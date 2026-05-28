@@ -468,8 +468,8 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
               {/* Chandra Kundali */}
               <div className="card-cosmic p-5 flex flex-col items-center gap-3">
                 <h3 className="font-serif text-gold-400 text-base self-start">Chandra Kundali (Moon Chart)</h3>
-                <SouthIndianChart planetaryPositions={pp} lagna={data.moon_sign} size={300} />
-                <p className="text-gray-300 text-xs text-center">Moon as Lagna — {data.moon_sign} rises</p>
+                <SouthIndianChart planetaryPositions={pp} lagna={data.lagna} size={300} title={"Chandra\nKundali"} />
+                <p className="text-gray-300 text-xs text-center">Rashi positions · Moon in {data.moon_sign} · Lagna: {data.lagna}</p>
               </div>
               {/* Chalit Kundali */}
               <div className="card-cosmic p-5 flex flex-col items-center gap-3">
@@ -485,6 +485,7 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                   )}
                   lagna={data.lagna}
                   size={300}
+                  title={"Chalit\nKundali"}
                 />
                 <p className="text-gray-300 text-xs text-center">Equal Bhava houses — planets placed by ±15° cusp rule</p>
               </div>
@@ -497,10 +498,11 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                       planetaryPositions={Object.fromEntries(
                         Object.entries(dc.navamsha).filter(([k]) => k !== 'Lagna').map(([k, v]) => [k, { sign: v.sign, sign_index: v.sign_index, retrograde: false }])
                       )}
-                      lagna={dc.navamsha.Lagna?.sign || data.lagna}
+                      lagna={data.lagna}
                       size={300}
+                      title={"Navamsha\nKundali"}
                     />
-                    <p className="text-gray-300 text-xs text-center">D-9 — Dharma, Marriage & Soul · Lagna: {dc.navamsha.Lagna?.sign || '—'}</p>
+                    <p className="text-gray-300 text-xs text-center">D-9 — Dharma, Marriage & Soul · Navamsha Lagna: {dc.navamsha.Lagna?.sign || '—'}</p>
                   </>
                 ) : <p className="text-gray-300 text-sm">Data not available</p>}
               </div>
@@ -513,10 +515,11 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                       planetaryPositions={Object.fromEntries(
                         Object.entries(dc.saptamsha).filter(([k]) => k !== 'Lagna').map(([k, v]) => [k, { sign: v.sign, sign_index: v.sign_index, retrograde: false }])
                       )}
-                      lagna={dc.saptamsha.Lagna?.sign || data.lagna}
+                      lagna={data.lagna}
                       size={300}
+                      title={"Saptamsha\nKundali"}
                     />
-                    <p className="text-gray-300 text-xs text-center">D-7 — Children & Progeny · Lagna: {dc.saptamsha.Lagna?.sign || '—'}</p>
+                    <p className="text-gray-300 text-xs text-center">D-7 — Children & Progeny · Saptamsha Lagna: {dc.saptamsha.Lagna?.sign || '—'}</p>
                   </>
                 ) : <p className="text-gray-300 text-sm">Data not available</p>}
               </div>
@@ -683,8 +686,9 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                       planetaryPositions={Object.fromEntries(
                         Object.entries(dc.navamsha).filter(([k])=>k!=='Lagna').map(([k,v])=>[k,{...v,sign_index:v.sign_index,retrograde:false}])
                       )}
-                      lagna={dc.navamsha['Lagna']?.sign || data.lagna}
+                      lagna={data.lagna}
                       size={320}
+                      title={"Navamsha\nKundali"}
                     />
                     <p className="text-gray-300 text-xs mt-2 text-center">Navamsha Lagna: {dc.navamsha['Lagna']?.sign || '—'}</p>
                   </div>

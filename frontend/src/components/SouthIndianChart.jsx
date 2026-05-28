@@ -34,7 +34,7 @@ const PLANET_COLORS = {
   Ketu:    '#884400',
 };
 
-export default function SouthIndianChart({ planetaryPositions = {}, lagna = 'Aries', size = 400 }) {
+export default function SouthIndianChart({ planetaryPositions = {}, lagna = 'Aries', size = 400, title = 'Janma\nKundali' }) {
   const lagnaIdx = SIGNS.indexOf(lagna);
   const cellSize = size / 4;
   const pad = size * 0.018;
@@ -86,16 +86,15 @@ export default function SouthIndianChart({ planetaryPositions = {}, lagna = 'Ari
                   stroke="#CCBBAA" strokeWidth="0.8" />
                 <line x1={cellSize * 3} y1={cellSize} x2={cellSize} y2={cellSize * 3}
                   stroke="#CCBBAA" strokeWidth="0.8" />
-                <text x={size / 2} y={size / 2 - size * 0.03}
-                  textAnchor="middle" fill="#663300"
-                  fontSize={size * 0.038} fontWeight="bold" fontFamily="Georgia, serif">
-                  Janma
-                </text>
-                <text x={size / 2} y={size / 2 + size * 0.032}
-                  textAnchor="middle" fill="#663300"
-                  fontSize={size * 0.038} fontWeight="bold" fontFamily="Georgia, serif">
-                  Kundali
-                </text>
+                {title.split('\n').map((line, i, arr) => (
+                  <text key={i}
+                    x={size / 2}
+                    y={size / 2 + (i - (arr.length - 1) / 2) * size * 0.062}
+                    textAnchor="middle" fill="#663300"
+                    fontSize={size * 0.038} fontWeight="bold" fontFamily="Georgia, serif">
+                    {line}
+                  </text>
+                ))}
               </g>
             );
           }
