@@ -1,0 +1,6 @@
+node_modules/
+.env
+astrovyoma.db
+*.db
+*.db-journal
+uploads/

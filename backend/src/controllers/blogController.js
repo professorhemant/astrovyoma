@@ -1,0 +1,360 @@
+const ARTICLES = [
+  {
+    id: '1',
+    slug: 'understanding-your-lagna',
+    title: 'Understanding Your Lagna: The Cornerstone of Vedic Astrology',
+    category: 'Vedic Astrology',
+    tags: ['lagna', 'ascendant', 'birth chart', 'kundali'],
+    author: 'AstroVyoma Editorial',
+    date: '2025-01-10',
+    readTime: 8,
+    icon: '♈',
+    excerpt: 'The Lagna or Ascendant is the most personal point in your Vedic birth chart. It governs your physical body, personality, and how the world perceives you — understanding it unlocks the entire chart.',
+    content: [
+      { type:'h2', text:'What Is the Lagna?' },
+      { type:'p',  text:'In Vedic astrology, the Lagna (also called the Ascendant) is the zodiac sign rising on the eastern horizon at the exact moment of your birth. Unlike your Sun sign — determined solely by birth date — the Lagna changes roughly every two hours, making it highly specific to your birth time and place. It is considered the most important single point in the entire Kundali.' },
+      { type:'p',  text:'The Lagna is the first house of your chart, and all other houses are counted from it. It represents your physical body, outward personality, general health, and the lens through which you experience life. If the Sun sign answers "who am I at the core," the Lagna answers "how do I show up in the world."' },
+      { type:'h2', text:'The Lagna Lord: Your Chart\'s Ruling Planet' },
+      { type:'p',  text:'Every Lagna sign has a ruling planet — called the Lagna Lord or Ascendant Lord. This planet\'s placement, strength, and aspects are of paramount importance. A well-placed Lagna Lord blesses the native with vitality, sharp personality, and general fortune, while a debilitated or afflicted Lagna Lord can indicate health challenges or obstacles in self-expression.' },
+      { type:'ul', items:[
+        'Aries Lagna — Lagna Lord Mars: dynamic, bold, energetic personality',
+        'Taurus Lagna — Lagna Lord Venus: artistic, sensual, steady and persistent',
+        'Gemini Lagna — Lagna Lord Mercury: intellectual, communicative, curious',
+        'Cancer Lagna — Lagna Lord Moon: emotional, nurturing, highly intuitive',
+        'Leo Lagna — Lagna Lord Sun: confident, regal, natural leaders',
+        'Virgo Lagna — Lagna Lord Mercury: analytical, detail-oriented, service-minded',
+        'Libra Lagna — Lagna Lord Venus: diplomatic, aesthetic, partnership-focused',
+        'Scorpio Lagna — Lagna Lord Mars (+ Ketu): intense, perceptive, transformative',
+        'Sagittarius Lagna — Lagna Lord Jupiter: philosophical, optimistic, truth-seeking',
+        'Capricorn Lagna — Lagna Lord Saturn: disciplined, ambitious, patient',
+        'Aquarius Lagna — Lagna Lord Saturn (+ Rahu): humanitarian, unconventional, progressive',
+        'Pisces Lagna — Lagna Lord Jupiter (+ Venus): spiritual, empathetic, imaginative',
+      ]},
+      { type:'h2', text:'Planets in the Lagna: Powerful Modifiers' },
+      { type:'p',  text:'Any planet sitting in the first house directly colours your personality and physical appearance. Jupiter in the Lagna bestows wisdom and an imposing presence. Saturn there gives serious, disciplined energy but may delay early success. Venus brings charm and an attractive appearance. Mars makes one assertive and physically active. Rahu in the Lagna creates an unconventional, driven personality with strong worldly ambitions.' },
+      { type:'callout', text:'Tip: Always check the Nakshatra of your Lagna degree for an even deeper layer. The Nakshatra reveals the subtlest expression of your ascendant energy.' },
+      { type:'h2', text:'Lagna vs. Sun Sign: Why Vedic Differs from Western Astrology' },
+      { type:'p',  text:'Western astrology places primary emphasis on the Sun sign. Vedic (Jyotish) astrology traditionally gives equal or greater weight to the Lagna and Moon sign. The reason is philosophical: the Moon and Lagna are considered more personally revealing than the Sun, which represents the soul\'s direction over a lifetime rather than day-to-day personality.' },
+      { type:'p',  text:'Additionally, Vedic astrology uses the sidereal zodiac (aligned to actual star constellations), while Western uses the tropical zodiac. This means most people\'s Vedic Sun sign differs by one sign from their Western sign — which further reinforces why Vedic practitioners anchor analysis in the Lagna and Moon.' },
+      { type:'h2', text:'How to Use Your Lagna in Daily Life' },
+      { type:'p',  text:'Knowing your Lagna helps you understand your natural strengths and the health areas to watch. A Scorpio Lagna native, for example, should be mindful of the reproductive and transformative areas of life and may naturally excel in psychology, research, or healing. A Sagittarius Lagna native does best with freedom, learning, and purpose-driven work.' },
+      { type:'p',  text:'When you run planetary transits (Gochara) or Dasha periods, always check how those planets relate to your Lagna lord — that reveals the personal impact far more precisely than checking any other reference point.' },
+    ]
+  },
+  {
+    id: '2',
+    slug: 'mercury-retrograde-2025',
+    title: 'Mercury Retrograde 2025: Dates, Effects, and How to Thrive',
+    category: 'Planets',
+    tags: ['mercury', 'retrograde', '2025', 'communication'],
+    author: 'AstroVyoma Editorial',
+    date: '2025-01-22',
+    readTime: 6,
+    icon: '☿',
+    excerpt: 'Mercury goes retrograde three times in 2025 — in Pisces, Leo, and Scorpio. Here\'s exactly what to expect during each phase and practical strategies to navigate communication, travel, and technology disruptions.',
+    content: [
+      { type:'h2', text:'Mercury Retrograde 2025: All Three Dates' },
+      { type:'ul', items:[
+        'Retrograde 1: March 15 – April 7, 2025 (Pisces) — intuition, creative confusion, spiritual insights',
+        'Retrograde 2: July 18 – August 11, 2025 (Leo) — ego, dramatic communication breakdowns, creative blocks',
+        'Retrograde 3: November 9 – November 29, 2025 (Scorpio) — secrets surfacing, deep psychological review, financial re-evaluations',
+      ]},
+      { type:'h2', text:'What Actually Happens During Mercury Retrograde?' },
+      { type:'p',  text:'From Earth\'s perspective, Mercury appears to move backwards through the zodiac for roughly three weeks, three times per year. This optical illusion occurs because Mercury, orbiting closer to the Sun, periodically "laps" Earth in their respective orbits. In Vedic astrology, a retrograde planet is called Vakri and is considered intensified — its energies turn inward and become stronger, sometimes disruptively so.' },
+      { type:'p',  text:'Mercury governs communication, logic, short-distance travel, technology, contracts, and commerce. When it retrogrades, these areas become unpredictable — delays, misunderstandings, device failures, and revisited decisions are common. But this is not purely negative: it is a time for review, revision, and reconnection.' },
+      { type:'h2', text:'What to Avoid During Mercury Retrograde' },
+      { type:'ul', items:[
+        'Signing new contracts or major agreements',
+        'Launching new businesses or websites',
+        'Making large purchases, especially tech and vehicles',
+        'Sending sensitive communications without double-checking',
+        'Making irreversible decisions — wait until Mercury stations direct',
+        'Starting new long-distance travel without backup plans',
+      ]},
+      { type:'h2', text:'What Mercury Retrograde Is Actually Good For' },
+      { type:'ul', items:[
+        'Revisiting old projects and finishing what was left incomplete',
+        'Reconnecting with people from the past',
+        'Editing, revising, and refining existing work',
+        'Deep introspection and reviewing life directions',
+        'Researching thoroughly before any upcoming decision',
+        'Backing up data and auditing finances',
+      ]},
+      { type:'callout', text:'The "RE-" Rule: Mercury retrograde favours anything with the prefix RE — revisit, revise, review, reconnect, renew, reconsider.' },
+      { type:'h2', text:'Mercury Retrograde in Pisces (March 15 – April 7)' },
+      { type:'p',  text:'Pisces is ruled by Jupiter and is the sign of imagination, spirituality, and dissolution of boundaries. Mercury is traditionally considered debilitated in Pisces. This retrograde can blur the line between reality and illusion — creative projects may feel inspired but directionless. Spiritual practice deepens, but practical communication suffers. Keep a dream journal; important subconscious messages surface now.' },
+      { type:'h2', text:'Mercury Retrograde in Leo (July 18 – August 11)' },
+      { type:'p',  text:'Leo rules ego, self-expression, and performance. This retrograde brings drama to communication — misunderstandings in creative collaborations, tech glitches during presentations, and ego clashes in professional settings. The remedy: listen more than you speak, and delay any major announcements until after August 11.' },
+      { type:'h2', text:'Mercury Retrograde in Scorpio (November 9 – November 29)' },
+      { type:'p',  text:'Scorpio rules secrets, depth psychology, and transformation. Hidden truths come to light now — in both positive and difficult ways. Financial audits, insurance matters, and joint assets need careful review. Avoid making new investments; instead, evaluate your existing portfolio. Old psychological patterns resurface for healing.' },
+    ]
+  },
+  {
+    id: '3',
+    slug: '12-houses-vedic-astrology',
+    title: 'The 12 Houses in Vedic Astrology: A Complete Guide',
+    category: 'Vedic Astrology',
+    tags: ['houses', 'bhavas', 'kundali', 'vedic astrology'],
+    author: 'AstroVyoma Editorial',
+    date: '2025-02-05',
+    readTime: 12,
+    icon: '🏠',
+    excerpt: 'The 12 Bhavas (houses) of the Vedic birth chart each govern a specific domain of life — from self and family to career, spirituality, and liberation. Understanding each house transforms how you read any chart.',
+    content: [
+      { type:'h2', text:'The Structure of the Vedic Birth Chart' },
+      { type:'p',  text:'The Vedic birth chart (Kundali) is divided into 12 houses, called Bhavas. Each house covers a distinct life area. Unlike planets and signs, which move and change, the houses are fixed reference points anchored to the Lagna (Ascendant). The first house begins at the Lagna degree and the rest follow in sequence, each spanning 30 degrees of the zodiac.' },
+      { type:'h2', text:'The First Six Houses: Personal Life' },
+      { type:'ul', items:[
+        '1st House (Tanu Bhava) — Self, body, personality, vitality, and overall life direction',
+        '2nd House (Dhana Bhava) — Wealth, family, speech, food, early education, and accumulated assets',
+        '3rd House (Sahaja Bhava) — Siblings, courage, communication, short journeys, skills, and initiative',
+        '4th House (Sukha Bhava) — Mother, home, vehicles, education, inner happiness, and real estate',
+        '5th House (Putra Bhava) — Children, intelligence, creativity, past-life merits (purva punya), romance',
+        '6th House (Ari Bhava) — Enemies, debts, diseases, service, litigation, daily work, and competition',
+      ]},
+      { type:'h2', text:'The Second Six Houses: Outer and Spiritual Life' },
+      { type:'ul', items:[
+        '7th House (Kalatra Bhava) — Marriage, partnerships, spouse, contracts, and business relationships',
+        '8th House (Ayu Bhava) — Longevity, transformation, inheritance, occult, sudden events, sexuality',
+        '9th House (Dharma Bhava) — Father, dharma, higher education, long journeys, luck, religion, guru',
+        '10th House (Karma Bhava) — Career, profession, reputation, public life, authority, and government',
+        '11th House (Labha Bhava) — Income, gains, elder siblings, social networks, desires and their fulfilment',
+        '12th House (Vyaya Bhava) — Losses, isolation, foreign lands, moksha, spiritual liberation, and expenses',
+      ]},
+      { type:'h2', text:'Kendra, Trikona, and Dusthana Houses' },
+      { type:'p',  text:'Vedic astrology classifies houses into groups based on their power and nature. Angular houses (Kendras) — 1, 4, 7, 10 — are the most powerful and give strong results. Trine houses (Trikonas) — 1, 5, 9 — are the most auspicious and connect to dharma and fortune. Upachaya houses — 3, 6, 10, 11 — improve with time and effort. Dusthana (difficult) houses — 6, 8, 12 — carry challenges but also great spiritual depth.' },
+      { type:'callout', text:'The 1st house is both a Kendra and a Trikona — making the Lagna the single most powerful house in the entire chart.' },
+      { type:'h2', text:'How to Judge a House\'s Strength' },
+      { type:'p',  text:'To assess any house, check four things: (1) the sign occupying the house, (2) any planets sitting in the house, (3) the house lord\'s placement and strength, and (4) aspects received by the house cusp from other planets. A house is considered strong when its lord is exalted, in its own sign, or in a Kendra/Trikona — and weak when the lord is debilitated, combust, or placed in a Dusthana.' },
+    ]
+  },
+  {
+    id: '4',
+    slug: 'sade-sati-saturn-explained',
+    title: 'Saturn\'s Sade Sati: The 7.5-Year Cosmic Test Fully Explained',
+    category: 'Planets',
+    tags: ['saturn', 'sade sati', 'shani', 'transit'],
+    author: 'AstroVyoma Editorial',
+    date: '2025-02-18',
+    readTime: 9,
+    icon: '🪐',
+    excerpt: 'Sade Sati — Saturn\'s 7.5-year transit over three consecutive signs around your Moon — is among the most discussed periods in Vedic astrology. Here is what actually happens, who is affected, and how to navigate it with grace.',
+    content: [
+      { type:'h2', text:'What Is Sade Sati?' },
+      { type:'p',  text:'Sade Sati (literally "seven and a half") refers to the 7.5-year period during which Saturn (Shani) transits through three consecutive zodiac signs — the sign before your natal Moon (12th from Moon), your natal Moon sign itself, and the sign after (2nd from Moon). Since Saturn spends approximately 2.5 years in each sign, the full transit lasts 7.5 years.' },
+      { type:'h2', text:'The Three Phases of Sade Sati' },
+      { type:'ul', items:[
+        'Rising Phase (12th from Moon): Increased mental restlessness, travel, foreign connections, spiritual yearning, subtle loss of peace',
+        'Peak Phase (on natal Moon): The most intense phase — burdens, responsibilities, health concerns for self or mother, tests of character',
+        'Setting Phase (2nd from Moon): Financial pressures, family tensions, speech-related conflicts, gradual release from burden',
+      ]},
+      { type:'h2', text:'Is Sade Sati Always Negative?' },
+      { type:'p',  text:'No — this is one of the most misunderstood aspects of Vedic astrology. Saturn is the planet of karma, discipline, and just rewards. For those who have lived responsibly — fulfilling duties to family, society, and self — Sade Sati often brings hard-won success, recognition, and spiritual maturity. It removes what no longer serves you, which can feel painful, but is ultimately purifying.' },
+      { type:'p',  text:'The experience varies significantly based on Saturn\'s natal placement, whether Saturn is a yogakaraka (beneficial planet) for your Lagna, and your overall karma. A Taurus or Libra Lagna often experiences Sade Sati relatively favourably because Venus (their Lagna lord) is friendly with Saturn.' },
+      { type:'callout', text:'Saturn tests everyone, but rewards those who do their karma sincerely. The difficult Sade Sati experiences arise primarily when one has been avoiding duties or living out of alignment with one\'s dharma.' },
+      { type:'h2', text:'Practical Remedies During Sade Sati' },
+      { type:'ul', items:[
+        'Offer mustard oil and sesame seeds to Shani Dev every Saturday',
+        'Recite the Shani Stotra or Shani Chalisa on Saturdays',
+        'Serve the underprivileged, elderly, and disabled — Saturn governs the downtrodden',
+        'Wear Blue Sapphire (Neelam) only after thorough astrological consultation',
+        'Feed crows (associated with Saturn) black sesame and rice on Saturdays',
+        'Avoid shortcuts, ego, and neglecting responsibilities — Saturn intensifies what you resist',
+        'Meditate on impermanence and cultivate equanimity as a daily practice',
+      ]},
+      { type:'h2', text:'Current Sade Sati: Who Is Affected in 2025?' },
+      { type:'p',  text:'Saturn is currently transiting Aquarius (Kumbha) through 2025. Natives with their natal Moon in Capricorn (peak phase), Aquarius (peak phase), or Pisces (setting phase) are currently in Sade Sati. If your Moon is in Sagittarius, your Sade Sati recently ended. Check our free Sade Sati calculator for your precise dates and phase.' },
+    ]
+  },
+  {
+    id: '5',
+    slug: 'mangal-dosha-facts-remedies',
+    title: 'Mangal Dosha: Separating Myth from Reality',
+    category: 'Relationships',
+    tags: ['mangal dosha', 'mars', 'marriage', 'compatibility'],
+    author: 'AstroVyoma Editorial',
+    date: '2025-03-02',
+    readTime: 7,
+    icon: '♂',
+    excerpt: 'Mangal Dosha causes more pre-marriage anxiety than any other astrological factor. But how serious is it really? We separate the real concerns from the myths and explain the genuine remedies.',
+    content: [
+      { type:'h2', text:'What Is Mangal Dosha?' },
+      { type:'p',  text:'Mangal Dosha (also called Kuja Dosha or Chevvai Dosham in South India) occurs when Mars (Mangal) is placed in the 1st, 2nd, 4th, 7th, 8th, or 12th house of the birth chart. Since Mars is a fiery, aggressive planet that governs passion, assertion, and conflict, its placement in these relationship-sensitive houses is believed to create turbulence in marriage.' },
+      { type:'h2', text:'How Many People Actually Have Mangal Dosha?' },
+      { type:'p',  text:'Mars can occupy any of the 12 houses. If we use the broadest definition (1, 2, 4, 7, 8, 12 from Lagna), that is 6 out of 12 houses — meaning roughly 50% of people technically have some form of Mangal Dosha. This alone should give pause to anyone terrified of the dosha. When it is so common, it cannot be the catastrophic marriage-destroyer popular belief makes it out to be.' },
+      { type:'h2', text:'The Real Concerns with Mars in Sensitive Houses' },
+      { type:'p',  text:'A strong or afflicted Mars in the 7th house (marriage) or 8th house (longevity of marriage) genuinely warrants attention. This placement can indicate a passionate but conflict-prone partner, tendency towards aggression in relationships, or challenges with shared resources. The 2nd house placement affects family life and speech. These are real, but manageable influences — not dooms.' },
+      { type:'h2', text:'Automatic Cancellations of Mangal Dosha' },
+      { type:'ul', items:[
+        'Mars in own sign (Aries or Scorpio) or exalted (Capricorn) — strength reduces dosha',
+        'Mars in the 1st house for Aries or Scorpio Lagna — Mars is Lagna lord, no dosha',
+        'Jupiter aspects Mars from the 7th — Jupiter\'s wisdom neutralises Mars\'s aggression',
+        'Mars conjunct or aspected by Moon — emotional intelligence softens Mars',
+        'Both partners have Mangal Dosha — considered mutually cancelling',
+        'Mars in Cancer (debilitated) — energies are weakened, dosha loses severity',
+        'Saturn aspecting Mars — discipline and restraint applied to Mars energy',
+      ]},
+      { type:'callout', text:'The most important rule: if both partners have Mars in the same house position, the dosha is considered cancelled. Two "Manglik" people are considered highly compatible.' },
+      { type:'h2', text:'Genuine Remedies for Mangal Dosha' },
+      { type:'p',  text:'Performing Kumbh Vivah (symbolic marriage with a peepal tree or clay pot before human marriage) is a traditional remedy but largely ritualistic. More practically: performing Mangal puja on Tuesdays, reciting the Mangal Stotra, wearing a real red coral after consultation, fasting on Tuesdays, and visiting Hanuman temples (Hanuman\'s energy harmonises Mars) are all time-tested approaches.' },
+    ]
+  },
+  {
+    id: '6',
+    slug: 'career-astrology-10th-house',
+    title: 'Career Astrology: Finding Your Life\'s Work Through the 10th House',
+    category: 'Career',
+    tags: ['career', '10th house', 'dharma', 'profession', 'saturn'],
+    author: 'AstroVyoma Editorial',
+    date: '2025-03-15',
+    readTime: 10,
+    icon: '💼',
+    excerpt: 'The 10th house, called Karma Bhava in Sanskrit, is the primary house of profession, reputation, and public life. Combined with the 2nd, 6th, and 11th houses, it reveals not just what career you are suited for — but what work will fulfil your soul.',
+    content: [
+      { type:'h2', text:'The 10th House: More Than Just Career' },
+      { type:'p',  text:'In Sanskrit, the 10th house is called Karma Bhava — the house of karma, deeds, and dharmic action. It is one of the four angular (Kendra) houses and is considered the most public point of the chart, directly opposite the 4th house of private home life. The 10th house reveals your calling, your public reputation, how authority figures perceive you, and the legacy you leave behind.' },
+      { type:'h2', text:'The Planetary Indicators of Career' },
+      { type:'ul', items:[
+        '10th house sign and its lord — primary indicator of career nature',
+        '10th house occupants — planets here directly flavour your professional life',
+        'Sun — father, authority, government, leadership roles',
+        'Moon — public dealings, hospitality, nurturing professions, fluctuating career',
+        'Mars — engineering, military, surgery, real estate, sports',
+        'Mercury — communication, writing, teaching, accounting, IT, trade',
+        'Jupiter — law, teaching, finance, counselling, philosophy, clergy',
+        'Venus — arts, design, entertainment, luxury goods, diplomacy',
+        'Saturn — service, construction, mining, agriculture, long-term institutions',
+        'Rahu — technology, unconventional fields, foreign connections, media',
+        'Ketu — research, spirituality, medicine, astrology, occult sciences',
+      ]},
+      { type:'h2', text:'The Artha Trikona: Houses of Material Prosperity' },
+      { type:'p',  text:'Career in Vedic astrology is not read from the 10th house alone. The Artha Trikona — houses 2, 6, and 10 — together form the triangle of material prosperity. The 2nd shows accumulated wealth and family business. The 6th shows service, competition, and the ability to sustain daily work. The 10th shows profession and public achievement. Strong planets in all three indicate exceptional career success.' },
+      { type:'h2', text:'Saturn and the 10th House' },
+      { type:'p',  text:'Saturn is the natural significator (Karaka) of the 10th house. A strong Saturn — even outside the 10th — bestows staying power, discipline, and the ability to build lasting institutions. Many highly successful long-term career builders have Saturn connected to the 10th house, Lagna, or 10th lord. Saturn delays but does not deny; significant career breakthroughs often come after age 36 for those with strong Saturn placements.' },
+      { type:'callout', text:'Timing is everything: even the best career yogas activate only during the appropriate Dasha-Antardasha period. A Rahu-Jupiter period, for example, can bring extraordinary sudden career rise if both planets are well-placed for career in your chart.' },
+      { type:'h2', text:'The Role of the Navamsa in Career Reading' },
+      { type:'p',  text:'The Navamsa (D-9 chart) is used to confirm the Rashi chart\'s indications. If the same career-related planet appears strong in both Rashi and Navamsa, its results are reliable. The Dasamsa (D-10 chart) — the divisional chart specifically for profession — gives the most granular career details available in Vedic astrology and is used by expert Jyotishis for detailed career counselling.' },
+    ]
+  },
+  {
+    id: '7',
+    slug: 'navagraha-nine-planets',
+    title: 'Navagraha: The Nine Planets of Vedic Astrology and Their Cosmic Role',
+    category: 'Vedic Astrology',
+    tags: ['navagraha', 'planets', 'sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn', 'rahu', 'ketu'],
+    author: 'AstroVyoma Editorial',
+    date: '2025-03-28',
+    readTime: 11,
+    icon: '🌠',
+    excerpt: 'The Navagraha — nine cosmic forces of Vedic astrology — are not merely planets but divine intelligences that shape human experience. From the radiant Sun to the shadowy Ketu, each rules a distinct dimension of life.',
+    content: [
+      { type:'h2', text:'The Nine Cosmic Forces' },
+      { type:'p',  text:'Unlike Western astrology\'s ten planets, Vedic astrology works with nine "grahas" — literally "seizers" or forces that grasp and influence us. These are: Surya (Sun), Chandra (Moon), Mangal (Mars), Budha (Mercury), Guru (Jupiter), Shukra (Venus), Shani (Saturn), Rahu (North Lunar Node), and Ketu (South Lunar Node). Rahu and Ketu are shadow planets — mathematical points where the Moon\'s orbit intersects the Sun\'s path.' },
+      { type:'ul', items:[
+        'Sun (Surya) — Soul, father, authority, vitality, government. Exalted in Aries; debilitated in Libra.',
+        'Moon (Chandra) — Mind, mother, emotions, public, liquids. Exalted in Taurus; debilitated in Scorpio.',
+        'Mars (Mangal) — Energy, courage, siblings, land, surgery. Exalted in Capricorn; debilitated in Cancer.',
+        'Mercury (Budha) — Intellect, communication, trade, skin. Exalted in Virgo; debilitated in Pisces.',
+        'Jupiter (Guru) — Wisdom, dharma, children, wealth, teacher. Exalted in Cancer; debilitated in Capricorn.',
+        'Venus (Shukra) — Love, beauty, arts, vehicles, luxury. Exalted in Pisces; debilitated in Virgo.',
+        'Saturn (Shani) — Karma, discipline, longevity, labour. Exalted in Libra; debilitated in Aries.',
+        'Rahu (North Node) — Obsession, ambition, worldly desires, foreigners, technology.',
+        'Ketu (South Node) — Liberation, past lives, spirituality, research, detachment.',
+      ]},
+      { type:'h2', text:'Natural Friends and Enemies Among Planets' },
+      { type:'p',  text:'Each graha has natural relationships with the others — friendships (mitra), neutrality (sama), and enmity (shatru). Sun and Moon are mutual friends; Saturn and Sun are enemies. Jupiter is friendly with most planets except Mercury and Venus, who are mutual friends but not particularly close to Jupiter. These relationships modify how planets in conjunction or aspect express themselves.' },
+      { type:'h2', text:'Planetary Karakas: What Each Planet Signifies in Life' },
+      { type:'p',  text:'Each planet is a karaka — a significator — of specific people and things in your life. The Sun represents your father and the "father archetype" in general. The Moon represents your mother. Mars represents siblings (especially younger). Mercury represents friends and cousins. Jupiter represents your Guru or mentor, as well as your children (and husband in a woman\'s chart). Venus represents marriage (and wife in a man\'s chart). Saturn represents servants, the elderly, and those with less privilege.' },
+      { type:'callout', text:'Rahu amplifies whatever it touches, often beyond proportion. Ketu detaches and spiritualises. Together they create the axis of worldly craving and spiritual release — the core tension of human existence.' },
+      { type:'h2', text:'The Seven-Day Week and Planetary Rulership' },
+      { type:'p',  text:'The Vedic planetary sequence gave us the seven-day week. Each day is ruled by a planet: Sunday (Sun), Monday (Moon), Tuesday (Mars), Wednesday (Mercury), Thursday (Jupiter), Friday (Venus), Saturday (Saturn). Performing planet-specific remedies on the corresponding day maximises effectiveness. Chanting a planet\'s mantra, wearing its gemstone, and observing relevant fasting on its weekday is the traditional approach.' },
+    ]
+  },
+  {
+    id: '8',
+    slug: 'vastu-shastra-home-guide',
+    title: 'Vastu Shastra: How the Ancient Science of Space Shapes Your Destiny',
+    category: 'Vastu',
+    tags: ['vastu', 'vastu shastra', 'home', 'directions', 'energy'],
+    author: 'AstroVyoma Editorial',
+    date: '2025-04-10',
+    readTime: 8,
+    icon: '🏠',
+    excerpt: 'Vastu Shastra — the 5,000-year-old Vedic science of architecture — holds that the spatial arrangement of your home directly influences health, wealth, relationships, and mental peace. Here is what every homeowner should know.',
+    content: [
+      { type:'h2', text:'The Foundation: Five Elements and Eight Directions' },
+      { type:'p',  text:'Vastu Shastra is built on two pillars: the Pancha Mahabhutas (five elements — Earth, Water, Fire, Air, Space) and the Ashtadisha (eight directions — N, NE, E, SE, S, SW, W, NW). Every room and object in your home corresponds to one or more of these elements and directions. Correct alignment creates a harmonious flow of cosmic energy; misalignment creates Vastu Doshas (defects) that manifest as stagnation, conflict, or ill-health.' },
+      { type:'h2', text:'The Brahmasthan: The Sacred Centre' },
+      { type:'p',  text:'The exact centre of any structure — called the Brahmasthan — is the most sacred space in Vastu. It should always be kept open, clean, and unencumbered. Never place heavy furniture, a bathroom, or a staircase at the Brahmasthan. In ancient temples, the deity was placed at the Brahmasthan. In modern homes, a small open courtyard or even a skylight honours this principle.' },
+      { type:'h2', text:'Room Placement by Direction' },
+      { type:'ul', items:[
+        'Northeast (Ishanya) — Puja room, meditation space, water features. Most sacred zone.',
+        'East (Purva) — Main entrance or living room. Governed by Sun — brings health and recognition.',
+        'North (Uttara) — Study, home office, treasury. Governed by Kubera (wealth). Keep this area open.',
+        'West (Paschima) — Dining room, children\'s room. Governed by Varuna (water).',
+        'South (Dakshina) — Master bedroom. Governed by Yama — stability and longevity.',
+        'Southeast (Agneya) — Kitchen. Governed by Agni (fire). Ideal placement for the cook and stove.',
+        'Southwest (Nairutya) — Master bedroom storage, heavy furniture. Most stable direction — no openings.',
+        'Northwest (Vayavya) — Guest room, garage. Governed by Vayu (wind) — temporary occupants.',
+      ]},
+      { type:'h2', text:'The Most Common Vastu Doshas and Their Remedies' },
+      { type:'ul', items:[
+        'Main door in South — place a Swastik or Ganesh image at the entrance; hang a copper wire toran',
+        'Kitchen in Northeast — use Vastu pyramids; shift the stove to face SE if possible',
+        'Bathroom in Northeast — apply sea salt in corners; place Vastu crystals to neutralise energy',
+        'Bedroom in Southeast — use cool blue tones; place heavy furniture in the SW of the room',
+        'Beams over bed — move the bed; paint the beam the same colour as the ceiling to visually dissolve it',
+        'Missing corner (L-shaped plot) — use mirrors and plants to visually extend the missing area',
+      ]},
+      { type:'callout', text:'You don\'t need to rebuild your home for Vastu. Most doshas can be significantly reduced through colour, placement adjustments, plants, crystals, and specific remedial objects (yantras, pyramids, wind chimes).' },
+    ]
+  },
+];
+
+exports.listArticles = (req, res) => {
+  try {
+    const { category, search, page = 1, limit = 9 } = req.query;
+    let results = ARTICLES;
+
+    if (category && category !== 'all') {
+      results = results.filter(a => a.category.toLowerCase() === category.toLowerCase());
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      results = results.filter(a =>
+        a.title.toLowerCase().includes(q) ||
+        a.excerpt.toLowerCase().includes(q) ||
+        a.tags.some(t => t.includes(q))
+      );
+    }
+
+    const total  = results.length;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    const items  = results.slice(offset, offset + parseInt(limit)).map(a => ({
+      id: a.id, slug: a.slug, title: a.title, category: a.category,
+      tags: a.tags, author: a.author, date: a.date, readTime: a.readTime,
+      icon: a.icon, excerpt: a.excerpt
+    }));
+
+    const categories = [...new Set(ARTICLES.map(a => a.category))];
+    res.json({ articles: items, total, page: parseInt(page), limit: parseInt(limit), categories });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getArticle = (req, res) => {
+  try {
+    const article = ARTICLES.find(a => a.slug === req.params.slug);
+    if (!article) return res.status(404).json({ error: 'Article not found' });
+
+    const related = ARTICLES
+      .filter(a => a.id !== article.id && (a.category === article.category || a.tags.some(t => article.tags.includes(t))))
+      .slice(0, 3)
+      .map(a => ({ id:a.id, slug:a.slug, title:a.title, category:a.category, icon:a.icon, readTime:a.readTime, excerpt:a.excerpt }));
+
+    res.json({ article, related });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

@@ -1,0 +1,111 @@
+
+> astrovyoma-frontend@1.0.0 dev
+> vite
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m1119[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m7:41:45 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/HoroscopePage.jsx, /src/index.css[22m
+[2m7:41:51 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/HoroscopePage.jsx, /src/index.css[22m
+[2m7:41:56 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/HoroscopePage.jsx, /src/index.css[22m
+[2m7:48:25 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/ZodiacIcon.jsx, /src/index.css[22m
+[2m7:48:33 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/HoroscopePage.jsx, /src/index.css[22m
+[2m7:48:36 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/HoroscopePage.jsx, /src/index.css[22m
+[2m7:53:07 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/KundaliPage.jsx, /src/index.css[22m
+[2m7:53:14 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/KundaliPage.jsx, /src/index.css[22m
+[2m8:02:04 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/KundaliPage.jsx, /src/index.css[22m
+[2m8:02:04 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/kundali/mine[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+[2m8:02:16 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/KundaliPage.jsx, /src/index.css[22m
+[2m8:02:16 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/kundali/mine[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+[2m8:02:24 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/KundaliPage.jsx, /src/index.css[22m
+[2m8:02:24 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/kundali/mine[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+[2m8:03:04 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/auth/me[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+[2m8:03:04 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/auth/me[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+[2m8:03:22 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/astrologers?limit=6[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+[2m8:03:22 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/astrologers?limit=6[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+[2m8:04:24 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/astrologers?limit=6[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+[2m8:04:24 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/astrologers?limit=6[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+[2m8:05:00 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/auth/register[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+[2m8:05:21 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/auth/login[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+[2m8:12:05 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/KundaliPage.jsx, /src/index.css[22m
+[2m8:16:03 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/KundaliPage.jsx, /src/index.css[22m
+[2m8:20:21 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/Navbar.jsx, /src/index.css[22m
+[2m8:20:33 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/Navbar.jsx, /src/index.css[22m
+[2m8:56:33 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/context/AuthContext.jsx, /src/index.css, /src/pages/HoroscopePage.jsx, /src/pages/LoginPage.jsx, /src/pages/AstrologerDetailPage.jsx, /src/pages/RegisterPage.jsx, /src/pages/WalletPage.jsx, /src/pages/AstrologersPage.jsx, /src/pages/ChatbotPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/PurposePage.jsx, /src/pages/ConsultationPage.jsx, /src/pages/HomePage.jsx, /src/pages/KundaliPage.jsx[22m
+[2m8:56:33 PM[22m [36m[1m[vite][22m[39m [33mhmr invalidate [39m[2m/src/context/AuthContext.jsx[22m Could not Fast Refresh ("useAuth" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m8:56:33 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css, /src/pages/LoginPage.jsx, /src/pages/AstrologerDetailPage.jsx, /src/pages/RegisterPage.jsx, /src/pages/WalletPage.jsx, /src/pages/ChatbotPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/PurposePage.jsx, /src/pages/ConsultationPage.jsx, /src/pages/KundaliPage.jsx, /src/components/Navbar.jsx[22m
+[2m8:56:33 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/astrologers?sort=&page=1&limit=12[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+[2m8:56:33 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/auth/me[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+[2m8:56:33 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/astrologers?sort=&page=1&limit=12[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+[2m8:56:44 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/ConsultationPage.jsx, /src/index.css[22m
+[2m8:56:57 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/ConsultationPage.jsx, /src/index.css[22m
+[2m8:57:09 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/ConsultationPage.jsx, /src/index.css[22m
+[2m8:57:23 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/ConsultationPage.jsx, /src/index.css[22m
+[2m8:57:36 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/AstrologerDetailPage.jsx, /src/index.css[22m
+[2m9:01:25 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/context/AuthContext.jsx, /src/index.css, /src/pages/HoroscopePage.jsx, /src/pages/LoginPage.jsx, /src/pages/AstrologerDetailPage.jsx, /src/pages/RegisterPage.jsx, /src/pages/WalletPage.jsx, /src/pages/AstrologersPage.jsx, /src/pages/ChatbotPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/PurposePage.jsx, /src/pages/ConsultationPage.jsx, /src/pages/HomePage.jsx, /src/pages/KundaliPage.jsx[22m
+[2m9:01:26 PM[22m [36m[1m[vite][22m[39m [33mhmr invalidate [39m[2m/src/context/AuthContext.jsx[22m Could not Fast Refresh ("useAuth" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m9:01:26 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css, /src/pages/LoginPage.jsx, /src/pages/AstrologerDetailPage.jsx, /src/pages/RegisterPage.jsx, /src/pages/WalletPage.jsx, /src/pages/ChatbotPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/PurposePage.jsx, /src/pages/ConsultationPage.jsx, /src/pages/KundaliPage.jsx, /src/components/Navbar.jsx[22m
+[2m9:02:27 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/PanchangPage.jsx, /src/index.css[22m
+[2m9:03:35 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+[2m9:03:39 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+[2m9:03:48 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/Navbar.jsx, /src/index.css[22m
+[2m9:03:54 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/Navbar.jsx, /src/index.css[22m
+[2m9:15:09 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/context/AuthContext.jsx, /src/index.css, /src/pages/HoroscopePage.jsx, /src/pages/LoginPage.jsx, /src/pages/AstrologerDetailPage.jsx, /src/pages/RegisterPage.jsx, /src/pages/WalletPage.jsx, /src/pages/AstrologersPage.jsx, /src/pages/ChatbotPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/PurposePage.jsx, /src/pages/ConsultationPage.jsx, /src/pages/HomePage.jsx, /src/pages/KundaliPage.jsx, /src/pages/PanchangPage.jsx, /src/pages/ConsultationHistoryPage.jsx[22m
+[2m9:15:10 PM[22m [36m[1m[vite][22m[39m [33mhmr invalidate [39m[2m/src/context/AuthContext.jsx[22m Could not Fast Refresh ("useAuth" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m9:15:10 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css, /src/pages/LoginPage.jsx, /src/pages/AstrologerDetailPage.jsx, /src/pages/RegisterPage.jsx, /src/pages/WalletPage.jsx, /src/pages/ChatbotPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/PurposePage.jsx, /src/pages/ConsultationPage.jsx, /src/pages/KundaliPage.jsx, /src/components/Navbar.jsx[22m
+[2m9:15:11 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/astrologers?limit=6[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+[2m9:15:11 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/astrologers?limit=6[39m
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+[2m9:16:14 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+[2m9:16:18 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+[2m9:16:24 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/Navbar.jsx, /src/index.css[22m
