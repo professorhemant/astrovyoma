@@ -463,8 +463,14 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
         {/* TAB: Birth Chart */}
         {tab === 'chart' && (
           <motion.div key="chart" initial={{opacity:0}} animate={{opacity:1}} className="space-y-8">
-            {/* 4 Kundali Charts */}
+            {/* 5 Kundali Charts */}
             <div className="grid md:grid-cols-2 gap-6">
+              {/* Lagna Kundali */}
+              <div className="card-cosmic p-5 flex flex-col items-center gap-3">
+                <h3 className="font-serif text-gold-400 text-base self-start">Lagna Kundali (D-1)</h3>
+                <SouthIndianChart planetaryPositions={pp} lagna={data.lagna} size={300} title={"Lagna\nKundali"} />
+                <p className="text-gray-300 text-xs text-center">Rashi chart · Lagna: {data.lagna}</p>
+              </div>
               {/* Chandra Kundali */}
               <div className="card-cosmic p-5 flex flex-col items-center gap-3">
                 <h3 className="font-serif text-gold-400 text-base self-start">Chandra Kundali (Moon Chart)</h3>
