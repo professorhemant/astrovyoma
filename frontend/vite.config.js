@@ -11,5 +11,10 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  preview: {
+    port: parseInt(process.env.PORT) || 4173,
+    host: true,
+    allowedHosts: 'all',
   }
 });
