@@ -467,20 +467,20 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
             <div className="grid md:grid-cols-2 gap-6">
               {/* Lagna Kundali */}
               <div className="card-cosmic p-5 flex flex-col items-center gap-3">
-                <h3 className="font-serif text-gold-400 text-base self-start">Lagna Kundali (D-1)</h3>
-                <SouthIndianChart planetaryPositions={pp} lagna={data.lagna} size={300} title={"Lagna\nKundali"} />
-                <p className="text-gray-300 text-xs text-center">Rashi chart · Lagna: {data.lagna}</p>
+                <h3 className="font-serif text-gold-400 text-base self-start">लग्न कुंडली (Lagna D-1)</h3>
+                <NorthIndianChart planetaryPositions={pp} lagna={data.lagna} size={300} title="ॐ" />
+                <p className="text-gray-300 text-xs text-center">राशि चक्र · लग्न: {data.lagna}</p>
               </div>
               {/* Chandra Kundali */}
               <div className="card-cosmic p-5 flex flex-col items-center gap-3">
-                <h3 className="font-serif text-gold-400 text-base self-start">Chandra Kundali (Moon Chart)</h3>
-                <SouthIndianChart planetaryPositions={pp} lagna={data.lagna} size={300} title={"Chandra\nKundali"} />
-                <p className="text-gray-300 text-xs text-center">Rashi positions · Moon in {data.moon_sign} · Lagna: {data.lagna}</p>
+                <h3 className="font-serif text-gold-400 text-base self-start">चंद्र कुंडली (Moon Chart)</h3>
+                <NorthIndianChart planetaryPositions={pp} lagna={data.moon_sign} size={300} title={"चंद्र\nकुंडली"} />
+                <p className="text-gray-300 text-xs text-center">चंद्र लग्न: {data.moon_sign}</p>
               </div>
               {/* Chalit Kundali */}
               <div className="card-cosmic p-5 flex flex-col items-center gap-3">
-                <h3 className="font-serif text-gold-400 text-base self-start">Chalit Kundali (Bhava Chart)</h3>
-                <SouthIndianChart
+                <h3 className="font-serif text-gold-400 text-base self-start">चलित कुंडली (Bhava Chart)</h3>
+                <NorthIndianChart
                   planetaryPositions={Object.fromEntries(
                     Object.entries(pp).map(([planet, pos]) => {
                       const diff = ((pos.degree - data.lagna_degree + 360 + 15) % 360);
@@ -491,41 +491,41 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                   )}
                   lagna={data.lagna}
                   size={300}
-                  title={"Chalit\nKundali"}
+                  title={"चलित\nकुंडली"}
                 />
-                <p className="text-gray-300 text-xs text-center">Equal Bhava houses — planets placed by ±15° cusp rule</p>
+                <p className="text-gray-300 text-xs text-center">समान भाव विभाजन — ±15° भाव सीमा नियम</p>
               </div>
               {/* Navamsha Kundali */}
               <div className="card-cosmic p-5 flex flex-col items-center gap-3">
-                <h3 className="font-serif text-gold-400 text-base self-start">Navamsha Kundali (D-9)</h3>
+                <h3 className="font-serif text-gold-400 text-base self-start">नवांश कुंडली (D-9)</h3>
                 {dc.navamsha ? (
                   <>
-                    <SouthIndianChart
+                    <NorthIndianChart
                       planetaryPositions={Object.fromEntries(
                         Object.entries(dc.navamsha).filter(([k]) => k !== 'Lagna').map(([k, v]) => [k, { sign: v.sign, sign_index: v.sign_index, retrograde: false }])
                       )}
                       lagna={data.lagna}
                       size={300}
-                      title={"Navamsha\nKundali"}
+                      title={"नवांश\nकुंडली"}
                     />
-                    <p className="text-gray-300 text-xs text-center">D-9 — Dharma, Marriage & Soul · Navamsha Lagna: {dc.navamsha.Lagna?.sign || '—'}</p>
+                    <p className="text-gray-300 text-xs text-center">D-9 — धर्म, विवाह व आत्मा · नवांश लग्न: {dc.navamsha.Lagna?.sign || '—'}</p>
                   </>
                 ) : <p className="text-gray-300 text-sm">Data not available</p>}
               </div>
               {/* Saptamsha Kundali */}
               <div className="card-cosmic p-5 flex flex-col items-center gap-3">
-                <h3 className="font-serif text-gold-400 text-base self-start">Saptamsha Kundali (D-7)</h3>
+                <h3 className="font-serif text-gold-400 text-base self-start">सप्तांश कुंडली (D-7)</h3>
                 {dc.saptamsha ? (
                   <>
-                    <SouthIndianChart
+                    <NorthIndianChart
                       planetaryPositions={Object.fromEntries(
                         Object.entries(dc.saptamsha).filter(([k]) => k !== 'Lagna').map(([k, v]) => [k, { sign: v.sign, sign_index: v.sign_index, retrograde: false }])
                       )}
                       lagna={data.lagna}
                       size={300}
-                      title={"Saptamsha\nKundali"}
+                      title={"सप्तांश\nकुंडली"}
                     />
-                    <p className="text-gray-300 text-xs text-center">D-7 — Children & Progeny · Saptamsha Lagna: {dc.saptamsha.Lagna?.sign || '—'}</p>
+                    <p className="text-gray-300 text-xs text-center">D-7 — संतान व सृजनशक्ति · सप्तांश लग्न: {dc.saptamsha.Lagna?.sign || '—'}</p>
                   </>
                 ) : <p className="text-gray-300 text-sm">Data not available</p>}
               </div>
@@ -688,13 +688,13 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
               {dc.navamsha && (
                 <div>
                   <div className="mb-6 flex flex-col items-center">
-                    <SouthIndianChart
+                    <NorthIndianChart
                       planetaryPositions={Object.fromEntries(
                         Object.entries(dc.navamsha).filter(([k])=>k!=='Lagna').map(([k,v])=>[k,{...v,sign_index:v.sign_index,retrograde:false}])
                       )}
                       lagna={data.lagna}
                       size={320}
-                      title={"Navamsha\nKundali"}
+                      title={"नवांश\nकुंडली"}
                     />
                     <p className="text-gray-300 text-xs mt-2 text-center">Navamsha Lagna: {dc.navamsha['Lagna']?.sign || '—'}</p>
                   </div>
