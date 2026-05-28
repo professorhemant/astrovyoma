@@ -809,8 +809,9 @@ async function calculateKundali(dob, birth_time, lat, lng, timezone) {
     divCharts.dashamsha[pName]  = getDashamsha(deg);
     divCharts.saptamsha[pName]  = getSaptamsha(deg);
   }
-  // Navamsha Lagna
-  divCharts.navamsha['Lagna'] = getNavamsha(ascDeg);
+  // Navamsha & Saptamsha Lagna
+  divCharts.navamsha['Lagna']  = getNavamsha(ascDeg);
+  divCharts.saptamsha['Lagna'] = getSaptamsha(ascDeg);
 
   // Panchang
   const sunLon = planetaryPositions['Sun'].degree;

@@ -7,6 +7,7 @@ import {
   Download, FileText, BookOpen, Star, Sun, Moon, ChevronDown, Sparkles, Bookmark
 } from 'lucide-react';
 import NorthIndianChart from '../components/NorthIndianChart';
+import SouthIndianChart from '../components/SouthIndianChart';
 import SwastikBorder from '../components/SwastikBorder';
 import { kundali as kundaliApi, reportHistory as historyApi } from '../api';
 import BirthPlacePicker from '../components/BirthPlacePicker';
@@ -454,73 +455,131 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
 
         {/* Tabs */}
         <div className="flex gap-2 mb-6 flex-wrap">
-          {[['chart','Birth Chart'],['planets','Planets & Houses'],['dasha','Dasha Timeline'],['navamsha','Navamsha (D-9)'],['upgrahas','Upgrahas'],['strength','Shadbala'],['bhavabala','Bhava Bala'],['namkaran','Namkaran Sanskar']].map(([t,l])=>(
+          {[['chart','Kundali Charts'],['planets','Planets & Houses'],['dasha','Dasha Timeline'],['navamsha','Navamsha (D-9)'],['upgrahas','Upgrahas'],['strength','Shadbala'],['bhavabala','Bhava Bala'],['namkaran','Namkaran Sanskar']].map(([t,l])=>(
             <TabButton key={t} active={tab===t} onClick={()=>{ setTab(t); if(t==='namkaran' && !namkaran) fetchNamkaran(); }}>{l}</TabButton>
           ))}
         </div>
 
         {/* TAB: Birth Chart */}
         {tab === 'chart' && (
-          <motion.div key="chart" initial={{opacity:0}} animate={{opacity:1}} className="grid lg:grid-cols-2 gap-8">
-            <div className="card-cosmic p-6 flex flex-col items-center gap-4">
-              <h3 className="font-serif text-gold-400 text-lg self-start">Rashi Chart (D-1)</h3>
-              <NorthIndianChart planetaryPositions={pp} lagna={data.lagna} size={380} />
-              <p className="text-gray-300 text-xs">North Indian style — House positions fixed — Signs rotate by Lagna</p>
-            </div>
-            <div className="space-y-4">
-              {/* Current Dasha */}
-              {currentDasha && (
-                <div className="card-cosmic p-5 border border-gold-600/30">
-                  <h3 className="font-serif text-gold-400 text-lg mb-3">Current Dasha Period</h3>
-                  <div className="bg-gold-500/10 rounded-xl p-3 mb-3">
-                    <p className="text-gray-300 text-xs uppercase tracking-wider mb-1">Mahadasha (Major)</p>
-                    <p className="text-gold-300 text-xl font-semibold">{currentDasha.planet} Dasha</p>
-                    <p className="text-gray-300 text-xs">{currentDasha.start} — {currentDasha.end} — {currentDasha.years} years</p>
-                  </div>
-                  {currentAntar && (
-                    <div className="bg-cosmic-900/60 rounded-xl p-3 border border-gold-600/20">
-                      <p className="text-gray-300 text-xs uppercase tracking-wider mb-1">Antardasha (Sub-Period)</p>
-                      <p className="text-gold-200 text-lg font-semibold">{currentDasha.planet}/{currentAntar.planet}</p>
-                      <p className="text-gray-300 text-xs">{currentAntar.start} — {currentAntar.end}</p>
-                    </div>
-                  )}
-                  {data.dasha_balance && (
-                    <p className="text-gray-300 text-xs mt-3 border-t border-gold-600/10 pt-3">
-                      Dasha Balance at Birth: <span className="text-gold-500">{data.dasha_balance.planet}</span> — {data.dasha_balance.remaining_years} yrs remaining
-                    </p>
-                  )}
-                </div>
-              )}
-              {/* Personality */}
-              <div className="card-cosmic p-5">
-                <h3 className="font-serif text-gold-400 text-lg mb-3">Nature & Traits</h3>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {(data.personality_traits?.combined_traits || []).map(t=>(
-                    <span key={t} className="px-3 py-1 rounded-full text-xs bg-gold-600/15 text-gold-400 border border-gold-600/20">{t}</span>
-                  ))}
-                </div>
-                <p className="text-gold-300 text-sm font-medium mb-1">{data.life_purpose}</p>
-                <p className="text-gray-200 text-xs leading-relaxed">{data.swabhav}</p>
+          <motion.div key="chart" initial={{opacity:0}} animate={{opacity:1}} className="space-y-8">
+            {/* 4 Kundali Charts */}
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Chandra Kundali */}
+              <div className="card-cosmic p-5 flex flex-col items-center gap-3">
+                <h3 className="font-serif text-gold-400 text-base self-start">Chandra Kundali (Moon Chart)</h3>
+                <SouthIndianChart planetaryPositions={pp} lagna={data.moon_sign} size={300} />
+                <p className="text-gray-300 text-xs text-center">Moon as Lagna — {data.moon_sign} rises</p>
               </div>
-              {/* LMT Info */}
-              {data.lmt_info && (
-                <div className="card-cosmic p-4">
-                  <h3 className="text-gold-400 font-medium text-sm mb-2">LMT & Sidereal Time Calculations</h3>
-                  <div className="text-xs space-y-1.5 text-gray-200">
-                    <p className="text-gray-300 uppercase tracking-wider text-[10px] mb-1">Local Mean Time</p>
-                    <div className="flex justify-between"><span>Standard Meridian</span><span className="text-gray-300">{data.lmt_info.standard_meridian}° E</span></div>
-                    <div className="flex justify-between"><span>Birth Longitude</span><span className="text-gray-300">{data.lmt_info.birth_longitude}° E</span></div>
-                    <div className="flex justify-between"><span>LMT Correction</span><span className="text-gold-400">{data.lmt_info.lmt_correction_display}</span></div>
-                    <div className="flex justify-between"><span>Local Mean Time</span><span className="text-gold-400 font-medium">{data.lmt_info.lmt}</span></div>
-                    {siderealTime.lmst_time && (<>
-                      <p className="text-gray-300 uppercase tracking-wider text-[10px] mt-2 mb-1 pt-2 border-t border-gold-600/10">Sidereal Time at Birth</p>
-                      <div className="flex justify-between"><span>Interval from LMT Noon</span><span className="text-gray-300">{siderealTime.interval_from_noon_hrs} hrs</span></div>
-                      <div className="flex justify-between"><span>Sidereal Acceleration</span><span className="text-gray-300">+{siderealTime.sidereal_acceleration_sec}s (10s/hr)</span></div>
-                      <div className="flex justify-between"><span>LMST at Birth</span><span className="text-gold-400 font-medium">{siderealTime.lmst_time}</span></div>
-                    </>)}
+              {/* Chalit Kundali */}
+              <div className="card-cosmic p-5 flex flex-col items-center gap-3">
+                <h3 className="font-serif text-gold-400 text-base self-start">Chalit Kundali (Bhava Chart)</h3>
+                <SouthIndianChart
+                  planetaryPositions={Object.fromEntries(
+                    Object.entries(pp).map(([planet, pos]) => {
+                      const diff = ((pos.degree - data.lagna_degree + 360 + 15) % 360);
+                      const chHouse = Math.floor(diff / 30) + 1;
+                      const chSignIdx = (data.lagna_sign_index + chHouse - 1) % 12;
+                      return [planet, { sign: SIGNS[chSignIdx], sign_index: chSignIdx, retrograde: pos.retrograde }];
+                    })
+                  )}
+                  lagna={data.lagna}
+                  size={300}
+                />
+                <p className="text-gray-300 text-xs text-center">Equal Bhava houses — planets placed by ±15° cusp rule</p>
+              </div>
+              {/* Navamsha Kundali */}
+              <div className="card-cosmic p-5 flex flex-col items-center gap-3">
+                <h3 className="font-serif text-gold-400 text-base self-start">Navamsha Kundali (D-9)</h3>
+                {dc.navamsha ? (
+                  <>
+                    <SouthIndianChart
+                      planetaryPositions={Object.fromEntries(
+                        Object.entries(dc.navamsha).filter(([k]) => k !== 'Lagna').map(([k, v]) => [k, { sign: v.sign, sign_index: v.sign_index, retrograde: false }])
+                      )}
+                      lagna={dc.navamsha.Lagna?.sign || data.lagna}
+                      size={300}
+                    />
+                    <p className="text-gray-300 text-xs text-center">D-9 — Dharma, Marriage & Soul · Lagna: {dc.navamsha.Lagna?.sign || '—'}</p>
+                  </>
+                ) : <p className="text-gray-300 text-sm">Data not available</p>}
+              </div>
+              {/* Saptamsha Kundali */}
+              <div className="card-cosmic p-5 flex flex-col items-center gap-3">
+                <h3 className="font-serif text-gold-400 text-base self-start">Saptamsha Kundali (D-7)</h3>
+                {dc.saptamsha ? (
+                  <>
+                    <SouthIndianChart
+                      planetaryPositions={Object.fromEntries(
+                        Object.entries(dc.saptamsha).filter(([k]) => k !== 'Lagna').map(([k, v]) => [k, { sign: v.sign, sign_index: v.sign_index, retrograde: false }])
+                      )}
+                      lagna={dc.saptamsha.Lagna?.sign || data.lagna}
+                      size={300}
+                    />
+                    <p className="text-gray-300 text-xs text-center">D-7 — Children & Progeny · Lagna: {dc.saptamsha.Lagna?.sign || '—'}</p>
+                  </>
+                ) : <p className="text-gray-300 text-sm">Data not available</p>}
+              </div>
+            </div>
+            {/* Dasha + Personality */}
+            <div className="grid lg:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                {/* Current Dasha */}
+                {currentDasha && (
+                  <div className="card-cosmic p-5 border border-gold-600/30">
+                    <h3 className="font-serif text-gold-400 text-lg mb-3">Current Dasha Period</h3>
+                    <div className="bg-gold-500/10 rounded-xl p-3 mb-3">
+                      <p className="text-gray-300 text-xs uppercase tracking-wider mb-1">Mahadasha (Major)</p>
+                      <p className="text-gold-300 text-xl font-semibold">{currentDasha.planet} Dasha</p>
+                      <p className="text-gray-300 text-xs">{currentDasha.start} — {currentDasha.end} — {currentDasha.years} years</p>
+                    </div>
+                    {currentAntar && (
+                      <div className="bg-cosmic-900/60 rounded-xl p-3 border border-gold-600/20">
+                        <p className="text-gray-300 text-xs uppercase tracking-wider mb-1">Antardasha (Sub-Period)</p>
+                        <p className="text-gold-200 text-lg font-semibold">{currentDasha.planet}/{currentAntar.planet}</p>
+                        <p className="text-gray-300 text-xs">{currentAntar.start} — {currentAntar.end}</p>
+                      </div>
+                    )}
+                    {data.dasha_balance && (
+                      <p className="text-gray-300 text-xs mt-3 border-t border-gold-600/10 pt-3">
+                        Dasha Balance at Birth: <span className="text-gold-500">{data.dasha_balance.planet}</span> — {data.dasha_balance.remaining_years} yrs remaining
+                      </p>
+                    )}
                   </div>
+                )}
+              </div>
+              <div className="space-y-4">
+                {/* Personality */}
+                <div className="card-cosmic p-5">
+                  <h3 className="font-serif text-gold-400 text-lg mb-3">Nature & Traits</h3>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {(data.personality_traits?.combined_traits || []).map(t=>(
+                      <span key={t} className="px-3 py-1 rounded-full text-xs bg-gold-600/15 text-gold-400 border border-gold-600/20">{t}</span>
+                    ))}
+                  </div>
+                  <p className="text-gold-300 text-sm font-medium mb-1">{data.life_purpose}</p>
+                  <p className="text-gray-200 text-xs leading-relaxed">{data.swabhav}</p>
                 </div>
-              )}
+                {/* LMT Info */}
+                {data.lmt_info && (
+                  <div className="card-cosmic p-4">
+                    <h3 className="text-gold-400 font-medium text-sm mb-2">LMT & Sidereal Time Calculations</h3>
+                    <div className="text-xs space-y-1.5 text-gray-200">
+                      <p className="text-gray-300 uppercase tracking-wider text-[10px] mb-1">Local Mean Time</p>
+                      <div className="flex justify-between"><span>Standard Meridian</span><span className="text-gray-300">{data.lmt_info.standard_meridian}° E</span></div>
+                      <div className="flex justify-between"><span>Birth Longitude</span><span className="text-gray-300">{data.lmt_info.birth_longitude}° E</span></div>
+                      <div className="flex justify-between"><span>LMT Correction</span><span className="text-gold-400">{data.lmt_info.lmt_correction_display}</span></div>
+                      <div className="flex justify-between"><span>Local Mean Time</span><span className="text-gold-400 font-medium">{data.lmt_info.lmt}</span></div>
+                      {siderealTime.lmst_time && (<>
+                        <p className="text-gray-300 uppercase tracking-wider text-[10px] mt-2 mb-1 pt-2 border-t border-gold-600/10">Sidereal Time at Birth</p>
+                        <div className="flex justify-between"><span>Interval from LMT Noon</span><span className="text-gray-300">{siderealTime.interval_from_noon_hrs} hrs</span></div>
+                        <div className="flex justify-between"><span>Sidereal Acceleration</span><span className="text-gray-300">+{siderealTime.sidereal_acceleration_sec}s (10s/hr)</span></div>
+                        <div className="flex justify-between"><span>LMST at Birth</span><span className="text-gold-400 font-medium">{siderealTime.lmst_time}</span></div>
+                      </>)}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </motion.div>
         )}
@@ -619,8 +678,8 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
               <p className="text-gray-300 text-xs mb-4">Each 30° sign divided into 9 parts — 3°20'. Chara signs → Aries, Fixed → Capricorn, Dual → Cancer.</p>
               {dc.navamsha && (
                 <div>
-                  <div className="mb-6">
-                    <NorthIndianChart
+                  <div className="mb-6 flex flex-col items-center">
+                    <SouthIndianChart
                       planetaryPositions={Object.fromEntries(
                         Object.entries(dc.navamsha).filter(([k])=>k!=='Lagna').map(([k,v])=>[k,{...v,sign_index:v.sign_index,retrograde:false}])
                       )}
