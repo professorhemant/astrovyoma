@@ -702,6 +702,7 @@ async function calculateKundali(dob, birth_time, lat, lng, timezone) {
       const rawCusps = hr.data ? hr.data.houses : hr.cusps;
       const rawAsc   = hr.data ? hr.data.points[0] : (hr.ascmc ? hr.ascmc[0] : hr.ascendant);
       ascDeg = norm360(rawAsc - ayanamsaValue);
+      if (isNaN(ascDeg)) throw new Error('sweph.houses() returned invalid ascendant — falling back to JS');
 
       for (let i = 1; i <= 12; i++) {
         const cDeg = norm360(rawCusps[i-1] - ayanamsaValue);
@@ -787,8 +788,9 @@ async function calculateKundali(dob, birth_time, lat, lng, timezone) {
   const planetOrder = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
   for (const pName of planetOrder) {
     const pos = planetaryPositions[pName];
-    if (!pos) continue;
+    if (!pos || pos.sign_index == null || isNaN(pos.sign_index)) continue;
     const houseNum = ((pos.sign_index - lagnaSignIdx + 12) % 12) + 1;
+    if (houseNum < 1 || houseNum > 12) continue;
     planetaryPositions[pName].house = houseNum;
     housePlanets[houseNum].push(pName);
   }
