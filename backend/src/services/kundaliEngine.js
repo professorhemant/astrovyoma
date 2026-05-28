@@ -16,7 +16,7 @@ try {
 // Swiss Ephemeris constants
 const SE_SUN = 0, SE_MOON = 1, SE_MERCURY = 2, SE_VENUS = 3, SE_MARS = 4;
 const SE_JUPITER = 5, SE_SATURN = 6, SE_TRUE_NODE = 11;
-const SE_FLG_SWIEPH = 2, SE_FLG_SPEED = 256, SE_FLG_SIDEREAL = 64 * 1024;
+const SE_FLG_SWIEPH = 2, SE_FLG_MOSEPH = 4, SE_FLG_SPEED = 256, SE_FLG_SIDEREAL = 64 * 1024;
 const SE_SIDM_LAHIRI = 1;
 
 // ─── CONSTANTS ──────────────────────────────────────────────────────────────
@@ -590,8 +590,9 @@ function calcDashas(nakshatra, birthDate) {
 const J2000 = 2451545.0;
 
 function getLahiriAyanamsa(jd) {
-  const T = (jd - J2000) / 36525;
-  return 23.85 + T * 50.3 / 3600; // approximate Lahiri
+  const T = (jd - J2000) / 36525; // T in Julian centuries
+  // 50.3"/year × 100 years/century ÷ 3600"/° = 1.3972°/century
+  return 23.85 + T * 1.3972;
 }
 
 function calcPlanetFallback(jd, planetId) {
@@ -672,7 +673,8 @@ async function calculateKundali(dob, birth_time, lat, lng, timezone) {
     try {
       sweph.set_sid_mode(SE_SIDM_LAHIRI, 0, 0);
       ayanamsaValue = sweph.get_ayanamsa_ut(jd);
-      const flagSidereal = SE_FLG_SWIEPH | SE_FLG_SIDEREAL | SE_FLG_SPEED;
+      // SE_FLG_MOSEPH: Moshier's theory — no .se1 files needed, accurate to ±0.001° for modern dates
+      const flagSidereal = SE_FLG_MOSEPH | SE_FLG_SIDEREAL | SE_FLG_SPEED;
 
       for (const p of PLANETS_LIST) {
         const res = sweph.calc_ut(jd, p.id, flagSidereal);
