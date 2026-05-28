@@ -9,7 +9,7 @@ if (isProduction && process.env.DB_URL) {
   sequelize = new Sequelize(process.env.DB_URL, {
     dialect: 'postgres',
     logging: false,
-    dialectOptions: { ssl: { require: true, rejectUnauthorized: false } },
+    dialectOptions: process.env.DB_URL?.includes('sslmode=disable') ? {} : { ssl: { require: true, rejectUnauthorized: false } },
     pool: { max: 10, min: 0, acquire: 30000, idle: 10000 }
   });
 } else {
