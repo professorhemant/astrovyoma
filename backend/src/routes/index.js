@@ -55,6 +55,7 @@ function panditAuth(req, res, next) {
 }
 
 // Auth routes
+router.post('/auth/send-otp', authController.sendOtp);
 router.post('/auth/register', authController.register);
 router.post('/auth/login', authController.login);
 router.get('/auth/me', auth, authController.getMe);

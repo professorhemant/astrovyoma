@@ -1,21 +1,54 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
+const { generateOtp, storeOtp, verifyOtp, sendOtpEmail } = require('../services/otpService');
+
+async function sendOtp(req, res) {
+  try {
+    const { email, phone } = req.body;
+    if (!email && !phone) return res.status(400).json({ error: 'Email or phone is required' });
+
+    const identifier = email || phone;
+
+    // Check if user already exists
+    const existing = email
+      ? await User.findOne({ where: { email } })
+      : await User.findOne({ where: { phone } });
+    if (existing) return res.status(409).json({ error: 'Account already exists with this email or phone' });
+
+    const otp = generateOtp();
+    storeOtp(identifier, otp);
+
+    if (email) {
+      await sendOtpEmail(email, otp);
+      return res.json({ message: `OTP sent to ${email}` });
+    }
+
+    // Phone-only: log OTP (SMS integration can be added later)
+    console.log(`[OTP] Phone ${phone} → ${otp}`);
+    res.json({ message: `OTP sent to ${phone}` });
+  } catch (err) {
+    console.error('Send OTP error:', err);
+    res.status(500).json({ error: 'Failed to send OTP' });
+  }
+}
 
 async function register(req, res) {
   try {
-    const { name, email, phone, password } = req.body;
+    const { name, email, phone, password, otp } = req.body;
     if (!name || !password || (!email && !phone)) {
       return res.status(400).json({ error: 'Name, password, and email or phone are required' });
     }
+    if (!otp) return res.status(400).json({ error: 'OTP is required' });
+
+    const identifier = email || phone;
+    const result = verifyOtp(identifier, otp);
+    if (!result.valid) return res.status(400).json({ error: result.reason });
 
     const existingUser = email
       ? await User.findOne({ where: { email } })
       : await User.findOne({ where: { phone } });
-
-    if (existingUser) {
-      return res.status(409).json({ error: 'User already exists with this email or phone' });
-    }
+    if (existingUser) return res.status(409).json({ error: 'User already exists with this email or phone' });
 
     const password_hash = await bcrypt.hash(password, 12);
     const user = await User.create({ name, email: email || null, phone: phone || null, password_hash });
@@ -70,4 +103,4 @@ async function getMe(req, res) {
   }
 }
 
-module.exports = { register, login, getMe };
+module.exports = { sendOtp, register, login, getMe };

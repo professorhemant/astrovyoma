@@ -127,7 +127,7 @@ function AppLayout() {
             <Route path="/panchang/shubhamuhurat" element={<TodayShubhamuhuratPage />} />
             <Route path="/panchang"               element={<PanchangPage />} />
             <Route path="/history" element={<ProtectedRoute><ConsultationHistoryPage /></ProtectedRoute>} />
-            <Route path="/remedies" element={<RemediesPage />} />
+            <Route path="/remedies" element={<ProtectedRoute><RemediesPage /></ProtectedRoute>} />
             <Route path="/book-pooja" element={<BookPoojaPage />} />
             <Route path="/mall" element={<AstroMallPage />} />
             <Route path="/mall/product/:id" element={<AstroMallProductPage />} />
