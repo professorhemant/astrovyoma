@@ -207,19 +207,19 @@ export default function KundaliMatchingPage() {
   return (
     <div className="relative min-h-screen bg-cosmic-950">
       <SwastikBorder />
-      <div className="relative z-10 pt-32 pb-16 px-4 md:px-8 lg:px-16">
-        <div className="max-w-4xl mx-auto">
 
-          {/* Header */}
-          <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-10">
-            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">✦ Vedic Compatibility</p>
-            <h1 className="font-serif text-3xl md:text-5xl text-gold-400 mb-3" style={{ textShadow:'0 0 30px rgba(201,168,76,0.4)' }}>
-              Kundali Matching
-            </h1>
-            <p className="text-gray-300 max-w-xl mx-auto text-sm">
-              Ashtakoot Milan — the authentic 36-point Vedic compatibility system
-            </p>
-          </motion.div>
+      {/* Hero Image */}
+      <div className="relative w-full h-64 md:h-80 lg:h-96 overflow-hidden mt-16">
+        <img
+          src="/kundali-hero.png"
+          alt="Kundali Matching"
+          className="w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-cosmic-950" />
+      </div>
+
+      <div className="relative z-10 pt-8 pb-16 px-4 md:px-8 lg:px-16">
+        <div className="max-w-4xl mx-auto">
 
           {/* Mode toggle */}
           <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.1 }}
