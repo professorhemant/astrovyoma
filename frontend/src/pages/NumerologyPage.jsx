@@ -191,7 +191,14 @@ export default function NumerologyPage() {
 
   return (
     <div className="relative min-h-screen bg-cosmic-950">
-      <div className="relative z-10 max-w-5xl mx-auto px-4 pt-32 pb-24">
+
+      {/* Hero Image */}
+      <div className="relative w-full h-64 md:h-80 lg:h-96 overflow-hidden mt-16">
+        <img src="/numerology-hero.png" alt="Numerology" className="w-full h-full object-cover object-center" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-cosmic-950" />
+      </div>
+
+      <div className="relative z-10 max-w-5xl mx-auto px-4 pt-8 pb-24">
 
         {/* Header */}
         <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-10">
