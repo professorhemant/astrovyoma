@@ -1734,13 +1734,19 @@ export default function KundaliPage() {
     // Still allow regenerating
   }
 
-  const canStep1 = form.name && form.dob;
-  const canStep2 = form.birth_place || (form.lat && form.lng);
+  const canStep1 = form.name && form.dob && (form.birth_place || (form.lat && form.lng));
 
   return (
     <div className="relative min-h-screen bg-cosmic-950">
       <SwastikBorder />
-      <div className="relative z-10 max-w-xl mx-auto px-4 pt-32 pb-24">
+
+      {/* Hero Image */}
+      <div className="relative w-full h-64 md:h-80 lg:h-96 overflow-hidden mt-16">
+        <img src="/kundali-page-hero.png" alt="Kundali" className="w-full h-full object-cover object-center" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-cosmic-950" />
+      </div>
+
+      <div className="relative z-10 max-w-xl mx-auto px-4 pt-8 pb-24">
 
         <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} className="text-center mb-8">
           <p className="text-gold-500 text-sm uppercase tracking-widest mb-2">Free Vedic Birth Chart</p>
@@ -1761,7 +1767,7 @@ export default function KundaliPage() {
         )}
 
         <div className="flex justify-center gap-2 mb-8">
-          {[1,2,3].map(s=>(
+          {[1,2].map(s=>(
             <div key={s} className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all ${step===s?'bg-gold-400 text-cosmic-950':step>s?'bg-gold-600/40 text-gold-400':'bg-cosmic-800 text-gray-300'}`}>{s}</div>
           ))}
         </div>
@@ -1769,7 +1775,7 @@ export default function KundaliPage() {
         <AnimatePresence mode="wait">
           {step === 1 && (
             <motion.div key="s1" initial={{opacity:0,x:30}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-30}} className="card-cosmic p-8 space-y-5">
-              <h2 className="font-serif text-gold-400 text-xl">Personal Details</h2>
+              <h2 className="font-serif text-gold-400 text-xl">Birth Details</h2>
               <div>
                 <label className="text-gray-200 text-sm block mb-1.5">Your Name</label>
                 <input value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} placeholder="Enter your full name"
@@ -1797,32 +1803,25 @@ export default function KundaliPage() {
                   <option>Male</option><option>Female</option><option>Non-binary</option>
                 </select>
               </div>
-              <button onClick={()=>canStep1?setStep(2):toast.error('Please fill name and date of birth')}
+              <div className="border-t border-gold-600/15 pt-5">
+                <h3 className="font-serif text-gold-400 text-lg mb-4">Birth Location</h3>
+                <BirthPlacePicker
+                  label="Birth City / Place"
+                  value={form.birth_place}
+                  onChange={p => setForm(f=>({...f, birth_place:p.place, lat:p.lat, lng:p.lng, timezone:p.timezone}))}
+                />
+                <button onClick={useMyLocation} className="btn-outline-gold w-full py-2.5 text-sm flex items-center justify-center gap-2 mt-3">
+                  <MapPin className="w-4 h-4"/> Use My Current Location
+                </button>
+              </div>
+              <button onClick={()=>canStep1?setStep(2):toast.error('Please fill name, date of birth and birth place')}
                 className="btn-gold w-full py-3 flex items-center justify-center gap-2">
-                Next: Birth Location <ChevronRight className="w-4 h-4" />
+                Next: Confirm & Generate <ChevronRight className="w-4 h-4" />
               </button>
             </motion.div>
           )}
 
           {step === 2 && (
-            <motion.div key="s2" initial={{opacity:0,x:30}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-30}} className="card-cosmic p-8 space-y-5">
-              <h2 className="font-serif text-gold-400 text-xl">Birth Location</h2>
-              <BirthPlacePicker
-                label="Birth City / Place"
-                value={form.birth_place}
-                onChange={p => setForm(f=>({...f, birth_place:p.place, lat:p.lat, lng:p.lng, timezone:p.timezone}))}
-              />
-              <button onClick={useMyLocation} className="btn-outline-gold w-full py-2.5 text-sm flex items-center justify-center gap-2">
-                <MapPin className="w-4 h-4"/> Use My Current Location
-              </button>
-              <div className="flex gap-3">
-                <button onClick={()=>setStep(1)} className="btn-outline-gold flex-1 py-3 flex items-center justify-center gap-2"><ChevronLeft className="w-4 h-4"/> Back</button>
-                <button onClick={()=>canStep2?setStep(3):toast.error('Please enter birth place')} className="btn-gold flex-1 py-3 flex items-center justify-center gap-2">Next <ChevronRight className="w-4 h-4"/></button>
-              </div>
-            </motion.div>
-          )}
-
-          {step === 3 && (
             <motion.div key="s3" initial={{opacity:0,x:30}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-30}} className="card-cosmic p-8 space-y-5">
               <h2 className="font-serif text-gold-400 text-xl">Confirm & Generate</h2>
               <div className="bg-cosmic-900/60 rounded-xl p-5 space-y-3 text-sm">
@@ -1851,7 +1850,7 @@ export default function KundaliPage() {
                 </div>
               )}
               <div className="flex gap-3">
-                <button onClick={()=>setStep(2)} className="btn-outline-gold flex-1 py-3 flex items-center justify-center gap-2"><ChevronLeft className="w-4 h-4"/> Back</button>
+                <button onClick={()=>setStep(1)} className="btn-outline-gold flex-1 py-3 flex items-center justify-center gap-2"><ChevronLeft className="w-4 h-4"/> Back</button>
                 <button onClick={handleGenerate} disabled={loading||!user}
                   className="btn-gold flex-1 py-3 flex items-center justify-center gap-2 disabled:opacity-50">
                   {loading ? <><Loader className="w-4 h-4 animate-spin"/> Calculating...</> : <>Generate Kundali →</>}
