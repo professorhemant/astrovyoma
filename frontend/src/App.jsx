@@ -50,7 +50,6 @@ import GochraPage from './pages/GochraPage';
 import VastuPage from './pages/VastuPage';
 import LalKitabPage from './pages/LalKitabPage';
 import LuckyPage from './pages/LuckyPage';
-import DomainReportPage from './pages/DomainReportPage';
 import FestivalCalendarPage from './pages/FestivalCalendarPage';
 import PlansPage from './pages/PlansPage';
 import ChatConsultPage from './pages/ChatConsultPage';
@@ -60,8 +59,6 @@ import CrystalGuidePage from './pages/CrystalGuidePage';
 import CrystalDetailPage from './pages/CrystalDetailPage';
 import BookAppointmentPage from './pages/BookAppointmentPage';
 import MyAppointmentsPage from './pages/MyAppointmentsPage';
-import KPAstrologyPage          from './pages/KPAstrologyPage';
-import DreamInterpretationPage  from './pages/DreamInterpretationPage';
 import MuhurtaPage              from './pages/MuhurtaPage';
 import VastuPoojaPage           from './pages/VastuPoojaPage';
 import PalmistryPage            from './pages/PalmistryPage';
@@ -144,7 +141,6 @@ function AppLayout() {
             <Route path="/vastu" element={<VastuPage />} />
             <Route path="/lal-kitab" element={<LalKitabPage />} />
             <Route path="/lucky" element={<LuckyPage />} />
-            <Route path="/domain-report" element={<DomainReportPage />} />
             <Route path="/festivals" element={<FestivalCalendarPage />} />
             <Route path="/plans" element={<PlansPage />} />
             <Route path="/chat-consult/:id" element={<ProtectedRoute><ChatConsultPage /></ProtectedRoute>} />
@@ -154,8 +150,6 @@ function AppLayout() {
             <Route path="/crystals/:slug" element={<CrystalDetailPage />} />
             <Route path="/book-appointment/:astrologerId" element={<ProtectedRoute><BookAppointmentPage /></ProtectedRoute>} />
             <Route path="/my-appointments" element={<ProtectedRoute><MyAppointmentsPage /></ProtectedRoute>} />
-            <Route path="/kp-astrology"          element={<KPAstrologyPage />} />
-            <Route path="/dream-interpretation"  element={<DreamInterpretationPage />} />
             <Route path="/muhurta"               element={<MuhurtaPage />} />
             <Route path="/vastu-pooja"           element={<VastuPoojaPage />} />
             <Route path="/palmistry"             element={<PalmistryPage />} />
