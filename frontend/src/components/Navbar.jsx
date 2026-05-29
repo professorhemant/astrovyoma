@@ -186,7 +186,7 @@ export default function Navbar() {
           ) : (
             <>
               <Link to="/login" className="text-gray-300 hover:text-gold-400 text-sm transition-colors">Login</Link>
-              <Link to="/register" className="btn-gold px-5 py-2 text-sm">Get Started</Link>
+              <Link to="/register" className="btn-gold px-5 py-2 text-sm">Sign Up</Link>
             </>
           )}
         </div>
