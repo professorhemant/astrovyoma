@@ -250,7 +250,13 @@ export default function TarotPage() {
       style={{ background:'linear-gradient(135deg,#0d0728 0%,#1a0533 40%,#0c1a3a 100%)' }}>
       <TarotBg />
 
-      <div className="relative z-10 pt-32 pb-16 px-4">
+      {/* Hero Image */}
+      <div className="relative w-full h-64 md:h-80 lg:h-96 overflow-hidden mt-16">
+        <img src="/tarot-hero.png" alt="Tarot" className="w-full h-full object-cover object-center" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0d0728]" />
+      </div>
+
+      <div className="relative z-10 pt-8 pb-16 px-4">
         <div className="max-w-5xl mx-auto">
 
           {/* Title */}
