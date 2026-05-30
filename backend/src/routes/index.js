@@ -41,7 +41,13 @@ const muhurtaController         = require('../controllers/muhurtaController');
 const reportHistoryController   = require('../controllers/reportHistoryController');
 const agoraService = require('../services/agoraService');
 const panditController = require('../controllers/panditController');
+const adminController = require('../controllers/adminController');
 const jwt = require('jsonwebtoken');
+
+function adminAuth(req, res, next) {
+  if (!req.user || req.user.role !== 'admin') return res.status(403).json({ error: 'Admin access required' });
+  next();
+}
 
 function panditAuth(req, res, next) {
   const token = (req.headers.authorization || '').replace('Bearer ', '');
@@ -53,6 +59,23 @@ function panditAuth(req, res, next) {
     res.status(401).json({ error: 'Invalid or expired token' });
   }
 }
+
+// Admin setup (one-time, requires ADMIN_SECRET)
+router.post('/admin/setup', adminController.setupAdmin);
+
+// Admin routes (require auth + admin role)
+router.get('/admin/stats',                      auth, adminAuth, adminController.getStats);
+router.get('/admin/users',                      auth, adminAuth, adminController.getUsers);
+router.put('/admin/users/:id',                  auth, adminAuth, adminController.updateUser);
+router.delete('/admin/users/:id',               auth, adminAuth, adminController.deleteUser);
+router.get('/admin/astrologers',                auth, adminAuth, adminController.getAstrologers);
+router.post('/admin/astrologers',               auth, adminAuth, adminController.createAstrologer);
+router.put('/admin/astrologers/:id',            auth, adminAuth, adminController.updateAstrologer);
+router.delete('/admin/astrologers/:id',         auth, adminAuth, adminController.deleteAstrologer);
+router.get('/admin/consultations',              auth, adminAuth, adminController.getConsultations);
+router.get('/admin/transactions',               auth, adminAuth, adminController.getTransactions);
+router.get('/admin/settings',                   auth, adminAuth, adminController.getSiteSettings);
+router.put('/admin/settings',                   auth, adminAuth, adminController.updateSiteSettings);
 
 // Auth routes
 router.post('/auth/register', authController.register);

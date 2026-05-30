@@ -18,6 +18,7 @@ import ConsultationPage from './pages/ConsultationPage';
 import ChatbotPage from './pages/ChatbotPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import AdminPage from './pages/AdminPage';
 import DashboardPage from './pages/DashboardPage';
 import WalletPage from './pages/WalletPage';
 import HoroscopePage from './pages/HoroscopePage';
@@ -111,6 +112,7 @@ function AppLayout() {
             <Route path="/pandit" element={<PanditJiPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/admin" element={<AdminPage />} />
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/wallet" element={<ProtectedRoute><WalletPage /></ProtectedRoute>} />
             <Route path="/horoscope/extended" element={<WeeklyHoroscopePage />} />

@@ -204,4 +204,20 @@ export const subscriptions = {
   verifyPayment: (data) => api.post('/subscriptions/verify', data),
 };
 
+export const admin = {
+  setup:               (data) => api.post('/admin/setup', data),
+  getStats:            ()     => api.get('/admin/stats'),
+  getUsers:            (params) => api.get('/admin/users', { params }),
+  updateUser:          (id, data) => api.put(`/admin/users/${id}`, data),
+  deleteUser:          (id) => api.delete(`/admin/users/${id}`),
+  getAstrologers:      ()     => api.get('/admin/astrologers'),
+  createAstrologer:    (data) => api.post('/admin/astrologers', data),
+  updateAstrologer:    (id, data) => api.put(`/admin/astrologers/${id}`, data),
+  deleteAstrologer:    (id) => api.delete(`/admin/astrologers/${id}`),
+  getConsultations:    (params) => api.get('/admin/consultations', { params }),
+  getTransactions:     (params) => api.get('/admin/transactions', { params }),
+  getSettings:         ()     => api.get('/admin/settings'),
+  updateSettings:      (data) => api.put('/admin/settings', data),
+};
+
 export default api;
