@@ -1,26 +1,50 @@
 const bcrypt = require('bcryptjs');
 const { Op } = require('sequelize');
-const { User, Astrologer, Consultation, Transaction } = require('../models');
+const { sequelize, User, Astrologer, Consultation, Transaction, Appointment } = require('../models');
 
-// In-memory site settings (resets on redeploy — acceptable for now)
 let siteSettings = {
   maintenanceMode: false,
   announcement: '',
   announcementActive: false,
+  commissionPercent: 20,
+  newUserFreeMinutes: 5,
+  minWalletRecharge: 100,
+  maxWalletRecharge: 10000,
+  platformPhone: '',
+  platformEmail: '',
+  platformWhatsApp: '',
+  featuredAstrologerIds: [],
 };
 
 async function getStats(req, res) {
   try {
     const today = new Date(); today.setHours(0, 0, 0, 0);
-    const [totalUsers, totalAstrologers, totalConsultations, todaySignups, activeConsultations, totalRevenue] = await Promise.all([
+    const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7); weekAgo.setHours(0, 0, 0, 0);
+    const [
+      totalUsers, totalAstrologers, totalConsultations, todaySignups,
+      activeConsultations, totalRevenue, onlineAstrologers,
+      totalAppointments, todayRevenue, weekRevenue, totalCredits, totalDebits,
+    ] = await Promise.all([
       User.count({ where: { role: 'user' } }),
       Astrologer.count(),
       Consultation.count(),
       User.count({ where: { created_at: { [Op.gte]: today } } }),
       Consultation.count({ where: { status: 'active' } }),
       Transaction.sum('amount', { where: { type: 'credit' } }),
+      Astrologer.count({ where: { is_online: true } }),
+      Appointment.count(),
+      Transaction.sum('amount', { where: { type: 'credit', created_at: { [Op.gte]: today } } }),
+      Transaction.sum('amount', { where: { type: 'credit', created_at: { [Op.gte]: weekAgo } } }),
+      Transaction.sum('amount', { where: { type: 'credit' } }),
+      Transaction.sum('amount', { where: { type: 'debit' } }),
     ]);
-    res.json({ totalUsers, totalAstrologers, totalConsultations, todaySignups, activeConsultations, totalRevenue: totalRevenue || 0 });
+    res.json({
+      totalUsers, totalAstrologers, totalConsultations, todaySignups,
+      activeConsultations, totalRevenue: totalRevenue || 0,
+      onlineAstrologers, totalAppointments,
+      todayRevenue: todayRevenue || 0, weekRevenue: weekRevenue || 0,
+      totalCredits: totalCredits || 0, totalDebits: totalDebits || 0,
+    });
   } catch (err) {
     console.error('getStats error:', err);
     res.status(500).json({ error: 'Failed to fetch stats' });
@@ -157,15 +181,74 @@ async function getConsultations(req, res) {
 
 async function getTransactions(req, res) {
   try {
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 20, type } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
+    const where = type ? { type } : {};
     const { rows, count } = await Transaction.findAndCountAll({
-      order: [['created_at', 'DESC']], limit: parseInt(limit), offset,
+      where, order: [['created_at', 'DESC']], limit: parseInt(limit), offset,
       include: [{ model: User, as: 'user', attributes: ['id', 'name', 'email'] }],
     });
     res.json({ transactions: rows, total: count, page: parseInt(page) });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch transactions' });
+  }
+}
+
+async function getAppointments(req, res) {
+  try {
+    const { page = 1, limit = 15 } = req.query;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    const { rows, count } = await Appointment.findAndCountAll({
+      order: [['scheduled_at', 'DESC']], limit: parseInt(limit), offset,
+      include: [
+        { model: User, as: 'user', attributes: ['id', 'name', 'email', 'phone'] },
+        { model: Astrologer, as: 'astrologer', attributes: ['id', 'display_name'] },
+      ],
+    });
+    res.json({ appointments: rows, total: count, page: parseInt(page) });
+  } catch (err) {
+    console.error('getAppointments error:', err);
+    res.status(500).json({ error: 'Failed to fetch appointments' });
+  }
+}
+
+async function getRevenue(req, res) {
+  try {
+    const daily = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      d.setHours(0, 0, 0, 0);
+      const nextD = new Date(d);
+      nextD.setDate(nextD.getDate() + 1);
+      const amount = await Transaction.sum('amount', {
+        where: { type: 'credit', created_at: { [Op.gte]: d, [Op.lt]: nextD } }
+      });
+      daily.push({ date: d.toISOString().split('T')[0], amount: amount || 0 });
+    }
+
+    const topAstrologers = await Consultation.findAll({
+      attributes: [
+        'astrologer_id',
+        [sequelize.fn('COUNT', sequelize.col('Consultation.id')), 'consultCount'],
+        [sequelize.fn('SUM', sequelize.col('total_cost')), 'revenue'],
+      ],
+      where: { status: 'completed' },
+      group: ['astrologer_id', 'astrologer.id'],
+      order: [[sequelize.fn('COUNT', sequelize.col('Consultation.id')), 'DESC']],
+      limit: 5,
+      include: [{ model: Astrologer, as: 'astrologer', attributes: ['display_name', 'photo_url'] }],
+    });
+
+    const modeBreakdown = await Consultation.findAll({
+      attributes: ['mode', [sequelize.fn('COUNT', sequelize.col('id')), 'count']],
+      group: ['mode'],
+    });
+
+    res.json({ daily, topAstrologers, modeBreakdown });
+  } catch (err) {
+    console.error('getRevenue error:', err);
+    res.status(500).json({ error: 'Failed to fetch revenue data' });
   }
 }
 
@@ -195,7 +278,7 @@ async function setupAdmin(req, res) {
 module.exports = {
   getStats, getUsers, updateUser, deleteUser,
   getAstrologers, createAstrologer, updateAstrologer, deleteAstrologer,
-  getConsultations, getTransactions,
+  getConsultations, getTransactions, getAppointments, getRevenue,
   getSiteSettings, updateSiteSettings,
   setupAdmin,
 };

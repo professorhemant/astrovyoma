@@ -7,7 +7,8 @@ import {
   LayoutDashboard, Users, Star, MessageSquare, Wallet,
   Settings, LogOut, Loader, Trash2, Edit2, Plus, X,
   CheckCircle, XCircle, RefreshCw, ChevronLeft, ChevronRight,
-  Shield, Bell, AlertTriangle
+  Shield, Bell, AlertTriangle, Calendar, TrendingUp,
+  Phone, Mail, BarChart2, Eye, EyeOff, IndianRupee
 } from 'lucide-react';
 
 const TABS = [
@@ -15,16 +16,25 @@ const TABS = [
   { key: 'users',         label: 'Users',          icon: Users },
   { key: 'astrologers',   label: 'Astrologers',    icon: Star },
   { key: 'consultations', label: 'Consultations',  icon: MessageSquare },
+  { key: 'appointments',  label: 'Appointments',   icon: Calendar },
   { key: 'transactions',  label: 'Transactions',   icon: Wallet },
+  { key: 'revenue',       label: 'Revenue',        icon: TrendingUp },
   { key: 'settings',      label: 'Settings',       icon: Settings },
 ];
 
-function StatCard({ label, value, sub, color = 'gold' }) {
+function StatCard({ label, value, sub, color = 'gold', icon: Icon }) {
   return (
-    <div className="card-cosmic p-5">
-      <p className="text-gray-400 text-xs uppercase tracking-widest mb-1">{label}</p>
-      <p className={`text-3xl font-bold text-${color}-400`}>{value}</p>
-      {sub && <p className="text-gray-400 text-xs mt-1">{sub}</p>}
+    <div className="card-cosmic p-5 flex items-start gap-4">
+      {Icon && (
+        <div className={`p-2 rounded-xl bg-${color}-500/10 shrink-0`}>
+          <Icon className={`w-5 h-5 text-${color}-400`} />
+        </div>
+      )}
+      <div>
+        <p className="text-gray-400 text-xs uppercase tracking-widest mb-1">{label}</p>
+        <p className={`text-2xl font-bold text-${color}-400`}>{value}</p>
+        {sub && <p className="text-gray-400 text-xs mt-1">{sub}</p>}
+      </div>
     </div>
   );
 }
@@ -46,7 +56,7 @@ function Pagination({ page, total, limit, onPage }) {
 }
 
 // ─── OVERVIEW ───────────────────────────────────────────────────────────────
-function Overview() {
+function Overview({ setTab }) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -58,17 +68,79 @@ function Overview() {
 
   return (
     <div>
-      <h2 className="font-serif text-2xl text-gold-400 mb-6">Dashboard Overview</h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-        <StatCard label="Total Users" value={stats?.totalUsers ?? 0} sub={`+${stats?.todaySignups ?? 0} today`} />
-        <StatCard label="Astrologers" value={stats?.totalAstrologers ?? 0} />
-        <StatCard label="Consultations" value={stats?.totalConsultations ?? 0} sub={`${stats?.activeConsultations ?? 0} active now`} />
-        <StatCard label="Total Revenue" value={`₹${Number(stats?.totalRevenue ?? 0).toLocaleString()}`} color="green" />
-        <StatCard label="Today Signups" value={stats?.todaySignups ?? 0} />
-        <StatCard label="Active Now" value={stats?.activeConsultations ?? 0} color="yellow" />
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="font-serif text-2xl text-gold-400">Dashboard Overview</h2>
+        <p className="text-gray-500 text-sm">{new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
       </div>
-      <div className="card-cosmic p-5">
-        <p className="text-gray-300 text-sm">Welcome to AstroVyoma Admin. Use the sidebar to manage all aspects of your platform.</p>
+
+      {/* Primary stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <StatCard label="Total Users" value={stats?.totalUsers ?? 0} sub={`+${stats?.todaySignups ?? 0} today`} icon={Users} />
+        <StatCard label="Astrologers" value={stats?.totalAstrologers ?? 0} sub={`${stats?.onlineAstrologers ?? 0} online now`} icon={Star} color="yellow" />
+        <StatCard label="Consultations" value={stats?.totalConsultations ?? 0} sub={`${stats?.activeConsultations ?? 0} active`} icon={MessageSquare} color="blue" />
+        <StatCard label="Appointments" value={stats?.totalAppointments ?? 0} icon={Calendar} color="purple" />
+      </div>
+
+      {/* Revenue stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <StatCard label="Total Revenue" value={`₹${Number(stats?.totalRevenue ?? 0).toLocaleString('en-IN')}`} icon={IndianRupee} color="green" />
+        <StatCard label="Today's Revenue" value={`₹${Number(stats?.todayRevenue ?? 0).toLocaleString('en-IN')}`} icon={TrendingUp} color="green" />
+        <StatCard label="This Week" value={`₹${Number(stats?.weekRevenue ?? 0).toLocaleString('en-IN')}`} icon={BarChart2} color="green" />
+        <StatCard label="Active Now" value={stats?.activeConsultations ?? 0} sub="live sessions" icon={Eye} color="red" />
+      </div>
+
+      {/* Quick actions */}
+      <div className="card-cosmic p-5 mb-6">
+        <h3 className="text-gold-400 font-medium mb-4 text-sm uppercase tracking-widest">Quick Actions</h3>
+        <div className="flex flex-wrap gap-3">
+          {[
+            { label: 'Manage Users', tab: 'users', color: 'text-blue-400' },
+            { label: 'Add Astrologer', tab: 'astrologers', color: 'text-yellow-400' },
+            { label: 'View Consultations', tab: 'consultations', color: 'text-purple-400' },
+            { label: 'Appointments', tab: 'appointments', color: 'text-green-400' },
+            { label: 'Revenue Report', tab: 'revenue', color: 'text-gold-400' },
+            { label: 'Site Settings', tab: 'settings', color: 'text-gray-300' },
+          ].map(({ label, tab, color }) => (
+            <button key={tab} onClick={() => setTab(tab)}
+              className={`px-4 py-2 rounded-xl text-sm border border-gold-600/20 hover:border-gold-500/50 ${color} hover:bg-cosmic-800 transition-all`}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Research insights box */}
+      <div className="card-cosmic p-5 border border-gold-600/20">
+        <h3 className="text-gold-400 font-medium mb-3 flex items-center gap-2"><BarChart2 className="w-4 h-4" /> Platform Intelligence (Based on Industry Research)</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div className="bg-cosmic-900/60 rounded-xl p-4">
+            <p className="text-gold-300 font-medium mb-2">AstroTalk Model</p>
+            <ul className="text-gray-400 space-y-1 text-xs">
+              <li>• Per-minute wallet billing</li>
+              <li>• Concern-based matching</li>
+              <li>• Astrologer verification queue</li>
+              <li>• Call + chat + video modes</li>
+            </ul>
+          </div>
+          <div className="bg-cosmic-900/60 rounded-xl p-4">
+            <p className="text-gold-300 font-medium mb-2">AstroSage Model</p>
+            <ul className="text-gray-400 space-y-1 text-xs">
+              <li>• AstroGPT AI integration</li>
+              <li>• 100M+ kundali answers</li>
+              <li>• Free tools drive traffic</li>
+              <li>• Premium upsell on reports</li>
+            </ul>
+          </div>
+          <div className="bg-cosmic-900/60 rounded-xl p-4">
+            <p className="text-gold-300 font-medium mb-2">Our Edge — AstroVyoma</p>
+            <ul className="text-gray-400 space-y-1 text-xs">
+              <li>• Swiss Ephemeris precision</li>
+              <li>• Pandit portal for pandits</li>
+              <li>• AstroMall + Pooja booking</li>
+              <li>• Full Vedic feature suite</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -99,6 +171,7 @@ function UsersTab() {
 
   async function handleRoleToggle(user) {
     const newRole = user.role === 'admin' ? 'user' : 'admin';
+    if (!window.confirm(`Set ${user.name} as ${newRole}?`)) return;
     try { await adminApi.updateUser(user.id, { role: newRole }); toast.success(`Role set to ${newRole}`); load(); }
     catch { toast.error('Failed to update role'); }
   }
@@ -115,7 +188,7 @@ function UsersTab() {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-serif text-2xl text-gold-400">Users</h2>
+        <h2 className="font-serif text-2xl text-gold-400">Users <span className="text-gray-500 text-sm font-sans font-normal ml-2">({data.total})</span></h2>
         <div className="flex gap-2">
           <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Search name/email/phone..."
             className="bg-cosmic-900 border border-gold-600/20 rounded-xl px-3 py-2 text-gray-200 text-sm focus:outline-none focus:border-gold-500 w-56" />
@@ -144,10 +217,10 @@ function UsersTab() {
                   <td className="py-2 pr-4">
                     <span className={`px-2 py-0.5 rounded text-xs ${u.role === 'admin' ? 'bg-purple-900/50 text-purple-300' : 'bg-cosmic-800 text-gray-400'}`}>{u.role}</span>
                   </td>
-                  <td className="py-2 pr-4 text-gold-400">₹{parseFloat(u.wallet_balance).toFixed(0)}</td>
-                  <td className="py-2 pr-4 text-gray-500">{new Date(u.created_at).toLocaleDateString()}</td>
+                  <td className="py-2 pr-4 text-gold-400">₹{parseFloat(u.wallet_balance || 0).toFixed(0)}</td>
+                  <td className="py-2 pr-4 text-gray-500">{new Date(u.created_at).toLocaleDateString('en-IN')}</td>
                   <td className="py-2 flex items-center gap-2">
-                    <button onClick={() => { setEditUser(u); setWalletAmount(''); setWalletNote(''); }} title="Wallet" className="text-gold-400 hover:text-gold-300"><Wallet className="w-4 h-4" /></button>
+                    <button onClick={() => { setEditUser(u); setWalletAmount(''); setWalletNote(''); }} title="Adjust Wallet" className="text-gold-400 hover:text-gold-300"><Wallet className="w-4 h-4" /></button>
                     <button onClick={() => handleRoleToggle(u)} title="Toggle Role" className="text-blue-400 hover:text-blue-300"><Shield className="w-4 h-4" /></button>
                     <button onClick={() => handleDelete(u.id, u.name)} title="Delete" className="text-red-400 hover:text-red-300"><Trash2 className="w-4 h-4" /></button>
                   </td>
@@ -167,9 +240,9 @@ function UsersTab() {
               <h3 className="font-serif text-gold-400">Wallet — {editUser.name}</h3>
               <button onClick={() => setEditUser(null)}><X className="w-4 h-4 text-gray-400" /></button>
             </div>
-            <p className="text-gray-400 text-sm mb-4">Current balance: <span className="text-gold-400">₹{parseFloat(editUser.wallet_balance).toFixed(2)}</span></p>
+            <p className="text-gray-400 text-sm mb-4">Current: <span className="text-gold-400">₹{parseFloat(editUser.wallet_balance || 0).toFixed(2)}</span></p>
             <form onSubmit={handleWallet} className="space-y-3">
-              <input type="number" value={walletAmount} onChange={e => setWalletAmount(e.target.value)} placeholder="Amount (negative to debit)"
+              <input type="number" value={walletAmount} onChange={e => setWalletAmount(e.target.value)} placeholder="Amount (+credit / -debit)"
                 className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-3 py-2 text-gray-200 text-sm focus:outline-none focus:border-gold-500" />
               <input value={walletNote} onChange={e => setWalletNote(e.target.value)} placeholder="Note (optional)"
                 className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-3 py-2 text-gray-200 text-sm focus:outline-none focus:border-gold-500" />
@@ -219,10 +292,17 @@ function AstrologersTab() {
     catch { toast.error('Failed'); }
   }
 
+  async function handleToggleVerified(a) {
+    try {
+      await adminApi.updateAstrologer(a.id, { is_verified: !a.is_verified });
+      toast.success(a.is_verified ? 'Unverified' : 'Verified'); load();
+    } catch { toast.error('Failed'); }
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-serif text-2xl text-gold-400">Astrologers</h2>
+        <h2 className="font-serif text-2xl text-gold-400">Astrologers <span className="text-gray-500 text-sm font-sans font-normal ml-2">({astrologers.length})</span></h2>
         <button onClick={() => setForm({ ...EMPTY_ASTRO })} className="btn-gold px-4 py-2 text-sm flex items-center gap-2"><Plus className="w-4 h-4" /> Add New</button>
       </div>
 
@@ -231,23 +311,32 @@ function AstrologersTab() {
           <table className="w-full text-sm text-gray-300">
             <thead>
               <tr className="border-b border-gold-600/20 text-gold-400 text-xs uppercase">
-                <th className="text-left py-2 pr-4">Name</th>
-                <th className="text-left py-2 pr-4">Phone</th>
-                <th className="text-left py-2 pr-4">Price/min</th>
-                <th className="text-left py-2 pr-4">Rating</th>
-                <th className="text-left py-2 pr-4">Status</th>
+                <th className="text-left py-2 pr-3">Name</th>
+                <th className="text-left py-2 pr-3">Phone</th>
+                <th className="text-left py-2 pr-3">₹/min</th>
+                <th className="text-left py-2 pr-3">Rating</th>
+                <th className="text-left py-2 pr-3">Orders</th>
+                <th className="text-left py-2 pr-3">Status</th>
+                <th className="text-left py-2 pr-3">Verified</th>
                 <th className="text-left py-2">Actions</th>
               </tr>
             </thead>
             <tbody>
               {astrologers.map(a => (
                 <tr key={a.id} className="border-b border-cosmic-800 hover:bg-cosmic-900/50">
-                  <td className="py-2 pr-4 font-medium">{a.display_name}</td>
-                  <td className="py-2 pr-4 text-gray-400">{a.phone || '—'}</td>
-                  <td className="py-2 pr-4 text-gold-400">₹{a.price_per_min}</td>
-                  <td className="py-2 pr-4">⭐ {a.rating}</td>
-                  <td className="py-2 pr-4">
-                    <span className={`px-2 py-0.5 rounded text-xs ${a.is_online ? 'bg-green-900/50 text-green-300' : 'bg-cosmic-800 text-gray-400'}`}>{a.is_online ? 'Online' : 'Offline'}</span>
+                  <td className="py-2 pr-3 font-medium">{a.display_name}</td>
+                  <td className="py-2 pr-3 text-gray-400">{a.phone || '—'}</td>
+                  <td className="py-2 pr-3 text-gold-400">₹{a.price_per_min}</td>
+                  <td className="py-2 pr-3">⭐ {a.rating}</td>
+                  <td className="py-2 pr-3 text-gray-400">{a.completed_orders}</td>
+                  <td className="py-2 pr-3">
+                    <span className={`px-2 py-0.5 rounded text-xs ${a.is_online ? 'bg-green-900/50 text-green-300' : 'bg-cosmic-800 text-gray-500'}`}>{a.is_online ? 'Online' : 'Offline'}</span>
+                  </td>
+                  <td className="py-2 pr-3">
+                    <button onClick={() => handleToggleVerified(a)} title="Toggle Verified"
+                      className={`px-2 py-0.5 rounded text-xs ${a.is_verified ? 'bg-blue-900/50 text-blue-300' : 'bg-cosmic-800 text-gray-500'}`}>
+                      {a.is_verified ? '✓ Verified' : 'Unverified'}
+                    </button>
                   </td>
                   <td className="py-2 flex items-center gap-2">
                     <button onClick={() => setForm({ ...a, specialties: Array.isArray(a.specialties) ? a.specialties.join(', ') : a.specialties, languages: Array.isArray(a.languages) ? a.languages.join(', ') : a.languages })} className="text-gold-400 hover:text-gold-300"><Edit2 className="w-4 h-4" /></button>
@@ -255,7 +344,7 @@ function AstrologersTab() {
                   </td>
                 </tr>
               ))}
-              {astrologers.length === 0 && <tr><td colSpan={6} className="py-8 text-center text-gray-500">No astrologers</td></tr>}
+              {astrologers.length === 0 && <tr><td colSpan={8} className="py-8 text-center text-gray-500">No astrologers</td></tr>}
             </tbody>
           </table>
         </div>
@@ -276,7 +365,7 @@ function AstrologersTab() {
                 ['pin', form.id ? 'New PIN (leave blank to keep)' : 'PIN (4 digits)', 'text'],
                 ['price_per_min', 'Price per Minute (₹)', 'number'],
                 ['experience_years', 'Experience (years)', 'number'],
-                ['free_minutes', 'Free Minutes', 'number'],
+                ['free_minutes', 'Free Minutes for New Users', 'number'],
                 ['photo_url', 'Photo URL', 'url'],
                 ['specialties', 'Specialties (comma-separated)', 'text'],
                 ['languages', 'Languages (comma-separated)', 'text'],
@@ -289,7 +378,7 @@ function AstrologersTab() {
               ))}
               <label className="flex items-center gap-2 text-gray-300 text-sm cursor-pointer">
                 <input type="checkbox" checked={form.is_verified} onChange={e => setForm(f => ({ ...f, is_verified: e.target.checked }))} className="accent-gold-400" />
-                Verified (shows in listings)
+                Verified (shows badge in listings)
               </label>
               <button type="submit" disabled={saving} className="btn-gold w-full py-2 text-sm flex items-center justify-center gap-2">
                 {saving ? <Loader className="w-4 h-4 animate-spin" /> : null} {form.id ? 'Save Changes' : 'Create Astrologer'}
@@ -314,10 +403,11 @@ function ConsultationsTab() {
   }, [page]);
 
   const statusColor = s => ({ active: 'text-green-400', completed: 'text-blue-400', pending: 'text-yellow-400' })[s] || 'text-gray-400';
+  const modeColor = m => ({ video: 'bg-purple-900/50 text-purple-300', audio: 'bg-blue-900/50 text-blue-300', chat: 'bg-green-900/50 text-green-300' })[m] || 'bg-cosmic-800 text-gray-400';
 
   return (
     <div>
-      <h2 className="font-serif text-2xl text-gold-400 mb-4">Consultations</h2>
+      <h2 className="font-serif text-2xl text-gold-400 mb-4">Consultations <span className="text-gray-500 text-sm font-sans font-normal ml-2">({data.total})</span></h2>
       {loading ? <div className="flex justify-center py-10"><Loader className="w-6 h-6 text-gold-400 animate-spin" /></div> : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-gray-300">
@@ -337,14 +427,69 @@ function ConsultationsTab() {
                 <tr key={c.id} className="border-b border-cosmic-800 hover:bg-cosmic-900/50">
                   <td className="py-2 pr-4">{c.user?.name || '—'}</td>
                   <td className="py-2 pr-4">{c.astrologer?.display_name || '—'}</td>
-                  <td className="py-2 pr-4 capitalize">{c.mode}</td>
+                  <td className="py-2 pr-4"><span className={`px-2 py-0.5 rounded text-xs capitalize ${modeColor(c.mode)}`}>{c.mode}</span></td>
                   <td className={`py-2 pr-4 capitalize font-medium ${statusColor(c.status)}`}>{c.status}</td>
                   <td className="py-2 pr-4">{c.duration_mins}m</td>
                   <td className="py-2 pr-4 text-gold-400">₹{parseFloat(c.total_cost || 0).toFixed(0)}</td>
-                  <td className="py-2 text-gray-500">{new Date(c.created_at).toLocaleDateString()}</td>
+                  <td className="py-2 text-gray-500">{new Date(c.created_at).toLocaleDateString('en-IN')}</td>
                 </tr>
               ))}
               {data.consultations.length === 0 && <tr><td colSpan={7} className="py-8 text-center text-gray-500">No consultations yet</td></tr>}
+            </tbody>
+          </table>
+          <Pagination page={page} total={data.total} limit={15} onPage={setPage} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── APPOINTMENTS ─────────────────────────────────────────────────────────────
+function AppointmentsTab() {
+  const [data, setData] = useState({ appointments: [], total: 0 });
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    setLoading(true);
+    adminApi.getAppointments({ page, limit: 15 }).then(r => setData(r.data)).catch(() => toast.error('Failed')).finally(() => setLoading(false));
+  }, [page]);
+
+  const statusColor = s => ({ confirmed: 'text-green-400', cancelled: 'text-red-400', completed: 'text-blue-400', pending: 'text-yellow-400' })[s] || 'text-gray-400';
+
+  return (
+    <div>
+      <h2 className="font-serif text-2xl text-gold-400 mb-4">Appointments <span className="text-gray-500 text-sm font-sans font-normal ml-2">({data.total})</span></h2>
+      {loading ? <div className="flex justify-center py-10"><Loader className="w-6 h-6 text-gold-400 animate-spin" /></div> : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-gray-300">
+            <thead>
+              <tr className="border-b border-gold-600/20 text-gold-400 text-xs uppercase">
+                <th className="text-left py-2 pr-4">User</th>
+                <th className="text-left py-2 pr-4">Astrologer</th>
+                <th className="text-left py-2 pr-4">Scheduled At</th>
+                <th className="text-left py-2 pr-4">Mode</th>
+                <th className="text-left py-2 pr-4">Concern</th>
+                <th className="text-left py-2 pr-4">Status</th>
+                <th className="text-left py-2">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.appointments.map(a => (
+                <tr key={a.id} className="border-b border-cosmic-800 hover:bg-cosmic-900/50">
+                  <td className="py-2 pr-4">
+                    <div>{a.user?.name || '—'}</div>
+                    <div className="text-gray-500 text-xs">{a.user?.phone || a.user?.email || ''}</div>
+                  </td>
+                  <td className="py-2 pr-4">{a.astrologer?.display_name || '—'}</td>
+                  <td className="py-2 pr-4 text-gray-300">{new Date(a.scheduled_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })}</td>
+                  <td className="py-2 pr-4 capitalize text-gray-400">{a.mode}</td>
+                  <td className="py-2 pr-4 text-gray-400 max-w-xs truncate">{a.concern_category || '—'}</td>
+                  <td className={`py-2 pr-4 capitalize font-medium ${statusColor(a.status)}`}>{a.status}</td>
+                  <td className="py-2 text-gold-400">₹{parseFloat(a.amount || 0).toFixed(0)}</td>
+                </tr>
+              ))}
+              {data.appointments.length === 0 && <tr><td colSpan={7} className="py-8 text-center text-gray-500">No appointments yet</td></tr>}
             </tbody>
           </table>
           <Pagination page={page} total={data.total} limit={15} onPage={setPage} />
@@ -359,15 +504,26 @@ function TransactionsTab() {
   const [data, setData] = useState({ transactions: [], total: 0 });
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [typeFilter, setTypeFilter] = useState('');
 
   useEffect(() => {
     setLoading(true);
-    adminApi.getTransactions({ page, limit: 15 }).then(r => setData(r.data)).catch(() => toast.error('Failed')).finally(() => setLoading(false));
-  }, [page]);
+    adminApi.getTransactions({ page, limit: 15, type: typeFilter || undefined }).then(r => setData(r.data)).catch(() => toast.error('Failed')).finally(() => setLoading(false));
+  }, [page, typeFilter]);
 
   return (
     <div>
-      <h2 className="font-serif text-2xl text-gold-400 mb-4">Transactions</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-serif text-2xl text-gold-400">Transactions <span className="text-gray-500 text-sm font-sans font-normal ml-2">({data.total})</span></h2>
+        <div className="flex gap-2">
+          {['', 'credit', 'debit'].map(t => (
+            <button key={t} onClick={() => { setTypeFilter(t); setPage(1); }}
+              className={`px-3 py-1.5 rounded-xl text-xs border ${typeFilter === t ? 'border-gold-500 text-gold-400 bg-gold-500/10' : 'border-gold-600/20 text-gray-400 hover:text-gray-200'}`}>
+              {t || 'All'}
+            </button>
+          ))}
+        </div>
+      </div>
       {loading ? <div className="flex justify-center py-10"><Loader className="w-6 h-6 text-gold-400 animate-spin" /></div> : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-gray-300">
@@ -393,7 +549,7 @@ function TransactionsTab() {
                   </td>
                   <td className="py-2 pr-4 text-gold-400">₹{parseFloat(t.balance_after || 0).toFixed(2)}</td>
                   <td className="py-2 pr-4 text-gray-400 max-w-xs truncate">{t.description || '—'}</td>
-                  <td className="py-2 text-gray-500">{new Date(t.created_at).toLocaleDateString()}</td>
+                  <td className="py-2 text-gray-500">{new Date(t.created_at).toLocaleDateString('en-IN')}</td>
                 </tr>
               ))}
               {data.transactions.length === 0 && <tr><td colSpan={6} className="py-8 text-center text-gray-500">No transactions yet</td></tr>}
@@ -406,15 +562,126 @@ function TransactionsTab() {
   );
 }
 
+// ─── REVENUE ──────────────────────────────────────────────────────────────────
+function RevenueTab() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    adminApi.getRevenue().then(r => setData(r.data)).catch(() => toast.error('Failed to load revenue data')).finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div className="flex justify-center py-20"><Loader className="w-8 h-8 text-gold-400 animate-spin" /></div>;
+
+  const maxAmount = data?.daily ? Math.max(...data.daily.map(d => d.amount), 1) : 1;
+
+  return (
+    <div>
+      <h2 className="font-serif text-2xl text-gold-400 mb-6">Revenue Analytics</h2>
+
+      {/* 7-day bar chart */}
+      <div className="card-cosmic p-6 mb-6">
+        <h3 className="text-gold-400 font-medium mb-4 flex items-center gap-2"><BarChart2 className="w-4 h-4" /> Last 7 Days Revenue</h3>
+        <div className="flex items-end gap-3 h-36">
+          {(data?.daily || []).map(({ date, amount }) => {
+            const pct = maxAmount > 0 ? (amount / maxAmount) * 100 : 0;
+            return (
+              <div key={date} className="flex-1 flex flex-col items-center gap-2">
+                <span className="text-gold-400 text-xs font-medium">₹{Number(amount).toLocaleString('en-IN')}</span>
+                <div className="w-full rounded-t-lg bg-gold-500/20 relative" style={{ height: '80px' }}>
+                  <div className="absolute bottom-0 w-full rounded-t-lg bg-gold-400/60 transition-all"
+                    style={{ height: `${Math.max(pct, 2)}%` }} />
+                </div>
+                <span className="text-gray-500 text-xs">{new Date(date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Top astrologers */}
+      <div className="card-cosmic p-6 mb-6">
+        <h3 className="text-gold-400 font-medium mb-4 flex items-center gap-2"><Star className="w-4 h-4" /> Top Astrologers by Consultations</h3>
+        {(data?.topAstrologers || []).length === 0 ? (
+          <p className="text-gray-500 text-sm">No completed consultations yet.</p>
+        ) : (
+          <div className="space-y-3">
+            {(data?.topAstrologers || []).map((row, i) => (
+              <div key={i} className="flex items-center justify-between bg-cosmic-900/60 rounded-xl px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <span className="text-gold-400 font-bold text-lg w-6">#{i + 1}</span>
+                  <div>
+                    <p className="text-gray-200 font-medium">{row.astrologer?.display_name || 'Unknown'}</p>
+                    <p className="text-gray-500 text-xs">{row.dataValues?.consultCount || 0} consultations</p>
+                  </div>
+                </div>
+                <span className="text-green-400 font-medium">₹{Number(row.dataValues?.revenue || 0).toLocaleString('en-IN')}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Mode breakdown */}
+      <div className="card-cosmic p-6">
+        <h3 className="text-gold-400 font-medium mb-4 flex items-center gap-2"><MessageSquare className="w-4 h-4" /> Consultation Mode Breakdown</h3>
+        {(data?.modeBreakdown || []).length === 0 ? (
+          <p className="text-gray-500 text-sm">No data yet.</p>
+        ) : (
+          <div className="flex gap-6">
+            {(data?.modeBreakdown || []).map((row, i) => {
+              const colors = { video: 'text-purple-400', audio: 'text-blue-400', chat: 'text-green-400' };
+              return (
+                <div key={i} className="text-center">
+                  <p className={`text-3xl font-bold ${colors[row.mode] || 'text-gold-400'}`}>{row.dataValues?.count || 0}</p>
+                  <p className="text-gray-400 text-sm capitalize mt-1">{row.mode}</p>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── SETTINGS ─────────────────────────────────────────────────────────────────
 function SettingsTab() {
-  const [settings, setSettings] = useState({ maintenanceMode: false, announcement: '', announcementActive: false });
+  const [settings, setSettings] = useState({
+    maintenanceMode: false,
+    announcement: '',
+    announcementActive: false,
+    commissionPercent: 20,
+    newUserFreeMinutes: 5,
+    minWalletRecharge: 100,
+    maxWalletRecharge: 10000,
+    platformPhone: '',
+    platformEmail: '',
+    platformWhatsApp: '',
+  });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     adminApi.getSettings().then(r => setSettings(r.data)).catch(() => toast.error('Failed to load settings')).finally(() => setLoading(false));
   }, []);
+
+  const set = (key, value) => setSettings(s => ({ ...s, [key]: value }));
+  const toggle = (key) => setSettings(s => ({ ...s, [key]: !s[key] }));
+
+  function Toggle({ k, label, desc, color = 'gold' }) {
+    return (
+      <div className="flex items-start gap-4">
+        <button onClick={() => toggle(k)} className={`w-12 h-6 rounded-full transition-colors relative shrink-0 mt-0.5 ${settings[k] ? `bg-${color}-500` : 'bg-cosmic-700'}`}>
+          <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${settings[k] ? 'translate-x-7' : 'translate-x-1'}`} />
+        </button>
+        <div>
+          <p className="text-gray-200 text-sm font-medium">{label}</p>
+          {desc && <p className="text-gray-500 text-xs mt-0.5">{desc}</p>}
+        </div>
+      </div>
+    );
+  }
 
   async function handleSave(e) {
     e.preventDefault();
@@ -427,38 +694,68 @@ function SettingsTab() {
   if (loading) return <div className="flex justify-center py-10"><Loader className="w-6 h-6 text-gold-400 animate-spin" /></div>;
 
   return (
-    <div className="max-w-lg">
+    <div className="max-w-2xl">
       <h2 className="font-serif text-2xl text-gold-400 mb-6">Site Settings</h2>
       <form onSubmit={handleSave} className="space-y-6">
-        <div className="card-cosmic p-5 space-y-4">
-          <h3 className="text-gold-400 font-medium flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> Maintenance Mode</h3>
-          <label className="flex items-center gap-3 cursor-pointer">
-            <div onClick={() => setSettings(s => ({ ...s, maintenanceMode: !s.maintenanceMode }))}
-              className={`w-12 h-6 rounded-full transition-colors relative ${settings.maintenanceMode ? 'bg-red-500' : 'bg-cosmic-700'}`}>
-              <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${settings.maintenanceMode ? 'translate-x-7' : 'translate-x-1'}`} />
-            </div>
-            <span className="text-gray-300 text-sm">{settings.maintenanceMode ? 'Site is in maintenance mode' : 'Site is live'}</span>
-          </label>
-          <p className="text-gray-500 text-xs">When enabled, visitors see a maintenance message instead of the site.</p>
+
+        {/* Site controls */}
+        <div className="card-cosmic p-5 space-y-5">
+          <h3 className="text-gold-400 font-medium text-sm uppercase tracking-widest flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> Site Controls</h3>
+          <Toggle k="maintenanceMode" label="Maintenance Mode" desc="When on, visitors see a maintenance page instead of the site." color="red" />
         </div>
 
+        {/* Announcement */}
         <div className="card-cosmic p-5 space-y-4">
-          <h3 className="text-gold-400 font-medium flex items-center gap-2"><Bell className="w-4 h-4" /> Announcement Banner</h3>
-          <textarea value={settings.announcement} onChange={e => setSettings(s => ({ ...s, announcement: e.target.value }))}
-            placeholder="Enter announcement text to show users..."
-            rows={3}
+          <h3 className="text-gold-400 font-medium text-sm uppercase tracking-widest flex items-center gap-2"><Bell className="w-4 h-4" /> Announcement Banner</h3>
+          <textarea value={settings.announcement} onChange={e => set('announcement', e.target.value)}
+            placeholder="Enter announcement text (e.g. 'Free consultation on Guru Purnima!')"
+            rows={2}
             className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 text-sm focus:outline-none focus:border-gold-500 resize-none" />
-          <label className="flex items-center gap-3 cursor-pointer">
-            <div onClick={() => setSettings(s => ({ ...s, announcementActive: !s.announcementActive }))}
-              className={`w-12 h-6 rounded-full transition-colors relative ${settings.announcementActive ? 'bg-gold-500' : 'bg-cosmic-700'}`}>
-              <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${settings.announcementActive ? 'translate-x-7' : 'translate-x-1'}`} />
-            </div>
-            <span className="text-gray-300 text-sm">Show announcement to users</span>
-          </label>
+          <Toggle k="announcementActive" label="Show announcement to all users" desc="Displays a banner at the top of every page." />
+        </div>
+
+        {/* Business settings */}
+        <div className="card-cosmic p-5 space-y-4">
+          <h3 className="text-gold-400 font-medium text-sm uppercase tracking-widest flex items-center gap-2"><IndianRupee className="w-4 h-4" /> Business Settings</h3>
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              ['commissionPercent', 'Platform Commission (%)', 'number', '20'],
+              ['newUserFreeMinutes', 'Free Minutes (New Users)', 'number', '5'],
+              ['minWalletRecharge', 'Min Wallet Recharge (₹)', 'number', '100'],
+              ['maxWalletRecharge', 'Max Wallet Recharge (₹)', 'number', '10000'],
+            ].map(([k, label, type, placeholder]) => (
+              <div key={k}>
+                <label className="text-gray-300 text-xs block mb-1">{label}</label>
+                <input type={type} value={settings[k] || ''} onChange={e => set(k, type === 'number' ? parseFloat(e.target.value) : e.target.value)} placeholder={placeholder}
+                  className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-3 py-2 text-gray-200 text-sm focus:outline-none focus:border-gold-500" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Contact info */}
+        <div className="card-cosmic p-5 space-y-4">
+          <h3 className="text-gold-400 font-medium text-sm uppercase tracking-widest flex items-center gap-2"><Phone className="w-4 h-4" /> Platform Contact Info</h3>
+          <div className="space-y-3">
+            {[
+              ['platformPhone', 'Support Phone', 'tel', Phone],
+              ['platformEmail', 'Support Email', 'email', Mail],
+              ['platformWhatsApp', 'WhatsApp Number', 'tel', Phone],
+            ].map(([k, label, type, Icon]) => (
+              <div key={k}>
+                <label className="text-gray-300 text-xs block mb-1">{label}</label>
+                <div className="relative">
+                  <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <input type={type} value={settings[k] || ''} onChange={e => set(k, e.target.value)}
+                    className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl pl-9 pr-3 py-2 text-gray-200 text-sm focus:outline-none focus:border-gold-500" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         <button type="submit" disabled={saving} className="btn-gold w-full py-3 flex items-center justify-center gap-2">
-          {saving ? <Loader className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />} Save Settings
+          {saving ? <Loader className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />} Save All Settings
         </button>
       </form>
     </div>
@@ -479,19 +776,28 @@ export default function AdminPage() {
 
   if (!user || user.role !== 'admin') return null;
 
-  const tabContent = { overview: <Overview />, users: <UsersTab />, astrologers: <AstrologersTab />, consultations: <ConsultationsTab />, transactions: <TransactionsTab />, settings: <SettingsTab /> };
+  const tabContent = {
+    overview:      <Overview setTab={setTab} />,
+    users:         <UsersTab />,
+    astrologers:   <AstrologersTab />,
+    consultations: <ConsultationsTab />,
+    appointments:  <AppointmentsTab />,
+    transactions:  <TransactionsTab />,
+    revenue:       <RevenueTab />,
+    settings:      <SettingsTab />,
+  };
 
   return (
     <div className="min-h-screen bg-cosmic-950 flex">
       {/* Sidebar */}
       <div className={`${sidebarOpen ? 'w-56' : 'w-14'} bg-cosmic-900 border-r border-gold-600/10 flex flex-col transition-all duration-200 shrink-0`}>
         <div className="p-4 border-b border-gold-600/10 flex items-center justify-between">
-          {sidebarOpen && <span className="font-serif text-gold-400 text-sm">✦ Admin</span>}
+          {sidebarOpen && <span className="font-serif text-gold-400 text-sm">✦ AstroVyoma Admin</span>}
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-400 hover:text-gold-400 ml-auto">
             {sidebarOpen ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </button>
         </div>
-        <nav className="flex-1 py-4 space-y-1 px-2">
+        <nav className="flex-1 py-4 space-y-1 px-2 overflow-y-auto">
           {TABS.map(({ key, label, icon: Icon }) => (
             <button key={key} onClick={() => setTab(key)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${tab === key ? 'bg-gold-500/10 text-gold-400' : 'text-gray-400 hover:text-gray-200 hover:bg-cosmic-800'}`}>
@@ -500,11 +806,16 @@ export default function AdminPage() {
             </button>
           ))}
         </nav>
-        <div className="p-2 border-t border-gold-600/10">
+        <div className="p-2 border-t border-gold-600/10 space-y-1">
           <button onClick={() => navigate('/')}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-400 hover:text-gray-200 hover:bg-cosmic-800 transition-colors">
+            <Eye className="w-4 h-4 shrink-0" />
+            {sidebarOpen && <span>View Site</span>}
+          </button>
+          <button onClick={logout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-400 hover:text-red-300 hover:bg-cosmic-800 transition-colors">
             <LogOut className="w-4 h-4 shrink-0" />
-            {sidebarOpen && <span>Back to Site</span>}
+            {sidebarOpen && <span>Logout</span>}
           </button>
         </div>
       </div>

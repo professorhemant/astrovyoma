@@ -216,6 +216,8 @@ export const admin = {
   deleteAstrologer:    (id) => api.delete(`/admin/astrologers/${id}`),
   getConsultations:    (params) => api.get('/admin/consultations', { params }),
   getTransactions:     (params) => api.get('/admin/transactions', { params }),
+  getAppointments:     (params) => api.get('/admin/appointments', { params }),
+  getRevenue:          ()     => api.get('/admin/revenue'),
   getSettings:         ()     => api.get('/admin/settings'),
   updateSettings:      (data) => api.put('/admin/settings', data),
 };

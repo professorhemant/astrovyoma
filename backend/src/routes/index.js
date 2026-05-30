@@ -76,6 +76,8 @@ router.get('/admin/consultations',              auth, adminAuth, adminController
 router.get('/admin/transactions',               auth, adminAuth, adminController.getTransactions);
 router.get('/admin/settings',                   auth, adminAuth, adminController.getSiteSettings);
 router.put('/admin/settings',                   auth, adminAuth, adminController.updateSiteSettings);
+router.get('/admin/appointments',               auth, adminAuth, adminController.getAppointments);
+router.get('/admin/revenue',                    auth, adminAuth, adminController.getRevenue);
 
 // Auth routes
 router.post('/auth/register', authController.register);
