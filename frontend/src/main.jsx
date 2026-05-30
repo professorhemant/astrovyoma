@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client'; // v6-admin-rebuild
+import ReactDOM from 'react-dom/client'; // v7-admin-final
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
