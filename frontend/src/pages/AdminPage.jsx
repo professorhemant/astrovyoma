@@ -954,13 +954,13 @@ export default function AdminPage() {
       <div className={`${sidebarOpen ? 'w-56' : 'w-14'} bg-cosmic-900 border-r border-gold-600/10 flex flex-col transition-all duration-200 shrink-0`}>
         <div className="p-4 border-b border-gold-600/10 flex items-center justify-between">
           {sidebarOpen && <span className="font-serif text-gold-400 text-sm">✦ AstroVyoma Admin</span>}
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-400 hover:text-gold-400 ml-auto">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-400 hover:text-gold-400 ml-auto" title={sidebarOpen ? 'Collapse' : 'Expand'}>
             {sidebarOpen ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </button>
         </div>
         <nav className="flex-1 py-4 space-y-1 px-2 overflow-y-auto">
           {TABS.map(({ key, label, icon: Icon }) => (
-            <button key={key} onClick={() => setTab(key)}
+            <button key={key} onClick={() => setTab(key)} title={label}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${tab === key ? 'bg-gold-500/10 text-gold-400' : 'text-gray-400 hover:text-gray-200 hover:bg-cosmic-800'}`}>
               <Icon className="w-4 h-4 shrink-0" />
               {sidebarOpen && <span>{label}</span>}
@@ -968,12 +968,12 @@ export default function AdminPage() {
           ))}
         </nav>
         <div className="p-2 border-t border-gold-600/10 space-y-1">
-          <button onClick={() => navigate('/')}
+          <button onClick={() => navigate('/')} title="View Site"
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-400 hover:text-gray-200 hover:bg-cosmic-800 transition-colors">
             <Eye className="w-4 h-4 shrink-0" />
             {sidebarOpen && <span>View Site</span>}
           </button>
-          <button onClick={logout}
+          <button onClick={logout} title="Logout"
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-400 hover:text-red-300 hover:bg-cosmic-800 transition-colors">
             <LogOut className="w-4 h-4 shrink-0" />
             {sidebarOpen && <span>Logout</span>}
@@ -983,6 +983,20 @@ export default function AdminPage() {
 
       {/* Main content */}
       <div className="flex-1 overflow-auto">
+        {/* Top tab bar — always visible regardless of sidebar state */}
+        <div className="bg-cosmic-900 border-b border-gold-600/10 px-4 sticky top-0 z-10">
+          <div className="flex overflow-x-auto scrollbar-none gap-1 py-1">
+            {TABS.map(({ key, label, icon: Icon }) => (
+              <button key={key} onClick={() => setTab(key)}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-colors shrink-0
+                  ${tab === key ? 'bg-gold-500/15 text-gold-400 border border-gold-500/30' : 'text-gray-400 hover:text-gray-200 hover:bg-cosmic-800'}`}>
+                <Icon className="w-3.5 h-3.5 shrink-0" />
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="p-6 md:p-8">
           {tabContent[tab]}
         </div>
