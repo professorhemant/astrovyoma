@@ -924,16 +924,22 @@ function ApplicationsTab() {
 
 // ─── MAIN ADMIN PAGE ──────────────────────────────────────────────────────────
 export default function AdminPage() {
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
+    if (loading) return;
     if (!user) { navigate('/login'); return; }
     if (user.role !== 'admin') { navigate('/'); toast.error('Admin access required'); }
-  }, [user, navigate]);
+  }, [user, loading, navigate]);
 
+  if (loading) return (
+    <div className="min-h-screen bg-cosmic-950 flex items-center justify-center">
+      <Loader className="w-8 h-8 text-gold-400 animate-spin" />
+    </div>
+  );
   if (!user || user.role !== 'admin') return null;
 
   const tabContent = {
