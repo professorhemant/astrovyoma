@@ -35,7 +35,7 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-app.use('/api', routes);
+app.use('/api', routes); // admin dashboard v1
 
 app.get('/health', (req, res) => res.json({ status: 'ok', service: 'AstroVyoma API' }));
 
