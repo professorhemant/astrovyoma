@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wallet, Menu, X, LogOut, User, ChevronDown, ShoppingCart, Wrench } from 'lucide-react';
+import { Wallet, Menu, X, LogOut, User, ChevronDown, ShoppingCart, Wrench, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 
@@ -162,6 +162,13 @@ export default function Navbar() {
                         <User className="w-4 h-4 flex-shrink-0" />
                         <span>Dashboard</span>
                       </Link>
+                      {user.role === 'admin' && (
+                        <Link to="/admin" className="flex items-center gap-3 px-4 py-2.5 text-sm text-purple-300 hover:bg-purple-500/10 hover:text-purple-200 transition-colors">
+                          <LayoutDashboard className="w-4 h-4 flex-shrink-0" />
+                          <span>Admin Panel</span>
+                          <span className="ml-auto text-[10px] bg-purple-500/20 border border-purple-500/40 text-purple-300 px-1.5 py-0.5 rounded-full">Admin</span>
+                        </Link>
+                      )}
                       <Link to="/my-appointments" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
                         <span className="w-4 text-center flex-shrink-0">📅</span>
                         <span>Appointments</span>
@@ -340,6 +347,13 @@ export default function Navbar() {
                     <Link to="/my-appointments" className="text-gray-300 text-sm hover:text-gold-400">Appointments</Link>
                     <button onClick={() => { logout(); navigate('/'); }} className="text-red-400 text-sm">Logout</button>
                   </div>
+                  {user.role === 'admin' && (
+                    <Link to="/admin" className="flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-xl px-3 py-2 text-purple-300 hover:bg-purple-500/20 transition-colors">
+                      <LayoutDashboard className="w-4 h-4 flex-shrink-0" />
+                      <span className="text-sm font-medium">Admin Panel</span>
+                      <span className="ml-auto text-[10px] bg-purple-500/20 border border-purple-500/40 px-1.5 py-0.5 rounded-full">Admin</span>
+                    </Link>
+                  )}
                 </div>
               ) : (
                 <div className="flex gap-3 pt-2 mt-1 border-t border-gold-600/10">
