@@ -24,11 +24,11 @@ function verifyOtp(identifier, otp) {
 }
 
 async function sendOtpEmail(email, otp) {
-  const user = process.env.GMAIL_USER;
-  const pass = process.env.GMAIL_APP_PASSWORD;
+  const user = process.env.EMAIL_USER;
+  const pass = process.env.EMAIL_PASS;
 
   if (!user || !pass) {
-    console.log(`[OTP] ${email} → ${otp} (set GMAIL_USER + GMAIL_APP_PASSWORD to send real emails)`);
+    console.log(`[OTP] ${email} → ${otp} (set EMAIL_USER + EMAIL_PASS to send real emails)`);
     return;
   }
 
@@ -38,18 +38,20 @@ async function sendOtpEmail(email, otp) {
   });
 
   await transporter.sendMail({
-    from: `"AstroVyoma" <${user}>`,
+    from: `"AstroVyoma ✦" <${user}>`,
     to: email,
     subject: 'Your AstroVyoma Verification Code',
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:auto;background:#0d0728;color:#f0e6c0;padding:32px;border-radius:12px;">
-        <h2 style="color:#C9A84C;font-family:serif;margin-bottom:8px;">✦ AstroVyoma</h2>
+        <h2 style="color:#C9A84C;font-family:serif;margin-bottom:8px;">&#10022; AstroVyoma</h2>
         <p style="color:#d4c48a;margin-bottom:24px;">Your verification code is:</p>
         <div style="font-size:36px;font-weight:bold;letter-spacing:12px;color:#C9A84C;background:#1a0a3a;padding:20px;border-radius:8px;text-align:center;">${otp}</div>
         <p style="color:#9e8a6a;font-size:12px;margin-top:24px;">This code expires in 5 minutes. Do not share it with anyone.</p>
       </div>
     `,
   });
+
+  console.log(`[OTP] Email sent to ${email}`);
 }
 
 module.exports = { generateOtp, storeOtp, verifyOtp, sendOtpEmail };
