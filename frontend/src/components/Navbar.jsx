@@ -12,6 +12,7 @@ const FREE_TOOLS_ITEMS = [
   { to:'/muhurta',              icon:'🕐', label:'Muhurta Calculator' },
   { to:'/palmistry',            icon:'🖐️', label:'Palmistry & Face Reading' },
   { to:'/yoga-finder',          icon:'🔱', label:'Yoga Finder' },
+  { to:'/join-as-astrologer',   icon:'⭐', label:'Become an Astrologer' },
 ];
 
 const PANCHANG_ITEMS = [

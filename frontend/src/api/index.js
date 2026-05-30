@@ -222,4 +222,11 @@ export const admin = {
   updateSettings:      (data) => api.put('/admin/settings', data),
 };
 
+export const astrologerApplications = {
+  submit: (data) => api.post('/astrologer/apply', data),
+  getAll: (params) => api.get('/admin/applications', { params }),
+  approve: (id) => api.post(`/admin/applications/${id}/approve`),
+  reject: (id, data) => api.post(`/admin/applications/${id}/reject`, data),
+};
+
 export default api;

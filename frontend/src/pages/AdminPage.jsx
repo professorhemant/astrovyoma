@@ -2,13 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
-import { admin as adminApi } from '../api';
+import { admin as adminApi, astrologerApplications } from '../api';
 import {
   LayoutDashboard, Users, Star, MessageSquare, Wallet,
   Settings, LogOut, Loader, Trash2, Edit2, Plus, X,
   CheckCircle, XCircle, RefreshCw, ChevronLeft, ChevronRight,
   Shield, Bell, AlertTriangle, Calendar, TrendingUp,
-  Phone, Mail, BarChart2, Eye, EyeOff, IndianRupee
+  Phone, Mail, BarChart2, Eye, EyeOff, IndianRupee, FileText
 } from 'lucide-react';
 
 const TABS = [
@@ -20,6 +20,7 @@ const TABS = [
   { key: 'transactions',  label: 'Transactions',   icon: Wallet },
   { key: 'revenue',       label: 'Revenue',        icon: TrendingUp },
   { key: 'settings',      label: 'Settings',       icon: Settings },
+  { key: 'applications',  label: 'Applications',   icon: FileText },
 ];
 
 function StatCard({ label, value, sub, color = 'gold', icon: Icon }) {
@@ -762,6 +763,165 @@ function SettingsTab() {
   );
 }
 
+// ─── APPLICATIONS ─────────────────────────────────────────────────────────────
+function ApplicationsTab() {
+  const [data, setData] = useState({ applications: [], total: 0 });
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [approvedModal, setApprovedModal] = useState(null);
+  const [rejectingId, setRejectingId] = useState(null);
+  const [rejectReason, setRejectReason] = useState('');
+
+  const load = useCallback(() => {
+    setLoading(true);
+    astrologerApplications.getAll({ page, limit: 10, status: statusFilter || undefined })
+      .then(r => setData(r.data))
+      .catch(() => toast.error('Failed to load applications'))
+      .finally(() => setLoading(false));
+  }, [page, statusFilter]);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function handleApprove(id) {
+    try {
+      const r = await astrologerApplications.approve(id);
+      setApprovedModal({ name: r.data.astrologer.display_name, pin: r.data.pin });
+      load();
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to approve');
+    }
+  }
+
+  async function handleReject(id) {
+    try {
+      await astrologerApplications.reject(id, { reason: rejectReason });
+      toast.success('Application rejected');
+      setRejectingId(null);
+      setRejectReason('');
+      load();
+    } catch {
+      toast.error('Failed to reject');
+    }
+  }
+
+  const statusBadge = (s) => {
+    const map = {
+      pending: 'bg-yellow-900/50 text-yellow-300',
+      approved: 'bg-green-900/50 text-green-300',
+      rejected: 'bg-red-900/50 text-red-300',
+    };
+    return `px-2 py-0.5 rounded text-xs capitalize ${map[s] || 'bg-cosmic-800 text-gray-400'}`;
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-serif text-2xl text-gold-400">Astrologer Applications <span className="text-gray-500 text-sm font-sans font-normal ml-2">({data.total})</span></h2>
+        <button onClick={load} className="p-2 text-gold-400 hover:text-gold-300"><RefreshCw className="w-4 h-4" /></button>
+      </div>
+
+      <div className="flex gap-2 mb-4">
+        {['', 'pending', 'approved', 'rejected'].map(s => (
+          <button key={s} onClick={() => { setStatusFilter(s); setPage(1); }}
+            className={`px-3 py-1.5 rounded-xl text-xs border capitalize ${statusFilter === s ? 'border-gold-500 text-gold-400 bg-gold-500/10' : 'border-gold-600/20 text-gray-400 hover:text-gray-200'}`}>
+            {s || 'All'}
+          </button>
+        ))}
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-10"><Loader className="w-6 h-6 text-gold-400 animate-spin" /></div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-gray-300">
+            <thead>
+              <tr className="border-b border-gold-600/20 text-gold-400 text-xs uppercase">
+                <th className="text-left py-2 pr-3">Name</th>
+                <th className="text-left py-2 pr-3">Email</th>
+                <th className="text-left py-2 pr-3">Phone</th>
+                <th className="text-left py-2 pr-3">Exp</th>
+                <th className="text-left py-2 pr-3">₹/min</th>
+                <th className="text-left py-2 pr-3">Specialties</th>
+                <th className="text-left py-2 pr-3">Date</th>
+                <th className="text-left py-2 pr-3">Status</th>
+                <th className="text-left py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.applications.map(a => (
+                <tr key={a.id} className="border-b border-cosmic-800 hover:bg-cosmic-900/50">
+                  <td className="py-2 pr-3 font-medium">{a.name}</td>
+                  <td className="py-2 pr-3 text-gray-400 text-xs">{a.email}</td>
+                  <td className="py-2 pr-3 text-gray-400 text-xs">{a.phone}</td>
+                  <td className="py-2 pr-3">{a.experience_years}y</td>
+                  <td className="py-2 pr-3 text-gold-400">₹{a.price_per_min}</td>
+                  <td className="py-2 pr-3 text-gray-400 max-w-[140px] truncate text-xs">{a.specialties || '—'}</td>
+                  <td className="py-2 pr-3 text-gray-500 text-xs">{new Date(a.created_at).toLocaleDateString('en-IN')}</td>
+                  <td className="py-2 pr-3"><span className={statusBadge(a.status)}>{a.status}</span></td>
+                  <td className="py-2">
+                    {a.status === 'pending' && (
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => handleApprove(a.id)}
+                          className="px-2 py-1 rounded text-xs bg-green-900/50 text-green-300 hover:bg-green-900/80 transition-colors">
+                          Approve
+                        </button>
+                        {rejectingId === a.id ? (
+                          <div className="flex items-center gap-1">
+                            <input value={rejectReason} onChange={e => setRejectReason(e.target.value)}
+                              placeholder="Reason (optional)"
+                              className="bg-cosmic-900 border border-gold-600/20 rounded px-2 py-1 text-gray-200 text-xs focus:outline-none focus:border-gold-500 w-32" />
+                            <button onClick={() => handleReject(a.id)}
+                              className="px-2 py-1 rounded text-xs bg-red-900/50 text-red-300 hover:bg-red-900/80 transition-colors">
+                              Confirm
+                            </button>
+                            <button onClick={() => { setRejectingId(null); setRejectReason(''); }}
+                              className="text-gray-500 hover:text-gray-300"><X className="w-3 h-3" /></button>
+                          </div>
+                        ) : (
+                          <button onClick={() => { setRejectingId(a.id); setRejectReason(''); }}
+                            className="px-2 py-1 rounded text-xs bg-red-900/50 text-red-300 hover:bg-red-900/80 transition-colors">
+                            Reject
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    {a.status === 'rejected' && a.rejection_reason && (
+                      <span className="text-gray-500 text-xs italic">{a.rejection_reason}</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+              {data.applications.length === 0 && (
+                <tr><td colSpan={9} className="py-8 text-center text-gray-500">No applications found</td></tr>
+              )}
+            </tbody>
+          </table>
+          <Pagination page={page} total={data.total} limit={10} onPage={setPage} />
+        </div>
+      )}
+
+      {approvedModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="card-cosmic p-6 max-w-sm w-full text-center border border-green-500/30">
+            <CheckCircle className="w-10 h-10 text-green-400 mx-auto mb-3" />
+            <h3 className="font-serif text-xl text-green-400 mb-2">Application Approved!</h3>
+            <p className="text-gray-300 text-sm mb-4">
+              <span className="text-gold-400 font-medium">{approvedModal.name}</span> has been added as an astrologer.
+            </p>
+            <div className="bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 mb-5">
+              <p className="text-gray-400 text-xs mb-1">Portal Login PIN</p>
+              <p className="text-gold-400 font-bold text-3xl tracking-widest">{approvedModal.pin}</p>
+              <p className="text-gray-500 text-xs mt-1">Share this PIN with the astrologer — it won't be shown again.</p>
+            </div>
+            <button onClick={() => setApprovedModal(null)} className="btn-gold px-6 py-2 text-sm">Done</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── MAIN ADMIN PAGE ──────────────────────────────────────────────────────────
 export default function AdminPage() {
   const { user, logout } = useAuth();
@@ -785,6 +945,7 @@ export default function AdminPage() {
     transactions:  <TransactionsTab />,
     revenue:       <RevenueTab />,
     settings:      <SettingsTab />,
+    applications:  <ApplicationsTab />,
   };
 
   return (

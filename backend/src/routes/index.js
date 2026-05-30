@@ -42,6 +42,7 @@ const reportHistoryController   = require('../controllers/reportHistoryControlle
 const agoraService = require('../services/agoraService');
 const panditController = require('../controllers/panditController');
 const adminController = require('../controllers/adminController');
+const astrologerApplicationController = require('../controllers/astrologerApplicationController');
 const jwt = require('jsonwebtoken');
 
 function adminAuth(req, res, next) {
@@ -78,6 +79,12 @@ router.get('/admin/settings',                   auth, adminAuth, adminController
 router.put('/admin/settings',                   auth, adminAuth, adminController.updateSiteSettings);
 router.get('/admin/appointments',               auth, adminAuth, adminController.getAppointments);
 router.get('/admin/revenue',                    auth, adminAuth, adminController.getRevenue);
+
+// Astrologer application routes
+router.post('/astrologer/apply', astrologerApplicationController.submitApplication);
+router.get('/admin/applications', auth, adminAuth, astrologerApplicationController.getApplications);
+router.post('/admin/applications/:id/approve', auth, adminAuth, astrologerApplicationController.approveApplication);
+router.post('/admin/applications/:id/reject', auth, adminAuth, astrologerApplicationController.rejectApplication);
 
 // Auth routes
 router.post('/auth/register', authController.register);

@@ -67,6 +67,9 @@ async function start() {
       isPostgres
         ? `ALTER TABLE astrologers ADD COLUMN IF NOT EXISTS pin_hash VARCHAR(100)`
         : `ALTER TABLE astrologers ADD COLUMN pin_hash TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologers ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT false`
+        : `ALTER TABLE astrologers ADD COLUMN is_featured INTEGER DEFAULT 0`,
     ];
     for (const sql of migrations) {
       try { await sequelize.query(sql); } catch (_) { /* column already exists */ }

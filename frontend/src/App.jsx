@@ -65,6 +65,7 @@ import VastuPoojaPage           from './pages/VastuPoojaPage';
 import PalmistryPage            from './pages/PalmistryPage';
 import YogaFinderPage           from './pages/YogaFinderPage';
 import AboutUsPage              from './pages/AboutUsPage';
+import JoinAsAstrologerPage    from './pages/JoinAsAstrologerPage';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -157,6 +158,7 @@ function AppLayout() {
             <Route path="/palmistry"             element={<PalmistryPage />} />
             <Route path="/yoga-finder"           element={<YogaFinderPage />} />
             <Route path="/about"                 element={<AboutUsPage />} />
+            <Route path="/join-as-astrologer"   element={<JoinAsAstrologerPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </motion.div>
