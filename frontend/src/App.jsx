@@ -81,6 +81,7 @@ function ProtectedRoute({ children }) {
 function AppLayout() {
   const location = useLocation();
   const isConsultation = location.pathname.startsWith('/consult/') || location.pathname.startsWith('/chat-consult/');
+  const isAdmin = location.pathname.startsWith('/admin');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -90,8 +91,8 @@ function AppLayout() {
     <>
       {/* Persistent background — never unmounts on navigation */}
       <CosmicBackground />
-      {!isConsultation && <Navbar />}
-      <FloatingAIButton />
+      {!isConsultation && !isAdmin && <Navbar />}
+      {!isAdmin && <FloatingAIButton />}
 
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
