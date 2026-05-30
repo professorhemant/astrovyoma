@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client'; // v3-admin
+import ReactDOM from 'react-dom/client'; // v4-admin
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
