@@ -513,7 +513,7 @@ async function generateSummaryPDF(data, name, birthInfo) {
   infoRow(doc, 'Date of Birth',  birthInfo.dob || '—',                                 boxTop + 16);
   infoRow(doc, 'Time of Birth',  birthInfo.birth_time || '—',                          boxTop + 32);
   infoRow(doc, 'Birth Place',    birthInfo.birth_place || '—',                         boxTop + 48);
-  infoRow(doc, 'Lat / Lng',      `${(birthInfo.lat||0).toFixed(4)}° N, ${(birthInfo.lng||0).toFixed(4)}° E`, boxTop + 64);
+  infoRow(doc, 'Lat / Lng',      `${parseFloat(birthInfo.lat||0).toFixed(4)}° N, ${parseFloat(birthInfo.lng||0).toFixed(4)}° E`, boxTop + 64);
   doc.y = boxTop + 108;
 
   sectionTitle(doc, 'CORE PLACEMENTS');
@@ -698,7 +698,7 @@ async function generateDetailedPDF(data, name, birthInfo) {
   infoRow(doc, 'Date of Birth',  birthInfo.dob || '—', b+16);
   infoRow(doc, 'Time of Birth',  birthInfo.birth_time || '—', b+32);
   infoRow(doc, 'Birth Place',    birthInfo.birth_place || '—', b+48);
-  infoRow(doc, 'Lat / Lng',      `${(birthInfo.lat||0).toFixed(4)}° N, ${(birthInfo.lng||0).toFixed(4)}° E`, b+64);
+  infoRow(doc, 'Lat / Lng',      `${parseFloat(birthInfo.lat||0).toFixed(4)}° N, ${parseFloat(birthInfo.lng||0).toFixed(4)}° E`, b+64);
   infoRow(doc, 'Timezone (UTC)', `+${birthInfo.timezone || 5.5}`, b+80);
   infoRow(doc, 'Julian Day',     data.julian_day?.toString() || '—', b+96);
   doc.y = b + 126;

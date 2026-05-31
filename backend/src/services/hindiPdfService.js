@@ -558,7 +558,7 @@ async function generateSummaryPDFHindi(data, name, birthInfo) {
   infoRow(doc, 'जन्म तिथि',    birthInfo.dob || '—',                     b + 26);
   infoRow(doc, 'जन्म समय',     birthInfo.birth_time || '—',              b + 42);
   infoRow(doc, 'जन्म स्थान',   birthInfo.birth_place || '—',             b + 58);
-  infoRow(doc, 'अक्षांश/देशांश', `${(birthInfo.lat||0).toFixed(4)}°उ. ${(birthInfo.lng||0).toFixed(4)}°पू.`, b + 74);
+  infoRow(doc, 'अक्षांश/देशांश', `${parseFloat(birthInfo.lat||0).toFixed(4)}°उ. ${parseFloat(birthInfo.lng||0).toFixed(4)}°पू.`, b + 74);
   infoRow(doc, 'अयनांश',       data.ayanamsha?.dms || '—',               b + 90);
   doc.y = b + 118;
 
@@ -771,7 +771,7 @@ async function generateDetailedPDFHindi(data, name, birthInfo) {
   infoRow(doc, 'जन्म तिथि',       birthInfo.dob || '—',                     b + 26);
   infoRow(doc, 'जन्म समय',        birthInfo.birth_time || '—',              b + 42);
   infoRow(doc, 'जन्म स्थान',      birthInfo.birth_place || '—',             b + 58);
-  infoRow(doc, 'अक्षांश/देशांश',  `${(birthInfo.lat||0).toFixed(4)}°उ. ${(birthInfo.lng||0).toFixed(4)}°पू.`, b + 74);
+  infoRow(doc, 'अक्षांश/देशांश',  `${parseFloat(birthInfo.lat||0).toFixed(4)}°उ. ${parseFloat(birthInfo.lng||0).toFixed(4)}°पू.`, b + 74);
   infoRow(doc, 'समयक्षेत्र (UTC)', `+${birthInfo.timezone || 5.5}`,          b + 90);
   infoRow(doc, 'अयनांश मान',      data.ayanamsha?.dms || '—',               b + 106);
   doc.y = b + 134;
