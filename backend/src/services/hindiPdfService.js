@@ -16,7 +16,8 @@ const {
   KP_INTRO_HINDI,
   LAGNA_HINDI, MOON_HINDI, SUN_HINDI, NAKSHATRA_HINDI,
   DASHA_HINDI, YOGA_HINDI, LABELS_HINDI: L,
-  MANGAL_DOSHA_HINDI, KALSARP_HINDI, SADE_SATI_HINDI
+  MANGAL_DOSHA_HINDI, KALSARP_HINDI, SADE_SATI_HINDI,
+  MOON_DOMAIN_HINDI, PLANET_CAREER_HINDI, PLANET_VITTA_HINDI, PLANET_VIDYA_HINDI,
 } = require('./hindiContent');
 const { calcVarshaphal, calcJaimini, calcKP } = require('./kundaliEngine');
 
@@ -920,23 +921,39 @@ async function generateDetailedPDFHindi(data, name, birthInfo) {
   doc.moveDown(0.8);
 
   if (lagnaH) {
+    const moonDomain  = MOON_DOMAIN_HINDI[data.moon_sign]  || {};
+    const lord10      = hl['10'] || null;
+    const lord2       = hl['2']  || null;
+    const lord5       = hl['5']  || null;
+    const career10    = lord10 ? (PLANET_CAREER_HINDI[lord10] || null) : null;
+    const vitta2      = lord2  ? (PLANET_VITTA_HINDI[lord2]  || null) : null;
+    const vidya5      = lord5  ? (PLANET_VIDYA_HINDI[lord5]  || null) : null;
+
+    // Planets placed in 7th and 10th houses — brief contextual note
+    const planets7  = (hp['7']  || []).filter(Boolean);
+    const planets10 = (hp['10'] || []).filter(Boolean);
+    const PLANET_HI = { Sun:'सूर्य', Moon:'चन्द्र', Mars:'मंगल', Mercury:'बुध', Jupiter:'गुरु', Venus:'शुक्र', Saturn:'शनि', Rahu:'राहु', Ketu:'केतु' };
+    const p7note    = planets7.length  ? `सप्तम भाव में ${planets7.map(p => PLANET_HI[p] || p).join(', ')} स्थित हैं — इनका विवाह और साझेदारी पर विशेष प्रभाव है।` : null;
+    const p10note   = planets10.length ? `दशम भाव में ${planets10.map(p => PLANET_HI[p] || p).join(', ')} स्थित हैं — ये ग्रह आपके कार्यक्षेत्र और सफलता को सीधे प्रभावित करते हैं।` : null;
+
     const lifeAreas = [
-      ['1. चरित्र एवं आचरण',      lagnaH.charitra],
-      ['2. सौभाग्य एवं विवाह',    lagnaH.saubhagya],
-      ['3. जीवनशैली',             lagnaH.jeevan_shaili],
-      ['4. रोजगार',               lagnaH.rozgar],
-      ['5. व्यवसाय',              lagnaH.vyavsay],
-      ['6. स्वास्थ्य',            lagnaH.swasthya],
-      ['7. रुचि एवं शौक',         lagnaH.ruchi],
-      ['8. प्रेम एवं सम्बन्ध',    lagnaH.prem],
-      ['9. वित्त एवं धन',         lagnaH.vitta],
-      ['10. शिक्षा एवं विद्या',   lagnaH.shiksha],
+      ['1. चरित्र एवं आचरण',      lagnaH.charitra,     moonDomain.charitra],
+      ['2. सौभाग्य एवं विवाह',    lagnaH.saubhagya,    [moonDomain.vivah, p7note].filter(Boolean).join(' ') || null],
+      ['3. जीवनशैली',             lagnaH.jeevan_shaili, moonDomain.jeevan_shaili],
+      ['4. रोजगार',               lagnaH.rozgar,        [career10, p10note].filter(Boolean).join(' ') || null],
+      ['5. व्यवसाय',              lagnaH.vyavsay,       [career10, p10note].filter(Boolean).join(' ') || null],
+      ['6. स्वास्थ्य',            lagnaH.swasthya,      moonDomain.swasthya],
+      ['7. रुचि एवं शौक',         lagnaH.ruchi,         moonDomain.ruchi],
+      ['8. प्रेम एवं सम्बन्ध',    lagnaH.prem,          [moonDomain.prem, p7note].filter(Boolean).join(' ') || null],
+      ['9. वित्त एवं धन',         lagnaH.vitta,         vitta2],
+      ['10. शिक्षा एवं विद्या',   lagnaH.shiksha,       vidya5],
     ];
 
-    for (const [areaTitle, areaText] of lifeAreas) {
+    for (const [areaTitle, areaText, extraText] of lifeAreas) {
       checkPage(doc, 60);
       sectionTitle(doc, areaTitle, '#1E3A5F');
       if (areaText) readingBlock(doc, areaText, CREAM);
+      if (extraText) readingBlock(doc, extraText, CREAM);
     }
   }
 
