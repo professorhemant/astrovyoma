@@ -1,22 +1,22 @@
-﻿import React from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import SwastikBorder from '../components/SwastikBorder';
 import ZodiacIcon from '../components/ZodiacIcon';
 
 const SIGNS = [
-  { name: 'Aries', symbol: '♈', dates: 'Mar 21 � Apr 19', element: 'Fire', ruling: 'Mars', color: '#FF6B6B' },
-  { name: 'Taurus', symbol: '♉', dates: 'Apr 20 � May 20', element: 'Earth', ruling: 'Venus', color: '#6BCB77' },
-  { name: 'Gemini', symbol: '♊', dates: 'May 21 � Jun 20', element: 'Air', ruling: 'Mercury', color: '#FFD93D' },
-  { name: 'Cancer', symbol: '♋', dates: 'Jun 21 � Jul 22', element: 'Water', ruling: 'Moon', color: '#C9A84C' },
-  { name: 'Leo', symbol: '♌', dates: 'Jul 23 � Aug 22', element: 'Fire', ruling: 'Sun', color: '#FF9F43' },
-  { name: 'Virgo', symbol: '♍', dates: 'Aug 23 � Sep 22', element: 'Earth', ruling: 'Mercury', color: '#A29BFE' },
-  { name: 'Libra', symbol: '♎', dates: 'Sep 23 � Oct 22', element: 'Air', ruling: 'Venus', color: '#FD79A8' },
-  { name: 'Scorpio', symbol: '♏', dates: 'Oct 23 � Nov 21', element: 'Water', ruling: 'Mars', color: '#6C5CE7' },
-  { name: 'Sagittarius', symbol: '♐', dates: 'Nov 22 � Dec 21', element: 'Fire', ruling: 'Jupiter', color: '#E17055' },
-  { name: 'Capricorn', symbol: '♑', dates: 'Dec 22 � Jan 19', element: 'Earth', ruling: 'Saturn', color: '#636E72' },
-  { name: 'Aquarius', symbol: '♒', dates: 'Jan 20 � Feb 18', element: 'Air', ruling: 'Saturn', color: '#00CEC9' },
-  { name: 'Pisces', symbol: '♓', dates: 'Feb 19 � Mar 20', element: 'Water', ruling: 'Jupiter', color: '#74B9FF' },
+  { name: 'Aries',       nameHi: 'मेष',      symbol: '♈', dates: 'Mar 21 – Apr 19', element: 'Fire',  ruling: 'Mars',    color: '#FF6B6B' },
+  { name: 'Taurus',      nameHi: 'वृष',       symbol: '♉', dates: 'Apr 20 – May 20', element: 'Earth', ruling: 'Venus',   color: '#6BCB77' },
+  { name: 'Gemini',      nameHi: 'मिथुन',     symbol: '♊', dates: 'May 21 – Jun 20', element: 'Air',   ruling: 'Mercury', color: '#FFD93D' },
+  { name: 'Cancer',      nameHi: 'कर्क',      symbol: '♋', dates: 'Jun 21 – Jul 22', element: 'Water', ruling: 'Moon',    color: '#C9A84C' },
+  { name: 'Leo',         nameHi: 'सिंह',      symbol: '♌', dates: 'Jul 23 – Aug 22', element: 'Fire',  ruling: 'Sun',     color: '#FF9F43' },
+  { name: 'Virgo',       nameHi: 'कन्या',     symbol: '♍', dates: 'Aug 23 – Sep 22', element: 'Earth', ruling: 'Mercury', color: '#A29BFE' },
+  { name: 'Libra',       nameHi: 'तुला',      symbol: '♎', dates: 'Sep 23 – Oct 22', element: 'Air',   ruling: 'Venus',   color: '#FD79A8' },
+  { name: 'Scorpio',     nameHi: 'वृश्चिक',   symbol: '♏', dates: 'Oct 23 – Nov 21', element: 'Water', ruling: 'Mars',    color: '#6C5CE7' },
+  { name: 'Sagittarius', nameHi: 'धनु',       symbol: '♐', dates: 'Nov 22 – Dec 21', element: 'Fire',  ruling: 'Jupiter', color: '#E17055' },
+  { name: 'Capricorn',   nameHi: 'मकर',       symbol: '♑', dates: 'Dec 22 – Jan 19', element: 'Earth', ruling: 'Saturn',  color: '#636E72' },
+  { name: 'Aquarius',    nameHi: 'कुंभ',      symbol: '♒', dates: 'Jan 20 – Feb 18', element: 'Air',   ruling: 'Saturn',  color: '#00CEC9' },
+  { name: 'Pisces',      nameHi: 'मीन',       symbol: '♓', dates: 'Feb 19 – Mar 20', element: 'Water', ruling: 'Jupiter', color: '#74B9FF' },
 ];
 
 const ELEMENT_ICON = { Fire: '🔥', Earth: '🌍', Air: '💨', Water: '💧' };
@@ -48,7 +48,7 @@ export default function HoroscopePage() {
             <div className="mt-4 flex flex-wrap justify-center gap-3">
               <Link to="/horoscope/extended"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gold-500/40 bg-gold-500/10 text-gold-300 text-sm font-semibold hover:bg-gold-500/20 transition-all">
-                ?? Weekly � Monthly � Yearly Forecasts ?
+                Weekly – Monthly – Yearly Forecasts
               </Link>
             </div>
           </motion.div>
@@ -68,9 +68,10 @@ export default function HoroscopePage() {
                   style={{ '--hover-shadow': sign.color + '20' }}
                 >
                   <ZodiacIcon sign={sign.name} size={52} />
-                  <span className="text-xs font-medium text-gray-200 group-hover:text-gold-400">{sign.name}</span>
+                  <span className="text-gold-400 font-semibold text-sm leading-tight" style={{ fontFamily: "'Noto Sans Devanagari',sans-serif" }}>{sign.nameHi}</span>
+                  <span className="text-gray-300 text-[10px]">{sign.name}</span>
                   <span className="text-gray-300 text-[10px]">{ELEMENT_ICON[sign.element]}</span>
-                  <span className="text-gray-300 text-[10px]">{sign.dates.split(' � ')[0]}</span>
+                  <span className="text-gray-300 text-[10px]">{sign.dates.split(' – ')[0]}</span>
                 </Link>
               </motion.div>
             ))}
