@@ -3,6 +3,7 @@
 const PDFDocument = require('pdfkit');
 const { getKundaliInterpretation } = require('./interpretationEngine');
 const { NAKSHATRA_ATTRIBUTES, LUCKY_FACTORS, GRAHA_BHAVA_HINDI } = require('./hindiContent');
+const { LAGNA_LIFE_EN, MOON_DOMAIN_EN, PLANET_CAREER_EN, PLANET_VITTA_EN, PLANET_VIDYA_EN } = require('./pdfEnglishContent');
 
 const PLANET_ORDER = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
 
@@ -946,6 +947,51 @@ async function generateDetailedPDF(data, name, birthInfo) {
     readingPair(doc, 'Key Strengths', interp.lagna_reading.strengths);
     readingPair(doc, 'Challenges to Master', interp.lagna_reading.challenges);
     readingPair(doc, 'Dharma (Soul Purpose)', interp.lagna_reading.dharma);
+  }
+
+  // ── DETAILED LIFE FORECAST — 10 LIFE AREAS ────────────────────────────────
+  const lagnaLife  = LAGNA_LIFE_EN[data.lagna]     || {};
+  const moonDomEn  = MOON_DOMAIN_EN[data.moon_sign] || {};
+  const lord10en   = hl['10'] || null;
+  const lord2en    = hl['2']  || null;
+  const lord5en    = hl['5']  || null;
+  const career10en = lord10en ? (PLANET_CAREER_EN[lord10en] || null) : null;
+  const vitta2en   = lord2en  ? (PLANET_VITTA_EN[lord2en]  || null) : null;
+  const vidya5en   = lord5en  ? (PLANET_VIDYA_EN[lord5en]  || null) : null;
+
+  const enPlanetHi = { Sun:'Sun', Moon:'Moon', Mars:'Mars', Mercury:'Mercury', Jupiter:'Jupiter', Venus:'Venus', Saturn:'Saturn', Rahu:'Rahu', Ketu:'Ketu' };
+  const p7enList   = (hp['7']  || []).filter(Boolean);
+  const p10enList  = (hp['10'] || []).filter(Boolean);
+  const p7enNote   = p7enList.length  ? `${p7enList.join(', ')} in the 7th house — these planets shape the nature and timing of your marriage and partnerships.` : null;
+  const p10enNote  = p10enList.length ? `${p10enList.join(', ')} in the 10th house — these planets directly influence your professional environment and career achievements.` : null;
+
+  if (Object.keys(lagnaLife).length > 0) {
+    newSectionPage(doc);
+    drawHeader(doc, 'Detailed Life Forecast', '10 Life Areas — Personalised Jyotisha Reading');
+    doc.fontSize(8.5).fillColor(GREY).font('Helvetica-Oblique')
+       .text('The following predictions are derived from your Ascendant, Moon sign, house lords, and planetary placements using classical Parashari rules. Each section combines your Ascendant foundation with your personal Moon sign and house-lord influences.',
+             50, doc.y, { width: doc.page.width - 100 });
+    doc.moveDown(0.8);
+
+    const enAreas = [
+      ['1. CHARACTER & CONDUCT',        lagnaLife.charitra,     moonDomEn.charitra],
+      ['2. MARRIAGE & FORTUNE',         lagnaLife.vivah,        [moonDomEn.vivah, p7enNote].filter(Boolean).join(' ') || null],
+      ['3. LIFESTYLE & OUTLOOK',        lagnaLife.jeevan_shaili, moonDomEn.jeevan_shaili],
+      ['4. EMPLOYMENT & SERVICE',       lagnaLife.rozgar,       [career10en, p10enNote].filter(Boolean).join(' ') || null],
+      ['5. BUSINESS & PROFESSION',      lagnaLife.vyavsay,      [career10en, p10enNote].filter(Boolean).join(' ') || null],
+      ['6. HEALTH & VITALITY',          lagnaLife.swasthya,     moonDomEn.swasthya],
+      ['7. INTERESTS & RECREATION',     lagnaLife.ruchi,        moonDomEn.ruchi],
+      ['8. LOVE & RELATIONSHIPS',       lagnaLife.prem,         [moonDomEn.prem, p7enNote].filter(Boolean).join(' ') || null],
+      ['9. WEALTH & FINANCES',          lagnaLife.vitta,        vitta2en],
+      ['10. EDUCATION & KNOWLEDGE',     lagnaLife.shiksha,      vidya5en],
+    ];
+
+    for (const [areaTitle, baseText, extraText] of enAreas) {
+      checkPage(doc, 60);
+      sectionTitle(doc, areaTitle);
+      if (baseText) readingBlock(doc, baseText);
+      if (extraText) readingBlock(doc, extraText);
+    }
   }
 
   checkPage(doc, 80);
