@@ -105,6 +105,11 @@ function downloadBlob(blob, filename) {
 
 const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 const SIGN_INDEX = Object.fromEntries(SIGNS.map((s,i)=>[s,i]));
+const RASHI_HI = {
+  Aries:'मेष', Taurus:'वृष', Gemini:'मिथुन', Cancer:'कर्क',
+  Leo:'सिंह', Virgo:'कन्या', Libra:'तुला', Scorpio:'वृश्चिक',
+  Sagittarius:'धनु', Capricorn:'मकर', Aquarius:'कुंभ', Pisces:'मीन',
+};
 
 function signOffset(sign, offset) {
   const idx = SIGN_INDEX[sign];
@@ -437,18 +442,25 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
         <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.2}}
           className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-8">
           {[
-            ['Lagna','Ascendant',data.lagna],
-            ['Rashi','Moon Sign',data.moon_sign],
-            ['Sun','Sun Sign',data.sun_sign],
-            ['Nakshatra','Birth Star',`${data.nakshatra||'—'} P${data.nakshatra_pada||'—'}`],
-            ['Tithi','Lunar Day',panchang.tithi?.name?.replace('Shukla ','Sh. ')?.replace('Krishna ','Kr. ')||'—'],
-            ['Yoga','Yoga',panchang.yoga?.name||'—'],
-            ['Karana','Karana',panchang.karana?.name||'—'],
-            ['Vaar','Weekday',panchang.vaar?.name?.split(' ')[0]||'—'],
-          ].map(([key, label, val]) => (
+            ['Lagna','Ascendant',data.lagna, true],
+            ['Rashi','Moon Sign',data.moon_sign, true],
+            ['Sun','Sun Sign',data.sun_sign, true],
+            ['Nakshatra','Birth Star',`${data.nakshatra||'—'} P${data.nakshatra_pada||'—'}`, false],
+            ['Tithi','Lunar Day',panchang.tithi?.name?.replace('Shukla ','Sh. ')?.replace('Krishna ','Kr. ')||'—', false],
+            ['Yoga','Yoga',panchang.yoga?.name||'—', false],
+            ['Karana','Karana',panchang.karana?.name||'—', false],
+            ['Vaar','Weekday',panchang.vaar?.name?.split(' ')[0]||'—', false],
+          ].map(([key, label, val, isSign]) => (
             <div key={key} className="card-cosmic p-3 text-center">
               <div className="text-gray-300 text-[10px] uppercase tracking-wider mb-1">{label}</div>
-              <div className="text-gold-400 font-semibold text-sm leading-tight">{val || '—'}</div>
+              {isSign && RASHI_HI[val] ? (
+                <>
+                  <div className="text-gold-400 font-semibold text-base leading-tight" style={{fontFamily:"'Noto Sans Devanagari',sans-serif"}}>{RASHI_HI[val]}</div>
+                  <div className="text-gray-300 text-[10px] mt-0.5">{val}</div>
+                </>
+              ) : (
+                <div className="text-gold-400 font-semibold text-sm leading-tight">{val || '—'}</div>
+              )}
             </div>
           ))}
         </motion.div>
@@ -1058,7 +1070,7 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
         <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.5}} className="text-center mt-10">
           <p className="text-gray-200 mb-4">Want deeper insights into your chart?</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button onClick={()=>navigate('/astrologers')} className="btn-gold px-8 py-3">Talk to an Astrologer ?</button>
+            <button onClick={()=>navigate('/astrologers')} className="btn-gold px-8 py-3">Talk to an Astrologer</button>
           </div>
         </motion.div>
       </div>
