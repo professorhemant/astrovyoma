@@ -144,7 +144,8 @@ export default function HomePage() {
           <motion.img
             src="/hero-banner.png"
             alt="AstroVyoma — Unveil Your Destiny, Map Your Cosmic Journey"
-            className="w-full h-auto block"
+            className="w-full block"
+            style={{ height: 'clamp(280px, 46vh, 520px)', objectFit: 'cover', objectPosition: 'center' }}
             initial={{ opacity: 0, scale: 1.03 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.2, ease: 'easeOut' }}
@@ -158,7 +159,7 @@ export default function HomePage() {
           {/* zodiac mandala overlaid on banner — vertically centered, slightly left */}
           <div
             className="absolute hidden md:flex flex-col items-center justify-center pointer-events-none"
-            style={{ top: 'calc(50% - 56px)', left: 'calc(22% - 192px)', transform: 'translate(-50%, -50%)', zIndex: 10 }}>
+            style={{ top: 'calc(50% - 56px)', left: '15%', transform: 'translate(-50%, -50%)', zIndex: 10 }}>
             <img
               src="/zodiac-mandala.png"
               alt="Vedic Zodiac Mandala"
@@ -178,7 +179,7 @@ export default function HomePage() {
 
           {/* Vedic Clock — bottom-left of hero, aligned under mandala */}
           <div className="absolute hidden md:block pointer-events-none"
-            style={{ bottom: '8px', left: 'calc(22% - 192px)', transform: 'translateX(-50%)', zIndex: 10 }}>
+            style={{ bottom: '8px', left: '15%', transform: 'translateX(-50%)', zIndex: 10 }}>
             <VedicClock />
           </div>
 
