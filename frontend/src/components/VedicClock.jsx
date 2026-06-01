@@ -3,12 +3,12 @@ import React, { useState, useEffect } from 'react';
 const pad = n => String(n).padStart(2, '0');
 
 // Display size — image is 1852×2304 (portrait)
-const W = 190;
-const H = Math.round(W * 2304 / 1852); // 236
+const W = 120;
+const H = Math.round(W * 2304 / 1852); // 149
 
 // Clock-face centre (Om symbol) — same proportions as original image
-const CX = W * 0.50;  // 95
-const CY = H * 0.49;  // ~116
+const CX = W * 0.50;  // 60
+const CY = H * 0.49;  // ~73
 
 export default function VedicClock() {
   const [time, setTime] = useState(new Date());
@@ -30,7 +30,7 @@ export default function VedicClock() {
   const ampm        = hr >= 12 ? 'PM' : 'AM';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px' }}>
 
       {/* ── Analog clock — new Gemini image, transparent bg ── */}
       <div style={{ position: 'relative', width: W, height: H }}>
@@ -47,31 +47,31 @@ export default function VedicClock() {
           {/* Hour hand */}
           <div style={{
             position: 'absolute', bottom: 0, left: 0,
-            width: 7, height: 42, marginLeft: -3.5,
+            width: 5, height: 27, marginLeft: -2.5,
             transformOrigin: 'bottom center',
             transform: `rotate(${degHr}deg)`,
             background: 'linear-gradient(to top, #c9a84c 55%, #ffffff 100%)',
             borderRadius: '3px 3px 1px 1px',
             clipPath: 'polygon(50% 0%,100% 18%,72% 100%,28% 100%,0% 18%)',
-            filter: 'drop-shadow(0 0 5px rgba(201,168,76,0.9))',
+            filter: 'drop-shadow(0 0 4px rgba(201,168,76,0.9))',
           }} />
 
           {/* Minute hand */}
           <div style={{
             position: 'absolute', bottom: 0, left: 0,
-            width: 5, height: 58, marginLeft: -2.5,
+            width: 3.5, height: 37, marginLeft: -1.75,
             transformOrigin: 'bottom center',
             transform: `rotate(${degMin}deg)`,
             background: 'linear-gradient(to top, #f0f0f0 55%, #a8ecf5 100%)',
             borderRadius: '2px 2px 1px 1px',
             clipPath: 'polygon(50% 0%,100% 14%,70% 100%,30% 100%,0% 14%)',
-            filter: 'drop-shadow(0 0 5px rgba(168,236,245,0.9))',
+            filter: 'drop-shadow(0 0 4px rgba(168,236,245,0.9))',
           }} />
 
           {/* Second hand */}
           <div style={{
             position: 'absolute', bottom: 0, left: 0,
-            width: 1.5, height: 65, marginLeft: -0.75,
+            width: 1, height: 41, marginLeft: -0.5,
             transformOrigin: 'bottom center',
             transform: `rotate(${degSec}deg)`,
             background: 'linear-gradient(to top, #ff6b00, #ffaa00)',
@@ -81,11 +81,11 @@ export default function VedicClock() {
           {/* Centre pin */}
           <div style={{
             position: 'absolute', top: 0, left: 0,
-            width: 12, height: 12,
+            width: 8, height: 8,
             transform: 'translate(-50%,-50%)',
             borderRadius: '50%',
             background: 'radial-gradient(circle, #fff 0%, #c9a84c 55%, #5a3e22 100%)',
-            boxShadow: '0 0 6px rgba(201,168,76,0.9)',
+            boxShadow: '0 0 5px rgba(201,168,76,0.9)',
             zIndex: 4,
           }} />
         </div>
