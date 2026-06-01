@@ -1,29 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-const VEDIC_ENG = {
-  1:  'Ishwar: The One Supreme Divine',
-  2:  'Paksha: The Two Lunar Fortnights',
-  3:  'Triguna: The Three Sacred Cosmic Qualities',
-  4:  'Veda: The Four Eternal Vedas',
-  5:  'Prana: The Five Vital Life Forces',
-  6:  'Shaddarshan: The Six Vedic Philosophies',
-  7:  'Saptarishi: The Seven Celestial Sages',
-  8:  'Ashtasiddhi: The Eight Divine Attainments',
-  9:  'Navagraha: The Nine Cosmic Planets',
-  10: 'Dashadik: The Ten Directions of Space',
-  11: 'Rudra: The Eleven Sacred Manifestations',
-  12: 'Aditya: The Twelve Solar Deities',
-};
-
-const pad = n => String(n).padStart(2, '0');
-
-// Display size (image is 1852×2304, ratio preserved)
-const W = 180;
-const H = Math.round(W * 2304 / 1852); // 224
-
-// Clock-face centre (Om symbol) — tweak CY if hands are off
-const CX = W * 0.50;   // 130
-const CY = H * 0.49;   // ~158
+const SIZE   = 160;
+const RADIUS = SIZE / 2;
+const pad    = n => String(n).padStart(2, '0');
 
 export default function VedicClock() {
   const [time, setTime] = useState(new Date());
@@ -44,110 +23,103 @@ export default function VedicClock() {
   const displayHour = (hr % 12) || 12;
   const ampm        = hr >= 12 ? 'PM' : 'AM';
 
+  // Hour tick marks
+  const ticks = Array.from({ length: 12 }, (_, i) => {
+    const angle = (i / 12) * 2 * Math.PI - Math.PI / 2;
+    const inner = RADIUS - 14;
+    const outer = RADIUS - 6;
+    return {
+      x1: RADIUS + inner * Math.cos(angle),
+      y1: RADIUS + inner * Math.sin(angle),
+      x2: RADIUS + outer * Math.cos(angle),
+      y2: RADIUS + outer * Math.sin(angle),
+    };
+  });
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ position: 'relative', width: W, height: H }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
 
-        {/* Background image — mask fades edges into hero banner */}
-        <img
-          src="/vedic-clock-bg.png"
-          alt="Vedic Clock"
-          style={{
-            width: W, height: H,
-            objectFit: 'fill',
-            display: 'block',
-            WebkitMaskImage: 'radial-gradient(ellipse 88% 94% at 50% 44%, black 58%, transparent 88%)',
-            maskImage:        'radial-gradient(ellipse 88% 94% at 50% 44%, black 58%, transparent 88%)',
-          }}
-        />
+      {/* ── Analog clock ── */}
+      <svg width={SIZE} height={SIZE} style={{ display: 'block' }}>
+        {/* Face */}
+        <circle cx={RADIUS} cy={RADIUS} r={RADIUS - 2}
+          fill="rgba(10,6,30,0.85)"
+          stroke="rgba(201,168,76,0.7)" strokeWidth="2.5" />
 
+        {/* Outer glow ring */}
+        <circle cx={RADIUS} cy={RADIUS} r={RADIUS - 2}
+          fill="none"
+          stroke="rgba(201,168,76,0.15)" strokeWidth="6" />
 
+        {/* Hour tick marks */}
+        {ticks.map((t, i) => (
+          <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+            stroke={i % 3 === 0 ? 'rgba(201,168,76,0.9)' : 'rgba(201,168,76,0.4)'}
+            strokeWidth={i % 3 === 0 ? 2 : 1}
+            strokeLinecap="round" />
+        ))}
 
-        {/* Hide static digital text from image — blends with image bg */}
-        <div style={{
-          position: 'absolute',
-          top: H * 0.765,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: 175, height: 30,
-          background: 'linear-gradient(to bottom, #181D21, #232221)',
-          zIndex: 2,
-        }} />
+        {/* Hour hand */}
+        <line
+          x1={RADIUS} y1={RADIUS}
+          x2={RADIUS + 38 * Math.sin((degHr * Math.PI) / 180)}
+          y2={RADIUS - 38 * Math.cos((degHr * Math.PI) / 180)}
+          stroke="#C9A84C" strokeWidth="4" strokeLinecap="round"
+          style={{ filter: 'drop-shadow(0 0 4px rgba(201,168,76,0.8))' }} />
 
-        {/* ── Animated clock hands ── */}
-        <div style={{ position: 'absolute', left: CX, top: CY, width: 0, height: 0, zIndex: 3 }}>
+        {/* Minute hand */}
+        <line
+          x1={RADIUS} y1={RADIUS}
+          x2={RADIUS + 52 * Math.sin((degMin * Math.PI) / 180)}
+          y2={RADIUS - 52 * Math.cos((degMin * Math.PI) / 180)}
+          stroke="#E8E8E8" strokeWidth="2.5" strokeLinecap="round"
+          style={{ filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.6))' }} />
 
-          {/* Hour hand */}
-          <div style={{
-            position: 'absolute', bottom: 0, left: 0,
-            width: 7, height: 50, marginLeft: -3.5,
-            transformOrigin: 'bottom center',
-            transform: `rotate(${degHr}deg)`,
-            background: 'linear-gradient(to top, #c9a84c 55%, #a8ecf5 100%)',
-            borderRadius: '3px 3px 1px 1px',
-            clipPath: 'polygon(50% 0%,100% 18%,72% 100%,28% 100%,0% 18%)',
-            filter: 'drop-shadow(0 0 5px rgba(168,236,245,0.85))',
-          }} />
+        {/* Second hand */}
+        <line
+          x1={RADIUS} y1={RADIUS}
+          x2={RADIUS + 58 * Math.sin((degSec * Math.PI) / 180)}
+          y2={RADIUS - 58 * Math.cos((degSec * Math.PI) / 180)}
+          stroke="#FF6B00" strokeWidth="1.5" strokeLinecap="round"
+          style={{ filter: 'drop-shadow(0 0 3px rgba(255,107,0,0.9))' }} />
 
-          {/* Minute hand */}
-          <div style={{
-            position: 'absolute', bottom: 0, left: 0,
-            width: 5, height: 70, marginLeft: -2.5,
-            transformOrigin: 'bottom center',
-            transform: `rotate(${degMin}deg)`,
-            background: 'linear-gradient(to top, #f0f0f0 55%, #a8ecf5 100%)',
-            borderRadius: '2px 2px 1px 1px',
-            clipPath: 'polygon(50% 0%,100% 14%,70% 100%,30% 100%,0% 14%)',
-            filter: 'drop-shadow(0 0 5px rgba(168,236,245,0.9))',
-          }} />
+        {/* Counter-weight stub on second hand */}
+        <line
+          x1={RADIUS} y1={RADIUS}
+          x2={RADIUS - 12 * Math.sin((degSec * Math.PI) / 180)}
+          y2={RADIUS + 12 * Math.cos((degSec * Math.PI) / 180)}
+          stroke="#FF6B00" strokeWidth="1.5" strokeLinecap="round" />
 
-          {/* Second hand */}
-          <div style={{
-            position: 'absolute', bottom: 0, left: 0,
-            width: 1.5, height: 76, marginLeft: -0.75,
-            transformOrigin: 'bottom center',
-            transform: `rotate(${degSec}deg)`,
-            background: 'linear-gradient(to top, #ff6b00, #ffaa00)',
-            filter: 'drop-shadow(0 0 3px rgba(255,120,0,0.9))',
-          }} />
+        {/* Centre pin */}
+        <circle cx={RADIUS} cy={RADIUS} r={5}
+          fill="radial-gradient(circle, #fff, #C9A84C)"
+          stroke="#C9A84C" strokeWidth="1.5" />
+        <circle cx={RADIUS} cy={RADIUS} r={2.5} fill="#fff" />
+      </svg>
 
-          {/* Centre pin */}
-          <div style={{
-            position: 'absolute', top: 0, left: 0,
-            width: 12, height: 12,
-            transform: 'translate(-50%,-50%)',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, #fff 0%, #c9a84c 55%, #5a3e22 100%)',
-            boxShadow: '0 0 6px rgba(201,168,76,0.9)',
-            zIndex: 4,
-          }} />
-        </div>
-
-        {/* ── Live digital display ── */}
-        <div style={{
-          position: 'absolute',
-          top: H * 0.783,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 3, textAlign: 'center',
+      {/* ── Digital clock (independent) ── */}
+      <div style={{ textAlign: 'center' }}>
+        <span style={{
+          fontFamily: "'Orbitron', monospace",
+          fontSize: '1.1rem',
+          fontWeight: 600,
+          color: '#ffffff',
+          letterSpacing: '2px',
+          textShadow: '0 0 10px rgba(255,255,255,0.7), 0 0 20px rgba(255,255,255,0.3)',
         }}>
-          <span style={{
-            fontFamily: "'Orbitron', monospace",
-            fontSize: '1.25rem',
-            fontWeight: 500,
-            color: '#ffffff',
-            letterSpacing: '3px',
-            textShadow: '0 0 10px rgba(255,255,255,0.75), 0 0 22px rgba(255,255,255,0.3)',
-          }}>
-            {displayHour}:{pad(min)}:{pad(sec)}
-          </span>
-          <span style={{ fontFamily: "'Orbitron', monospace", fontSize: '0.55rem', color: '#aaa', marginLeft: 5 }}>
-            {ampm} IST
-          </span>
-        </div>
-
-
+          {displayHour}:{pad(min)}:{pad(sec)}
+        </span>
+        <span style={{
+          fontFamily: "'Orbitron', monospace",
+          fontSize: '0.55rem',
+          color: '#C9A84C',
+          marginLeft: '5px',
+          letterSpacing: '1px',
+        }}>
+          {ampm} IST
+        </span>
       </div>
+
     </div>
   );
 }
