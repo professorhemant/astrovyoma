@@ -109,7 +109,7 @@ function SectionDivider() {
 }
 
 const HERO_OVERLAY_LEFT = '15%';
-const heroBannerStyle = { height: 'clamp(300px, 55vh, 640px)', objectFit: 'cover', objectPosition: 'center' };
+const heroBannerStyle = { height: 'clamp(300px, 66vh, 760px)', objectFit: 'cover', objectPosition: 'center' };
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
