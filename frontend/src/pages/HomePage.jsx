@@ -108,6 +108,9 @@ function SectionDivider() {
   );
 }
 
+const HERO_OVERLAY_LEFT = '15%';
+const heroBannerStyle = { height: 'clamp(280px, 46vh, 520px)', objectFit: 'cover', objectPosition: 'center' };
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
@@ -145,7 +148,7 @@ export default function HomePage() {
             src="/hero-banner.png"
             alt="AstroVyoma — Unveil Your Destiny, Map Your Cosmic Journey"
             className="w-full block"
-            style={{ height: 'clamp(280px, 46vh, 520px)', objectFit: 'cover', objectPosition: 'center' }}
+            style={heroBannerStyle}
             initial={{ opacity: 0, scale: 1.03 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.2, ease: 'easeOut' }}
@@ -159,7 +162,7 @@ export default function HomePage() {
           {/* zodiac mandala overlaid on banner — vertically centered, slightly left */}
           <div
             className="absolute hidden md:flex flex-col items-center justify-center pointer-events-none"
-            style={{ top: 'calc(50% - 56px)', left: '15%', transform: 'translate(-50%, -50%)', zIndex: 10 }}>
+            style={{ top: 'calc(50% - 56px)', left: HERO_OVERLAY_LEFT, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
             <img
               src="/zodiac-mandala.png"
               alt="Vedic Zodiac Mandala"
@@ -179,7 +182,7 @@ export default function HomePage() {
 
           {/* Vedic Clock — bottom-left of hero, aligned under mandala */}
           <div className="absolute hidden md:block pointer-events-none"
-            style={{ bottom: '8px', left: '15%', transform: 'translateX(-50%)', zIndex: 10 }}>
+            style={{ bottom: '8px', left: HERO_OVERLAY_LEFT, transform: 'translateX(-50%)', zIndex: 10 }}>
             <VedicClock />
           </div>
 
