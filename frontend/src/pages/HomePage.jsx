@@ -182,7 +182,7 @@ export default function HomePage() {
 
           {/* Vedic Clock — bottom-left of hero, aligned under mandala */}
           <div className="absolute hidden md:block pointer-events-none"
-            style={{ bottom: '-22px', left: HERO_OVERLAY_LEFT, transform: 'translateX(-50%)', zIndex: 10 }}>
+            style={{ bottom: '8px', left: HERO_OVERLAY_LEFT, transform: 'translateX(-50%)', zIndex: 10 }}>
             <VedicClock />
           </div>
 

@@ -29,10 +29,16 @@ export default function VedicClock() {
   const displayHour = (hr % 12) || 12;
   const ampm        = hr >= 12 ? 'PM' : 'AM';
 
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px' }}>
+  // Wrapper uses absolute positioning so analog and digital move independently.
+  // SHIFT_DOWN pushes only the analog image lower without affecting the digital clock.
+  const SHIFT_DOWN = 25;
+  const DIGITAL_H  = 28;
 
-      {/* ── Analog clock — new Gemini image, transparent bg ── */}
+  return (
+    <div style={{ position: 'relative', width: W, height: H + DIGITAL_H, alignItems: 'center' }}>
+
+      {/* ── Analog clock — shifted down independently ── */}
+      <div style={{ position: 'absolute', top: SHIFT_DOWN, left: '50%', transform: 'translateX(-50%)' }}>
       <div style={{ position: 'relative', width: W, height: H }}>
 
         <img
@@ -90,9 +96,10 @@ export default function VedicClock() {
           }} />
         </div>
       </div>
+      </div>
 
-      {/* ── Independent digital clock ── */}
-      <div style={{ textAlign: 'center' }}>
+      {/* ── Digital clock — fixed at bottom, unaffected by analog shift ── */}
+      <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', textAlign: 'center', whiteSpace: 'nowrap' }}>
         <span style={{
           fontFamily: "'Orbitron', monospace",
           fontSize: '1.1rem',
