@@ -92,6 +92,7 @@ router.post('/auth/login', authController.login);
 router.get('/auth/me', auth, authController.getMe);
 
 // Kundali routes
+router.post('/kundali/generate-public', kundaliController.generatePublicKundali);
 router.post('/kundali/generate', auth, kundaliController.generateKundali);
 router.get('/kundali/mine', auth, kundaliController.getMyKundali);
 router.get('/kundali/personality', auth, kundaliController.getPersonalityReport);

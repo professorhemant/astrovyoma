@@ -225,4 +225,34 @@ async function downloadDetailedPDFHindi(req, res) {
   }
 }
 
-module.exports = { generateKundali, getMyKundali, getPersonalityReport, downloadSummaryPDF, downloadDetailedPDF, downloadSummaryPDFHindi, downloadDetailedPDFHindi, getNamkaran };
+async function generatePublicKundali(req, res) {
+  try {
+    const { name, dob, birth_time, birth_place, lat, lng, timezone } = req.body;
+    if (!dob) return res.status(400).json({ error: 'Date of birth is required' });
+
+    let resolvedLat = lat, resolvedLng = lng, resolvedTz = timezone;
+
+    if (!resolvedLat || !resolvedLng) {
+      if (!birth_place) return res.status(400).json({ error: 'Birth place or coordinates required' });
+      const geo = await geocodePlace(birth_place);
+      resolvedLat = geo.lat;
+      resolvedLng = geo.lng;
+    }
+
+    if (resolvedTz === undefined || resolvedTz === null) {
+      resolvedTz = await getTimezone(resolvedLat, resolvedLng);
+    }
+
+    const chartData = await calculateKundali(dob, birth_time, resolvedLat, resolvedLng, resolvedTz);
+
+    res.json({
+      chart: chartData,
+      birth_info: { name, dob, birth_time, birth_place, lat: resolvedLat, lng: resolvedLng, timezone: resolvedTz }
+    });
+  } catch (err) {
+    console.error('generatePublicKundali error:', err);
+    res.status(500).json({ error: err.message || 'Failed to generate Kundali' });
+  }
+}
+
+module.exports = { generateKundali, generatePublicKundali, getMyKundali, getPersonalityReport, downloadSummaryPDF, downloadDetailedPDF, downloadSummaryPDFHindi, downloadDetailedPDFHindi, getNamkaran };

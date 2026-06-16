@@ -27,6 +27,7 @@ export const auth = {
 };
 
 export const kundali = {
+  generatePublic: (data) => api.post('/kundali/generate-public', data),
   generate: (data) => api.post('/kundali/generate', data),
   getMyKundali: () => api.get('/kundali/mine'),
   getPersonality: () => api.get('/kundali/personality'),
