@@ -47,6 +47,7 @@ import NumerologyPage from './pages/NumerologyPage';
 import SadeSatiPage from './pages/SadeSatiPage';
 import MangalDoshaPage from './pages/MangalDoshaPage';
 import WeeklyHoroscopePage from './pages/WeeklyHoroscopePage';
+import PersonalizedHoroscopeResultPage from './pages/PersonalizedHoroscopeResultPage';
 import GochraPage from './pages/GochraPage';
 import VastuPage from './pages/VastuPage';
 import LalKitabPage from './pages/LalKitabPage';
@@ -118,6 +119,7 @@ function AppLayout() {
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/wallet" element={<ProtectedRoute><WalletPage /></ProtectedRoute>} />
             <Route path="/horoscope/extended" element={<WeeklyHoroscopePage />} />
+            <Route path="/horoscope/personalized" element={<PersonalizedHoroscopeResultPage />} />
             <Route path="/horoscope/:sign" element={<HoroscopeSignPage />} />
             <Route path="/horoscope" element={<HoroscopePage />} />
             <Route path="/matching" element={<KundaliMatchingPage />} />

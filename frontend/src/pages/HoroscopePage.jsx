@@ -60,8 +60,7 @@ export default function HoroscopePage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const sign = getSunSign(form.day, form.month);
-    navigate(`/horoscope/${sign}`);
+    navigate('/horoscope/personalized', { state: { ...form } });
   };
 
   return (
