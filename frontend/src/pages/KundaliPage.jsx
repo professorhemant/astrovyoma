@@ -533,7 +533,7 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                       planetaryPositions={Object.fromEntries(
                         Object.entries(dc.saptamsha).filter(([k]) => k !== 'Lagna').map(([k, v]) => [k, { sign: v.sign, sign_index: v.sign_index, retrograde: false }])
                       )}
-                      lagna={data.lagna}
+                      lagna={dc.saptamsha.Lagna?.sign || data.lagna}
                       size={300}
                       title={"सप्तांश\nकुंडली"}
                     />
