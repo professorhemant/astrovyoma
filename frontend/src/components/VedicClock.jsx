@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 
 const pad = n => String(n).padStart(2, '0');
 
-// Display size — image is 1852×2304 (portrait)
-const W = 190;
-const H = Math.round(W * 2304 / 1852); // 236
+// Display size — image is square (504×504)
+const W = 200;
+const H = 200;
 
-// Clock-face centre (Om symbol) — same proportions as original image
-const CX = W * 0.50;  // 95
-const CY = H * 0.49;  // ~116
+// Clock-face centre — Om symbol at exact centre of circular image
+const CX = W * 0.50;  // 100
+const CY = H * 0.50;  // 100
 
 export default function VedicClock() {
   const [time, setTime] = useState(new Date());
@@ -30,8 +30,7 @@ export default function VedicClock() {
   const ampm        = hr >= 12 ? 'PM' : 'AM';
 
   // Wrapper uses absolute positioning so analog and digital move independently.
-  // SHIFT_DOWN pushes only the analog image lower without affecting the digital clock.
-  const SHIFT_DOWN = 25;
+  const SHIFT_DOWN = 0;
   const DIGITAL_H  = 28;
 
   return (
@@ -42,7 +41,7 @@ export default function VedicClock() {
       <div style={{ position: 'relative', width: W, height: H }}>
 
         <img
-          src="/vedic-clock-gemini.png"
+          src="/vedic-clock-new.png"
           alt="Vedic Clock"
           style={{ width: W, height: H, display: 'block', objectFit: 'fill' }}
         />
@@ -53,7 +52,7 @@ export default function VedicClock() {
           {/* Hour hand */}
           <div style={{
             position: 'absolute', bottom: 0, left: 0,
-            width: 7, height: 42, marginLeft: -3.5,
+            width: 8, height: 52, marginLeft: -4,
             transformOrigin: 'bottom center',
             transform: `rotate(${degHr}deg)`,
             background: 'linear-gradient(to top, #c9a84c 55%, #ffffff 100%)',
@@ -65,7 +64,7 @@ export default function VedicClock() {
           {/* Minute hand */}
           <div style={{
             position: 'absolute', bottom: 0, left: 0,
-            width: 5, height: 58, marginLeft: -2.5,
+            width: 6, height: 72, marginLeft: -3,
             transformOrigin: 'bottom center',
             transform: `rotate(${degMin}deg)`,
             background: 'linear-gradient(to top, #f0f0f0 55%, #a8ecf5 100%)',
@@ -77,7 +76,7 @@ export default function VedicClock() {
           {/* Second hand */}
           <div style={{
             position: 'absolute', bottom: 0, left: 0,
-            width: 1.5, height: 65, marginLeft: -0.75,
+            width: 2, height: 82, marginLeft: -1,
             transformOrigin: 'bottom center',
             transform: `rotate(${degSec}deg)`,
             background: 'linear-gradient(to top, #ff6b00, #ffaa00)',
@@ -87,7 +86,7 @@ export default function VedicClock() {
           {/* Centre pin */}
           <div style={{
             position: 'absolute', top: 0, left: 0,
-            width: 12, height: 12,
+            width: 13, height: 13,
             transform: 'translate(-50%,-50%)',
             borderRadius: '50%',
             background: 'radial-gradient(circle, #fff 0%, #c9a84c 55%, #5a3e22 100%)',
