@@ -813,6 +813,20 @@ async function calculateKundali(dob, birth_time, lat, lng, timezone) {
     divCharts.dashamsha[pName]  = getDashamsha(deg);
     divCharts.saptamsha[pName]  = getSaptamsha(deg);
   }
+
+  // Ketu fix: opposite signs (+6) share the same NAVAMSHA_START and degInSign,
+  // so getNavamsha/getHora return the same sign for both Rahu and Ketu. Override Ketu.
+  if (divCharts.navamsha['Rahu']) {
+    const rIdx = divCharts.navamsha['Rahu'].sign_index;
+    const kIdx = (rIdx + 6) % 12;
+    divCharts.navamsha['Ketu'] = { sign: ZODIAC_SIGNS[kIdx], sign_index: kIdx, part: divCharts.navamsha['Rahu'].part };
+  }
+  if (divCharts.hora['Rahu']) {
+    const rHora = divCharts.hora['Rahu'].sign_index; // Leo(4) or Cancer(3)
+    const kHora = rHora === 4 ? 3 : 4;
+    divCharts.hora['Ketu'] = { sign: ZODIAC_SIGNS[kHora], sign_index: kHora, lord: SIGN_LORDS[kHora] };
+  }
+
   // Navamsha & Saptamsha Lagna
   divCharts.navamsha['Lagna']  = getNavamsha(ascDeg);
   divCharts.saptamsha['Lagna'] = getSaptamsha(ascDeg);
