@@ -516,7 +516,7 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                       planetaryPositions={Object.fromEntries(
                         Object.entries(dc.navamsha).filter(([k]) => k !== 'Lagna').map(([k, v]) => [k, { sign: v.sign, sign_index: v.sign_index, retrograde: false }])
                       )}
-                      lagna={data.lagna}
+                      lagna={dc.navamsha.Lagna?.sign || data.lagna}
                       size={300}
                       title={"नवांश\nकुंडली"}
                     />
@@ -704,7 +704,7 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                       planetaryPositions={Object.fromEntries(
                         Object.entries(dc.navamsha).filter(([k])=>k!=='Lagna').map(([k,v])=>[k,{...v,sign_index:v.sign_index,retrograde:false}])
                       )}
-                      lagna={data.lagna}
+                      lagna={dc.navamsha['Lagna']?.sign || data.lagna}
                       size={320}
                       title={"नवांश\nकुंडली"}
                     />
