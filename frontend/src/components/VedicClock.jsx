@@ -6,9 +6,9 @@ const pad = n => String(n).padStart(2, '0');
 const W = 200;
 const H = 200;
 
-// Clock-face centre — Om symbol at exact centre of circular image
-const CX = W * 0.50;  // 100
-const CY = H * 0.50;  // 100
+// Clock-face centre — Om symbol measured at 48.7% x, 55.3% y of the extracted circle
+const CX = W * 0.487;  // ~97
+const CY = H * 0.553;  // ~111
 
 export default function VedicClock() {
   const [time, setTime] = useState(new Date());
@@ -76,7 +76,7 @@ export default function VedicClock() {
           {/* Second hand */}
           <div style={{
             position: 'absolute', bottom: 0, left: 0,
-            width: 2, height: 82, marginLeft: -1,
+            width: 2, height: 75, marginLeft: -1,
             transformOrigin: 'bottom center',
             transform: `rotate(${degSec}deg)`,
             background: 'linear-gradient(to top, #ff6b00, #ffaa00)',
