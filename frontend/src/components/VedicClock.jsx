@@ -6,9 +6,9 @@ const pad = n => String(n).padStart(2, '0');
 const W = 200;
 const H = 200;
 
-// Clock-face centre — Om symbol measured at 48.7% x, 55.3% y of the extracted circle
-const CX = W * 0.487;  // ~97
-const CY = H * 0.553;  // ~111
+// Clock-face centre — inner lotus measured at 47.6% x, 57.1% y via radial symmetry
+const CX = W * 0.476;  // ~95
+const CY = H * 0.571;  // ~114
 
 export default function VedicClock() {
   const [time, setTime] = useState(new Date());
