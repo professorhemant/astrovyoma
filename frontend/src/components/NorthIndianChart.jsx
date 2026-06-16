@@ -73,6 +73,7 @@ export default function NorthIndianChart({
       {HOUSE_DEFS.map(({ h, pts, cx, cy }) => {
         const isLagna = h === 1;
         const signIdx = (lagnaIdx + h - 1) % 12;
+        const signNum = signIdx + 1; // 1-indexed rashi number (like AstroSage)
         const planets = housePlanets[h] || [];
         const polyPts = pts.map(([x, y]) => `${x * size},${y * size}`).join(' ');
 
@@ -97,11 +98,11 @@ export default function NorthIndianChart({
               />
             )}
 
-            {/* House number */}
+            {/* Rashi number (sign number 1-12, matches AstroSage convention) */}
             <text x={cx * size} y={hnY}
               textAnchor="middle" dominantBaseline="middle"
               fill="#444444" fontSize={hnFS} fontWeight="bold">
-              {h}
+              {signNum}
             </text>
 
             {/* Full Hindi sign name */}
