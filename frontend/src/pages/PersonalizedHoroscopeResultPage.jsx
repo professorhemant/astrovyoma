@@ -1,22 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ChevronRight, Menu, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SwastikBorder from '../components/SwastikBorder';
-
-const SIDEBAR_ITEMS = [
-  { label: 'Profile',                       link: '/dashboard' },
-  { label: 'Print Birth Chart / Life Report', link: '/kundali' },
-  { label: 'Calculations',                  link: '/kundali' },
-  { label: 'Predictions & Reports',         link: '/purpose',   active: true },
-  { label: 'Numerology',                    link: '/numerology' },
-  { label: 'Dasha',                         link: '/dasha' },
-  { label: 'Lal Kitab',                     link: '/lal-kitab' },
-  { label: 'KP System',                     link: '/kundali' },
-  { label: 'Match Horoscope',               link: '/matching' },
-  { label: 'Paid Consultation',             link: '/plans' },
-  { label: 'Talk to Astrologer',            link: '/astrologers' },
-];
 
 const CARDS = [
   {
@@ -141,7 +126,6 @@ const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov
 export default function PersonalizedHoroscopeResultPage() {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const name  = state?.name  || 'Your';
   const sex   = state?.sex   || '';
@@ -159,70 +143,11 @@ export default function PersonalizedHoroscopeResultPage() {
     <div className="relative min-h-screen bg-cosmic-950 mt-16">
       <SwastikBorder />
 
-      <div className="flex min-h-[calc(100vh-4rem)]">
+      <div className="relative z-10 px-4 py-8 md:px-8 lg:px-16">
+        <div className="max-w-5xl mx-auto">
 
-        {/* Mobile sidebar toggle */}
-        <button
-          className="md:hidden fixed bottom-6 left-4 z-50 bg-orange-900 text-white p-3 rounded-full shadow-lg"
-          onClick={() => setSidebarOpen(o => !o)}
-        >
-          {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
-
-        {/* Sidebar */}
-        <aside
-          className={`fixed md:sticky top-16 left-0 h-[calc(100vh-4rem)] w-64 z-40 flex-shrink-0 overflow-y-auto transition-transform duration-300
-            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
-          style={{ background: 'linear-gradient(180deg, #7a2200 0%, #5c1a00 100%)' }}
-        >
-          {/* Name header */}
-          <div className="px-4 py-4 border-b border-white/10">
-            <p className="text-white font-semibold text-base leading-tight">{name}'s Kundli</p>
-            {dobStr && <p className="text-orange-200/70 text-xs mt-0.5">{dobStr}{timeStr ? `, ${timeStr}` : ''}</p>}
-            {place && <p className="text-orange-200/60 text-xs">{place}</p>}
-          </div>
-
-          {/* Menu items */}
-          <nav className="py-1">
-            {SIDEBAR_ITEMS.map((item, i) => (
-              <Link
-                key={i}
-                to={item.link || '#'}
-                onClick={() => setSidebarOpen(false)}
-                className={`flex items-center justify-between px-4 py-3 text-sm border-b border-white/5 transition-colors
-                  ${item.active
-                    ? 'bg-orange-700/60 text-orange-200 font-medium'
-                    : 'text-white hover:bg-white/10'}`}
-              >
-                <span>{item.label}</span>
-                <ChevronRight className="w-4 h-4 flex-shrink-0 opacity-60" />
-              </Link>
-            ))}
-          </nav>
-
-          {/* Edit birth details */}
-          <div className="px-4 py-4 border-t border-white/10">
-            <button
-              onClick={() => navigate('/horoscope')}
-              className="w-full text-center text-xs text-orange-300 hover:text-orange-100 transition-colors py-1"
-            >
-              ✎ Edit Birth Details
-            </button>
-          </div>
-        </aside>
-
-        {/* Overlay for mobile */}
-        {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black/50 z-30 md:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
-
-        {/* Main content */}
-        <main className="flex-1 px-4 py-6 md:px-6 lg:px-8 overflow-x-hidden">
           {/* Header */}
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
             <p className="text-gold-500/60 text-xs tracking-widest uppercase mb-1">✦ Your Cosmic Profile</p>
             <h1 className="font-serif text-2xl md:text-3xl text-gold-400 mb-1">
               {name}'s Horoscope
@@ -232,6 +157,12 @@ export default function PersonalizedHoroscopeResultPage() {
                 {sex && `${sex} · `}{dobStr}{timeStr ? ` · ${timeStr}` : ''}{place ? ` · ${place}` : ''}
               </p>
             )}
+            <button
+              onClick={() => navigate('/horoscope')}
+              className="mt-3 text-xs text-gold-500/70 hover:text-gold-400 transition-colors"
+            >
+              ✎ Edit Birth Details
+            </button>
           </motion.div>
 
           {/* Card grid */}
@@ -247,11 +178,9 @@ export default function PersonalizedHoroscopeResultPage() {
                   to={card.link}
                   className="flex items-start gap-4 p-4 rounded-xl border border-gold-600/15 bg-cosmic-800/50 hover:bg-cosmic-800/80 hover:border-gold-500/30 transition-all duration-200 group h-full"
                 >
-                  {/* Icon circle */}
                   <div className={`flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br ${card.bg} flex items-center justify-center text-2xl shadow-lg`}>
                     {card.icon}
                   </div>
-                  {/* Text */}
                   <div className="min-w-0">
                     <p className="text-white font-semibold text-sm group-hover:text-gold-300 transition-colors leading-tight mb-1">
                       {card.title}
@@ -264,7 +193,8 @@ export default function PersonalizedHoroscopeResultPage() {
               </motion.div>
             ))}
           </div>
-        </main>
+
+        </div>
       </div>
     </div>
   );
