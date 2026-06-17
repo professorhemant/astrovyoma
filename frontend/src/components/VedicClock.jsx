@@ -43,7 +43,7 @@ export default function VedicClock() {
         <img
           src="/vedic-clock-new.png"
           alt="Vedic Clock"
-          style={{ width: W, height: H, display: 'block', objectFit: 'contain' }}
+          style={{ width: W, height: H, display: 'block', objectFit: 'cover', borderRadius: '50%' }}
         />
 
         {/* ── Animated hands ── */}
