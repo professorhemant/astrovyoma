@@ -42,16 +42,16 @@ export default function VedicClock() {
             style={{ width: W, height: H, display: 'block', objectFit: 'contain' }}
           />
 
-          {/* Cover disc — hides the baked-in screenshot hands underneath the animated hands */}
+          {/* Cover disc — hides the baked-in screenshot hands, color matched to inner mandala */}
           <div style={{
             position: 'absolute',
             left: '50%',
             top: '50%',
             transform: 'translate(-50%, -50%)',
-            width: 118,
-            height: 118,
+            width: 120,
+            height: 120,
             borderRadius: '50%',
-            background: 'radial-gradient(circle, #8B5520 0%, #6B3D12 35%, #4A2608 65%, #3A1A05 100%)',
+            background: 'radial-gradient(circle, #D4A030 0%, #C08828 25%, #9A6820 50%, #7A5018 75%, #5A3810 100%)',
             zIndex: 2,
           }} />
 
