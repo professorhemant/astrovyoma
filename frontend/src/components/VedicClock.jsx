@@ -35,27 +35,12 @@ export default function VedicClock() {
       <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)' }}>
         <div style={{ position: 'relative', width: W, height: H }}>
 
-          {/* Clock face — user's pre-cropped circular image */}
+          {/* Clock face — clean circular PNG, transparent corners, no hands */}
           <img
             src="/vedic-clock-new.png"
             alt="Vedic Clock"
             style={{ width: W, height: H, display: 'block', objectFit: 'contain' }}
           />
-
-          {/* Inner disc — shows actual mandala from the image, perfectly aligned */}
-          <div style={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 120,
-            height: 120,
-            borderRadius: '50%',
-            backgroundImage: 'url(/vedic-clock-new.png)',
-            backgroundSize: `${W}px ${H}px`,
-            backgroundPosition: `-${(W - 120) / 2}px -${(H - 120) / 2}px`,
-            zIndex: 2,
-          }} />
 
           {/* Animated hands — pivot from exact center */}
           <div style={{ position: 'absolute', left: CX, top: CY, width: 0, height: 0, zIndex: 3 }}>
