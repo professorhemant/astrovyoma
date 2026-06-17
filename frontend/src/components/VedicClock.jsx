@@ -42,7 +42,7 @@ export default function VedicClock() {
             style={{ width: W, height: H, display: 'block', objectFit: 'contain' }}
           />
 
-          {/* Cover disc — hides the baked-in screenshot hands, color matched to inner mandala */}
+          {/* Inner disc — shows actual mandala from the image, perfectly aligned */}
           <div style={{
             position: 'absolute',
             left: '50%',
@@ -51,7 +51,9 @@ export default function VedicClock() {
             width: 120,
             height: 120,
             borderRadius: '50%',
-            background: 'radial-gradient(circle, #D4A030 0%, #C08828 25%, #9A6820 50%, #7A5018 75%, #5A3810 100%)',
+            backgroundImage: 'url(/vedic-clock-new.png)',
+            backgroundSize: `${W}px ${H}px`,
+            backgroundPosition: `-${(W - 120) / 2}px -${(H - 120) / 2}px`,
             zIndex: 2,
           }} />
 
