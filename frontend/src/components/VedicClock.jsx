@@ -6,9 +6,9 @@ const pad = n => String(n).padStart(2, '0');
 const W = 200;
 const H = 200;
 
-// Clock-face centre — inner lotus measured at 47.6% x, 57.1% y via radial symmetry
-const CX = W * 0.476;  // ~95
-const CY = H * 0.571;  // ~114
+// Clock-face centre — geometric center of the circular face
+const CX = W * 0.5;   // 100
+const CY = H * 0.5;   // 100
 
 export default function VedicClock() {
   const [time, setTime] = useState(new Date());
@@ -43,7 +43,7 @@ export default function VedicClock() {
         <img
           src="/vedic-clock-new.png"
           alt="Vedic Clock"
-          style={{ width: W, height: H, display: 'block', objectFit: 'fill' }}
+          style={{ width: W, height: H, display: 'block', objectFit: 'cover', borderRadius: '50%' }}
         />
 
         {/* ── Animated hands ── */}
