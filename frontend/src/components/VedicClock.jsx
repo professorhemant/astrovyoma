@@ -37,7 +37,7 @@ export default function VedicClock() {
 
           {/* Clock face — clean circular PNG, transparent corners, no hands */}
           <img
-            src="/vedic-clock-new.png"
+            src="/vedic-clock-clean.png"
             alt="Vedic Clock"
             style={{ width: W, height: H, display: 'block', objectFit: 'contain' }}
           />
