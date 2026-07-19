@@ -105,7 +105,14 @@ async function forgotPassword(req, res) {
 
     const otp = generateOtp();
     storeOtp(resetKey(user.email), otp);
-    await sendPasswordResetEmail(user.email, otp);
+
+    // Deliberately not awaited. Blocking on SMTP made a real account take
+    // seconds (or hang the request entirely) while an unknown one returned
+    // instantly — which both broke the endpoint under a slow mail server and
+    // leaked account existence through response time.
+    sendPasswordResetEmail(user.email, otp).catch(err => {
+      console.error('Failed to send reset email:', err && err.message ? err.message : err);
+    });
 
     res.json(generic);
   } catch (err) {

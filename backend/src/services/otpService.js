@@ -35,6 +35,11 @@ async function sendOtpEmail(email, otp) {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: { user, pass },
+    // Without these a bad or unreachable mail server holds the socket open
+    // indefinitely instead of erroring.
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
   });
 
   await transporter.sendMail({
@@ -66,6 +71,11 @@ async function sendPasswordResetEmail(email, otp) {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: { user, pass },
+    // Without these a bad or unreachable mail server holds the socket open
+    // indefinitely instead of erroring.
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
   });
 
   await transporter.sendMail({
