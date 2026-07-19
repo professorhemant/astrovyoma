@@ -8,7 +8,7 @@ import {
   Settings, LogOut, Loader, Trash2, Edit2, Plus, X,
   CheckCircle, XCircle, RefreshCw, ChevronLeft, ChevronRight,
   Shield, Bell, AlertTriangle, Calendar, TrendingUp,
-  Phone, Mail, BarChart2, Eye, EyeOff, IndianRupee, FileText
+  Phone, Mail, BarChart2, Eye, EyeOff, IndianRupee, FileText, Home
 } from 'lucide-react';
 
 const TABS = [
@@ -981,7 +981,10 @@ export default function AdminPage() {
     // scroll container. With min-h-screen it grew to fit its content, the
     // window scrolled instead, and both the sticky tab bar and the sticky
     // save button had a scrollport that never moved.
-    <div className="h-screen overflow-hidden bg-cosmic-950 flex">
+    // relative z-10 lifts the whole shell above CosmicBackground, which is
+    // `fixed inset-0 z-0 pointer-events-none` and was painting over the
+    // sidebar — clicks passed through, but nothing was visible.
+    <div className="relative z-10 h-screen overflow-hidden bg-cosmic-950 flex">
       {/* Sidebar */}
       <div className={`${sidebarOpen ? 'w-56' : 'w-14'} bg-cosmic-900 border-r border-gold-600/10 flex flex-col transition-all duration-200 shrink-0`}>
         <div className="p-4 border-b border-gold-600/10 flex items-center justify-between">
@@ -1016,7 +1019,15 @@ export default function AdminPage() {
       {/* Main content */}
       <div className="flex-1 overflow-auto">
         {/* Top tab bar — always visible regardless of sidebar state */}
-        <div className="bg-cosmic-900 border-b border-gold-600/10 px-4 sticky top-0 z-10">
+        <div className="bg-cosmic-900 border-b border-gold-600/10 px-4 sticky top-0 z-10 flex items-center gap-2">
+          {/* Always-visible way back to the site — the sidebar's "View Site"
+              is easy to miss, and disappears entirely when it is collapsed. */}
+          <button onClick={() => navigate('/')} title="Back to site"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap shrink-0 text-gray-300 hover:text-gold-400 hover:bg-cosmic-800 border border-gold-600/20 transition-colors">
+            <Home className="w-3.5 h-3.5 shrink-0" />
+            Home
+          </button>
+          <div className="w-px h-5 bg-gold-600/20 shrink-0" />
           <div className="flex overflow-x-auto scrollbar-none gap-1 py-1">
             {TABS.map(({ key, label, icon: Icon }) => (
               <button key={key} onClick={() => setTab(key)}
