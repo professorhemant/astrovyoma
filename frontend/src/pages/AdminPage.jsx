@@ -755,9 +755,13 @@ function SettingsTab() {
           </div>
         </div>
 
-        <button type="submit" disabled={saving} className="btn-gold w-full py-3 flex items-center justify-center gap-2">
-          {saving ? <Loader className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />} Save All Settings
-        </button>
+        {/* Sticky so the save action stays reachable — the form is taller than
+            the viewport, which left this button permanently below the fold. */}
+        <div className="sticky bottom-0 -mx-1 px-1 py-3 bg-cosmic-950/95 backdrop-blur border-t border-gold-600/10">
+          <button type="submit" disabled={saving} className="btn-gold w-full py-3 flex items-center justify-center gap-2 disabled:opacity-50">
+            {saving ? <Loader className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />} Save All Settings
+          </button>
+        </div>
       </form>
     </div>
   );
@@ -955,7 +959,11 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-cosmic-950 flex">
+    // h-screen + overflow-hidden so the content column below is the actual
+    // scroll container. With min-h-screen it grew to fit its content, the
+    // window scrolled instead, and both the sticky tab bar and the sticky
+    // save button had a scrollport that never moved.
+    <div className="h-screen overflow-hidden bg-cosmic-950 flex">
       {/* Sidebar */}
       <div className={`${sidebarOpen ? 'w-56' : 'w-14'} bg-cosmic-900 border-r border-gold-600/10 flex flex-col transition-all duration-200 shrink-0`}>
         <div className="p-4 border-b border-gold-600/10 flex items-center justify-between">
