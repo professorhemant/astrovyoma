@@ -33,7 +33,12 @@ async function sendOtpEmail(email, otp) {
   }
 
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    // Railway's container has no working IPv6 route, so resolving
+    // smtp.gmail.com to AAAA gave ENETUNREACH and the send timed out.
+    family: 4,
     auth: { user, pass },
     // Without these a bad or unreachable mail server holds the socket open
     // indefinitely instead of erroring.
@@ -69,7 +74,12 @@ async function sendPasswordResetEmail(email, otp) {
   }
 
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    // Railway's container has no working IPv6 route, so resolving
+    // smtp.gmail.com to AAAA gave ENETUNREACH and the send timed out.
+    family: 4,
     auth: { user, pass },
     // Without these a bad or unreachable mail server holds the socket open
     // indefinitely instead of erroring.
