@@ -23,18 +23,50 @@ const TABS = [
   { key: 'applications',  label: 'Applications',   icon: FileText },
 ];
 
+// Tailwind scans source text at build time, so an interpolated class name like
+// `bg-${color}-500` is never emitted on its own account. These happened to work
+// only because other files mention the same names literally — add a colour here
+// that nothing else uses and it would silently render unstyled. Look them up.
+const ACCENT = {
+  gold:   { soft: 'bg-gold-500/10',   text: 'text-gold-400',   on: 'bg-gold-500' },
+  red:    { soft: 'bg-red-500/10',    text: 'text-red-400',    on: 'bg-red-500' },
+  yellow: { soft: 'bg-yellow-500/10', text: 'text-yellow-400', on: 'bg-yellow-500' },
+  blue:   { soft: 'bg-blue-500/10',   text: 'text-blue-400',   on: 'bg-blue-500' },
+  purple: { soft: 'bg-purple-500/10', text: 'text-purple-400', on: 'bg-purple-500' },
+  green:  { soft: 'bg-green-500/10',  text: 'text-green-400',  on: 'bg-green-500' },
+};
+
 function StatCard({ label, value, sub, color = 'gold', icon: Icon }) {
+  const accent = ACCENT[color] || ACCENT.gold;
   return (
     <div className="card-cosmic p-5 flex items-start gap-4">
       {Icon && (
-        <div className={`p-2 rounded-xl bg-${color}-500/10 shrink-0`}>
-          <Icon className={`w-5 h-5 text-${color}-400`} />
+        <div className={`p-2 rounded-xl ${accent.soft} shrink-0`}>
+          <Icon className={`w-5 h-5 ${accent.text}`} />
         </div>
       )}
       <div>
         <p className="text-gray-400 text-xs uppercase tracking-widest mb-1">{label}</p>
-        <p className={`text-2xl font-bold text-${color}-400`}>{value}</p>
+        <p className={`text-2xl font-bold ${accent.text}`}>{value}</p>
         {sub && <p className="text-gray-400 text-xs mt-1">{sub}</p>}
+      </div>
+    </div>
+  );
+}
+
+// Module scope on purpose: defined inside SettingsTab this was a new component
+// type on every render, so React unmounted and remounted it on each keystroke.
+function Toggle({ checked, onChange, label, desc, color = 'gold' }) {
+  const accent = ACCENT[color] || ACCENT.gold;
+  return (
+    <div className="flex items-start gap-4">
+      <button type="button" onClick={onChange} role="switch" aria-checked={!!checked} aria-label={label}
+        className={`w-12 h-6 rounded-full transition-colors relative shrink-0 mt-0.5 ${checked ? accent.on : 'bg-cosmic-700'}`}>
+        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${checked ? 'translate-x-7' : 'translate-x-1'}`} />
+      </button>
+      <div>
+        <p className="text-gray-200 text-sm font-medium">{label}</p>
+        {desc && <p className="text-gray-500 text-xs mt-0.5">{desc}</p>}
       </div>
     </div>
   );
@@ -670,20 +702,6 @@ function SettingsTab() {
   const set = (key, value) => setSettings(s => ({ ...s, [key]: value }));
   const toggle = (key) => setSettings(s => ({ ...s, [key]: !s[key] }));
 
-  function Toggle({ k, label, desc, color = 'gold' }) {
-    return (
-      <div className="flex items-start gap-4">
-        <button onClick={() => toggle(k)} className={`w-12 h-6 rounded-full transition-colors relative shrink-0 mt-0.5 ${settings[k] ? `bg-${color}-500` : 'bg-cosmic-700'}`}>
-          <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${settings[k] ? 'translate-x-7' : 'translate-x-1'}`} />
-        </button>
-        <div>
-          <p className="text-gray-200 text-sm font-medium">{label}</p>
-          {desc && <p className="text-gray-500 text-xs mt-0.5">{desc}</p>}
-        </div>
-      </div>
-    );
-  }
-
   async function handleSave(e) {
     e.preventDefault();
     setSaving(true);
@@ -702,7 +720,7 @@ function SettingsTab() {
         {/* Site controls */}
         <div className="card-cosmic p-5 space-y-5">
           <h3 className="text-gold-400 font-medium text-sm uppercase tracking-widest flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> Site Controls</h3>
-          <Toggle k="maintenanceMode" label="Maintenance Mode" desc="When on, visitors see a maintenance page instead of the site." color="red" />
+          <Toggle checked={settings.maintenanceMode} onChange={() => toggle('maintenanceMode')} label="Maintenance Mode" desc="When on, visitors see a maintenance page instead of the site." color="red" />
         </div>
 
         {/* Announcement */}
@@ -712,7 +730,7 @@ function SettingsTab() {
             placeholder="Enter announcement text (e.g. 'Free consultation on Guru Purnima!')"
             rows={2}
             className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 text-sm focus:outline-none focus:border-gold-500 resize-none" />
-          <Toggle k="announcementActive" label="Show announcement to all users" desc="Displays a banner at the top of every page." />
+          <Toggle checked={settings.announcementActive} onChange={() => toggle('announcementActive')} label="Show announcement to all users" desc="Displays a banner at the top of every page." />
         </div>
 
         {/* Business settings */}
