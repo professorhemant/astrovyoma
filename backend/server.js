@@ -12,6 +12,12 @@ const { seedAstrologers, seedRealAstrologers } = require('./src/seeders/astrolog
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust exactly one proxy hop (Railway's edge). Without this every request
+// looks like it came from the proxy's IP, so the rate limiter below counts
+// all users against a single shared bucket. Not `true` — trusting the whole
+// chain would let a client forge X-Forwarded-For to get a fresh quota.
+app.set('trust proxy', 1);
+
 app.use(helmet({ contentSecurityPolicy: false }));
 const allowedOrigins = process.env.NODE_ENV === 'production'
   ? (process.env.FRONTEND_URL || '').split(',').map(u => u.trim()).filter(Boolean)
