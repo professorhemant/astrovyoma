@@ -1,27 +1,19 @@
 const Groq = require('groq-sdk');
+const { buildFocusedContext } = require('./questionRouter');
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-function buildKundaliContext(kundaliData) {
-  if (!kundaliData) return 'The user has not provided their birth details yet. Encourage them to generate their free Kundali for personalized guidance.';
-  return `
-BIRTH CHART OF THIS USER:
-- Sun Sign: ${kundaliData.sun_sign}
-- Moon Sign: ${kundaliData.moon_sign}
-- Ascendant (Lagna): ${kundaliData.lagna}
-- Nakshatra: ${kundaliData.nakshatra} (Pada ${kundaliData.nakshatra_pada})
-- Planetary Positions: ${JSON.stringify(kundaliData.planetary_positions)}
-- Current Dasha: ${JSON.stringify(kundaliData.dasha_sequence?.slice(0, 3))}
-- Life Purpose: ${kundaliData.life_purpose}
-- Personality: ${kundaliData.swabhav}
-
-Always personalize responses based on this birth chart.`;
+// Routes the question to the houses/karakas/varga/dasha that actually govern it,
+// instead of dumping the whole chart and leaving the selection to the model.
+function buildKundaliContext(kundaliData, userMessage) {
+  const { context } = buildFocusedContext(kundaliData, userMessage);
+  return context;
 }
 
 async function getAstrologyChatResponse(userMessage, kundaliData, conversationHistory = []) {
   const systemPrompt = `You are AstroVyoma AI — an expert Vedic astrologer powered by ancient wisdom and modern AI. You have deep knowledge of Jyotish (Vedic astrology), Nakshatras, planetary influences, Dashas, and life guidance.
 
-${buildKundaliContext(kundaliData)}
+${buildKundaliContext(kundaliData, userMessage)}
 
 GUIDELINES:
 - Speak with wisdom, compassion, and spiritual depth — like a trusted guru
@@ -52,7 +44,7 @@ GUIDELINES:
 async function getPanditJiResponse(userMessage, kundaliData, conversationHistory = []) {
   const systemPrompt = `आप "पंडित AI जी" हैं — एक परम विद्वान, वृद्ध वैदिक ज्योतिषाचार्य जो महर्षि पराशर की परंपरा में दीक्षित हैं। आप AstroVyoma मंच पर सेवा करते हैं।
 
-${buildKundaliContext(kundaliData)}
+${buildKundaliContext(kundaliData, userMessage)}
 
 आपकी शैली एवं व्यक्तित्व:
 - प्रश्नकर्ता को "वत्स" या "पुत्र/पुत्री" से संबोधित करें
