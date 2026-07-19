@@ -90,6 +90,8 @@ router.post('/admin/applications/:id/reject', auth, adminAuth, astrologerApplica
 router.post('/auth/register', authController.register);
 router.post('/auth/login', authController.login);
 router.get('/auth/me', auth, authController.getMe);
+router.post('/auth/forgot-password', authController.forgotPassword);
+router.post('/auth/reset-password', authController.resetPassword);
 
 // Kundali routes
 router.post('/kundali/generate-public', kundaliController.generatePublicKundali);

@@ -74,13 +74,19 @@ export default function LoginPage() {
             </button>
           </div>
 
+          <div className="text-right">
+            <Link to="/forgot-password" className="text-gold-400 hover:text-gold-300 text-xs">
+              Forgot password?
+            </Link>
+          </div>
+
           <button type="submit" disabled={loading} className="btn-gold w-full py-3 flex items-center justify-center gap-2 mt-2 disabled:opacity-50">
             {loading ? <><Loader className="w-4 h-4 animate-spin" /> Signing in...</> : 'Sign In ✦'}
           </button>
         </form>
 
         <p className="text-center text-gray-300 text-sm mt-6">
-          New to AstroVyoma₹{' '}
+          New to AstroVyoma?{' '}
           <Link to="/register" className="text-gold-400 hover:text-gold-300">Create free account</Link>
         </p>
       </motion.div>

@@ -17,6 +17,7 @@ import AstrologerDetailPage from './pages/AstrologerDetailPage';
 import ConsultationPage from './pages/ConsultationPage';
 import ChatbotPage from './pages/ChatbotPage';
 import LoginPage from './pages/LoginPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import RegisterPage from './pages/RegisterPage';
 import AdminPage from './pages/AdminPage';
 import DashboardPage from './pages/DashboardPage';
@@ -114,6 +115,7 @@ function AppLayout() {
             <Route path="/chat" element={<ChatbotPage />} />
             <Route path="/pandit" element={<PanditJiPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />

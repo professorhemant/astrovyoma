@@ -54,4 +54,35 @@ async function sendOtpEmail(email, otp) {
   console.log(`[OTP] Email sent to ${email}`);
 }
 
-module.exports = { generateOtp, storeOtp, verifyOtp, sendOtpEmail };
+async function sendPasswordResetEmail(email, otp) {
+  const user = process.env.EMAIL_USER;
+  const pass = process.env.EMAIL_PASS;
+
+  if (!user || !pass) {
+    console.log(`[RESET] ${email} → ${otp} (set EMAIL_USER + EMAIL_PASS to send real emails)`);
+    return;
+  }
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: { user, pass },
+  });
+
+  await transporter.sendMail({
+    from: `"AstroVyoma ✦" <${user}>`,
+    to: email,
+    subject: 'Reset your AstroVyoma password',
+    html: `
+      <div style="font-family:sans-serif;max-width:480px;margin:auto;background:#0d0728;color:#f0e6c0;padding:32px;border-radius:12px;">
+        <h2 style="color:#C9A84C;font-family:serif;margin-bottom:8px;">&#10022; AstroVyoma</h2>
+        <p style="color:#d4c48a;margin-bottom:24px;">Use this code to reset your password:</p>
+        <div style="font-size:36px;font-weight:bold;letter-spacing:12px;color:#C9A84C;background:#1a0a3a;padding:20px;border-radius:8px;text-align:center;">${otp}</div>
+        <p style="color:#9e8a6a;font-size:12px;margin-top:24px;">This code expires in 5 minutes. If you did not request a password reset, you can safely ignore this email — your password will not change.</p>
+      </div>
+    `,
+  });
+
+  console.log(`[RESET] Email sent to ${email}`);
+}
+
+module.exports = { generateOtp, storeOtp, verifyOtp, sendOtpEmail, sendPasswordResetEmail };

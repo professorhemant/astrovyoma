@@ -1,6 +1,16 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
+const { generateOtp, storeOtp, verifyOtp, sendPasswordResetEmail } = require('../services/otpService');
+
+const MIN_PASSWORD_LENGTH = 8;
+// One reset email per address per minute, so the endpoint can't be used to
+// spam someone's inbox (or burn the Gmail sending quota).
+const RESET_THROTTLE_MS = 60 * 1000;
+const lastResetRequest = new Map();
+
+// OTPs are namespaced so a signup code can never be replayed as a reset code.
+const resetKey = email => `reset:${email.toLowerCase()}`;
 
 async function register(req, res) {
   try {
@@ -67,4 +77,72 @@ async function getMe(req, res) {
   }
 }
 
-module.exports = { register, login, getMe };
+// Always answers 200 with the same message. Telling the caller whether an
+// account exists would turn this into a free account-enumeration oracle.
+async function forgotPassword(req, res) {
+  const generic = {
+    message: 'If an account with that email exists, a reset code has been sent to it.'
+  };
+
+  try {
+    const { emailOrPhone } = req.body;
+    if (!emailOrPhone) return res.status(400).json({ error: 'Email or phone is required' });
+
+    const identifier = String(emailOrPhone).trim();
+    const isEmail = identifier.includes('@');
+
+    const user = isEmail
+      ? await User.findOne({ where: { email: identifier.toLowerCase() } })
+      : await User.findOne({ where: { phone: identifier } });
+
+    // No account, or a phone-only account with no address to send a code to.
+    // Both fall through to the same generic response.
+    if (!user || !user.email) return res.json(generic);
+
+    const last = lastResetRequest.get(user.email);
+    if (last && Date.now() - last < RESET_THROTTLE_MS) return res.json(generic);
+    lastResetRequest.set(user.email, Date.now());
+
+    const otp = generateOtp();
+    storeOtp(resetKey(user.email), otp);
+    await sendPasswordResetEmail(user.email, otp);
+
+    res.json(generic);
+  } catch (err) {
+    console.error('Forgot password error:', err);
+    // Still generic — an error here must not reveal whether the account existed.
+    res.json(generic);
+  }
+}
+
+async function resetPassword(req, res) {
+  try {
+    const { email, otp, password } = req.body;
+    if (!email || !otp || !password) {
+      return res.status(400).json({ error: 'Email, code, and new password are required' });
+    }
+    if (String(password).length < MIN_PASSWORD_LENGTH) {
+      return res.status(400).json({ error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters` });
+    }
+
+    const normalized = String(email).trim().toLowerCase();
+    const result = verifyOtp(resetKey(normalized), String(otp).trim());
+    if (!result.valid) return res.status(400).json({ error: result.reason });
+
+    const user = await User.findOne({ where: { email: normalized } });
+    // The OTP was valid, so this should not happen — but the code is spent
+    // either way, which is the behaviour we want.
+    if (!user) return res.status(400).json({ error: 'Unable to reset password. Please request a new code.' });
+
+    user.password_hash = await bcrypt.hash(password, 12);
+    await user.save();
+    lastResetRequest.delete(user.email);
+
+    res.json({ message: 'Password reset successfully. You can now sign in with your new password.' });
+  } catch (err) {
+    console.error('Reset password error:', err);
+    res.status(500).json({ error: 'Password reset failed' });
+  }
+}
+
+module.exports = { register, login, getMe, forgotPassword, resetPassword };
