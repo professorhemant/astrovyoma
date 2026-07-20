@@ -7,7 +7,7 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.36.3",
+    "@anthropic-ai/sdk": "^0.112.3",
     "@google/generative-ai": "^0.24.1",
     "agora-token": "^2.0.3",
     "axios": "^1.6.2",

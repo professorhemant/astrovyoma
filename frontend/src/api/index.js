@@ -181,8 +181,9 @@ export const dream = {
 };
 
 export const palmistry = {
-  getOptions: ()     => api.get('/palmistry/options'),
-  analyse:    (data) => api.post('/palmistry/analyse', data),
+  getOptions:   ()     => api.get('/palmistry/options'),
+  analyse:      (data) => api.post('/palmistry/analyse', data),
+  analyseImage: (data) => api.post('/palmistry/analyse-image', data),
 };
 
 export const yoga = {

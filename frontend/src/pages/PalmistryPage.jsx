@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { ChevronRight, ChevronLeft, Loader, RotateCcw } from 'lucide-react';
@@ -104,6 +104,137 @@ const LINE_ICONS = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Reads a palm photo and fills in the features it can actually see.
+// The image is sent for analysis and never stored — see palmistryVisionController.
+function PalmPhotoAnalyser({ onFeatures }) {
+  const [preview, setPreview]   = useState(null);
+  const [busy, setBusy]         = useState(false);
+  const [result, setResult]     = useState(null);
+  const [problem, setProblem]   = useState(null);
+  const uploadRef = useRef(null);
+  const cameraRef = useRef(null);
+
+  const FEATURE_LABEL = {
+    hand_type:'Hand shape', life_line:'Life line', heart_line:'Heart line',
+    head_line:'Head line', fate_line:'Fate line', sun_line:'Sun line',
+    finger_length:'Finger length',
+  };
+
+  async function handleFile(file) {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return setProblem('Please choose an image file.');
+    if (file.size > 5 * 1024 * 1024) return setProblem('That image is over 5MB — please use a smaller photo.');
+
+    setProblem(null); setResult(null); setBusy(true);
+    try {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = () => reject(new Error('Could not read that file'));
+        r.readAsDataURL(file);
+      });
+      setPreview(dataUrl);
+
+      const res = await palmistryApi.analyseImage({ image: dataUrl });
+      setResult(res.data);
+      onFeatures(res.data.features || {});
+    } catch (err) {
+      const d = err?.response?.data;
+      setProblem(d?.error || 'Could not analyse that photo. Please try again.');
+      if (d?.note) setProblem(p => `${p} ${d.note}`);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="rounded-2xl border border-gold-600/25 bg-gold-500/5 p-5">
+      <p className="font-serif text-gold-400 text-base mb-1">📷 Read my palm from a photo</p>
+      <p className="text-gray-400 text-xs mb-4">
+        We'll detect what's visible in the image and fill in the form for you.
+      </p>
+
+      {/* Which hand — classical Vedic practice */}
+      <div className="rounded-xl border border-gold-600/20 bg-cosmic-900/40 p-3 mb-4">
+        <p className="text-gold-500/90 text-xs font-semibold mb-1.5">🤚 Which palm to photograph</p>
+        <p className="text-gray-300 text-xs leading-relaxed">
+          <b className="text-gray-200">Men — right palm.</b> &nbsp;<b className="text-gray-200">Women — left palm.</b>
+        </p>
+        <p className="text-gray-500 text-[11px] mt-1.5 leading-relaxed">
+          This follows classical Hast Rekha Shastra. If you're unsure, use your dominant hand.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <button type="button" disabled={busy} onClick={() => uploadRef.current?.click()}
+          className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-gold-500/40 bg-cosmic-900/60 text-gold-300 text-sm hover:bg-gold-500/10 disabled:opacity-50">
+          ⬆️ Upload palm image
+        </button>
+        <button type="button" disabled={busy} onClick={() => cameraRef.current?.click()}
+          className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-gold-500/40 bg-cosmic-900/60 text-gold-300 text-sm hover:bg-gold-500/10 disabled:opacity-50">
+          📸 Capture palm image
+        </button>
+      </div>
+
+      <input ref={uploadRef} type="file" accept="image/*" hidden
+        onChange={e => { handleFile(e.target.files?.[0]); e.target.value = ''; }} />
+      {/* capture= opens the device camera directly on mobile */}
+      <input ref={cameraRef} type="file" accept="image/*" capture="environment" hidden
+        onChange={e => { handleFile(e.target.files?.[0]); e.target.value = ''; }} />
+
+      <p className="text-gray-500 text-[11px] mt-3 leading-relaxed">
+        Open palm flat, fingers slightly spread, in even daylight. Avoid shadows and glare.
+      </p>
+
+      {preview && (
+        <div className="mt-4 flex items-start gap-3">
+          <img src={preview} alt="Your palm" className="w-24 h-24 object-cover rounded-xl border border-gold-600/25" />
+          {busy && <p className="text-gold-400 text-xs mt-2">Reading your palm…</p>}
+        </div>
+      )}
+
+      {problem && (
+        <div className="mt-4 rounded-xl border border-amber-500/40 bg-amber-500/5 p-3">
+          <p className="text-amber-300 text-xs">{problem}</p>
+        </div>
+      )}
+
+      {result && (
+        <div className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 space-y-2">
+          <p className="text-emerald-300 text-xs font-semibold">
+            ✓ Read from your photo — check and adjust below
+          </p>
+          <p className="text-gray-300 text-[11px]">
+            {Object.keys(result.features || {}).map(k => FEATURE_LABEL[k] || k).join(' · ')}
+          </p>
+
+          {result.hand_mismatch && (
+            <p className="text-amber-300 text-[11px]">
+              ⚠️ This looks like your {result.detected_hand} hand.
+            </p>
+          )}
+
+          {result.unclear_features?.length > 0 && (
+            <p className="text-gray-400 text-[11px]">
+              Not clear enough to read: {result.unclear_features.map(k => FEATURE_LABEL[k] || k).join(', ')} — please set {result.unclear_features.length > 1 ? 'these' : 'this'} yourself below.
+            </p>
+          )}
+
+          <p className="text-gray-500 text-[11px] leading-relaxed border-t border-emerald-500/15 pt-2">
+            A photo can't show the <b className="text-gray-400">mounts</b> (raised pads, judged by touch),
+            <b className="text-gray-400"> special marks</b>, or <b className="text-gray-400">thumb flexibility</b>.
+            Add those yourself in the next steps for a fuller reading.
+          </p>
+        </div>
+      )}
+
+      <p className="text-gray-600 text-[10px] mt-3 leading-relaxed">
+        🔒 Your palm image is analysed and immediately discarded. It is never saved to our servers.
+      </p>
+    </div>
+  );
+}
+
 export default function PalmistryPage() {
   const [options, setOptions] = useState(null);
   const [step, setStep]       = useState(0);
@@ -214,6 +345,23 @@ export default function PalmistryPage() {
                 {/* ── Step 0: Hand shape + name ── */}
                 {step === 0 && (
                   <div className="space-y-5">
+
+                    {options?.image_analysis_available && (
+                      <>
+                        <PalmPhotoAnalyser
+                          onFeatures={(features) => {
+                            setForm(f => ({ ...f, ...features }));
+                            if (features.hand_type) toast.success('Palm read — details filled in below');
+                          }}
+                        />
+                        <div className="flex items-center gap-3">
+                          <div className="flex-1 h-px bg-gold-600/15" />
+                          <span className="text-gray-600 text-[11px] uppercase tracking-wider">or fill in manually</span>
+                          <div className="flex-1 h-px bg-gold-600/15" />
+                        </div>
+                      </>
+                    )}
+
                     <div>
                       <label className="text-gray-400 text-xs uppercase tracking-wider block mb-1.5">Your Name (optional)</label>
                       <input value={name} onChange={e => setName(e.target.value)} placeholder="Name"
