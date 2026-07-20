@@ -75,9 +75,9 @@ Rules:
 - hand_type comes from measurable geometry: square palm + short fingers = earth; square palm + long fingers = air; long palm + short fingers = fire; long palm + long fingers = water.
 - "quality": "too_poor" if blur, glare, shadow, low resolution or cropping stop you tracing the major lines.
 - Do NOT infer character, personality, fortune or life events. A separate system does interpretation. You only describe visible anatomy.
-- If the image is not an open human palm, return is_palm false.
+- If the image is not an open human palm, return is_palm false and set every feature to null.
 
-Respond with the JSON object only.`;
+Output the raw JSON object and nothing else. No markdown fences, no explanation, no preamble.`;
 
 function extractJson(raw) {
   if (!raw) return null;
@@ -88,12 +88,16 @@ function extractJson(raw) {
   try { return JSON.parse(m[0]); } catch { return null; }
 }
 
+// Deliberately NOT using Groq's response_format: json_object. Its server-side
+// validator rejects the whole request with json_validate_failed when the model
+// slips (observed in production, with an empty failed_generation), so the text
+// never reaches us and extractJson never gets a chance. We validate every field
+// against ENUMS regardless, so JSON mode was buying a failure mode, not safety.
 async function callModel(groq, mediaType, data, hand) {
   const res = await groq.chat.completions.create({
     model: MODEL,
     temperature: 0.1,
     max_tokens: 1200,
-    response_format: { type: 'json_object' },
     messages: [{
       role: 'user',
       content: [
