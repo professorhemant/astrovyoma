@@ -1,26 +1,56 @@
 const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+const { OtpCode } = require('../models');
 
-// In-memory OTP store: key = email/phone, value = { otp, expiresAt }
-const otpStore = new Map();
+const OTP_TTL_MS = 5 * 60 * 1000;
+
+// Codes are persisted, not held in memory — a Railway restart used to invalidate
+// every code already emailed out, and a second instance could never see a code
+// written by the first. Stored as a hash: a short-lived credential has no
+// business being readable in a database dump.
+const hashOtp = (otp) => crypto.createHash('sha256').update(String(otp)).digest('hex');
 
 function generateOtp() {
-  return String(Math.floor(100000 + Math.random() * 900000));
+  // crypto.randomInt is uniform and unpredictable; Math.random is neither, and
+  // this value guards account recovery.
+  return String(crypto.randomInt(100000, 1000000));
 }
 
-function storeOtp(identifier, otp) {
-  otpStore.set(identifier, { otp, expiresAt: Date.now() + 5 * 60 * 1000 }); // 5 min
+async function storeOtp(identifier, otp) {
+  const values = {
+    identifier,
+    otp_hash: hashOtp(otp),
+    expires_at: new Date(Date.now() + OTP_TTL_MS),
+    last_sent_at: new Date(),
+  };
+  const existing = await OtpCode.findOne({ where: { identifier } });
+  if (existing) await existing.update(values);
+  else await OtpCode.create(values);
 }
 
-function verifyOtp(identifier, otp) {
-  const record = otpStore.get(identifier);
+async function verifyOtp(identifier, otp) {
+  const record = await OtpCode.findOne({ where: { identifier } });
   if (!record) return { valid: false, reason: 'OTP not found. Please request a new one.' };
-  if (Date.now() > record.expiresAt) {
-    otpStore.delete(identifier);
+  if (Date.now() > new Date(record.expires_at).getTime()) {
+    await record.destroy();
     return { valid: false, reason: 'OTP expired. Please request a new one.' };
   }
-  if (record.otp !== otp) return { valid: false, reason: 'Invalid OTP. Please try again.' };
-  otpStore.delete(identifier);
+  // Constant-time compare so a wrong code cannot be narrowed down by timing.
+  const a = Buffer.from(record.otp_hash, 'hex');
+  const b = Buffer.from(hashOtp(otp), 'hex');
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
+    return { valid: false, reason: 'Invalid OTP. Please try again.' };
+  }
+  await record.destroy();
   return { valid: true };
+}
+
+// Resend throttle, persisted alongside the code for the same reason.
+async function secondsUntilResendAllowed(identifier, throttleMs) {
+  const record = await OtpCode.findOne({ where: { identifier }, attributes: ['last_sent_at'] });
+  if (!record) return 0;
+  const elapsed = Date.now() - new Date(record.last_sent_at).getTime();
+  return elapsed >= throttleMs ? 0 : Math.ceil((throttleMs - elapsed) / 1000);
 }
 
 // ─── DELIVERY ────────────────────────────────────────────────────────────────
@@ -130,4 +160,4 @@ async function sendPasswordResetEmail(email, otp) {
   );
 }
 
-module.exports = { generateOtp, storeOtp, verifyOtp, sendOtpEmail, sendPasswordResetEmail };
+module.exports = { generateOtp, storeOtp, verifyOtp, secondsUntilResendAllowed, sendOtpEmail, sendPasswordResetEmail };

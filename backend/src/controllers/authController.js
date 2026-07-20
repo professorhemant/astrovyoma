@@ -1,13 +1,12 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
-const { generateOtp, storeOtp, verifyOtp, sendPasswordResetEmail } = require('../services/otpService');
+const { generateOtp, storeOtp, verifyOtp, secondsUntilResendAllowed, sendPasswordResetEmail } = require('../services/otpService');
 
 const MIN_PASSWORD_LENGTH = 8;
 // One reset email per address per minute, so the endpoint can't be used to
 // spam someone's inbox (or burn the Gmail sending quota).
 const RESET_THROTTLE_MS = 60 * 1000;
-const lastResetRequest = new Map();
 
 // OTPs are namespaced so a signup code can never be replayed as a reset code.
 const resetKey = email => `reset:${email.toLowerCase()}`;
@@ -99,12 +98,13 @@ async function forgotPassword(req, res) {
     // Both fall through to the same generic response.
     if (!user || !user.email) return res.json(generic);
 
-    const last = lastResetRequest.get(user.email);
-    if (last && Date.now() - last < RESET_THROTTLE_MS) return res.json(generic);
-    lastResetRequest.set(user.email, Date.now());
+    // Throttle now reads last_sent_at from the stored code, so it survives a
+    // restart and is shared across instances — the Map it replaced did neither.
+    const wait = await secondsUntilResendAllowed(resetKey(user.email), RESET_THROTTLE_MS);
+    if (wait > 0) return res.json(generic);
 
     const otp = generateOtp();
-    storeOtp(resetKey(user.email), otp);
+    await storeOtp(resetKey(user.email), otp);
 
     // Deliberately not awaited. Blocking on SMTP made a real account take
     // seconds (or hang the request entirely) while an unknown one returned
@@ -133,7 +133,7 @@ async function resetPassword(req, res) {
     }
 
     const normalized = String(email).trim().toLowerCase();
-    const result = verifyOtp(resetKey(normalized), String(otp).trim());
+    const result = await verifyOtp(resetKey(normalized), String(otp).trim());
     if (!result.valid) return res.status(400).json({ error: result.reason });
 
     const user = await User.findOne({ where: { email: normalized } });
@@ -143,7 +143,6 @@ async function resetPassword(req, res) {
 
     user.password_hash = await bcrypt.hash(password, 12);
     await user.save();
-    lastResetRequest.delete(user.email);
 
     res.json({ message: 'Password reset successfully. You can now sign in with your new password.' });
   } catch (err) {

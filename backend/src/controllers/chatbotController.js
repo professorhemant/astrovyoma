@@ -1,7 +1,33 @@
 const { getAstrologyChatResponse, getPanditJiResponse } = require('../services/chatbotService');
-const { Kundali } = require('../models');
+const { Kundali, AiChatMessage } = require('../models');
 
-const conversationStore = new Map();
+// History is persisted rather than held in a module-scope Map. The Map was
+// wiped by every Railway restart (i.e. every deploy), so the assistant forgot
+// the conversation mid-thread, and a second instance would have kept its own
+// separate copy.
+const HISTORY_TURNS = 20;
+
+async function loadHistory(userId, scope) {
+  const rows = await AiChatMessage.findAll({
+    where: { user_id: userId, scope },
+    order: [['created_at', 'DESC']],
+    limit: HISTORY_TURNS,
+    attributes: ['role', 'content'],
+  });
+  return rows.reverse().map(r => ({ role: r.role, content: r.content }));
+}
+
+// Best-effort: a storage failure must not cost the user the reply they just got.
+async function saveTurn(userId, scope, message, response) {
+  try {
+    await AiChatMessage.bulkCreate([
+      { user_id: userId, scope, role: 'user', content: message },
+      { user_id: userId, scope, role: 'assistant', content: response },
+    ]);
+  } catch (e) {
+    console.error(`chat history persist failed (${scope}):`, e.message);
+  }
+}
 
 async function chat(req, res) {
   try {
@@ -11,8 +37,7 @@ async function chat(req, res) {
     const kundali = await Kundali.findOne({ where: { user_id: req.user.id } });
 
     const userId = req.user.id;
-    if (!conversationStore.has(userId)) conversationStore.set(userId, []);
-    const history = conversationStore.get(userId);
+    const history = await loadHistory(userId, 'chatbot');
 
     const kundaliData = kundali ? {
       sun_sign: kundali.sun_sign,
@@ -27,10 +52,7 @@ async function chat(req, res) {
     } : null;
 
     const response = await getAstrologyChatResponse(message, kundaliData, history);
-
-    history.push({ role: 'user', content: message });
-    history.push({ role: 'assistant', content: response });
-    if (history.length > 20) history.splice(0, 2);
+    await saveTurn(userId, 'chatbot', message, response);
 
     res.json({ response, has_kundali: !!kundali });
   } catch (err) {
@@ -40,11 +62,9 @@ async function chat(req, res) {
 }
 
 async function clearHistory(req, res) {
-  conversationStore.delete(req.user.id);
+  await AiChatMessage.destroy({ where: { user_id: req.user.id, scope: 'chatbot' } });
   res.json({ success: true });
 }
-
-const panditStore = new Map();
 
 async function panditChat(req, res) {
   try {
@@ -53,8 +73,7 @@ async function panditChat(req, res) {
 
     const kundali = await Kundali.findOne({ where: { user_id: req.user.id } });
     const userId = req.user.id;
-    if (!panditStore.has(userId)) panditStore.set(userId, []);
-    const history = panditStore.get(userId);
+    const history = await loadHistory(userId, 'pandit');
 
     const kundaliData = kundali ? {
       sun_sign: kundali.sun_sign,
@@ -69,10 +88,7 @@ async function panditChat(req, res) {
     } : null;
 
     const response = await getPanditJiResponse(message, kundaliData, history);
-
-    history.push({ role: 'user', content: message });
-    history.push({ role: 'assistant', content: response });
-    if (history.length > 20) history.splice(0, 2);
+    await saveTurn(userId, 'pandit', message, response);
 
     res.json({ response, has_kundali: !!kundali });
   } catch (err) {
@@ -82,7 +98,7 @@ async function panditChat(req, res) {
 }
 
 async function clearPanditHistory(req, res) {
-  panditStore.delete(req.user.id);
+  await AiChatMessage.destroy({ where: { user_id: req.user.id, scope: 'pandit' } });
   res.json({ success: true });
 }
 

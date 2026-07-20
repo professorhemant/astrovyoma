@@ -25,6 +25,8 @@ const Astrologer = require('./Astrologer')(sequelize);
 const Kundali = require('./Kundali')(sequelize);
 const Consultation = require('./Consultation')(sequelize);
 const Message = require('./Message')(sequelize);
+const AiChatMessage = require('./AiChatMessage')(sequelize);
+const OtpCode = require('./OtpCode')(sequelize);
 const Transaction = require('./Transaction')(sequelize);
 const Review = require('./Review')(sequelize);
 const Subscription  = require('./Subscription')(sequelize);
@@ -67,4 +69,4 @@ Appointment.belongsTo(Astrologer, { foreignKey: 'astrologer_id', as: 'astrologer
 User.hasMany(UserReport, { foreignKey: 'user_id', as: 'reports' });
 UserReport.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
-module.exports = { sequelize, User, Astrologer, Kundali, Consultation, Message, Transaction, Review, Subscription, Appointment, UserReport, AstrologerApplication };
+module.exports = { sequelize, User, Astrologer, Kundali, Consultation, Message, AiChatMessage, OtpCode, Transaction, Review, Subscription, Appointment, UserReport, AstrologerApplication };

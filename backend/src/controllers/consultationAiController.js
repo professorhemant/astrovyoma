@@ -1,7 +1,6 @@
 const { getGroq } = require('../services/groqClient');
-const { Consultation, Astrologer, Kundali } = require('../models');
+const { Consultation, Astrologer, Kundali, Message } = require('../models');
 
-const histories = new Map(); // consultationId -> messages[]
 
 async function aiReply(req, res) {
   try {
@@ -46,11 +45,32 @@ You speak with warmth, wisdom, and spiritual depth — like a trusted guide. You
 - Never claim to predict exact future events with certainty — guide probabilities and cosmic influences
 ${kundaliContext ? '\n' + kundaliContext : ''}`;
 
-    const historyKey = `${id}_${req.user.id}`;
-    if (!histories.has(historyKey)) histories.set(historyKey, []);
-    const history = histories.get(historyKey);
+    // History comes from the messages table rather than a process-local Map.
+    // The Map was lost on every restart (Railway restarts on each deploy), so
+    // the astrologer forgot the conversation mid-session, and a second instance
+    // would have had its own separate copy. The user's own turns were already
+    // being persisted by consultationController.sendMessage — only the AI's
+    // replies were not, which also left getMessages returning a one-sided
+    // transcript. Both halves are now stored.
+    const priorRows = await Message.findAll({
+      where: { consultation_id: id },
+      order: [['created_at', 'ASC']],
+      limit: 40,
+      attributes: ['sender_type', 'content'],
+    });
 
-    if (history.length > 20) history.splice(0, 2);
+    // The current turn is saved by sendMessage just before this call, so drop a
+    // trailing copy of it to avoid sending the same text twice.
+    const prior = priorRows.map(m => ({
+      role: m.sender_type === 'user' ? 'user' : 'assistant',
+      content: m.content,
+    }));
+    if (prior.length && prior[prior.length - 1].role === 'user'
+        && prior[prior.length - 1].content === message) {
+      prior.pop();
+    }
+
+    const history = prior.slice(-20);
 
     const result = await getGroq().chat.completions.create({
       model: 'llama-3.3-70b-versatile',
@@ -64,8 +84,19 @@ ${kundaliContext ? '\n' + kundaliContext : ''}`;
     });
     const reply = result.choices[0].message.content;
 
-    history.push({ role: 'user', content: message });
-    history.push({ role: 'assistant', content: reply });
+    // Persist the reply so it survives a restart and appears in getMessages.
+    // Best-effort: a storage failure must not lose the user's answer.
+    try {
+      await Message.create({
+        consultation_id: id,
+        sender_type: 'astrologer',
+        sender_id: consultation.astrologer_id,
+        content: reply,
+        message_type: 'text',
+      });
+    } catch (e) {
+      console.error('aiReply: could not persist reply:', e.message);
+    }
 
     res.json({ reply });
   } catch (err) {
