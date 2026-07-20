@@ -21,7 +21,7 @@ export default function FloatingAIButton() {
           >
             <div className="px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap"
               style={{ background: 'linear-gradient(135deg,#2d0e5e,#1a0845)', border: '1px solid rgba(201,168,76,0.5)', color: '#E8C547', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
-              AI से बात करें ✦
+              AstroVyoma AI से बात करें ✦
             </div>
           </motion.div>
         )}

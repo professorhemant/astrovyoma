@@ -169,7 +169,7 @@ export default function PurposePage() {
             <p className="text-gray-200 text-sm mb-6">Talk to an expert astrologer who can interpret every nuance of your chart, answer your specific questions, and guide your next steps.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button onClick={() => navigate('/astrologers')} className="btn-gold px-8 py-3">Talk to an Astrologer →</button>
-              <button onClick={() => navigate('/chat')} className="btn-outline-gold px-8 py-3">Ask AstroVyoma AI</button>
+              <button onClick={() => navigate('/chat')} className="btn-outline-gold px-8 py-3">Talk to AstroVyoma AI</button>
             </div>
           </motion.div>
         </div>

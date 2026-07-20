@@ -23,7 +23,7 @@ export default function DashboardPage() {
     { icon: '🔮', label: 'View Kundali', desc: 'Your complete birth chart', onClick: () => navigate('/kundali') },
     { icon: '✨', label: 'Find Purpose', desc: 'Soul blueprint & purpose', onClick: () => navigate('/purpose') },
     { icon: '🌟', label: 'Talk to Astrologer', desc: 'Expert guidance now', onClick: () => navigate('/astrologers') },
-    { icon: '🤖', label: 'AI Chat', desc: 'AstroVyoma AI guide', onClick: () => navigate('/chat') },
+    { icon: '🤖', label: 'Talk to AstroVyoma AI', desc: 'Your personal AI astrologer', onClick: () => navigate('/chat') },
   ];
 
   return (

@@ -200,7 +200,7 @@ export default function HomePage() {
             className="flex items-center justify-center gap-2 px-7 py-3 text-xs font-semibold rounded-full transition-all hover:scale-105"
             style={{ background: 'linear-gradient(135deg, #2e0e62 0%, #1a0845 100%)', border: '2px solid rgba(201,168,76,0.6)', color: '#E8C547', boxShadow: '0 4px 20px rgba(201,168,76,0.2)' }}>
             <Sparkles className="w-4 h-4" />
-            AI से बात करें
+            AstroVyoma AI से बात करें
           </Link>
           <Link to="/tarot"
             className="flex items-center justify-center gap-2 px-7 py-3 text-xs font-semibold rounded-full transition-all hover:scale-105"
@@ -560,7 +560,7 @@ export default function HomePage() {
               <div>
                 <h4 className="text-gold-400 text-sm font-medium mb-3">Platform</h4>
                 <ul className="space-y-2 text-gray-400 text-sm">
-                  {[['Kundali','/kundali'],['Find Purpose','/purpose'],['Astrologers','/astrologers'],['AI Chat','/chat'],['About Us','/about']].map(([l,h]) => (
+                  {[['Kundali','/kundali'],['Find Purpose','/purpose'],['Astrologers','/astrologers'],['Talk to AstroVyoma AI','/chat'],['About Us','/about']].map(([l,h]) => (
                     <li key={l}><Link to={h} className="hover:text-gold-400 transition-colors">{l}</Link></li>
                   ))}
                 </ul>
