@@ -205,7 +205,11 @@ async function analyseImage(req, res) {
         detail: `Vision model "${MODEL}" was rejected by Groq. Set PALM_VISION_MODEL to a current vision model.`,
       });
     }
-    res.status(500).json({ error: 'Palm analysis failed. Please try again.' });
+    res.status(500).json({
+      error: 'Palm analysis failed. Please try again.',
+      // TEMPORARY: surfaced to diagnose the production failure; remove once fixed.
+      detail: msg.slice(0, 300),
+    });
   }
 }
 
