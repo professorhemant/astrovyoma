@@ -71,9 +71,10 @@ Return a single JSON object with exactly these keys:
 
 Rules:
 - Each feature value MUST be exactly one string from its list above. Never invent a value.
-- If a line is not clearly traceable in THIS image, put its name in unclear_features. Listing it there is always better than guessing. Guessing is the worst possible outcome.
-- hand_type comes from measurable geometry: square palm + short fingers = earth; square palm + long fingers = air; long palm + short fingers = fire; long palm + long fingers = water.
-- "quality": "too_poor" if blur, glare, shadow, low resolution or cropping stop you tracing the major lines.
+- hand_type and finger_length are SHAPE measurements, not line readings. If you can see the whole hand you can determine them, so report them. hand_type: square palm + short fingers = earth; square palm + long fingers = air; long palm + short fingers = fire; long palm + long fingers = water. Compare palm width to palm length, and middle-finger length to palm length. Only mark these unclear if the hand is cropped or obscured.
+- For the lines: give your best assessment of what you can see. Ordinary phone photos rarely show lines perfectly — that is expected, and a reasonable reading of a visible line is wanted. Use unclear_features only for a line you genuinely cannot locate in the image at all, not for one you can see but cannot classify with total confidence.
+- Do not mark everything unclear. If you can see a palm, you can normally report at least its shape.
+- "quality": "too_poor" only when the image is so degraded that no feature at all can be assessed.
 - Do NOT infer character, personality, fortune or life events. A separate system does interpretation. You only describe visible anatomy.
 - If the image is not an open human palm, return is_palm false and set every feature to null.
 
@@ -127,7 +128,7 @@ function extractJson(raw) {
 // slips (observed in production, with an empty failed_generation), so the text
 // never reaches us and extractJson never gets a chance. We validate every field
 // against ENUMS regardless, so JSON mode was buying a failure mode, not safety.
-async function callModel(groq, mediaType, data, hand) {
+async function callModel(groq, mediaType, data, hand, reasoning = 'none') {
   const res = await groq.chat.completions.create({
     model: MODEL,
     temperature: 0.1,
@@ -136,8 +137,8 @@ async function callModel(groq, mediaType, data, hand) {
     // handful of reads. Groq supports disabling reasoning outright on qwen3,
     // which removes that cost and the truncation risk with it. extractJson
     // still strips <think> in case a model without this switch is configured.
-    reasoning_effort: 'none',
-    max_tokens: 1500,
+    reasoning_effort: reasoning,
+    max_tokens: reasoning === 'none' ? 1500 : 4000,
     messages: [{
       role: 'user',
       content: [
@@ -179,8 +180,8 @@ async function analyseImage(req, res) {
       return res.status(413).json({ error: 'Image too large — please use a photo under 5MB.' });
     }
 
-    // One retry: JSON mode is not a guarantee, and a malformed first response
-    // is common enough that failing the user on it would be needless.
+    // Reasoning off by default: it is far cheaper in tokens and adequate for
+    // most photos. One retry covers a malformed response.
     let v = await callModel(groq, mediaType, data, hand);
     if (!v) v = await callModel(groq, mediaType, data, hand);
     if (!v) return res.status(502).json({ error: 'Could not read the analysis result. Please try again.' });
@@ -200,17 +201,38 @@ async function analyseImage(req, res) {
     // Validate every value against the engine's vocabulary. Anything the model
     // flagged unclear, invented, or returned in the wrong shape is dropped —
     // the engine must never receive a guessed or unrecognised feature.
-    const flagged = new Set(Array.isArray(v.unclear_features) ? v.unclear_features : []);
-    const features = {};
-    const rejected = [];
-    for (const [key, allowed] of Object.entries(ENUMS)) {
-      if (flagged.has(key)) continue;
-      const val = v[key];
-      if (typeof val === 'string' && allowed.includes(val)) features[key] = val;
-      else if (val != null) rejected.push(`${key}=${String(val).slice(0, 40)}`);
-    }
-    if (rejected.length) {
-      console.warn('[palmistryVision] discarded invalid values:', rejected.join(', '));
+    const validate = (obj) => {
+      const flagged = new Set(Array.isArray(obj.unclear_features) ? obj.unclear_features : []);
+      const features = {};
+      const rejected = [];
+      for (const [key, allowed] of Object.entries(ENUMS)) {
+        if (flagged.has(key)) continue;
+        const val = obj[key];
+        if (typeof val === 'string' && allowed.includes(val)) features[key] = val;
+        else if (val != null) rejected.push(`${key}=${String(val).slice(0, 40)}`);
+      }
+      if (rejected.length) {
+        console.warn('[palmistryVision] discarded invalid values:', rejected.join(', '));
+      }
+      return { features, flagged, rejected };
+    };
+
+    let { features, flagged, rejected } = validate(v);
+
+    // Reasoning is disabled by default to keep token use (and rate-limit
+    // pressure) low, but that makes the model weaker on marginal photos — it
+    // sometimes marks every feature unclear. Rather than fail the user, spend
+    // the tokens once with reasoning enabled before giving up. The cheap path
+    // still handles the common case.
+    if (Object.keys(features).length === 0) {
+      const v2 = await callModel(groq, mediaType, data, hand, 'default');
+      if (v2 && v2.is_palm !== false) {
+        const second = validate(v2);
+        if (Object.keys(second.features).length > 0) {
+          v = v2;
+          ({ features, flagged, rejected } = second);
+        }
+      }
     }
 
     // Return whatever WAS readable rather than discarding a partial read. An
