@@ -68,11 +68,13 @@ function MountRow({ mount, value, onChange }) {
     { value: 'overdeveloped', label: 'Overdeveloped' },
   ];
   return (
-    <div className="flex flex-wrap items-center gap-3 py-2 border-b border-white/5 last:border-0">
-      <span className="text-gray-300 text-xs w-40 flex-shrink-0">{mount.label}</span>
+    // Grid rather than flex-wrap: the longer locations (Moon, Venus, Upper Mars)
+    // otherwise wrap onto their own line and those rows end up taller than the rest.
+    <div className="grid grid-cols-1 sm:grid-cols-[9rem_1fr_10rem] sm:items-center gap-x-3 gap-y-2 py-2.5 border-b border-white/5 last:border-0">
+      <span className="text-gray-300 text-xs">{mount.label}</span>
       <PillSelect options={opts} value={value || 'skip'} onChange={onChange} color="#74B9FF" />
       {mount.location && (
-        <span className="text-gray-500 text-[11px] sm:ml-auto sm:text-right leading-snug">
+        <span className="text-gray-500 text-[11px] leading-snug sm:text-right">
           📍 {mount.location}
         </span>
       )}
