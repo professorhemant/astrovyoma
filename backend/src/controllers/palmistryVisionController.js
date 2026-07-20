@@ -248,15 +248,36 @@ async function analyseImage(req, res) {
     });
   } catch (err) {
     const msg = err?.message || String(err);
-    console.error('[palmistryVision]', msg);
-    // A deprecated or renamed model is the most likely operational failure here.
-    if (/model|not found|decommission|deprecat/i.test(msg)) {
-      return res.status(503).json({
-        error: 'Palm photo analysis is temporarily unavailable.',
-        detail: `Vision model "${MODEL}" was rejected by Groq. Set PALM_VISION_MODEL to a current vision model.`,
+    const status = err?.status ?? err?.response?.status;
+    const code = err?.error?.error?.code || err?.error?.code || '';
+    console.error(`[palmistryVision] status=${status} code=${code} ${msg}`);
+
+    // Classify on the HTTP status, not on the message text. An earlier version
+    // matched /model/ and therefore reported Groq's rate-limit error ("Rate
+    // limit reached for model ...") as a dead model, which sent operators
+    // hunting for a model change when the real fix was to wait.
+    if (status === 429) {
+      return res.status(429).json({
+        error: 'Palm reading is busy right now. Please try again in a minute.',
+        retry: true,
       });
     }
-    res.status(500).json({ error: 'Palm analysis failed. Please try again.' });
+    if (status === 404 || /model_not_found|decommission|deprecat/i.test(`${code} ${msg}`)) {
+      return res.status(503).json({
+        error: 'Palm photo analysis is temporarily unavailable.',
+        detail: `Vision model "${MODEL}" was rejected by Groq (${code || status || 'unknown'}). Set PALM_VISION_MODEL to a current vision model.`,
+      });
+    }
+    if (status === 413) {
+      return res.status(413).json({ error: 'That image is too large. Please use a smaller photo.' });
+    }
+    res.status(500).json({
+      error: 'Palm analysis failed. Please try again.',
+      // Operational reason only — an upstream API status/code, never the image
+      // and never a key. Without it, a misclassified failure is undiagnosable
+      // in production, which is exactly what happened here.
+      detail: `upstream ${status || 'error'}${code ? ` (${code})` : ''}`,
+    });
   }
 }
 
