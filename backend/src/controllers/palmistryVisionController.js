@@ -207,15 +207,18 @@ async function analyseImage(req, res) {
       console.warn('[palmistryVision] discarded invalid values:', rejected.join(', '));
     }
 
-    // The engine hard-requires these four.
-    const missing = ['hand_type','life_line','heart_line','head_line'].filter(k => !features[k]);
-    if (missing.length) {
+    // Return whatever WAS readable rather than discarding a partial read. An
+    // earlier version required all four engine-mandatory features and threw
+    // everything away if one was unclear — so a photo with a perfectly legible
+    // hand shape but a faint head line filled in nothing at all. Partial is
+    // useful: the user completes the rest in the form, which is what the form
+    // is for. Only fail outright when nothing at all could be read.
+    if (Object.keys(features).length === 0) {
       return res.status(422).json({
-        error: 'Some key lines were not clear enough to read in this photo.',
-        unreadable: missing,
+        error: (typeof v.quality_note === 'string' && v.quality_note.trim())
+          || 'Nothing could be read clearly in this photo.',
         retry: true,
-        note: (typeof v.quality_note === 'string' && v.quality_note.trim())
-          || 'Try again with the palm flat, fingers slightly spread, in even daylight.',
+        note: 'Try again with the palm flat, fingers slightly spread, in even daylight.',
       });
     }
 
@@ -223,6 +226,10 @@ async function analyseImage(req, res) {
       ...[...flagged].filter(k => k in ENUMS),
       ...rejected.map(r => r.split('=')[0]),
     ];
+    // Engine-mandatory features the photo could not supply; the user must set
+    // these before a reading can be generated.
+    const needs_manual = ['hand_type','life_line','heart_line','head_line']
+      .filter(k => !features[k]);
 
     res.json({
       features,
@@ -232,6 +239,8 @@ async function analyseImage(req, res) {
       hand_mismatch: (hand === 'left' || hand === 'right')
         && ['left','right'].includes(v.detected_hand) && v.detected_hand !== hand,
       unclear_features: [...new Set(unclear)],
+      needs_manual,
+      partial: needs_manual.length > 0,
       // Things a photo cannot establish — surfaced so the UI can say so rather
       // than letting the reading imply they were observed.
       not_from_photo: ['mounts', 'special_mark', 'thumb'],

@@ -200,13 +200,28 @@ function PalmPhotoAnalyser({ onFeatures }) {
       )}
 
       {result && (
-        <div className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 space-y-2">
-          <p className="text-emerald-300 text-xs font-semibold">
-            ✓ Read from your photo — check and adjust below
+        <div className={`mt-4 rounded-xl border p-3 space-y-2 ${
+          result.partial ? 'border-amber-500/30 bg-amber-500/5' : 'border-emerald-500/30 bg-emerald-500/5'
+        }`}>
+          <p className={`text-xs font-semibold ${result.partial ? 'text-amber-300' : 'text-emerald-300'}`}>
+            {result.partial
+              ? '◐ Partly read from your photo — check and complete below'
+              : '✓ Read from your photo — check and adjust below'}
           </p>
           <p className="text-gray-300 text-[11px]">
-            {Object.keys(result.features || {}).map(k => FEATURE_LABEL[k] || k).join(' · ')}
+            <b className="text-gray-200">Filled in:</b>{' '}
+            {Object.keys(result.features || {}).map(k => FEATURE_LABEL[k] || k).join(' · ') || 'nothing'}
           </p>
+
+          {result.needs_manual?.length > 0 && (
+            <p className="text-amber-300/90 text-[11px]">
+              <b>Please set yourself:</b> {result.needs_manual.map(k => FEATURE_LABEL[k] || k).join(', ')} — the photo wasn't clear enough for {result.needs_manual.length > 1 ? 'these' : 'this'}. A sharper, evenly-lit photo may capture {result.needs_manual.length > 1 ? 'them' : 'it'}.
+            </p>
+          )}
+
+          {result.quality_note && (
+            <p className="text-gray-400 text-[11px]">{result.quality_note}</p>
+          )}
 
           {result.hand_mismatch && (
             <p className="text-amber-300 text-[11px]">
