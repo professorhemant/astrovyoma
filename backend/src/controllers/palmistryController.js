@@ -100,43 +100,43 @@ const SUN_LINE = {
 // ── Mounts ───────────────────────────────────────────────────────────────────
 const MOUNTS = {
   jupiter: {
-    name: 'Mount of Jupiter', planet: 'Jupiter', finger: 'Index finger',
+    name: 'Mount of Jupiter', planet: 'Jupiter', finger: 'Below index (1st) finger',
     well_developed:   'Ambition, leadership, and spiritual wisdom are your defining gifts. You have natural authority and command respect without demanding it. Success in law, education, religion, or leadership is strongly indicated.',
     flat:             'Humility and a lack of ego — but guard against undervaluing your own abilities and leadership potential.',
     overdeveloped:    'Strong ambition, but a tendency toward pride, arrogance, or overreach. Channel this powerful energy toward genuine service.',
   },
   saturn: {
-    name: 'Mount of Saturn', planet: 'Saturn', finger: 'Middle finger',
+    name: 'Mount of Saturn', planet: 'Saturn', finger: 'Below middle (2nd) finger',
     well_developed:   'Exceptional discipline, wisdom through experience, and a deep philosophical nature. You understand life at a profound level and age like fine wine. Careers in law, research, and long-term strategy suit you perfectly.',
     flat:             'A carefree, spontaneous nature that resists heavy responsibility. You prefer freedom over structure.',
     overdeveloped:    'Tendency toward pessimism, isolation, or an overly serious worldview. Balance Saturn\'s depth with Jupiter\'s optimism.',
   },
   apollo: {
-    name: 'Mount of Apollo (Sun)', planet: 'Sun', finger: 'Ring finger',
+    name: 'Mount of Apollo (Sun)', planet: 'Sun', finger: 'Below ring (3rd) finger',
     well_developed:   'Creative brilliance, warmth, and a natural gift for the arts. You radiate positive energy and have exceptional aesthetic sensibility. Fame, artistic success, and public recognition are within your reach.',
     flat:             'Practicality over creativity — you prefer proven methods over artistic expression.',
     overdeveloped:    'Vanity, excessive desire for attention, or impractical idealism. Ground your considerable creative energy in consistent action.',
   },
   mercury: {
-    name: 'Mount of Mercury', planet: 'Mercury', finger: 'Little finger',
+    name: 'Mount of Mercury', planet: 'Mercury', finger: 'Below little (4th) finger',
     well_developed:   'Exceptional communication, business acumen, and quick thinking. You are a natural in commerce, negotiation, and any field requiring the power of persuasion. Wit, charm, and intelligence make you highly effective.',
     flat:             'Reserved communication style and preference for listening over speaking.',
     overdeveloped:    'A tendency toward cunning or cleverness that can shade into manipulation. Use your remarkable gifts for Mercury with integrity.',
   },
   moon: {
-    name: 'Mount of Moon', planet: 'Moon', finger: 'Lower outer palm',
+    name: 'Mount of Moon', planet: 'Moon', finger: 'Lower outer palm, below Upper Mars',
     well_developed:   'Rich imagination, strong psychic intuition, and deep creative gifts. You are highly sensitive to atmosphere and have an almost supernatural ability to sense hidden truths. Poetry, music, and spiritual arts call to you.',
     flat:             'A practical, rational orientation with less interest in the imaginative or mystical dimensions of life.',
     overdeveloped:    'An overactive imagination that can shade into fantasy, escapism, or emotional instability. Ground your gifts with regular practical activity.',
   },
   venus: {
-    name: 'Mount of Venus', planet: 'Venus', finger: 'Base of thumb',
+    name: 'Mount of Venus', planet: 'Venus', finger: 'Base of thumb, inside the life line',
     well_developed:   'A warm, loving, and deeply sensual nature. You are generous, attractive, and naturally gifted in all matters of love and beauty. You have a strong life force and bring joy wherever you go.',
     flat:             'A more reserved or ascetic nature regarding physical pleasures and romantic expression.',
     overdeveloped:    'An excess of sensuality, passion, or indulgence that can lead to imbalance in relationships or lifestyle. Channel this tremendous life energy constructively.',
   },
   mars_upper: {
-    name: 'Mount of Upper Mars', planet: 'Mars (Courage)',
+    name: 'Mount of Upper Mars', planet: 'Mars (Courage)', finger: 'Outer edge, between Mercury and Moon',
     well_developed:   'Exceptional moral courage, mental resilience, and the ability to endure under pressure. You do not break — you bend and then return stronger.',
     flat:             'A gentle or conflict-averse nature. You prefer negotiation over confrontation.',
     overdeveloped:    'Aggressive tendencies or a combative nature that can create unnecessary opposition.',
@@ -324,6 +324,6 @@ exports.getOptions = (_req, res) => {
     finger_lengths:Object.entries(FINGER_LENGTH).map(([k,v]) => ({ value:k, label:k.replace(/_/g,' ').replace(/\b\w/g,l=>l.toUpperCase()) })),
     special_marks: Object.entries(SPECIAL_MARKS).map(([k,v]) => ({ value:k, label:k.replace(/_/g,' ').replace(/\b\w/g,l=>l.toUpperCase()) })),
     mount_qualities: ['well_developed','flat','overdeveloped'],
-    mounts: Object.entries(MOUNTS).map(([k,v]) => ({ value:k, label:v.name })),
+    mounts: Object.entries(MOUNTS).map(([k,v]) => ({ value:k, label:v.name, location:v.finger || '' })),
   });
 };

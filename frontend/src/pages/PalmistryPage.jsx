@@ -71,6 +71,11 @@ function MountRow({ mount, value, onChange }) {
     <div className="flex flex-wrap items-center gap-3 py-2 border-b border-white/5 last:border-0">
       <span className="text-gray-300 text-xs w-40 flex-shrink-0">{mount.label}</span>
       <PillSelect options={opts} value={value || 'skip'} onChange={onChange} color="#74B9FF" />
+      {mount.location && (
+        <span className="text-gray-500 text-[11px] sm:ml-auto sm:text-right leading-snug">
+          📍 {mount.location}
+        </span>
+      )}
     </div>
   );
 }
@@ -79,7 +84,7 @@ function MountRow({ mount, value, onChange }) {
 const STEPS = [
   { id: 'hand',    title: 'Hand Shape',     icon: '🖐️', desc: 'What shape is the palm and fingers?' },
   { id: 'lines',   title: 'Palm Lines',     icon: '〰️', desc: 'Describe each major line on your palm' },
-  { id: 'mounts',  title: 'Mounts',         icon: '⛰️', desc: 'Rate the fleshy pads below each finger' },
+  { id: 'mounts',  title: 'Mounts',         icon: '⛰️', desc: 'Rate the fleshy pads on your palm' },
   { id: 'details', title: 'Details',        icon: '🔍', desc: 'Thumb, fingers, and special marks' },
 ];
 
@@ -441,7 +446,7 @@ export default function PalmistryPage() {
                 {step === 2 && options && (
                   <div className="space-y-2">
                     <p className="text-gray-500 text-xs leading-relaxed mb-4">
-                      Mounts are the fleshy pads on your palm. Press your fingers together — the pads that rise beneath each finger are the mounts. Rate each as flat, well-developed, or overdeveloped.
+                      Mounts are the raised, fleshy pads on your palm — judge them by touch, not by eye. Cup your hand slightly and press each area with a fingertip: a mount that springs back firmly is well developed, one you can barely feel is flat. Four sit directly below the fingers; Venus, Moon and Upper Mars do not. The location of each is shown on the right.
                     </p>
                     {options.mounts.map(m => (
                       <MountRow key={m.value} mount={m} value={form.mounts[m.value]} onChange={v => setMount(m.value, v)} />
