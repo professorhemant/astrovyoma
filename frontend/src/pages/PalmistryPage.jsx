@@ -127,19 +127,43 @@ function PalmPhotoAnalyser({ onFeatures }) {
     finger_length:'Finger length',
   };
 
+  // Phone photos arrive at 1200x1600 or larger. Vision models bill image tokens
+  // by resolution, and a full-size palm was large enough to exhaust the API
+  // quota in a handful of reads. ~900px on the long edge still resolves the
+  // major lines clearly while cutting the token cost several-fold.
+  const MAX_EDGE = 900;
+  function downscale(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('Could not read that file'));
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('Could not decode that image'));
+        img.onload = () => {
+          const scale = Math.min(1, MAX_EDGE / Math.max(img.width, img.height));
+          if (scale === 1) return resolve(reader.result); // already small enough
+          const c = document.createElement('canvas');
+          c.width  = Math.round(img.width  * scale);
+          c.height = Math.round(img.height * scale);
+          const ctx = c.getContext('2d');
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, c.width, c.height);
+          resolve(c.toDataURL('image/jpeg', 0.85));
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
   async function handleFile(file) {
     if (!file) return;
     if (!file.type.startsWith('image/')) return setProblem('Please choose an image file.');
-    if (file.size > 5 * 1024 * 1024) return setProblem('That image is over 5MB — please use a smaller photo.');
+    if (file.size > 15 * 1024 * 1024) return setProblem('That image is very large — please use a photo under 15MB.');
 
     setProblem(null); setResult(null); setBusy(true);
     try {
-      const dataUrl = await new Promise((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(r.result);
-        r.onerror = () => reject(new Error('Could not read that file'));
-        r.readAsDataURL(file);
-      });
+      const dataUrl = await downscale(file);
       setPreview(dataUrl);
 
       const res = await palmistryApi.analyseImage({ image: dataUrl });
