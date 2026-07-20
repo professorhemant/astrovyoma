@@ -196,12 +196,6 @@ export default function HomePage() {
           <Link to="/astrologers" className="btn-outline-gold px-7 py-3 text-xs font-medium flex items-center justify-center gap-2">
             Talk to Astrologer
           </Link>
-          <Link to="/chat"
-            className="flex items-center justify-center gap-2 px-7 py-3 text-xs font-semibold rounded-full transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #2e0e62 0%, #1a0845 100%)', border: '2px solid rgba(201,168,76,0.6)', color: '#E8C547', boxShadow: '0 4px 20px rgba(201,168,76,0.2)' }}>
-            <Sparkles className="w-4 h-4" />
-            AstroVyoma AI से बात करें
-          </Link>
           <Link to="/tarot"
             className="flex items-center justify-center gap-2 px-7 py-3 text-xs font-semibold rounded-full transition-all hover:scale-105"
             style={{ background: 'linear-gradient(135deg, #3b0764 0%, #1e0533 100%)', border: '2px solid rgba(168,85,247,0.6)', color: '#C084FC', boxShadow: '0 4px 20px rgba(168,85,247,0.2)' }}>
