@@ -131,7 +131,13 @@ async function callModel(groq, mediaType, data, hand) {
   const res = await groq.chat.completions.create({
     model: MODEL,
     temperature: 0.1,
-    max_tokens: 4000,
+    // qwen3.6 is a reasoning model and its <think> block cost several thousand
+    // tokens per palm — enough to exhaust the tokens-per-minute quota after a
+    // handful of reads. Groq supports disabling reasoning outright on qwen3,
+    // which removes that cost and the truncation risk with it. extractJson
+    // still strips <think> in case a model without this switch is configured.
+    reasoning_effort: 'none',
+    max_tokens: 1500,
     messages: [{
       role: 'user',
       content: [
@@ -257,9 +263,18 @@ async function analyseImage(req, res) {
     // limit reached for model ...") as a dead model, which sent operators
     // hunting for a model change when the real fix was to wait.
     if (status === 429) {
+      const h = err?.headers;
+      const raw = (typeof h?.get === 'function' ? h.get('retry-after') : h?.['retry-after']) ?? '';
+      const secs = Math.ceil(Number(raw));
+      const wait = Number.isFinite(secs) && secs > 0
+        ? (secs < 90 ? `${secs} seconds` : `${Math.ceil(secs / 60)} minutes`)
+        : null;
       return res.status(429).json({
-        error: 'Palm reading is busy right now. Please try again in a minute.',
+        error: wait
+          ? `Palm reading is busy right now. Please try again in about ${wait}.`
+          : 'Palm reading is busy right now. Please try again shortly.',
         retry: true,
+        retry_after_seconds: Number.isFinite(secs) && secs > 0 ? secs : undefined,
       });
     }
     if (status === 404 || /model_not_found|decommission|deprecat/i.test(`${code} ${msg}`)) {
