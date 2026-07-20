@@ -196,14 +196,24 @@ const DEMO_ASTROLOGERS = [
   }
 ];
 
+// These are fictional profiles: invented names, biographies, experience, and
+// review/order counts, answered at runtime by an LLM. They are demo fixtures
+// for local development, not people. Seeding them into production presents
+// fabricated credentials and social proof alongside real per-minute billing, so
+// this now requires an explicit opt-in.
+//
+// The previous guard was `count > 0`, which meant that emptying the astrologers
+// table for any reason silently repopulated all eleven.
 async function seedAstrologers() {
+  if (process.env.SEED_DEMO_ASTROLOGERS !== 'true') return;
+
   const count = await Astrologer.count();
   if (count > 0) return;
 
   for (const data of DEMO_ASTROLOGERS) {
     await Astrologer.create(data);
   }
-  console.log(`Seeded ${DEMO_ASTROLOGERS.length} demo astrologers`);
+  console.log(`Seeded ${DEMO_ASTROLOGERS.length} demo astrologers (SEED_DEMO_ASTROLOGERS=true)`);
 }
 
 const REAL_ASTROLOGERS = [

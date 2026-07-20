@@ -201,11 +201,46 @@ async function updateAstrologer(req, res) {
   }
 }
 
+// Deleting an astrologer used to destroy only that row, leaving their
+// consultations, appointments and reviews behind pointing at nothing.
+//
+// Consultations and appointments are billing records, so this refuses rather
+// than cascading: erasing an astrologer who has taken paid sessions would
+// destroy financial history. Deactivating (is_available/is_online false) is the
+// right action there. Profiles with no trading history — demo fixtures, a
+// mistaken entry — delete cleanly, with their reviews removed in the same
+// transaction.
 async function deleteAstrologer(req, res) {
+  const t = await sequelize.transaction();
   try {
-    await Astrologer.destroy({ where: { id: req.params.id } });
+    const astrologerId = req.params.id;
+    const astrologer = await Astrologer.findByPk(astrologerId, { transaction: t });
+    if (!astrologer) {
+      await t.rollback();
+      return res.status(404).json({ error: 'Astrologer not found' });
+    }
+
+    const consultations = await Consultation.count({ where: { astrologer_id: astrologerId }, transaction: t });
+    const appointments = await Appointment.count({ where: { astrologer_id: astrologerId }, transaction: t });
+
+    if (consultations > 0 || appointments > 0) {
+      await t.rollback();
+      return res.status(409).json({
+        error: 'This astrologer has consultation or appointment history and cannot be deleted.',
+        detail: 'Deleting them would destroy billing records. Mark them unavailable instead.',
+        consultations,
+        appointments,
+        suggestion: 'set_unavailable',
+      });
+    }
+
+    await Review.destroy({ where: { astrologer_id: astrologerId }, transaction: t });
+    await Astrologer.destroy({ where: { id: astrologerId }, transaction: t });
+    await t.commit();
     res.json({ success: true });
   } catch (err) {
+    await t.rollback();
+    console.error('deleteAstrologer error:', err);
     res.status(500).json({ error: 'Failed to delete astrologer' });
   }
 }
