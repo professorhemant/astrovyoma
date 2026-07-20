@@ -107,8 +107,14 @@ async function callModel(groq, mediaType, data, hand) {
       ],
     }],
   });
-  return extractJson(res.choices?.[0]?.message?.content);
+  const raw = res.choices?.[0]?.message?.content;
+  const parsed = extractJson(raw);
+  if (!parsed) lastRaw = typeof raw === 'string' ? raw : JSON.stringify(raw);
+  return parsed;
 }
+
+// TEMPORARY: retains the last unparseable model output for diagnosis.
+let lastRaw = null;
 
 async function analyseImage(req, res) {
   try {
@@ -139,7 +145,11 @@ async function analyseImage(req, res) {
     // is common enough that failing the user on it would be needless.
     let v = await callModel(groq, mediaType, data, hand);
     if (!v) v = await callModel(groq, mediaType, data, hand);
-    if (!v) return res.status(502).json({ error: 'Could not read the analysis result. Please try again.' });
+    if (!v) return res.status(502).json({
+      error: 'Could not read the analysis result. Please try again.',
+      // TEMPORARY: raw model output, for diagnosis. Remove once fixed.
+      detail: (lastRaw || '(empty response)').slice(0, 600),
+    });
 
     if (v.is_palm === false) {
       return res.status(422).json({ error: "That doesn't look like an open palm. Please upload a clear photo of your palm." });
