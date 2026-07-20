@@ -79,13 +79,47 @@ Rules:
 
 Output the raw JSON object and nothing else. No markdown fences, no explanation, no preamble.`;
 
+// qwen3.6 is a reasoning model: it emits a <think> block before the answer, and
+// that block contains braces and quoted key names that look like JSON. Strip it
+// first, or a naive brace match parses the reasoning instead of the result.
 function extractJson(raw) {
-  if (!raw) return null;
-  try { return JSON.parse(raw); } catch {}
-  // Models in JSON mode still sometimes wrap output in prose or fences.
-  const m = raw.match(/\{[\s\S]*\}/);
-  if (!m) return null;
-  try { return JSON.parse(m[0]); } catch { return null; }
+  if (typeof raw !== 'string' || !raw.trim()) return null;
+
+  let s = raw
+    .replace(/<think>[\s\S]*?<\/think>/gi, '')  // completed reasoning
+    .replace(/<\/?think>/gi, '')                // stray/unclosed tag
+    .replace(/```(?:json)?/gi, '')               // markdown fences
+    .trim();
+
+  try { return JSON.parse(s); } catch {}
+
+  // Scan for a balanced object, preferring the last one (the answer usually
+  // follows any narration). String-aware so braces inside values don't confuse
+  // the depth count.
+  const found = [];
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] !== '{') continue;
+    let depth = 0, inStr = false, esc = false;
+    for (let j = i; j < s.length; j++) {
+      const ch = s[j];
+      if (esc) { esc = false; continue; }
+      if (ch === '\\') { esc = true; continue; }
+      if (ch === '"') { inStr = !inStr; continue; }
+      if (inStr) continue;
+      if (ch === '{') depth++;
+      else if (ch === '}') {
+        depth--;
+        if (depth === 0) { found.push(s.slice(i, j + 1)); i = j; break; }
+      }
+    }
+  }
+  for (const candidate of found.reverse()) {
+    try {
+      const o = JSON.parse(candidate);
+      if (o && typeof o === 'object' && 'is_palm' in o) return o;
+    } catch {}
+  }
+  return null;
 }
 
 // Deliberately NOT using Groq's response_format: json_object. Its server-side
@@ -97,7 +131,7 @@ async function callModel(groq, mediaType, data, hand) {
   const res = await groq.chat.completions.create({
     model: MODEL,
     temperature: 0.1,
-    max_tokens: 1200,
+    max_tokens: 4000,
     messages: [{
       role: 'user',
       content: [
@@ -151,7 +185,7 @@ async function analyseImage(req, res) {
       detail: (lastRaw || '(empty response)').slice(0, 600),
     });
 
-    if (v.is_palm === false) {
+    if (v.is_palm === false || v.is_palm === 'false') {
       return res.status(422).json({ error: "That doesn't look like an open palm. Please upload a clear photo of your palm." });
     }
     if (v.quality === 'too_poor') {
