@@ -313,7 +313,7 @@ exports.getOptions = (_req, res) => {
   res.json({
     // Photo analysis needs a vision model; the UI hides that option when the
     // key isn't configured rather than showing a button that always fails.
-    image_analysis_available: !!process.env.ANTHROPIC_API_KEY,
+    image_analysis_available: !!process.env.GROQ_API_KEY,
     hand_types:    Object.entries(HAND_TYPES).map(([k,v]) => ({ value:k, label:v.label, element:v.element })),
     life_lines:    Object.entries(LIFE_LINE).map(([k,v])  => ({ value:k, label:v.quality })),
     heart_lines:   Object.entries(HEART_LINE).map(([k,v]) => ({ value:k, label:v.quality })),
