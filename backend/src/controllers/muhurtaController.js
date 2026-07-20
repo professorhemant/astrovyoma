@@ -112,11 +112,101 @@ const EVENTS = {
   },
 };
 
+// ── Personalisation: Tara Bala & Chandra Bala ────────────────────────────────
+// Both are computed relative to the seeker's janma nakshatra / janma rashi, so
+// unlike tithi/vara/yoga they differ from person to person on the same day.
+
+const NAKSHATRA_LIST = ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha','Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha','Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishtha','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati'];
+
+const RASHI_LIST = ['Mesha','Vrishabha','Mithuna','Karka','Simha','Kanya','Tula','Vrishchika','Dhanu','Makara','Kumbha','Meena'];
+
+// Kundali records store moon_sign in English (kundaliEngine.ZODIAC_SIGNS), so
+// accept either naming when resolving a rashi.
+const RASHI_EN = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+
+// The 9 taras, counted from the seeker's janma nakshatra to the day's nakshatra.
+// 3rd (Vipat), 5th (Pratyari) and 7th (Vadha) are rejected for auspicious work;
+// the 1st (Janma) is treated as mixed rather than outright bad.
+const TARAS = [
+  { name:'Janma',     quality:'Mixed',        meaning:'Your own birth star — guard your health and avoid risk' },
+  { name:'Sampat',    quality:'Auspicious',   meaning:'Wealth and gain — highly favourable' },
+  { name:'Vipat',     quality:'Inauspicious', meaning:'Danger and loss — avoid new undertakings' },
+  { name:'Kshema',    quality:'Auspicious',   meaning:'Prosperity and well-being — favourable' },
+  { name:'Pratyari',  quality:'Inauspicious', meaning:'Obstruction and opposition — avoid' },
+  { name:'Sadhaka',   quality:'Auspicious',   meaning:'Accomplishment — good for achieving aims' },
+  { name:'Vadha',     quality:'Inauspicious', meaning:'Harm and destruction — strongly avoid' },
+  { name:'Mitra',     quality:'Auspicious',   meaning:'Friendly and supportive' },
+  { name:'Ati-Mitra', quality:'Auspicious',   meaning:'Best friend — the most supportive tara' },
+];
+
+// Moon's transit sign counted from janma rashi. 4th, 8th and 12th are rejected.
+const CHANDRA_BALA = {
+  1:'Auspicious', 2:'Neutral', 3:'Auspicious', 4:'Inauspicious',
+  5:'Neutral',    6:'Auspicious', 7:'Auspicious', 8:'Inauspicious',
+  9:'Neutral',   10:'Auspicious', 11:'Auspicious', 12:'Inauspicious',
+};
+
+function ordinal(n) {
+  const s = ['th','st','nd','rd'], v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+function nakshatraIndex(name) {
+  if (name == null) return -1;
+  return NAKSHATRA_LIST.findIndex(n => n.toLowerCase() === String(name).trim().toLowerCase());
+}
+
+function rashiIndex(name) {
+  if (name == null) return -1;
+  const n = String(name).trim().toLowerCase();
+  const i = RASHI_LIST.findIndex(r => r.toLowerCase() === n);
+  return i >= 0 ? i : RASHI_EN.findIndex(r => r.toLowerCase() === n);
+}
+
+function getTaraBala(janmaNakIdx, dayNakIdx) {
+  const count   = ((dayNakIdx - janmaNakIdx + 27) % 27) + 1; // 1..27
+  const taraNum = ((count - 1) % 9) + 1;                     // 1..9
+  const tara    = TARAS[taraNum - 1];
+  return { taraNum, count, name: tara.name, quality: tara.quality, meaning: tara.meaning };
+}
+
+function getChandraBala(janmaRashiIdx, moonRashiIdx) {
+  const house = ((moonRashiIdx - janmaRashiIdx + 12) % 12) + 1; // 1..12
+  return { house, quality: CHANDRA_BALA[house], moonRashi: RASHI_LIST[moonRashiIdx] };
+}
+
+// Drik-style day summary: which janma nakshatras / rashis the day favours.
+// Always returned, so anonymous visitors can find themselves in the list.
+function buildBalaSummary(pd) {
+  const moonRashiIdx = Math.floor(((pd.moonLon % 360) + 360) % 360 / 30);
+
+  const goodTara = [], badTara = [];
+  NAKSHATRA_LIST.forEach((nak, idx) => {
+    const t = getTaraBala(idx, pd.nakshatraIdx);
+    (t.quality === 'Inauspicious' ? badTara : goodTara).push(nak);
+  });
+
+  const goodChandra = [], badChandra = [];
+  RASHI_LIST.forEach((rashi, idx) => {
+    const c = getChandraBala(idx, moonRashiIdx);
+    (c.quality === 'Inauspicious' ? badChandra : goodChandra).push(rashi);
+  });
+
+  return {
+    moon_rashi: RASHI_LIST[moonRashiIdx],
+    day_nakshatra: pd.nakshatra,
+    good_tara_nakshatras: goodTara,
+    bad_tara_nakshatras:  badTara,
+    good_chandra_rashis:  goodChandra,
+    bad_chandra_rashis:   badChandra,
+  };
+}
+
 // Yoga quality from panchangController categories
 const BAD_YOGAS_UNIVERSAL = new Set(['Vishkumbha','Atiganda','Ganda','Vyaghata','Vajra','Vyatipata','Parigha','Vaidhriti','Shoola']);
 const GOOD_YOGAS_UNIVERSAL = new Set(['Siddha','Shubha','Shukla','Brahma','Indra','Vriddhi','Harshana','Saubhagya','Ayushman','Sadhya','Preeti','Priti']);
 
-function scoreDay(pd, eventType) {
+function scoreDay(pd, eventType, person = {}) {
   const ev = EVENTS[eventType];
   if (!ev) return null;
 
@@ -167,7 +257,56 @@ function scoreDay(pd, eventType) {
     factors.push({ label:'Panchanga Yoga', value: pd.yoga, quality:'Neutral', points:0, reason: `${pd.yoga} yoga is neutral` });
   }
 
-  score = Math.max(0, Math.min(100, score));
+  // ── Personal factors (only when the seeker's birth star / sign is known) ──
+  const janmaNakIdx   = nakshatraIndex(person.janma_nakshatra);
+  const janmaRashiIdx = rashiIndex(person.janma_rashi);
+  let personalized = false;
+
+  // Tara Bala (20 points) — the strongest personal filter in classical muhurta
+  if (janmaNakIdx >= 0) {
+    personalized = true;
+    const t = getTaraBala(janmaNakIdx, pd.nakshatraIdx);
+    const pts = t.quality === 'Inauspicious' ? -20 : t.quality === 'Mixed' ? -5 : +20;
+    score += pts;
+    factors.push({
+      label: 'Tara Bala', value: `${t.name} Tara (${ordinal(t.count)})`, quality: t.quality, points: pts,
+      reason: `Counting from your janma nakshatra ${NAKSHATRA_LIST[janmaNakIdx]} to today's ${pd.nakshatra} gives ${t.name} Tara — ${t.meaning}`,
+      personal: true,
+    });
+  }
+
+  // Chandra Bala (15 points)
+  if (janmaRashiIdx >= 0) {
+    personalized = true;
+    const moonRashiIdx = Math.floor(((pd.moonLon % 360) + 360) % 360 / 30);
+    const c = getChandraBala(janmaRashiIdx, moonRashiIdx);
+    const pts = c.quality === 'Inauspicious' ? -15 : c.quality === 'Neutral' ? 0 : +15;
+    score += pts;
+    factors.push({
+      label: 'Chandra Bala', value: `Moon in ${ordinal(c.house)} from your rashi`,
+      quality: c.quality, points: pts,
+      reason: `Moon transits ${c.moonRashi}, the ${ordinal(c.house)} sign from your janma rashi ${RASHI_LIST[janmaRashiIdx]}`,
+      personal: true,
+    });
+  }
+
+  // Normalise against the maximum achievable for this mode. Without this the
+  // raw sum saturates (50 + 25+20+15+10 = 120 → clamped to 100) and a rejected
+  // Tara Bala would be invisible on an otherwise good day.
+  const maxPositive = 70 + (janmaNakIdx >= 0 ? 20 : 0) + (janmaRashiIdx >= 0 ? 15 : 0);
+  score = Math.max(0, Math.min(100, Math.round(50 + 50 * ((score - 50) / maxPositive))));
+
+  // Classical practice treats Vipat/Pratyari/Vadha tara and a 4/8/12 Chandra
+  // Bala as disqualifying regardless of how good the general panchang is, so
+  // surface them explicitly rather than letting the score average them away.
+  const warnings = factors
+    .filter(f => f.personal && f.quality === 'Inauspicious')
+    .map(f => `${f.label}: ${f.value} — traditionally avoided for ${ev.label.split(' (')[0]}`);
+
+  // A rejected tara or Chandra Bala overrides an otherwise excellent panchang:
+  // without this cap a Vadha Tara day still reported "Highly Auspicious", and
+  // findBestDates (which keeps scores >= 55) would go on recommending it.
+  if (warnings.length) score = Math.min(score, warnings.length > 1 ? 25 : 35);
 
   let verdict, verdictColor;
   if (score >= 75)      { verdict = 'Highly Auspicious'; verdictColor = '#6BCB77'; }
@@ -176,7 +315,7 @@ function scoreDay(pd, eventType) {
   else if (score >= 25) { verdict = 'Inauspicious'; verdictColor = '#FF9F43'; }
   else                  { verdict = 'Avoid'; verdictColor = '#FF6B6B'; }
 
-  return { score, verdict, verdictColor, factors };
+  return { score, verdict, verdictColor, factors, personalized, warnings };
 }
 
 function getVerdictMessage(score, eventName) {
@@ -212,7 +351,7 @@ function getVerdictMessage(score, eventName) {
   };
 }
 
-function findBestDates(eventType, fromDateStr, count = 3) {
+function findBestDates(eventType, fromDateStr, count = 3, person = {}) {
   const results = [];
   const from = new Date(fromDateStr + 'T00:00:00');
 
@@ -221,7 +360,7 @@ function findBestDates(eventType, fromDateStr, count = 3) {
     const dateStr = d.toISOString().split('T')[0];
     try {
       const pd = getPanchangData(dateStr);
-      const scoring = scoreDay(pd, eventType);
+      const scoring = scoreDay(pd, eventType, person);
       if (!scoring || scoring.score < 55) continue;
 
       const chog = buildChoghadiya(pd);
@@ -301,18 +440,28 @@ function buildChoghadiya(pd) {
 
 function calculate(req, res) {
   try {
-    const { date, event_type } = req.body;
+    const { date, event_type, janma_nakshatra, janma_rashi } = req.body;
     if (!date)       return res.status(400).json({ error: 'date is required (YYYY-MM-DD)' });
     if (!event_type) return res.status(400).json({ error: 'event_type is required' });
     if (!EVENTS[event_type]) return res.status(400).json({ error: 'Invalid event_type', valid: Object.keys(EVENTS) });
 
+    if (janma_nakshatra && nakshatraIndex(janma_nakshatra) < 0) {
+      return res.status(400).json({ error: 'Invalid janma_nakshatra', valid: NAKSHATRA_LIST });
+    }
+    if (janma_rashi && rashiIndex(janma_rashi) < 0) {
+      return res.status(400).json({ error: 'Invalid janma_rashi', valid: RASHI_LIST });
+    }
+
+    const person = { janma_nakshatra, janma_rashi };
     const pd  = getPanchangData(date);
     const ev  = EVENTS[event_type];
-    const scoring = scoreDay(pd, event_type);
+    const scoring = scoreDay(pd, event_type, person);
     const choghadiya = buildChoghadiya(pd);
     const eventName = ev.label.split(' (')[0];
     const verdict = getVerdictMessage(scoring.score, eventName);
-    const best_dates = scoring.score < 55 ? findBestDates(event_type, date, 3) : findBestDates(event_type, date, 1);
+    const best_dates = scoring.score < 55
+      ? findBestDates(event_type, date, 3, person)
+      : findBestDates(event_type, date, 1, person);
 
     const auspSlots = choghadiya.filter(s =>
       ['Amrit','Shubh','Labh','Char'].includes(s.name) &&
@@ -338,6 +487,7 @@ function calculate(req, res) {
         sunset:    minToTime12(pd.ssMin),
       },
       scoring,
+      bala: buildBalaSummary(pd),
       choghadiya,
       best_slots: auspSlots,
       notes: ev.notes,
@@ -360,7 +510,11 @@ function getEventTypes(req, res) {
   const types = Object.entries(EVENTS).map(([key, ev]) => ({
     key, label: ev.label, icon: ev.icon,
   }));
-  res.json({ event_types: types });
+  res.json({
+    event_types: types,
+    nakshatras: NAKSHATRA_LIST,
+    rashis: RASHI_LIST,
+  });
 }
 
 module.exports = { calculate, getEventTypes };

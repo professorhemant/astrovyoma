@@ -2,7 +2,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { Loader, Bookmark } from 'lucide-react';
-import { muhurta as muhurtaApi, reportHistory as historyApi } from '../api';
+import { muhurta as muhurtaApi, reportHistory as historyApi, kundali as kundaliApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 
 const CHOG_COLOR = { 'Very Auspicious':'#6BCB77', Auspicious:'#74B9FF', 'Inauspicious':'#FF6B6B' };
@@ -76,7 +76,10 @@ function ChoghadiyaSlot({ slot }) {
 export default function MuhurtaPage() {
   const { user } = useAuth();
   const [eventTypes, setEventTypes] = useState([]);
-  const [form, setForm]  = useState({ event_type:'', date:'' });
+  const [nakshatras, setNakshatras] = useState([]);
+  const [rashis, setRashis]         = useState([]);
+  const [autoFilled, setAutoFilled] = useState(false);
+  const [form, setForm]  = useState({ event_type:'', date:'', janma_nakshatra:'', janma_rashi:'' });
   const [data, setData]  = useState(null);
   const [loading, setLoading] = useState(false);
   const [showNight, setShowNight] = useState(false);
@@ -85,11 +88,33 @@ export default function MuhurtaPage() {
 
   useEffect(() => {
     muhurtaApi.getEventTypes()
-      .then(r => setEventTypes(r.data.event_types || []))
+      .then(r => {
+        setEventTypes(r.data.event_types || []);
+        setNakshatras(r.data.nakshatras || []);
+        setRashis(r.data.rashis || []);
+      })
       .catch(() => {});
     // Default to today
     setForm(f => ({ ...f, date: new Date().toISOString().split('T')[0] }));
   }, []);
+
+  // Pre-fill the seeker's birth star / sign from their saved kundali so logged-in
+  // users get a personalised muhurta without filling anything in.
+  useEffect(() => {
+    if (!user) return;
+    kundaliApi.getMyKundali()
+      .then(r => {
+        const k = r.data?.kundali || r.data;
+        if (!k?.nakshatra && !k?.moon_sign) return;
+        setForm(f => ({
+          ...f,
+          janma_nakshatra: f.janma_nakshatra || k.nakshatra || '',
+          janma_rashi:     f.janma_rashi     || k.moon_sign || '',
+        }));
+        setAutoFilled(true);
+      })
+      .catch(() => {});
+  }, [user]);
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
@@ -100,7 +125,12 @@ export default function MuhurtaPage() {
     setLoading(true);
     setData(null);
     try {
-      const r = await muhurtaApi.calculate({ event_type: form.event_type, date: form.date });
+      const r = await muhurtaApi.calculate({
+        event_type: form.event_type,
+        date: form.date,
+        ...(form.janma_nakshatra ? { janma_nakshatra: form.janma_nakshatra } : {}),
+        ...(form.janma_rashi     ? { janma_rashi:     form.janma_rashi     } : {}),
+      });
       setData(r.data);
       setSaved(false);
     } catch (err) {
@@ -153,6 +183,52 @@ export default function MuhurtaPage() {
               <input type="date" value={form.date} onChange={e => set('date', e.target.value)} required
                 min={new Date().toISOString().split('T')[0]}
                 className="w-full bg-cosmic-900/60 border border-gold-600/20 rounded-xl px-4 py-2.5 text-gray-200 text-sm focus:outline-none focus:border-gold-500/50"/>
+            </div>
+
+            {/* Personalisation — Tara Bala / Chandra Bala */}
+            <div className="rounded-xl border border-gold-600/15 bg-cosmic-900/30 p-4">
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div>
+                  <label className="text-gray-400 text-xs uppercase tracking-wider block">
+                    Personalise for you <span className="text-gray-600 normal-case tracking-normal">(optional)</span>
+                  </label>
+                  <p className="text-gray-500 text-[11px] mt-1 leading-relaxed">
+                    Adds <span className="text-gold-500">Tara Bala</span> &amp; <span className="text-gold-500">Chandra Bala</span> — the day's strength for
+                    <em> your</em> birth star, which pandits weigh most heavily.
+                  </p>
+                </div>
+                {autoFilled && (
+                  <span className="shrink-0 text-[10px] px-2 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-400">
+                    From your Kundali
+                  </span>
+                )}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-gray-500 text-[11px] block mb-1.5">Janma Nakshatra (birth star)</label>
+                  <select value={form.janma_nakshatra} onChange={e => set('janma_nakshatra', e.target.value)}
+                    className="w-full bg-cosmic-900/60 border border-gold-600/20 rounded-xl px-3 py-2.5 text-gray-200 text-sm focus:outline-none focus:border-gold-500/50">
+                    <option value="">— Not specified —</option>
+                    {nakshatras.map(n => <option key={n} value={n}>{n}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-gray-500 text-[11px] block mb-1.5">Janma Rashi (Moon sign)</label>
+                  <select value={form.janma_rashi} onChange={e => set('janma_rashi', e.target.value)}
+                    className="w-full bg-cosmic-900/60 border border-gold-600/20 rounded-xl px-3 py-2.5 text-gray-200 text-sm focus:outline-none focus:border-gold-500/50">
+                    <option value="">— Not specified —</option>
+                    {rashis.map(r => <option key={r} value={r}>{r}</option>)}
+                    {form.janma_rashi && !rashis.includes(form.janma_rashi) && (
+                      <option value={form.janma_rashi}>{form.janma_rashi}</option>
+                    )}
+                  </select>
+                </div>
+              </div>
+              {!user && (
+                <p className="text-gray-600 text-[11px] mt-3">
+                  Don't know yours? <a href="/kundali" className="text-gold-500 hover:text-gold-400 underline">Generate your free Kundali</a> and this fills in automatically.
+                </p>
+              )}
             </div>
 
             <button type="submit" disabled={loading}
@@ -218,6 +294,49 @@ export default function MuhurtaPage() {
                   </div>
                 )}
               </motion.div>
+
+              {/* ── Personal warnings (Vipat/Pratyari/Vadha tara, 4/8/12 Chandra Bala) ── */}
+              {data.scoring.warnings?.length > 0 && (
+                <div className="rounded-2xl p-5 border border-red-500/40 bg-red-500/5">
+                  <p className="font-serif text-base text-red-300 mb-2">⚠️ Personal caution for your birth star</p>
+                  <ul className="space-y-1.5">
+                    {data.scoring.warnings.map((w, i) => (
+                      <li key={i} className="text-gray-300 text-sm flex gap-2">
+                        <span className="text-red-400 shrink-0">•</span>{w}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-gray-500 text-xs mt-3">
+                    The general panchang may be favourable, but these are traditionally treated as disqualifying for you personally. Prefer a date below.
+                  </p>
+                </div>
+              )}
+
+              {/* ── Tara Bala / Chandra Bala for the day (everyone, no input needed) ── */}
+              {data.bala && (
+                <div className="rounded-2xl p-5 border border-gold-600/20">
+                  <p className="font-serif text-base text-gold-400 mb-1">✦ Tara Bala &amp; Chandra Bala</p>
+                  <p className="text-gray-500 text-xs mb-4">
+                    Moon in {data.bala.day_nakshatra} ({data.bala.moon_rashi}) — find your own birth star or Moon sign below.
+                  </p>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-emerald-400 text-xs font-semibold mb-1.5">Good Tara Bala for these janma nakshatras</p>
+                      <p className="text-gray-300 text-xs leading-relaxed">{data.bala.good_tara_nakshatras.join(' · ')}</p>
+                    </div>
+                    <div>
+                      <p className="text-red-400 text-xs font-semibold mb-1.5">Avoid — Vipat / Pratyari / Vadha tara</p>
+                      <p className="text-gray-400 text-xs leading-relaxed">{data.bala.bad_tara_nakshatras.join(' · ')}</p>
+                    </div>
+                    <div className="pt-3 border-t border-gold-600/10">
+                      <p className="text-emerald-400 text-xs font-semibold mb-1.5">Good Chandra Bala for these rashis</p>
+                      <p className="text-gray-300 text-xs leading-relaxed">{data.bala.good_chandra_rashis.join(' · ')}</p>
+                      <p className="text-red-400 text-xs font-semibold mt-2 mb-1.5">Avoid (4th / 8th / 12th from Moon)</p>
+                      <p className="text-gray-400 text-xs leading-relaxed">{data.bala.bad_chandra_rashis.join(' · ')}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* ── BEST UPCOMING DATES (shown always but prominently when today is not ideal) ── */}
               {data.best_dates?.length > 0 && (
