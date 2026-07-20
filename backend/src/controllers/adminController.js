@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const { Op } = require('sequelize');
-const { sequelize, User, Astrologer, Consultation, Transaction, Appointment } = require('../models');
+const { sequelize, User, Astrologer, Consultation, Transaction, Appointment,
+        Kundali, Message, Review, Subscription, UserReport, AiChatMessage, OtpCode } = require('../models');
 
 let siteSettings = {
   maintenanceMode: false,
@@ -100,11 +101,58 @@ async function updateUser(req, res) {
   }
 }
 
+// Deleting a user has to remove everything that belongs to them. No model
+// declares onDelete, and sequelize.sync() does not alter foreign keys on tables
+// that already exist, so adding cascades to the associations would not change
+// the live database. The cascade is therefore explicit here, and wrapped in a
+// transaction so a failure part-way through cannot leave a half-deleted account.
 async function deleteUser(req, res) {
+  const t = await sequelize.transaction();
   try {
-    await User.destroy({ where: { id: req.params.id } });
+    const userId = req.params.id;
+    const user = await User.findByPk(userId, { transaction: t });
+    if (!user) {
+      await t.rollback();
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Messages hang off consultations rather than the user directly.
+    const consultations = await Consultation.findAll({
+      where: { user_id: userId }, attributes: ['id'], transaction: t,
+    });
+    const consultationIds = consultations.map(c => c.id);
+    if (consultationIds.length) {
+      await Message.destroy({ where: { consultation_id: consultationIds }, transaction: t });
+    }
+
+    // Reviews reference the consultation, so they go before it.
+    await Review.destroy({ where: { user_id: userId }, transaction: t });
+    await Consultation.destroy({ where: { user_id: userId }, transaction: t });
+
+    // Sequential, not Promise.all. Concurrent deletes that share a transaction
+    // keep running after one of them rejects, and the rollback in the catch
+    // block lands while they are still in flight — they then hit a finished
+    // transaction and throw outside any handler, crashing the process instead
+    // of returning a clean error. One at a time keeps at most one in flight.
+    for (const Model of [Kundali, Transaction, Subscription, Appointment, UserReport, AiChatMessage]) {
+      await Model.destroy({ where: { user_id: userId }, transaction: t });
+    }
+
+    // Pending reset codes are keyed by email, not user id.
+    if (user.email) {
+      await OtpCode.destroy({ where: { identifier: `reset:${user.email.toLowerCase()}` }, transaction: t });
+    }
+
+    // An astrologer profile is a separate business record that happens to be
+    // linked to a login. Unlink it rather than deleting the astrologer.
+    await Astrologer.update({ user_id: null }, { where: { user_id: userId }, transaction: t });
+
+    await User.destroy({ where: { id: userId }, transaction: t });
+    await t.commit();
     res.json({ success: true });
   } catch (err) {
+    await t.rollback();
+    console.error('deleteUser error:', err);
     res.status(500).json({ error: 'Failed to delete user' });
   }
 }

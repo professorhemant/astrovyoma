@@ -249,6 +249,9 @@ router.delete('/history/:id',  auth, reportHistoryController.deleteReport);
 router.post('/agora/token', auth, (req, res) => {
   const { channel, uid } = req.body;
   if (!channel) return res.status(400).json({ error: 'channel is required' });
+  if (!agoraService.isConfigured() && process.env.NODE_ENV === 'production') {
+    return res.status(503).json({ error: 'Voice and video calls are temporarily unavailable.' });
+  }
   const result = agoraService.generateToken(channel, uid || 0);
   res.json(result);
 });

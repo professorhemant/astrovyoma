@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const { Consultation, Message, Astrologer, User } = require('../models');
-const { generateToken } = require('../services/agoraService');
+const { generateToken, isConfigured: agoraConfigured } = require('../services/agoraService');
 const { deductPerMinute } = require('../services/walletService');
 
 async function startConsultation(req, res) {
@@ -10,6 +10,20 @@ async function startConsultation(req, res) {
 
     const astrologer = await Astrologer.findByPk(astrologer_id);
     if (!astrologer) return res.status(404).json({ error: 'Astrologer not found' });
+
+    // Refuse a voice/video consultation when Agora is not configured, BEFORE
+    // creating the record. Creating it would set started_at and status active,
+    // and endConsultation bills duration x price_per_min — so the user would be
+    // charged for a call that could never connect. Chat needs no Agora and is
+    // unaffected.
+    const needsRtc = mode === 'video' || mode === 'audio';
+    if (needsRtc && !agoraConfigured()) {
+      return res.status(503).json({
+        error: 'Voice and video calls are temporarily unavailable. Please use chat instead.',
+        mode_unavailable: mode,
+        chat_available: true,
+      });
+    }
 
     const channelName = `consult_${uuidv4().replace(/-/g, '')}`;
     const { token, appId } = generateToken(channelName, 0);
