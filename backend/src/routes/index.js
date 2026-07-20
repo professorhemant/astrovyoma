@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const { optionalAuth } = require('../middleware/auth');
+const aiRateLimit = require('../middleware/aiRateLimit');
 
 const authController = require('../controllers/authController');
 const kundaliController = require('../controllers/kundaliController');
@@ -155,10 +156,10 @@ router.get('/panchang',               panchangController.getPanchang);
 router.post('/namkaran/calculate', auth, namkaranController.calculateNamkaran);
 
 // Remedies route
-router.post('/remedies', optionalAuth, remediesController.getRemedies);
+router.post('/remedies', optionalAuth, aiRateLimit, remediesController.getRemedies);
 
 // Tarot reading route (no auth required — public discovery feature)
-router.post('/tarot/reading', tarotController.getTarotReading);
+router.post('/tarot/reading', optionalAuth, aiRateLimit, tarotController.getTarotReading);
 
 // Numerology — pure math, no auth, no DB
 router.post('/numerology/calculate', numerologyController.calculate);
@@ -228,7 +229,7 @@ router.get('/mall/products/:id',  mallController.getProductById);
 router.post('/kp/analyse', kpController.analyse);
 
 // Dream Interpretation
-router.post('/dream/interpret', dreamController.interpret);
+router.post('/dream/interpret', optionalAuth, aiRateLimit, dreamController.interpret);
 
 
 // Planetary Yoga Finder
