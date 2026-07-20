@@ -268,4 +268,8 @@ async function seedRealAstrologers() {
   }
 }
 
-module.exports = { seedAstrologers, seedRealAstrologers };
+// Exported so the admin cleanup can target exactly the seeded fixtures by name
+// and never touch a genuine astrologer.
+const DEMO_ASTROLOGER_NAMES = DEMO_ASTROLOGERS.map(a => a.display_name);
+
+module.exports = { seedAstrologers, seedRealAstrologers, DEMO_ASTROLOGER_NAMES };

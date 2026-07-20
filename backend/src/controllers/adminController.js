@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const { DEMO_ASTROLOGER_NAMES } = require('../seeders/astrologerSeeder');
 const { Op } = require('sequelize');
 const { sequelize, User, Astrologer, Consultation, Transaction, Appointment,
         Kundali, Message, Review, Subscription, UserReport, AiChatMessage, OtpCode } = require('../models');
@@ -154,6 +155,59 @@ async function deleteUser(req, res) {
     await t.rollback();
     console.error('deleteUser error:', err);
     res.status(500).json({ error: 'Failed to delete user' });
+  }
+}
+
+// One-shot removal of the seeded demo astrologers.
+//
+// Deleting them one row at a time through the UI proved unreliable, so this
+// does the whole set in a single transaction. It matches on the exact seeded
+// display names, so a genuine astrologer can never be caught by it — the real
+// pandit lives in REAL_ASTROLOGERS and is not in this list.
+//
+// Their consultations, messages, appointments and reviews go too: those are
+// test sessions answered by an LLM, not billing records worth preserving.
+// Returns a per-name report so the caller can see exactly what happened.
+async function cleanupDemoAstrologers(req, res) {
+  const t = await sequelize.transaction();
+  try {
+    const demos = await Astrologer.findAll({
+      where: { display_name: DEMO_ASTROLOGER_NAMES },
+      transaction: t,
+    });
+
+    if (!demos.length) {
+      await t.rollback();
+      return res.json({ success: true, deleted: 0, message: 'No demo astrologers found.', removed: [] });
+    }
+
+    const ids = demos.map(a => a.id);
+
+    const consultations = await Consultation.findAll({
+      where: { astrologer_id: ids }, attributes: ['id'], transaction: t,
+    });
+    const consultationIds = consultations.map(c => c.id);
+    if (consultationIds.length) {
+      await Message.destroy({ where: { consultation_id: consultationIds }, transaction: t });
+    }
+
+    await Review.destroy({ where: { astrologer_id: ids }, transaction: t });
+    await Consultation.destroy({ where: { astrologer_id: ids }, transaction: t });
+    await Appointment.destroy({ where: { astrologer_id: ids }, transaction: t });
+    await Astrologer.destroy({ where: { id: ids }, transaction: t });
+
+    await t.commit();
+    res.json({
+      success: true,
+      deleted: demos.length,
+      removed: demos.map(a => a.display_name),
+      consultations_removed: consultationIds.length,
+      remaining_note: 'Genuine astrologers are untouched.',
+    });
+  } catch (err) {
+    await t.rollback();
+    console.error('cleanupDemoAstrologers error:', err);
+    res.status(500).json({ error: 'Cleanup failed', detail: err.message });
   }
 }
 
@@ -376,7 +430,7 @@ async function setupAdmin(req, res) {
 }
 
 module.exports = {
-  getStats, getUsers, updateUser, deleteUser,
+  getStats, getUsers, updateUser, deleteUser, cleanupDemoAstrologers,
   getAstrologers, createAstrologer, updateAstrologer, deleteAstrologer,
   getConsultations, getTransactions, getAppointments, getRevenue,
   getSiteSettings, updateSiteSettings,

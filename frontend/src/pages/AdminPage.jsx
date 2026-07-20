@@ -319,6 +319,25 @@ function AstrologersTab() {
     finally { setSaving(false); }
   }
 
+  // Removes the seeded demo profiles in one transaction. Deleting them one row
+  // at a time proved unreliable, and they are fictional records with fabricated
+  // review counts, so they are worth removing decisively.
+  async function handleCleanupDemo() {
+    if (!window.confirm(
+      'Remove all seeded demo astrologer profiles?\n\n' +
+      'These are fictional (invented names, biographies and review counts) and their ' +
+      'consultations were answered by AI. Genuine astrologers are not affected.\n\n' +
+      'This cannot be undone.'
+    )) return;
+    try {
+      const { data } = await adminApi.cleanupDemoAstrologers();
+      toast.success(data.deleted ? `Removed ${data.deleted} demo profile(s)` : 'No demo profiles found');
+      load();
+    } catch (err) {
+      toast.error(err?.response?.data?.detail || err?.response?.data?.error || 'Cleanup failed');
+    }
+  }
+
   async function handleDelete(id, name) {
     if (!window.confirm(`Delete astrologer "${name}"?`)) return;
     try {
@@ -360,7 +379,13 @@ function AstrologersTab() {
     <div>
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-serif text-2xl text-gold-400">Astrologers <span className="text-gray-500 text-sm font-sans font-normal ml-2">({astrologers.length})</span></h2>
-        <button onClick={() => setForm({ ...EMPTY_ASTRO })} className="btn-gold px-4 py-2 text-sm flex items-center gap-2"><Plus className="w-4 h-4" /> Add New</button>
+        <div className="flex items-center gap-2">
+          <button onClick={handleCleanupDemo}
+            className="px-4 py-2 text-sm rounded-full border border-red-500/40 text-red-300 hover:bg-red-500/10 transition-colors">
+            Remove demo profiles
+          </button>
+          <button onClick={() => setForm({ ...EMPTY_ASTRO })} className="btn-gold px-4 py-2 text-sm flex items-center gap-2"><Plus className="w-4 h-4" /> Add New</button>
+        </div>
       </div>
 
       {loading ? <div className="flex justify-center py-10"><Loader className="w-6 h-6 text-gold-400 animate-spin" /></div> : (

@@ -73,6 +73,7 @@ router.get('/admin/astrologers',                auth, adminAuth, adminController
 router.post('/admin/astrologers',               auth, adminAuth, adminController.createAstrologer);
 router.put('/admin/astrologers/:id',            auth, adminAuth, adminController.updateAstrologer);
 router.delete('/admin/astrologers/:id',         auth, adminAuth, adminController.deleteAstrologer);
+router.post('/admin/astrologers/cleanup-demo', auth, adminAuth, adminController.cleanupDemoAstrologers);
 router.get('/admin/consultations',              auth, adminAuth, adminController.getConsultations);
 router.get('/admin/transactions',               auth, adminAuth, adminController.getTransactions);
 router.get('/admin/settings',                   auth, adminAuth, adminController.getSiteSettings);
