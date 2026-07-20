@@ -194,15 +194,26 @@ async function cleanupDemoAstrologers(req, res) {
     await Review.destroy({ where: { astrologer_id: ids }, transaction: t });
     await Consultation.destroy({ where: { astrologer_id: ids }, transaction: t });
     await Appointment.destroy({ where: { astrologer_id: ids }, transaction: t });
-    await Astrologer.destroy({ where: { id: ids }, transaction: t });
+
+    // Report the rows the delete actually affected, not the number matched.
+    // Reporting `demos.length` made a delete that removed nothing look
+    // successful, which cost a diagnosis cycle.
+    const destroyed = await Astrologer.destroy({ where: { id: ids }, transaction: t });
 
     await t.commit();
+
+    // Confirm from outside the transaction that the rows are really gone.
+    const stillPresent = await Astrologer.count({ where: { id: ids } });
+    const totalAfter = await Astrologer.count();
+
     res.json({
-      success: true,
-      deleted: demos.length,
+      success: stillPresent === 0,
+      matched: demos.length,
+      deleted: destroyed,
+      still_present_after_commit: stillPresent,
+      total_astrologers_now: totalAfter,
       removed: demos.map(a => a.display_name),
       consultations_removed: consultationIds.length,
-      remaining_note: 'Genuine astrologers are untouched.',
     });
   } catch (err) {
     await t.rollback();
