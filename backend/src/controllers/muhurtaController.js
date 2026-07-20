@@ -290,10 +290,44 @@ function scoreDay(pd, eventType, person = {}) {
     });
   }
 
+  // ── Partner factors (marriage) ──
+  // Classical vivah muhurta centres the bride's bala and checks the groom's
+  // secondarily, so the partner carries roughly half the weight.
+  const pNakIdx   = nakshatraIndex(person.partner_nakshatra);
+  const pRashiIdx = rashiIndex(person.partner_rashi);
+
+  if (pNakIdx >= 0) {
+    personalized = true;
+    const t = getTaraBala(pNakIdx, pd.nakshatraIdx);
+    const pts = t.quality === 'Inauspicious' ? -10 : t.quality === 'Mixed' ? -3 : +10;
+    score += pts;
+    factors.push({
+      label: "Partner's Tara Bala", value: `${t.name} Tara (${ordinal(t.count)})`, quality: t.quality, points: pts,
+      reason: `From the partner's janma nakshatra ${NAKSHATRA_LIST[pNakIdx]} to today's ${pd.nakshatra} — ${t.meaning}`,
+      personal: true, partner: true,
+    });
+  }
+
+  if (pRashiIdx >= 0) {
+    personalized = true;
+    const moonRashiIdx = Math.floor(((pd.moonLon % 360) + 360) % 360 / 30);
+    const c = getChandraBala(pRashiIdx, moonRashiIdx);
+    const pts = c.quality === 'Inauspicious' ? -8 : c.quality === 'Neutral' ? 0 : +8;
+    score += pts;
+    factors.push({
+      label: "Partner's Chandra Bala", value: `Moon in ${ordinal(c.house)} from their rashi`,
+      quality: c.quality, points: pts,
+      reason: `Moon transits ${c.moonRashi}, the ${ordinal(c.house)} sign from the partner's janma rashi ${RASHI_LIST[pRashiIdx]}`,
+      personal: true, partner: true,
+    });
+  }
+
   // Normalise against the maximum achievable for this mode. Without this the
   // raw sum saturates (50 + 25+20+15+10 = 120 → clamped to 100) and a rejected
   // Tara Bala would be invisible on an otherwise good day.
-  const maxPositive = 70 + (janmaNakIdx >= 0 ? 20 : 0) + (janmaRashiIdx >= 0 ? 15 : 0);
+  const maxPositive = 70
+    + (janmaNakIdx   >= 0 ? 20 : 0) + (janmaRashiIdx >= 0 ? 15 : 0)
+    + (pNakIdx       >= 0 ? 10 : 0) + (pRashiIdx     >= 0 ?  8 : 0);
   score = Math.max(0, Math.min(100, Math.round(50 + 50 * ((score - 50) / maxPositive))));
 
   // Classical practice treats Vipat/Pratyari/Vadha tara and a 4/8/12 Chandra
@@ -464,7 +498,7 @@ function buildChoghadiya(pd) {
 
 function calculate(req, res) {
   try {
-    const { date, event_type, janma_nakshatra, janma_rashi } = req.body;
+    const { date, event_type, janma_nakshatra, janma_rashi, partner_nakshatra, partner_rashi } = req.body;
     if (!date)       return res.status(400).json({ error: 'date is required (YYYY-MM-DD)' });
     if (!event_type) return res.status(400).json({ error: 'event_type is required' });
     if (!EVENTS[event_type]) return res.status(400).json({ error: 'Invalid event_type', valid: Object.keys(EVENTS) });
@@ -475,8 +509,14 @@ function calculate(req, res) {
     if (janma_rashi && rashiIndex(janma_rashi) < 0) {
       return res.status(400).json({ error: 'Invalid janma_rashi', valid: RASHI_LIST });
     }
+    if (partner_nakshatra && nakshatraIndex(partner_nakshatra) < 0) {
+      return res.status(400).json({ error: 'Invalid partner_nakshatra', valid: NAKSHATRA_LIST });
+    }
+    if (partner_rashi && rashiIndex(partner_rashi) < 0) {
+      return res.status(400).json({ error: 'Invalid partner_rashi', valid: RASHI_LIST });
+    }
 
-    const person = { janma_nakshatra, janma_rashi };
+    const person = { janma_nakshatra, janma_rashi, partner_nakshatra, partner_rashi };
     const pd  = getPanchangData(date);
     const ev  = EVENTS[event_type];
     const scoring = scoreDay(pd, event_type, person);
@@ -535,7 +575,7 @@ function calculate(req, res) {
 // daytime windows.
 function bestDates(req, res) {
   try {
-    const { event_type, from_date, janma_nakshatra, janma_rashi } = req.body;
+    const { event_type, from_date, janma_nakshatra, janma_rashi, partner_nakshatra, partner_rashi } = req.body;
     const count  = Math.min(Math.max(parseInt(req.body.count, 10) || 6, 1), 12);
     const months = Math.min(Math.max(parseInt(req.body.months, 10) || 4, 1), 12);
 
@@ -547,9 +587,15 @@ function bestDates(req, res) {
     if (janma_rashi && rashiIndex(janma_rashi) < 0) {
       return res.status(400).json({ error: 'Invalid janma_rashi', valid: RASHI_LIST });
     }
+    if (partner_nakshatra && nakshatraIndex(partner_nakshatra) < 0) {
+      return res.status(400).json({ error: 'Invalid partner_nakshatra', valid: NAKSHATRA_LIST });
+    }
+    if (partner_rashi && rashiIndex(partner_rashi) < 0) {
+      return res.status(400).json({ error: 'Invalid partner_rashi', valid: RASHI_LIST });
+    }
 
     const from   = from_date || new Date().toISOString().split('T')[0];
-    const person = { janma_nakshatra, janma_rashi };
+    const person = { janma_nakshatra, janma_rashi, partner_nakshatra, partner_rashi };
     const ev     = EVENTS[event_type];
 
     let dates = findBestDates(event_type, from, count, person, {
@@ -573,7 +619,8 @@ function bestDates(req, res) {
       event_icon:  ev.icon,
       from_date:   from,
       searched_days: widened ? 365 : months * 30,
-      personalized: !!(nakshatraIndex(janma_nakshatra) >= 0 || rashiIndex(janma_rashi) >= 0),
+      personalized: !!(nakshatraIndex(janma_nakshatra) >= 0 || rashiIndex(janma_rashi) >= 0
+                    || nakshatraIndex(partner_nakshatra) >= 0 || rashiIndex(partner_rashi) >= 0),
       count: dates.length,
       dates,
       notes: ev.notes,

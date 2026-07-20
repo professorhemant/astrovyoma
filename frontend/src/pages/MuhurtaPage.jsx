@@ -73,6 +73,13 @@ function ChoghadiyaSlot({ slot }) {
   );
 }
 
+// Kundali records store moon_sign in English; the dropdown lists Sanskrit names.
+const RASHI_EN_TO_SA = {
+  Aries:'Mesha', Taurus:'Vrishabha', Gemini:'Mithuna', Cancer:'Karka',
+  Leo:'Simha', Virgo:'Kanya', Libra:'Tula', Scorpio:'Vrishchika',
+  Sagittarius:'Dhanu', Capricorn:'Makara', Aquarius:'Kumbha', Pisces:'Meena',
+};
+
 export default function MuhurtaPage() {
   const { user } = useAuth();
   const [eventTypes, setEventTypes] = useState([]);
@@ -81,7 +88,7 @@ export default function MuhurtaPage() {
   const [autoFilled, setAutoFilled] = useState(false);
   const [mode, setMode]  = useState('find');   // 'find' = list dates, 'check' = one date
   const [listData, setListData] = useState(null);
-  const [form, setForm]  = useState({ event_type:'', date:'', janma_nakshatra:'', janma_rashi:'', months:'4' });
+  const [form, setForm]  = useState({ event_type:'', date:'', janma_nakshatra:'', janma_rashi:'', partner_nakshatra:'', partner_rashi:'', months:'4' });
   const [data, setData]  = useState(null);
   const [loading, setLoading] = useState(false);
   const [showNight, setShowNight] = useState(false);
@@ -111,7 +118,7 @@ export default function MuhurtaPage() {
         setForm(f => ({
           ...f,
           janma_nakshatra: f.janma_nakshatra || k.nakshatra || '',
-          janma_rashi:     f.janma_rashi     || k.moon_sign || '',
+          janma_rashi:     f.janma_rashi     || RASHI_EN_TO_SA[k.moon_sign] || k.moon_sign || '',
         }));
         setAutoFilled(true);
       })
@@ -125,9 +132,12 @@ export default function MuhurtaPage() {
     if (!form.event_type) return toast.error('Please select an event type');
     if (mode === 'check' && !form.date) return toast.error('Please select a date');
 
+    const isMarriage = form.event_type === 'marriage';
     const person = {
       ...(form.janma_nakshatra ? { janma_nakshatra: form.janma_nakshatra } : {}),
       ...(form.janma_rashi     ? { janma_rashi:     form.janma_rashi     } : {}),
+      ...(isMarriage && form.partner_nakshatra ? { partner_nakshatra: form.partner_nakshatra } : {}),
+      ...(isMarriage && form.partner_rashi     ? { partner_rashi:     form.partner_rashi     } : {}),
     };
 
     setLoading(true);
@@ -281,6 +291,37 @@ export default function MuhurtaPage() {
                 <p className="text-gray-600 text-[11px] mt-3">
                   Don't know yours? <a href="/kundali" className="text-gold-500 hover:text-gold-400 underline">Generate your free Kundali</a> and this fills in automatically.
                 </p>
+              )}
+
+              {/* Marriage is checked for both parties — classically the bride's
+                  bala is primary and the groom's is verified alongside it. */}
+              {form.event_type === 'marriage' && (
+                <div className="mt-4 pt-4 border-t border-gold-600/10">
+                  <label className="text-gray-400 text-xs uppercase tracking-wider block mb-1">
+                    Partner's details <span className="text-gray-600 normal-case tracking-normal">(optional)</span>
+                  </label>
+                  <p className="text-gray-500 text-[11px] mb-3 leading-relaxed">
+                    For vivah, both parties are checked. The details above are treated as primary; the partner's are weighed alongside.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-gray-500 text-[11px] block mb-1.5">Partner's Janma Nakshatra</label>
+                      <select value={form.partner_nakshatra} onChange={e => set('partner_nakshatra', e.target.value)}
+                        className="w-full bg-cosmic-900/60 border border-gold-600/20 rounded-xl px-3 py-2.5 text-gray-200 text-sm focus:outline-none focus:border-gold-500/50">
+                        <option value="">— Not specified —</option>
+                        {nakshatras.map(n => <option key={n} value={n}>{n}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-gray-500 text-[11px] block mb-1.5">Partner's Janma Rashi</label>
+                      <select value={form.partner_rashi} onChange={e => set('partner_rashi', e.target.value)}
+                        className="w-full bg-cosmic-900/60 border border-gold-600/20 rounded-xl px-3 py-2.5 text-gray-200 text-sm focus:outline-none focus:border-gold-500/50">
+                        <option value="">— Not specified —</option>
+                        {rashis.map(r => <option key={r} value={r}>{r}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
 
