@@ -19,7 +19,8 @@ module.exports = {
         'pulse-gold': 'pulse-gold 3s ease-in-out infinite',
         'float': 'float 6s ease-in-out infinite',
         'twinkle': 'twinkle 2s ease-in-out infinite alternate',
-        'shooting-star': 'shooting-star 3s linear infinite'
+        'shooting-star': 'shooting-star 3s linear infinite',
+        'blink-ai': 'blink-ai 1.4s ease-in-out infinite'
       },
       keyframes: {
         'spin-cw': { '0%': { transform: 'rotate(0deg) translateZ(0)' }, '100%': { transform: 'rotate(360deg) translateZ(0)' } },
@@ -33,6 +34,10 @@ module.exports = {
         'shooting-star': {
           '0%': { transform: 'translateX(-100px) translateY(100px)', opacity: 1 },
           '100%': { transform: 'translateX(1000px) translateY(-1000px)', opacity: 0 }
+        },
+        'blink-ai': {
+          '0%, 100%': { opacity: 1, boxShadow: '0 0 0 rgba(232,197,71,0)' },
+          '50%': { opacity: 0.55, boxShadow: '0 0 18px rgba(232,197,71,0.65)' }
         }
       },
       backgroundImage: {

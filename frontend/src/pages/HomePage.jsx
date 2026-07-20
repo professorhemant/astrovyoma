@@ -243,6 +243,52 @@ export default function HomePage() {
           </Link>
         </div>
 
+        {/* ── AI Chatbot Preview ── */}
+        <section className="py-16 px-4 md:px-8 lg:px-16 relative z-10">
+          <div className="max-w-4xl mx-auto">
+            <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="text-center mb-10">
+              <h2 className="font-serif text-4xl md:text-5xl text-gold-400 mb-3">Talk to AstroVyoma AI ✦</h2>
+              <p className="text-gray-400 text-sm">Powered by Vedic wisdom + AI — Your birth chart as context</p>
+            </motion.div>
+            <motion.div initial={{opacity:0,y:30}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="card-cosmic p-6 rounded-2xl">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gold-600/10">
+                <div className="w-10 h-10 rounded-full bg-cosmic-800 border border-gold-600/40 flex items-center justify-center text-gold-400">✦</div>
+                <div>
+                  <div className="text-gold-400 font-medium text-sm">AstroVyoma AI</div>
+                  <div className="text-green-400 text-xs flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" /> Online
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-4 mb-6">
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 rounded-full bg-cosmic-800 border border-gold-600/30 flex items-center justify-center text-gold-400 text-xs flex-shrink-0">✦</div>
+                  <div className="bg-cosmic-800/80 border border-gold-600/15 rounded-2xl rounded-tl-sm px-4 py-3 max-w-sm">
+                    <p className="text-gray-300 text-sm">Namaste 🙏 I am AstroVyoma AI, your personal Vedic astrology guide. With your birth chart as my guide, I can reveal your Nakshatra, current Dasha, life purpose, and cosmic timing. What would you like to know?</p>
+                  </div>
+                </div>
+                <div className="flex gap-3 flex-row-reverse">
+                  <div className="bg-gold-600/20 border border-gold-600/30 rounded-2xl rounded-tr-sm px-4 py-3 max-w-xs">
+                    <p className="text-gray-200 text-sm">What does my current Mahadasha mean for my career?</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 rounded-full bg-cosmic-800 border border-gold-600/30 flex items-center justify-center text-gold-400 text-xs flex-shrink-0">✦</div>
+                  <div className="bg-cosmic-800/80 border border-gold-600/15 rounded-2xl rounded-tl-sm px-4 py-3 max-w-lg">
+                    <p className="text-gray-300 text-sm">Your current Jupiter Mahadasha (Brihaspati Dasha) is a period of great expansion. Jupiter is activating your 10th house of career and public recognition...</p>
+                    <p className="text-gold-500 text-xs mt-2 flex items-center gap-1"><Sparkles className="w-3 h-3" /> Personalized with your Kundali</p>
+                  </div>
+                </div>
+              </div>
+              <Link to="/chat" className="btn-gold w-full py-3 text-sm flex items-center justify-center gap-2">
+                <MessageCircle className="w-4 h-4" /> Start Chatting Free →
+              </Link>
+            </motion.div>
+          </div>
+        </section>
+
+        <SectionDivider />
+
         {/* ── Free Features ── */}
         <section className="pt-2 pb-4 px-4 md:px-8 lg:px-16 relative z-10">
           <div className="max-w-7xl mx-auto">
@@ -381,52 +427,6 @@ export default function HomePage() {
                 View All Astrologers <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
-          </div>
-        </section>
-
-        <SectionDivider />
-
-        {/* ── AI Chatbot Preview ── */}
-        <section className="py-16 px-4 md:px-8 lg:px-16 relative z-10">
-          <div className="max-w-4xl mx-auto">
-            <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="text-center mb-10">
-              <h2 className="font-serif text-4xl md:text-5xl text-gold-400 mb-3">Ask AstroVyoma AI ✦</h2>
-              <p className="text-gray-400 text-sm">Powered by Vedic wisdom + AI — Your birth chart as context</p>
-            </motion.div>
-            <motion.div initial={{opacity:0,y:30}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="card-cosmic p-6 rounded-2xl">
-              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gold-600/10">
-                <div className="w-10 h-10 rounded-full bg-cosmic-800 border border-gold-600/40 flex items-center justify-center text-gold-400">✦</div>
-                <div>
-                  <div className="text-gold-400 font-medium text-sm">AstroVyoma AI</div>
-                  <div className="text-green-400 text-xs flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" /> Online
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-4 mb-6">
-                <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-cosmic-800 border border-gold-600/30 flex items-center justify-center text-gold-400 text-xs flex-shrink-0">✦</div>
-                  <div className="bg-cosmic-800/80 border border-gold-600/15 rounded-2xl rounded-tl-sm px-4 py-3 max-w-sm">
-                    <p className="text-gray-300 text-sm">Namaste 🙏 I am AstroVyoma AI, your personal Vedic astrology guide. With your birth chart as my guide, I can reveal your Nakshatra, current Dasha, life purpose, and cosmic timing. What would you like to know?</p>
-                  </div>
-                </div>
-                <div className="flex gap-3 flex-row-reverse">
-                  <div className="bg-gold-600/20 border border-gold-600/30 rounded-2xl rounded-tr-sm px-4 py-3 max-w-xs">
-                    <p className="text-gray-200 text-sm">What does my current Mahadasha mean for my career?</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-cosmic-800 border border-gold-600/30 flex items-center justify-center text-gold-400 text-xs flex-shrink-0">✦</div>
-                  <div className="bg-cosmic-800/80 border border-gold-600/15 rounded-2xl rounded-tl-sm px-4 py-3 max-w-lg">
-                    <p className="text-gray-300 text-sm">Your current Jupiter Mahadasha (Brihaspati Dasha) is a period of great expansion. Jupiter is activating your 10th house of career and public recognition...</p>
-                    <p className="text-gold-500 text-xs mt-2 flex items-center gap-1"><Sparkles className="w-3 h-3" /> Personalized with your Kundali</p>
-                  </div>
-                </div>
-              </div>
-              <Link to="/chat" className="btn-gold w-full py-3 text-sm flex items-center justify-center gap-2">
-                <MessageCircle className="w-4 h-4" /> Start Chatting Free →
-              </Link>
-            </motion.div>
           </div>
         </section>
 

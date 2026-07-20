@@ -100,6 +100,15 @@ export default function Navbar() {
           })}
 
           <PanchangDropdown isPanchangActive={isPanchangActive} location={location} />
+
+          {/* Talk to AstroVyoma AI — blinking highlight */}
+          <Link
+            to="/chat"
+            className="text-sm transition-all flex items-center gap-1.5 px-3 py-1 rounded-full border border-gold-400/80 bg-gold-400/15 text-gold-300 font-medium whitespace-nowrap hover:bg-gold-400/25 animate-blink-ai"
+          >
+            ✦ Talk to AstroVyoma AI
+          </Link>
+
           {[
             { to: '/numerology', label: 'Numerology' },
             { to: '/tarot', label: 'Tarot Reader' },
@@ -257,6 +266,15 @@ export default function Navbar() {
                 </Link>
               ))}
 
+              {/* Talk to AstroVyoma AI — blinking highlight */}
+              <Link
+                to="/chat"
+                onClick={() => setMenuOpen(false)}
+                className="text-sm py-2.5 px-3 rounded-xl flex items-center gap-2 border border-gold-400/80 bg-gold-400/15 text-gold-300 font-medium animate-blink-ai"
+              >
+                <span>✦</span>
+                Talk to AstroVyoma AI
+              </Link>
 
               {/* Mobile Panchang accordion */}
               <div>
