@@ -241,6 +241,7 @@ router.post('/yoga/analyse', yogaController.analyse);
 // Muhurta Calculator
 router.get('/muhurta/event-types', muhurtaController.getEventTypes);
 router.post('/muhurta/calculate',  muhurtaController.calculate);
+router.post('/muhurta/best-dates', muhurtaController.bestDates);
 
 // Report History — save any report, retrieve all
 router.post('/history/save',   auth, reportHistoryController.saveReport);

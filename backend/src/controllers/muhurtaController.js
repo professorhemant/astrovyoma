@@ -351,17 +351,24 @@ function getVerdictMessage(score, eventName) {
   };
 }
 
-function findBestDates(eventType, fromDateStr, count = 3, person = {}) {
+// rank:'chronological' keeps the original "next N qualifying dates" behaviour.
+// rank:'score' scans the whole window, keeps the N strongest, then returns them
+// in date order — used by the "find me dates" mode, where the soonest qualifying
+// date is rarely the best one in the window.
+function findBestDates(eventType, fromDateStr, count = 3, person = {}, opts = {}) {
+  const { windowDays = 60, rank = 'chronological', minScore = 55, includeFromDate = false } = opts;
   const results = [];
   const from = new Date(fromDateStr + 'T00:00:00');
+  const start = includeFromDate ? 0 : 1;
 
-  for (let i = 1; i <= 60 && results.length < count; i++) {
+  for (let i = start; i <= windowDays; i++) {
+    if (rank === 'chronological' && results.length >= count) break;
     const d = new Date(from.getTime() + i * 86400000);
     const dateStr = d.toISOString().split('T')[0];
     try {
       const pd = getPanchangData(dateStr);
       const scoring = scoreDay(pd, eventType, person);
-      if (!scoring || scoring.score < 55) continue;
+      if (!scoring || scoring.score < minScore) continue;
 
       const chog = buildChoghadiya(pd);
       const bestSlot = chog.find(s =>
@@ -372,6 +379,14 @@ function findBestDates(eventType, fromDateStr, count = 3, person = {}) {
         s.name === 'Char' && !s.isRahu && !s.isYamganda && s.period === 'Day'
       );
 
+      // Every auspicious daytime window, so the user can pick a workable hour
+      // rather than being handed a single slot.
+      const slots = chog
+        .filter(s => ['Amrit','Shubh','Labh','Char'].includes(s.name) && !s.isRahu && !s.isYamganda && s.period === 'Day')
+        .map(s => ({ name: s.name, start: s.start, end: s.end, nature: s.nature }));
+
+      const taraFactor = scoring.factors.find(f => f.label === 'Tara Bala');
+
       results.push({
         date: dateStr,
         display: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
@@ -379,12 +394,21 @@ function findBestDates(eventType, fromDateStr, count = 3, person = {}) {
         verdict: scoring.verdict,
         verdictColor: scoring.verdictColor,
         bestTime: bestSlot ? `${bestSlot.start} – ${bestSlot.end} (${bestSlot.name} Choghadiya)` : 'Check Choghadiya for best time',
+        slots,
         vara: pd.vara,
         nakshatra: pd.nakshatra,
         tithi: pd.tithi,
         yoga: pd.yoga,
+        tara: taraFactor ? taraFactor.value : null,
       });
     } catch (_) { /* skip bad dates */ }
+  }
+
+  if (rank === 'score') {
+    return results
+      .sort((a, b) => b.score - a.score)
+      .slice(0, count)
+      .sort((a, b) => a.date.localeCompare(b.date));
   }
   return results;
 }
@@ -506,6 +530,60 @@ function calculate(req, res) {
   }
 }
 
+// List-first mode: "when should I do this?" rather than "is this date good?".
+// Scans a window and returns the strongest dates, each with its auspicious
+// daytime windows.
+function bestDates(req, res) {
+  try {
+    const { event_type, from_date, janma_nakshatra, janma_rashi } = req.body;
+    const count  = Math.min(Math.max(parseInt(req.body.count, 10) || 6, 1), 12);
+    const months = Math.min(Math.max(parseInt(req.body.months, 10) || 4, 1), 12);
+
+    if (!event_type) return res.status(400).json({ error: 'event_type is required' });
+    if (!EVENTS[event_type]) return res.status(400).json({ error: 'Invalid event_type', valid: Object.keys(EVENTS) });
+    if (janma_nakshatra && nakshatraIndex(janma_nakshatra) < 0) {
+      return res.status(400).json({ error: 'Invalid janma_nakshatra', valid: NAKSHATRA_LIST });
+    }
+    if (janma_rashi && rashiIndex(janma_rashi) < 0) {
+      return res.status(400).json({ error: 'Invalid janma_rashi', valid: RASHI_LIST });
+    }
+
+    const from   = from_date || new Date().toISOString().split('T')[0];
+    const person = { janma_nakshatra, janma_rashi };
+    const ev     = EVENTS[event_type];
+
+    let dates = findBestDates(event_type, from, count, person, {
+      windowDays: months * 30, rank: 'score', includeFromDate: true,
+    });
+
+    // Marriage in particular has long barren stretches (Chaturmas, Guru/Shukra
+    // asta), and a personalised search rejects two-thirds more days. Rather than
+    // return an empty list, widen the window once before giving up.
+    let widened = false;
+    if (dates.length < count) {
+      widened = true;
+      dates = findBestDates(event_type, from, count, person, {
+        windowDays: 365, rank: 'score', includeFromDate: true,
+      });
+    }
+
+    res.json({
+      event_type,
+      event_label: ev.label,
+      event_icon:  ev.icon,
+      from_date:   from,
+      searched_days: widened ? 365 : months * 30,
+      personalized: !!(nakshatraIndex(janma_nakshatra) >= 0 || rashiIndex(janma_rashi) >= 0),
+      count: dates.length,
+      dates,
+      notes: ev.notes,
+    });
+  } catch (err) {
+    console.error('[muhurta:bestDates]', err);
+    res.status(500).json({ error: err.message || 'Muhurta date search failed' });
+  }
+}
+
 function getEventTypes(req, res) {
   const types = Object.entries(EVENTS).map(([key, ev]) => ({
     key, label: ev.label, icon: ev.icon,
@@ -517,4 +595,4 @@ function getEventTypes(req, res) {
   });
 }
 
-module.exports = { calculate, getEventTypes };
+module.exports = { calculate, bestDates, getEventTypes };

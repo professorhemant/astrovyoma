@@ -192,6 +192,7 @@ export const yoga = {
 export const muhurta = {
   getEventTypes: ()     => api.get('/muhurta/event-types'),
   calculate:     (data) => api.post('/muhurta/calculate', data),
+  bestDates:     (data) => api.post('/muhurta/best-dates', data),
 };
 
 export const reportHistory = {

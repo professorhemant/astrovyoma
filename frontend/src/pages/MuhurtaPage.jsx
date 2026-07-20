@@ -79,7 +79,9 @@ export default function MuhurtaPage() {
   const [nakshatras, setNakshatras] = useState([]);
   const [rashis, setRashis]         = useState([]);
   const [autoFilled, setAutoFilled] = useState(false);
-  const [form, setForm]  = useState({ event_type:'', date:'', janma_nakshatra:'', janma_rashi:'' });
+  const [mode, setMode]  = useState('find');   // 'find' = list dates, 'check' = one date
+  const [listData, setListData] = useState(null);
+  const [form, setForm]  = useState({ event_type:'', date:'', janma_nakshatra:'', janma_rashi:'', months:'4' });
   const [data, setData]  = useState(null);
   const [loading, setLoading] = useState(false);
   const [showNight, setShowNight] = useState(false);
@@ -121,17 +123,30 @@ export default function MuhurtaPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.event_type) return toast.error('Please select an event type');
-    if (!form.date)       return toast.error('Please select a date');
+    if (mode === 'check' && !form.date) return toast.error('Please select a date');
+
+    const person = {
+      ...(form.janma_nakshatra ? { janma_nakshatra: form.janma_nakshatra } : {}),
+      ...(form.janma_rashi     ? { janma_rashi:     form.janma_rashi     } : {}),
+    };
+
     setLoading(true);
     setData(null);
+    setListData(null);
     try {
-      const r = await muhurtaApi.calculate({
-        event_type: form.event_type,
-        date: form.date,
-        ...(form.janma_nakshatra ? { janma_nakshatra: form.janma_nakshatra } : {}),
-        ...(form.janma_rashi     ? { janma_rashi:     form.janma_rashi     } : {}),
-      });
-      setData(r.data);
+      if (mode === 'find') {
+        const r = await muhurtaApi.bestDates({
+          event_type: form.event_type,
+          from_date: form.date || undefined,
+          months: parseInt(form.months, 10) || 4,
+          count: 6,
+          ...person,
+        });
+        setListData(r.data);
+      } else {
+        const r = await muhurtaApi.calculate({ event_type: form.event_type, date: form.date, ...person });
+        setData(r.data);
+      }
       setSaved(false);
     } catch (err) {
       toast.error(err?.response?.data?.error || 'Calculation failed. Please try again.');
@@ -160,6 +175,23 @@ export default function MuhurtaPage() {
           className="card-cosmic rounded-2xl p-6 border border-gold-600/20 mb-8">
           <form onSubmit={handleSubmit} className="space-y-5">
 
+            {/* Mode toggle — finding dates is the primary job, checking one is secondary */}
+            <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-cosmic-900/60 border border-gold-600/15">
+              {[
+                { key:'find',  label:'📅 Find Best Dates', hint:'Show me when' },
+                { key:'check', label:'🔍 Check a Date',    hint:'Is this date good?' },
+              ].map(m => (
+                <button key={m.key} type="button"
+                  onClick={() => { setMode(m.key); setData(null); setListData(null); }}
+                  className={`rounded-lg px-3 py-2.5 text-center transition-all ${
+                    mode === m.key ? 'bg-gold-500/15 border border-gold-500/50' : 'border border-transparent hover:bg-white/5'
+                  }`}>
+                  <span className={`block text-sm font-semibold ${mode === m.key ? 'text-gold-400' : 'text-gray-400'}`}>{m.label}</span>
+                  <span className="block text-[11px] text-gray-500 mt-0.5">{m.hint}</span>
+                </button>
+              ))}
+            </div>
+
             {/* Event type grid */}
             <div>
               <label className="text-gray-400 text-xs uppercase tracking-wider block mb-3">Select Event Type *</label>
@@ -178,12 +210,33 @@ export default function MuhurtaPage() {
               </div>
             </div>
 
-            <div>
-              <label className="text-gray-400 text-xs uppercase tracking-wider block mb-1.5">Select Date *</label>
-              <input type="date" value={form.date} onChange={e => set('date', e.target.value)} required
-                min={new Date().toISOString().split('T')[0]}
-                className="w-full bg-cosmic-900/60 border border-gold-600/20 rounded-xl px-4 py-2.5 text-gray-200 text-sm focus:outline-none focus:border-gold-500/50"/>
-            </div>
+            {mode === 'check' ? (
+              <div>
+                <label className="text-gray-400 text-xs uppercase tracking-wider block mb-1.5">Select Date *</label>
+                <input type="date" value={form.date} onChange={e => set('date', e.target.value)} required
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full bg-cosmic-900/60 border border-gold-600/20 rounded-xl px-4 py-2.5 text-gray-200 text-sm focus:outline-none focus:border-gold-500/50"/>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-gray-400 text-xs uppercase tracking-wider block mb-1.5">Search from</label>
+                  <input type="date" value={form.date} onChange={e => set('date', e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full bg-cosmic-900/60 border border-gold-600/20 rounded-xl px-4 py-2.5 text-gray-200 text-sm focus:outline-none focus:border-gold-500/50"/>
+                </div>
+                <div>
+                  <label className="text-gray-400 text-xs uppercase tracking-wider block mb-1.5">Look ahead</label>
+                  <select value={form.months} onChange={e => set('months', e.target.value)}
+                    className="w-full bg-cosmic-900/60 border border-gold-600/20 rounded-xl px-4 py-2.5 text-gray-200 text-sm focus:outline-none focus:border-gold-500/50">
+                    <option value="2">Next 2 months</option>
+                    <option value="4">Next 4 months</option>
+                    <option value="6">Next 6 months</option>
+                    <option value="12">Next 12 months</option>
+                  </select>
+                </div>
+              </div>
+            )}
 
             {/* Personalisation — Tara Bala / Chandra Bala */}
             <div className="rounded-xl border border-gold-600/15 bg-cosmic-900/30 p-4">
@@ -234,8 +287,8 @@ export default function MuhurtaPage() {
             <button type="submit" disabled={loading}
               className="w-full btn-gold py-3 text-sm font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
               {loading
-                ? <><Loader className="w-4 h-4 animate-spin"/>Calculating Muhurta...</>
-                : `✦ Calculate Muhurta${selectedEvent ? ` for ${selectedEvent.icon} ${selectedEvent.label.split(' (')[0]}` : ''}`}
+                ? <><Loader className="w-4 h-4 animate-spin"/>{mode === 'find' ? 'Searching for auspicious dates…' : 'Calculating Muhurta…'}</>
+                : `✦ ${mode === 'find' ? 'Find Auspicious Dates' : 'Check This Date'}${selectedEvent ? ` for ${selectedEvent.icon} ${selectedEvent.label.split(' (')[0]}` : ''}`}
             </button>
           </form>
         </motion.div>
@@ -247,6 +300,74 @@ export default function MuhurtaPage() {
               className="flex flex-col items-center justify-center py-20 gap-4">
               <Loader className="w-8 h-8 text-gold-400 animate-spin"/>
               <p className="text-gray-400 text-sm">Consulting the Panchanga...</p>
+            </motion.div>
+          )}
+
+          {listData && !loading && (
+            <motion.div key="list" initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}
+              className="space-y-6">
+
+              <div className="rounded-2xl p-5 border border-gold-600/25 bg-gold-500/5">
+                <p className="font-serif text-xl text-gold-400 mb-1">
+                  {listData.event_icon} Best dates for {listData.event_label.split(' (')[0]}
+                </p>
+                <p className="text-gray-400 text-xs">
+                  {listData.count} most auspicious {listData.count === 1 ? 'date' : 'dates'} in the next {listData.searched_days} days
+                  {listData.personalized
+                    ? <span className="text-emerald-400"> · personalised for your birth star</span>
+                    : <span className="text-gray-500"> · general panchang (add your birth star above for a personal reading)</span>}
+                </p>
+              </div>
+
+              {listData.count === 0 && (
+                <div className="rounded-2xl p-6 border border-amber-500/40 bg-amber-500/5 text-center">
+                  <p className="text-amber-300 text-sm font-semibold mb-1">No auspicious dates found in this window</p>
+                  <p className="text-gray-400 text-xs">Try a longer "look ahead" range — some events have long barren stretches in the traditional calendar.</p>
+                </div>
+              )}
+
+              <div className="space-y-3">
+                {listData.dates.map((bd, i) => (
+                  <div key={bd.date} className="rounded-2xl p-5 bg-cosmic-900/50 border border-gold-600/15">
+                    <div className="flex flex-col md:flex-row md:items-start gap-4">
+                      <div className="w-11 h-11 rounded-full flex items-center justify-center text-lg font-bold shrink-0"
+                        style={{ background: bd.verdictColor + '20', color: bd.verdictColor }}>
+                        {i + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white font-semibold text-base">{bd.display}</p>
+                        <p className="text-gray-500 text-xs mt-0.5">
+                          {bd.vara} · {bd.nakshatra} · {bd.tithi} · {bd.yoga} yoga
+                        </p>
+                        {bd.tara && (
+                          <p className="text-emerald-400/90 text-xs mt-1.5">✦ {bd.tara} for you</p>
+                        )}
+                        {bd.slots?.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-3">
+                            {bd.slots.map((s, si) => (
+                              <span key={si}
+                                className="text-[11px] px-2.5 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+                                {s.start} – {s.end} · {s.name}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-center shrink-0">
+                        <p className="text-[11px] text-gray-500">Score</p>
+                        <p className="font-bold text-xl" style={{ color: bd.verdictColor }}>{bd.score}</p>
+                        <p className="text-[10px]" style={{ color: bd.verdictColor }}>{bd.verdict}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {listData.notes && (
+                <div className="rounded-2xl p-4 border border-gold-600/15 bg-cosmic-900/40">
+                  <p className="text-gray-400 text-xs leading-relaxed"><span className="text-gold-500">Note: </span>{listData.notes}</p>
+                </div>
+              )}
             </motion.div>
           )}
 
