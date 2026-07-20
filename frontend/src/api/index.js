@@ -180,12 +180,6 @@ export const dream = {
   interpret: (data) => api.post('/dream/interpret', data),
 };
 
-export const palmistry = {
-  getOptions:   ()     => api.get('/palmistry/options'),
-  analyse:      (data) => api.post('/palmistry/analyse', data),
-  analyseImage: (data) => api.post('/palmistry/analyse-image', data),
-};
-
 export const yoga = {
   analyse: (data) => api.post('/yoga/analyse', data),
 };

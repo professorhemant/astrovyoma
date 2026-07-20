@@ -10,7 +10,6 @@ const FREE_TOOLS_ITEMS = [
   { to:'/gochara',       icon:'🌍', label:'Gochara (Transit)' },
   { to:'/lal-kitab',    icon:'📖', label:'Lal Kitab' },
   { to:'/muhurta',              icon:'🕐', label:'Muhurta Calculator' },
-  { to:'/palmistry',            icon:'🖐️', label:'Palmistry & Face Reading' },
   { to:'/yoga-finder',          icon:'🔱', label:'Yoga Finder' },
   { to:'/join-as-astrologer',   icon:'⭐', label:'Become an Astrologer' },
 ];

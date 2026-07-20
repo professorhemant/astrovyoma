@@ -35,8 +35,6 @@ const crystalController         = require('../controllers/crystalController');
 const appointmentController     = require('../controllers/appointmentController');
 const kpController              = require('../controllers/kpController');
 const dreamController           = require('../controllers/dreamController');
-const palmistryController       = require('../controllers/palmistryController');
-const palmistryVisionController = require('../controllers/palmistryVisionController');
 const yogaController            = require('../controllers/yogaController');
 const muhurtaController         = require('../controllers/muhurtaController');
 const reportHistoryController   = require('../controllers/reportHistoryController');
@@ -232,10 +230,6 @@ router.post('/kp/analyse', kpController.analyse);
 // Dream Interpretation
 router.post('/dream/interpret', dreamController.interpret);
 
-// Palmistry — deterministic Hast Rekha Shastra engine (no AI at runtime)
-router.get('/palmistry/options', palmistryController.getOptions);
-router.post('/palmistry/analyse', palmistryController.analyse);
-router.post('/palmistry/analyse-image', palmistryVisionController.analyseImage);
 
 // Planetary Yoga Finder
 router.post('/yoga/analyse', yogaController.analyse);

@@ -64,7 +64,6 @@ import BookAppointmentPage from './pages/BookAppointmentPage';
 import MyAppointmentsPage from './pages/MyAppointmentsPage';
 import MuhurtaPage              from './pages/MuhurtaPage';
 import VastuPoojaPage           from './pages/VastuPoojaPage';
-import PalmistryPage            from './pages/PalmistryPage';
 import YogaFinderPage           from './pages/YogaFinderPage';
 import AboutUsPage              from './pages/AboutUsPage';
 import JoinAsAstrologerPage    from './pages/JoinAsAstrologerPage';
@@ -160,7 +159,6 @@ function AppLayout() {
             <Route path="/my-appointments" element={<ProtectedRoute><MyAppointmentsPage /></ProtectedRoute>} />
             <Route path="/muhurta"               element={<MuhurtaPage />} />
             <Route path="/vastu-pooja"           element={<VastuPoojaPage />} />
-            <Route path="/palmistry"             element={<PalmistryPage />} />
             <Route path="/yoga-finder"           element={<YogaFinderPage />} />
             <Route path="/about"                 element={<AboutUsPage />} />
             <Route path="/join-as-astrologer"   element={<JoinAsAstrologerPage />} />
