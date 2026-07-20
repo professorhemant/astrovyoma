@@ -321,8 +321,32 @@ function AstrologersTab() {
 
   async function handleDelete(id, name) {
     if (!window.confirm(`Delete astrologer "${name}"?`)) return;
-    try { await adminApi.deleteAstrologer(id); toast.success('Deleted'); load(); }
-    catch { toast.error('Failed'); }
+    try {
+      await adminApi.deleteAstrologer(id);
+      toast.success('Deleted');
+      load();
+    } catch (err) {
+      const d = err?.response?.data;
+      // The server refuses when the astrologer has billing history. Show why —
+      // a bare "Failed" left it impossible to tell a protected record from a
+      // real error — and let the admin confirm the wider delete explicitly.
+      if (err?.response?.status === 409 && d?.can_force) {
+        const ok = window.confirm(
+          `${d.error}\n\n${d.detail}\n\n` +
+          `Delete "${name}" AND its ${d.consultations} consultation(s) and ${d.appointments} appointment(s)? This cannot be undone.`
+        );
+        if (!ok) return;
+        try {
+          await adminApi.deleteAstrologer(id, true);
+          toast.success('Deleted with history');
+          load();
+        } catch (e2) {
+          toast.error(e2?.response?.data?.error || 'Failed to delete');
+        }
+        return;
+      }
+      toast.error(d?.error || 'Failed to delete');
+    }
   }
 
   async function handleToggleVerified(a) {

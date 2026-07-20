@@ -223,18 +223,35 @@ async function deleteAstrologer(req, res) {
     const consultations = await Consultation.count({ where: { astrologer_id: astrologerId }, transaction: t });
     const appointments = await Appointment.count({ where: { astrologer_id: astrologerId }, transaction: t });
 
-    if (consultations > 0 || appointments > 0) {
+    // Refuse by default: deleting an astrologer with trading history would
+    // destroy billing records. `force` is the deliberate override for cases
+    // where the history is itself disposable — seeded demo profiles and their
+    // test consultations — and the caller has been told what it will remove.
+    const force = req.query.force === 'true' || req.body?.force === true;
+
+    if ((consultations > 0 || appointments > 0) && !force) {
       await t.rollback();
       return res.status(409).json({
-        error: 'This astrologer has consultation or appointment history and cannot be deleted.',
-        detail: 'Deleting them would destroy billing records. Mark them unavailable instead.',
+        error: `"${astrologer.display_name}" has ${consultations} consultation(s) and ${appointments} appointment(s).`,
+        detail: 'Deleting removes those billing records too. Mark them unavailable instead, or confirm to delete everything.',
         consultations,
         appointments,
-        suggestion: 'set_unavailable',
+        can_force: true,
       });
     }
 
+    if (force && consultations > 0) {
+      const ids = (await Consultation.findAll({
+        where: { astrologer_id: astrologerId }, attributes: ['id'], transaction: t,
+      })).map(c => c.id);
+      if (ids.length) await Message.destroy({ where: { consultation_id: ids }, transaction: t });
+    }
+
     await Review.destroy({ where: { astrologer_id: astrologerId }, transaction: t });
+    if (force) {
+      await Consultation.destroy({ where: { astrologer_id: astrologerId }, transaction: t });
+      await Appointment.destroy({ where: { astrologer_id: astrologerId }, transaction: t });
+    }
     await Astrologer.destroy({ where: { id: astrologerId }, transaction: t });
     await t.commit();
     res.json({ success: true });

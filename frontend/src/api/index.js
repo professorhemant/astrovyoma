@@ -212,7 +212,7 @@ export const admin = {
   getAstrologers:      ()     => api.get('/admin/astrologers'),
   createAstrologer:    (data) => api.post('/admin/astrologers', data),
   updateAstrologer:    (id, data) => api.put(`/admin/astrologers/${id}`, data),
-  deleteAstrologer:    (id) => api.delete(`/admin/astrologers/${id}`),
+  deleteAstrologer:    (id, force) => api.delete(`/admin/astrologers/${id}${force ? '?force=true' : ''}`),
   getConsultations:    (params) => api.get('/admin/consultations', { params }),
   getTransactions:     (params) => api.get('/admin/transactions', { params }),
   getAppointments:     (params) => api.get('/admin/appointments', { params }),
