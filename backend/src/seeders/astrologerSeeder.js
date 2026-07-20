@@ -228,9 +228,24 @@ const REAL_ASTROLOGERS = [
   },
 ];
 
+// Identity is the phone number, not the display name. Matching on display_name
+// meant that renaming a pandit in the admin panel made the next deploy fail to
+// find them and create a duplicate — and because panditLogin resolves the
+// account by phone, a duplicate verified row can lock the real pandit out of
+// their own portal. Phone is what they actually log in with, so it is the
+// stable key. Compared on the last 10 digits, matching panditLogin's own
+// normalisation, so +91 prefixes and formatting differences don't cause a
+// spurious insert.
+const last10 = (v) => String(v || '').replace(/\D/g, '').slice(-10);
+
 async function seedRealAstrologers() {
+  const existingAll = await Astrologer.findAll({ attributes: ['id', 'display_name', 'phone', 'pin_hash'] });
+
   for (const data of REAL_ASTROLOGERS) {
-    const existing = await Astrologer.findOne({ where: { display_name: data.display_name } });
+    const key = last10(data.phone);
+    const existing = existingAll.find(a => key && last10(a.phone) === key)
+      || existingAll.find(a => a.display_name === data.display_name);
+
     if (!existing) {
       const pin_hash = await bcrypt.hash('7786', 10);
       await Astrologer.create({ ...data, pin_hash });

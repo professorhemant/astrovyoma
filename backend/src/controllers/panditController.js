@@ -7,17 +7,23 @@ async function panditLogin(req, res) {
     const { phone, pin } = req.body;
     if (!phone || !pin) return res.status(400).json({ error: 'Phone and PIN required' });
 
-    const normalised = phone.replace(/\D/g, '');
-    const astrologer = await Astrologer.findOne({
+    const normalised = phone.replace(/\D/g, '').slice(-10);
+
+    // Previously this was findOne({ where: { is_verified: true } }) — it took an
+    // arbitrary verified astrologer and then checked whether *that* row's phone
+    // matched. With one verified pandit it happened to work; with two it would
+    // authenticate only whichever row the database returned first and lock
+    // everyone else out. Resolve the account by the phone that was supplied.
+    const candidates = await Astrologer.findAll({
       where: { is_verified: true },
       attributes: ['id', 'display_name', 'photo_url', 'is_online', 'phone', 'pin_hash', 'free_minutes', 'price_per_min']
     });
 
-    // Match by last 10 digits of stored phone
-    const match = astrologer && astrologer.phone &&
-      astrologer.phone.replace(/\D/g, '').endsWith(normalised.slice(-10));
+    const astrologer = candidates.find(a =>
+      a.phone && a.phone.replace(/\D/g, '').slice(-10) === normalised
+    );
 
-    if (!match) return res.status(401).json({ error: 'Invalid phone or PIN' });
+    if (!astrologer) return res.status(401).json({ error: 'Invalid phone or PIN' });
 
     const pinOk = await bcrypt.compare(pin, astrologer.pin_hash || '');
     if (!pinOk) return res.status(401).json({ error: 'Invalid phone or PIN' });
