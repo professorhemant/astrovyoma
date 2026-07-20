@@ -305,7 +305,7 @@ export default function PalmistryPage() {
             🖐️ Palmistry Reading
           </h1>
           <p className="text-gray-400 text-sm max-w-md mx-auto leading-relaxed">
-            Select your palm characteristics below. Our deterministic Hast Rekha engine will generate your full reading — no photo, no AI guesswork.
+            Upload a palm photo or select your characteristics below. Either way, the reading itself comes from our deterministic Hast Rekha engine — a photo is only used to detect what is visible in it, never to invent the reading.
           </p>
         </motion.div>
 
