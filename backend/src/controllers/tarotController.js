@@ -1,5 +1,4 @@
-const Groq = require('groq-sdk');
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const { getGroq } = require('../services/groqClient');
 
 const CARD_INFO = {
   0:  { name: 'The Fool',           nameHi: 'मूर्ख',            ruler: 'Uranus',              meaning: 'new beginnings, freedom, innocence' },
@@ -95,7 +94,7 @@ ${cardLines}
 - एक प्रेरणादायक आशीर्वाद के साथ समाप्त करें`;
     }
 
-    const completion = await groq.chat.completions.create({
+    const completion = await getGroq().chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages: [
         { role: 'system', content: systemPrompt },

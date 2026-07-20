@@ -1,7 +1,6 @@
 'use strict';
-const Groq = require('groq-sdk');
+const { getGroq } = require('../services/groqClient');
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const ZODIAC_DASHA = {
   Aries:'Mars', Taurus:'Venus', Gemini:'Mercury', Cancer:'Moon',
@@ -44,7 +43,7 @@ exports.interpret = async (req, res) => {
 
     const userMessage = `${context ? context + '\n\n' : ''}Dream description:\n${dream_text.trim()}`;
 
-    const response = await groq.chat.completions.create({
+    const response = await getGroq().chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },

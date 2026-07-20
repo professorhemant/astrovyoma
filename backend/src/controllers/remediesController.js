@@ -1,7 +1,6 @@
-const Groq = require('groq-sdk');
+const { getGroq } = require('../services/groqClient');
 const { Kundali } = require('../models');
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const CATEGORIES = {
   career: 'Career & Finance',
@@ -95,7 +94,7 @@ Respond ONLY with valid JSON in this exact structure (no extra text before or af
   "affirmation": "A short powerful Vedic affirmation or Sanskrit shloka with meaning"
 }`;
 
-    const result = await groq.chat.completions.create({
+    const result = await getGroq().chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 1200,

@@ -1,7 +1,6 @@
-const Groq = require('groq-sdk');
+const { getGroq } = require('../services/groqClient');
 const { Consultation, Astrologer, Kundali } = require('../models');
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const histories = new Map(); // consultationId -> messages[]
 
 async function aiReply(req, res) {
@@ -53,7 +52,7 @@ ${kundaliContext ? '\n' + kundaliContext : ''}`;
 
     if (history.length > 20) history.splice(0, 2);
 
-    const result = await groq.chat.completions.create({
+    const result = await getGroq().chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages: [
         { role: 'system', content: systemPrompt },

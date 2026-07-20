@@ -1,7 +1,6 @@
-const Groq = require('groq-sdk');
+const { getGroq } = require('./groqClient');
 const { buildFocusedContext } = require('./questionRouter');
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // Routes the question to the houses/karakas/varga/dasha that actually govern it,
 // instead of dumping the whole chart and leaving the selection to the model.
@@ -31,7 +30,7 @@ GUIDELINES:
     { role: 'user', content: userMessage }
   ];
 
-  const response = await groq.chat.completions.create({
+  const response = await getGroq().chat.completions.create({
     model: 'llama-3.3-70b-versatile',
     messages,
     max_tokens: 1024,
@@ -64,7 +63,7 @@ ${buildKundaliContext(kundaliData, userMessage)}
     { role: 'user', content: userMessage }
   ];
 
-  const response = await groq.chat.completions.create({
+  const response = await getGroq().chat.completions.create({
     model: 'llama-3.3-70b-versatile',
     messages,
     max_tokens: 1024,
