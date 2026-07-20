@@ -143,12 +143,10 @@ async function callModel(groq, mediaType, data, hand) {
   });
   const raw = res.choices?.[0]?.message?.content;
   const parsed = extractJson(raw);
-  if (!parsed) lastRaw = typeof raw === 'string' ? raw : JSON.stringify(raw);
+  // Log a short excerpt only — never the image, never the full body.
+  if (!parsed) console.warn('[palmistryVision] unparseable output:', String(raw ?? '').slice(0, 200));
   return parsed;
 }
-
-// TEMPORARY: retains the last unparseable model output for diagnosis.
-let lastRaw = null;
 
 async function analyseImage(req, res) {
   try {
@@ -179,11 +177,7 @@ async function analyseImage(req, res) {
     // is common enough that failing the user on it would be needless.
     let v = await callModel(groq, mediaType, data, hand);
     if (!v) v = await callModel(groq, mediaType, data, hand);
-    if (!v) return res.status(502).json({
-      error: 'Could not read the analysis result. Please try again.',
-      // TEMPORARY: raw model output, for diagnosis. Remove once fixed.
-      detail: (lastRaw || '(empty response)').slice(0, 600),
-    });
+    if (!v) return res.status(502).json({ error: 'Could not read the analysis result. Please try again.' });
 
     if (v.is_palm === false || v.is_palm === 'false') {
       return res.status(422).json({ error: "That doesn't look like an open palm. Please upload a clear photo of your palm." });
@@ -253,11 +247,7 @@ async function analyseImage(req, res) {
         detail: `Vision model "${MODEL}" was rejected by Groq. Set PALM_VISION_MODEL to a current vision model.`,
       });
     }
-    res.status(500).json({
-      error: 'Palm analysis failed. Please try again.',
-      // TEMPORARY: surfaced to diagnose the production failure; remove once fixed.
-      detail: msg.slice(0, 300),
-    });
+    res.status(500).json({ error: 'Palm analysis failed. Please try again.' });
   }
 }
 
