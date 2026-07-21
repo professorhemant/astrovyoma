@@ -429,8 +429,13 @@ function updateSiteSettings(req, res) {
 async function setupAdmin(req, res) {
   try {
     const { email, secret } = req.body;
-    const adminSecret = process.env.ADMIN_SECRET || 'astrovyoma_admin_2024';
-    if (secret !== adminSecret) return res.status(403).json({ error: 'Invalid secret' });
+    // Fail closed. The old fallback ('astrovyoma_admin_2024') lived in source, so
+    // anyone reading the repo could promote any account to admin whenever
+    // ADMIN_SECRET was unset in the environment. With no secret configured the
+    // endpoint is disabled outright rather than guarded by a public default.
+    const adminSecret = process.env.ADMIN_SECRET;
+    if (!adminSecret) return res.status(503).json({ error: 'Admin setup is disabled' });
+    if (!secret || secret !== adminSecret) return res.status(403).json({ error: 'Invalid secret' });
     const user = await User.findOne({ where: { email } });
     if (!user) return res.status(404).json({ error: 'User not found with this email' });
     await User.update({ role: 'admin' }, { where: { email } });
