@@ -43,7 +43,7 @@ RUDRAKSHA per planet (mukhi → ruling planet → deity):
 SIGNATURE remedies by problem (prefer these established ones over generic filler):
 - Delayed/broken marriage: Katyayani Mantra "Om Katyayani Mahamaye Mahayoginyadhishwari Nandagopasutam Devi Patim Me Kuru Te Namah"; worship Shiva-Parvati / Gauri Puja; 16 Somvar (Monday) vrat; Gauri-Shankar Rudraksha. Women strengthen JUPITER (husband karaka → Yellow Sapphire); men strengthen VENUS (wife karaka → Diamond/White Sapphire). Infer the seeker's gender from the description when possible and emphasise accordingly.
 - Career/job/finance: strengthen 10th lord, Saturn, Sun; Hanuman Chalisa; "Om Sham Shanaishcharaya Namah" for Saturn; Aditya Hridayam / Surya Namaskar for Sun; serve/feed workers and the poor.
-- Debt & losses: Rin-Mukteshwar / Rin Mochan Mangal Stotra; Kanakadhara Stotram; Lakshmi puja on Fridays.
+- Debt & losses: Rin Mochan Mangal Stotra — dedicated to MANGAL (Mars), deity is Lord Mangal/Hanuman, begin on a TUESDAY (not Saturday, not Ganesha/Saturn); plus Kanakadhara Stotram and Lakshmi puja on Fridays for prosperity. Debt karaka is Mars (the "rin"/loan planet) and Saturn.
 - Enemies/litigation & obstacles: Bagalamukhi or Hanuman worship; "Om Gam Ganapataye Namaha"; Sundarkand path.
 - Children/fertility: Santan Gopal Mantra "Om Devakisut Govind Vasudev Jagatpate, Dehi Me Tanayam Krishna Twamaham Sharanam Gatah"; worship Bala Gopala; strengthen Jupiter (5th-house karaka).
 - Health/vitality: Mahamrityunjaya Mantra; strengthen the Lagna lord, Sun (vitality) and Moon (mind).
@@ -101,7 +101,7 @@ ${kundaliContext}
 Problem Category: ${categoryLabel}
 Problem Description: ${problem_description}
 
-Based on the birth chart above, analyze which planets and houses are involved in this problem, then prescribe highly personalized Vedic remedies. You may reason freely about which planets are afflicted and why, but for every gemstone (stone, metal, finger, day), rudraksha (mukhi and its ruling planet) and signature mantra/puja you MUST draw from the AUTHORITATIVE VEDIC CORRESPONDENCES above — never assign a gemstone to the wrong metal or finger, never attribute a rudraksha mukhi to the wrong planet, and always prefer the established signature remedy for the problem over a generic one. Recommend the gemstone/rudraksha of the planet you are actually strengthening for this problem.
+Based on the birth chart above, analyze which planets and houses are involved in this problem, then prescribe highly personalized Vedic remedies. You may reason freely about which planets are afflicted and why, but for every gemstone (stone, metal, finger, day), rudraksha (mukhi and its ruling planet) and signature mantra/puja you MUST draw from the AUTHORITATIVE VEDIC CORRESPONDENCES above — never assign a gemstone to the wrong metal or finger, never attribute a rudraksha mukhi to the wrong planet, and always prefer the established signature remedy for the problem over a generic one. Recommend the gemstone/rudraksha of the planet you are actually strengthening for this problem. For every mantra, set "deity" to its true presiding deity and "count" to the day/frequency that traditionally goes with it — do not attach a stotra to the wrong deity or day.
 
 Respond ONLY with valid JSON in this exact structure (no extra text before or after):
 {
