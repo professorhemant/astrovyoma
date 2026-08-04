@@ -246,7 +246,7 @@ export default function ChatConsultPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ paddingTop: 0 }}>
+    <div className="h-screen flex flex-col overflow-hidden" style={{ paddingTop: 0 }}>
 
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-cosmic-950/95 backdrop-blur-xl border-b border-gold-500/20 px-4 py-3">
@@ -295,8 +295,10 @@ export default function ChatConsultPage() {
         )}
       </AnimatePresence>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 pb-28" style={{ paddingTop:'80px' }}>
+      {/* Messages — min-h-0 lets this flex child shrink so it scrolls INTERNALLY
+          instead of growing the page and letting the document scroll into dead
+          space (which pushed new messages off-screen after auto-scroll). */}
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-28" style={{ paddingTop:'80px' }}>
         <div className="max-w-2xl mx-auto py-4">
 
           {/* Rate info chip */}
