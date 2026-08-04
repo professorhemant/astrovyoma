@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -104,13 +104,32 @@ export default function ChatConsultPage() {
     return () => clearInterval(timerRef.current);
   }, [ended]);
 
-  // Poll messages every 4s (catch any out-of-sync state)
+  // Poll messages every 4s (catch any out-of-sync state).
+  // The server is the source of truth for persisted messages, but a naive
+  // setMessages(data) clobbered local state: it wiped the client-only greeting
+  // and, when an in-flight poll resolved just after a freshly-sent message or
+  // AI reply was appended, it overwrote them with a staler list — so the reply
+  // would blink in and then vanish until the next poll. Merge instead: take the
+  // server rows (they carry stable UUID ids) and keep any optimistic messages
+  // (numeric ids) that haven't shown up server-side yet. Return the previous
+  // array unchanged when nothing differs, so we don't re-render / auto-scroll
+  // every 4s while the user is reading.
   useEffect(() => {
     if (ended) return;
     const poll = async () => {
       try {
         const { data } = await consultationsApi.getMessages(consultationId);
-        setMessages(data);
+        if (!Array.isArray(data)) return;
+        setMessages(prev => {
+          const serverKeys = new Set(data.map(m => `${m.sender_type}|${m.content}`));
+          const pending = prev.filter(
+            m => typeof m.id === 'number' && !serverKeys.has(`${m.sender_type}|${m.content}`)
+          );
+          const next = [...data, ...pending];
+          const same = next.length === prev.length
+            && next.every((m, i) => prev[i] && prev[i].id === m.id && prev[i].content === m.content);
+          return same ? prev : next;
+        });
       } catch {}
     };
     poll();
@@ -123,16 +142,15 @@ export default function ChatConsultPage() {
     walletApi.getBalance().then(r => setBalance(parseFloat(r.data.balance))).catch(() => {});
   }, []);
 
-  // Opening greeting from astrologer
-  useEffect(() => {
-    const greeting = {
-      id:          'greeting',
-      sender_type: 'astrologer',
-      content:     `Namaste! I am ${astrologerName}${specialties.length ? `, specialising in ${specialties.slice(0, 2).join(' & ')}` : ''}. How may I guide you today? Please feel free to share your question — I'm here to help.`,
-      created_at:  new Date().toISOString()
-    };
-    setMessages([greeting]);
-  }, [astrologerName]);
+  // Opening greeting from the astrologer. It is not persisted server-side, so
+  // it is rendered as a static bubble (below) rather than stored in `messages`
+  // — otherwise the 4s poll, which mirrors the server, would erase it.
+  const greeting = useMemo(() => ({
+    id:          'greeting',
+    sender_type: 'astrologer',
+    content:     `Namaste! I am ${astrologerName}${specialties.length ? `, specialising in ${specialties.slice(0, 2).join(' & ')}` : ''}. How may I guide you today? Please feel free to share your question — I'm here to help.`,
+    created_at:  new Date().toISOString()
+  }), [astrologerName, specialties]);
 
   const minsRemaining = balance / pricePerMin;
 
@@ -287,6 +305,8 @@ export default function ChatConsultPage() {
               ₹{pricePerMin}/min · Chat with {astrologerName}
             </span>
           </div>
+
+          <MessageBubble key="greeting" msg={greeting} astrologerName={astrologerName} />
 
           {messages.map((msg, i) => (
             <MessageBubble key={msg.id || i} msg={msg} astrologerName={astrologerName} />
