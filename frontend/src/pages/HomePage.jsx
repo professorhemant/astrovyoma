@@ -114,7 +114,7 @@ const HERO_OVERLAY_LEFT = '15%';
 // artwork. A tall box on a narrow screen makes object-fit:cover throw away the
 // sides — at 77vh on a phone that is 76% of the width, which slices the
 // headline in half. Keep the box short until there is room to be cinematic.
-const heroBannerClass = 'w-full block object-cover object-center h-72 sm:h-80 md:h-[clamp(300px,77vh,880px)]';
+const heroBannerClass = 'w-full block object-cover object-center h-80 sm:h-96 md:h-[clamp(300px,77vh,880px)]';
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
@@ -189,12 +189,12 @@ export default function HomePage() {
               same figure lands the wheel behind the navbar, so anchor it by
               percentage there, clear of the headline and above the clock. */}
           <div
-            className="absolute flex flex-col items-center justify-center pointer-events-none top-[53%] md:top-[calc(50%-56px)]"
+            className="absolute flex flex-col items-center justify-center pointer-events-none top-[54%] md:top-[calc(50%-56px)]"
             style={{ left: HERO_OVERLAY_LEFT, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
             <img
               src="/zodiac-mandala.png"
               alt="Vedic Zodiac Mandala"
-              className="w-16 md:w-56 lg:w-72"
+              className="w-24 md:w-56 lg:w-72"
               style={{
                 animation: 'spinCW 120s linear infinite',
                 willChange: 'transform',
@@ -215,7 +215,7 @@ export default function HomePage() {
               disturbing anything around it. */}
           <div className="absolute pointer-events-none"
             style={{ bottom: '8px', left: HERO_OVERLAY_LEFT, transform: 'translateX(-50%)', zIndex: 10 }}>
-            <div className="scale-[0.42] md:scale-100 origin-bottom">
+            <div className="scale-[0.38] md:scale-100 origin-bottom">
               <VedicClock />
             </div>
           </div>
