@@ -93,7 +93,9 @@ export default function ChatbotPage() {
         }} />
       </div>
 
-      <div className="relative z-10 flex flex-col h-screen pt-16">
+      {/* Navbar is h-16, plus a desktop-only Free Tools sub-bar — clear both, or it
+          covers this page's top bar and eats its clicks. */}
+      <div className="relative z-10 flex flex-col h-screen pt-16 md:pt-[104px]">
 
         {/* ── Premium Header ── */}
         <div className="flex-shrink-0 px-4 md:px-8 py-4 border-b border-gold-600/15 backdrop-blur-md"

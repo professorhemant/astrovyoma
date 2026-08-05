@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Send, Volume2, VolumeX, RefreshCw, ChevronLeft, Mic, MicOff } from 'lucide-react';
+import { Send, Volume2, VolumeX, RefreshCw, ChevronLeft, Mic, MicOff, LogIn } from 'lucide-react';
 import { chatbot as chatbotApi, kundali as kundaliApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 
@@ -337,7 +337,9 @@ export default function PanditJiPage() {
         ))}
       </div>
 
-      <div className="relative z-10 flex flex-col min-h-screen pt-16">
+      {/* Navbar is h-16, plus a desktop-only Free Tools sub-bar — clear both, or it
+          covers this page's top bar and eats its clicks. */}
+      <div className="relative z-10 flex flex-col min-h-screen pt-16 md:pt-[104px]">
 
         {/* ── Top bar ── */}
         <div className="flex-shrink-0 flex items-center justify-between px-4 md:px-8 py-3 border-b backdrop-blur-md"
@@ -355,6 +357,13 @@ export default function PanditJiPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Pandits used to reach their portal at this URL — send them on */}
+            <Link to="/pandit-portal" title="Pandit login"
+              className="flex items-center gap-1.5 h-9 px-2.5 rounded-full text-xs transition-colors hover:bg-gold-600/10"
+              style={{ border: '1px solid rgba(201,168,76,0.2)', color: '#C9A84C' }}>
+              <LogIn className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Pandit login</span>
+            </Link>
             <button onClick={() => { setVoiceEnabled(v => { if (v) stopSpeaking(); return !v; })}
             } title={voiceEnabled ? 'Mute' : 'Unmute'}
               className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
