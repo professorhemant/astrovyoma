@@ -120,11 +120,11 @@ export default function PlansPage() {
 
   const isCurrent = (planId) => myPlan?.plan === planId;
 
+  // relative z-10: CosmicBackground is a fixed z-0 layer, so it paints over any
+  // in-flow content that has no stacking context of its own. The cards kept
+  // their transforms and stayed visible; this header lost its one the moment
+  // its entry animation finished, and vanished.
   return (
-    {/* relative z-10: CosmicBackground is a fixed z-0 layer, so it paints over
-        any in-flow content that has no stacking context of its own. The cards
-        kept their transforms and stayed visible; this header lost its one the
-        moment its entry animation finished, and vanished. */}
     <div className="relative z-10 min-h-screen pt-32 pb-16 px-4">
       <div className="max-w-6xl mx-auto">
 

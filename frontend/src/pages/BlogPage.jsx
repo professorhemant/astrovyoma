@@ -76,9 +76,9 @@ export default function BlogPage() {
     setActiveTab('all');
   };
 
+  // relative z-10: without a stacking context the fixed z-0 CosmicBackground
+  // paints over this page's heading and filters.
   return (
-    {/* relative z-10: without a stacking context the fixed z-0 CosmicBackground
-        paints over this page's heading and filters. */}
     <div className="relative z-10 min-h-screen pt-32 pb-16 px-4">
       <div className="max-w-6xl mx-auto">
 
