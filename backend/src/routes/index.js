@@ -134,7 +134,10 @@ router.post('/chatbot/pandit-clear', auth, chatbotController.clearPanditHistory)
 
 // Wallet routes
 router.get('/wallet/balance', auth, walletController.getBalance);
-router.post('/wallet/recharge', auth, walletController.recharge);
+router.get('/wallet/packs', walletController.getPacks);
+router.post('/wallet/recharge/order',  auth, walletController.createRechargeOrder);
+router.post('/wallet/recharge/verify', auth, walletController.verifyRecharge);
+router.post('/wallet/recharge', auth, walletController.legacyRecharge); // withdrawn — see controller
 router.get('/wallet/transactions', auth, walletController.getTransactions);
 
 // Horoscope routes

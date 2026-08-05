@@ -323,20 +323,11 @@ const PAATHS = [
 ];
 
 const crypto  = require('crypto');
-const Razorpay = require('razorpay');
+const { getRazorpay } = require('../services/razorpay');
 
 // ── Bookings (in-memory for now) ──────────────────────────────────────────
 const bookings = [];
 let bookingCounter = 1000;
-
-function getRazorpay() {
-  const key_id     = process.env.RAZORPAY_KEY_ID;
-  const key_secret = process.env.RAZORPAY_KEY_SECRET;
-  if (!key_id || !key_secret || key_id === 'your_razorpay_key') {
-    throw new Error('Razorpay credentials not configured');
-  }
-  return new Razorpay({ key_id, key_secret });
-}
 
 function resolvePrice(paath, variant) {
   if (paath.variants && variant) {

@@ -1,6 +1,6 @@
 const crypto  = require('crypto');
-const Razorpay = require('razorpay');
 const { User, Subscription } = require('../models');
+const { getRazorpay } = require('../services/razorpay');
 
 const PLANS = {
   silver: {
@@ -71,13 +71,6 @@ const FREE_PLAN = {
   ],
   notIncluded: ['PDF downloads', 'Extended horoscope', 'Consultations'],
 };
-
-function getRazorpay() {
-  const key_id     = process.env.RAZORPAY_KEY_ID;
-  const key_secret = process.env.RAZORPAY_KEY_SECRET;
-  if (!key_id || !key_secret) throw new Error('Razorpay credentials not configured');
-  return new Razorpay({ key_id, key_secret });
-}
 
 exports.getPlans = (req, res) => {
   res.json({ plans: [FREE_PLAN, PLANS.silver, PLANS.gold, PLANS.platinum] });

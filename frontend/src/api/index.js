@@ -67,7 +67,9 @@ export const chatbot = {
 
 export const wallet = {
   getBalance: () => api.get('/wallet/balance'),
-  recharge: (amount) => api.post('/wallet/recharge', { amount }),
+  getPacks: () => api.get('/wallet/packs'),
+  createRechargeOrder: (amount) => api.post('/wallet/recharge/order', { amount }),
+  verifyRecharge: (payload) => api.post('/wallet/recharge/verify', payload),
   getTransactions: (params) => api.get('/wallet/transactions', { params })
 };
 

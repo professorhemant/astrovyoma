@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { subscriptions } from '../api';
 import { useAuth } from '../context/AuthContext';
+import { loadRazorpay } from '../utils/razorpay';
 
 const PLAN_STYLES = {
   free:     { border:'border-cosmic-700',       badge:'',                        btn:'bg-white/10 hover:bg-white/15 text-white border border-white/20' },
@@ -18,17 +19,6 @@ const ICON_BG = {
   gold:     'bg-gold-500/20 text-gold-400',
   platinum: 'bg-violet-500/20 text-violet-400',
 };
-
-function loadRazorpay() {
-  return new Promise(resolve => {
-    if (window.Razorpay) { resolve(true); return; }
-    const s = document.createElement('script');
-    s.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    s.onload  = () => resolve(true);
-    s.onerror = () => resolve(false);
-    document.body.appendChild(s);
-  });
-}
 
 export default function PlansPage() {
   const { user } = useAuth();

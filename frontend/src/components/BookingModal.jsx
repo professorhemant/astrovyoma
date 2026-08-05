@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { pooja as poojaApi } from '../api';
+import { loadRazorpay as loadRazorpayScript } from '../utils/razorpay';
 
 const TIME_SLOTS = [
   'Morning (5:30 – 8:00 AM)',
@@ -11,17 +12,6 @@ const TIME_SLOTS = [
   'Evening (4:00 – 7:00 PM)',
   'Flexible (Pandit Ji\'s discretion)',
 ];
-
-function loadRazorpayScript() {
-  return new Promise(resolve => {
-    if (window.Razorpay) { resolve(true); return; }
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.onload  = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-}
 
 export default function BookingModal({ paath, onClose }) {
   const [form, setForm] = useState({
