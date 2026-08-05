@@ -69,8 +69,9 @@ async function generateKundali(req, res) {
 async function getMyKundali(req, res) {
   try {
     const kundali = await Kundali.findOne({ where: { user_id: req.user.id } });
-    if (!kundali) return res.status(404).json({ error: 'Kundali not found. Please generate your birth chart first.' });
-    res.json(kundali);
+    // Not having generated a chart yet is an ordinary empty state, not an error:
+    // answer 200/null so callers can tell it apart from a real failure.
+    res.json(kundali || null);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch Kundali' });
   }
