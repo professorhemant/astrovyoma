@@ -222,54 +222,17 @@ export default function HomePage() {
 
         </section>
 
-        {/* ── CTA Buttons — Row 1 ── */}
-        {/* Two columns on a phone. Nine of these stacked one per line filled the
-            whole screen with buttons; the primary CTA keeps the full width. */}
-        <div className="relative z-10 grid grid-cols-2 sm:flex sm:flex-row gap-2.5 sm:gap-3 justify-center items-stretch pt-3 pb-3 px-4 -mt-[10px]">
-          <Link to="/kundali" className="btn-gold col-span-2 sm:col-span-1 px-3 sm:px-7 py-3 text-xs font-semibold flex items-center justify-center gap-2">
+        {/* ── CTA Buttons ── */}
+        {/* The seven tool pills that used to sit here (Tarot, Book Pooja, Astro
+            Mall, Vastu, Namkaran, Festivals, Crystals) now live under Tools ▾
+            and Shop ▾ in the navbar. Only the two conversion paths stay on the
+            hero. Two-up on a phone, side by side on desktop. */}
+        <div className="relative z-10 grid grid-cols-2 sm:flex sm:flex-row gap-2.5 sm:gap-3 justify-center items-stretch pt-3 pb-4 px-4 -mt-[10px]">
+          <Link to="/kundali" className="btn-gold px-3 sm:px-7 py-3 text-xs font-semibold flex items-center justify-center gap-2">
             Get Free Kundali <ChevronRight className="w-3.5 h-3.5" />
           </Link>
           <Link to="/astrologers" className="btn-outline-gold px-3 sm:px-7 py-3 text-xs font-medium flex items-center justify-center gap-2">
             Talk to Astrologer
-          </Link>
-          <Link to="/tarot"
-            className="flex items-center justify-center gap-2 px-3 sm:px-7 py-3 text-xs font-semibold rounded-full transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #3b0764 0%, #1e0533 100%)', border: '2px solid rgba(168,85,247,0.6)', color: '#C084FC', boxShadow: '0 4px 20px rgba(168,85,247,0.2)' }}>
-            🔮 Tarot Card Reader
-          </Link>
-          <Link to="/book-pooja"
-            className="flex items-center justify-center gap-2 px-3 sm:px-7 py-3 text-xs font-semibold rounded-full transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #7c2d12 0%, #431407 100%)', border: '2px solid rgba(251,146,60,0.6)', color: '#FBB042', boxShadow: '0 4px 20px rgba(251,146,60,0.2)' }}>
-            🪔 Book Pooja
-          </Link>
-          <Link to="/mall"
-            className="flex items-center justify-center gap-2 px-3 sm:px-7 py-3 text-xs font-semibold rounded-full transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #064e3b 0%, #022c22 100%)', border: '2px solid rgba(52,211,153,0.6)', color: '#6EE7B7', boxShadow: '0 4px 20px rgba(52,211,153,0.2)' }}>
-            🛍️ Astro Mall
-          </Link>
-        </div>
-
-        {/* ── CTA Buttons — Row 2 ── */}
-        <div className="relative z-10 grid grid-cols-2 sm:flex sm:flex-row gap-2.5 sm:gap-2 justify-center items-stretch pb-4 px-4">
-          <Link to="/vastu"
-            className="flex items-center justify-center gap-2 px-3 sm:px-6 py-2 text-xs font-semibold rounded-full transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #0c2a3a 0%, #071520 100%)', border: '2px solid rgba(56,189,248,0.55)', color: '#7DD3FC', boxShadow: '0 4px 16px rgba(56,189,248,0.18)' }}>
-            🏠 Vastu Shastra
-          </Link>
-          <Link to="/namkaran"
-            className="flex items-center justify-center gap-2 px-3 sm:px-6 py-2 text-xs font-semibold rounded-full transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #3a0c2a 0%, #200715 100%)', border: '2px solid rgba(244,114,182,0.55)', color: '#F9A8D4', boxShadow: '0 4px 16px rgba(244,114,182,0.18)' }}>
-            🍼 Namkaran Tool
-          </Link>
-          <Link to="/festivals"
-            className="flex items-center justify-center gap-2 px-3 sm:px-6 py-2 text-xs font-semibold rounded-full transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #3a2a0c 0%, #201507 100%)', border: '2px solid rgba(251,191,36,0.55)', color: '#FDE68A', boxShadow: '0 4px 16px rgba(251,191,36,0.18)' }}>
-            🗓️ Festival Calendar
-          </Link>
-          <Link to="/crystals"
-            className="flex items-center justify-center gap-2 px-3 sm:px-6 py-2 text-xs font-semibold rounded-full transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #0c0c3a 0%, #070720 100%)', border: '2px solid rgba(129,140,248,0.55)', color: '#A5B4FC', boxShadow: '0 4px 16px rgba(129,140,248,0.18)' }}>
-            💎 Crystal &amp; Gem Guide
           </Link>
         </div>
 
