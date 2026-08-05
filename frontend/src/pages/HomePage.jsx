@@ -590,7 +590,7 @@ export default function HomePage() {
               <div>
                 <h4 className="text-gold-400 text-sm font-medium mb-3">Platform</h4>
                 <ul className="space-y-2 text-gray-400 text-sm">
-                  {[['Kundali','/kundali'],['Find Purpose','/purpose'],['Astrologers','/astrologers'],['Talk to AstroVyoma AI','/chat'],['About Us','/about']].map(([l,h]) => (
+                  {[['Kundali','/kundali'],['Find Purpose','/purpose'],['Astrologers','/astrologers'],['Talk to AstroVyoma AI','/chat'],['Blog','/blog'],['About Us','/about'],['Become an Astrologer','/join-as-astrologer']].map(([l,h]) => (
                     <li key={l}><Link to={h} className="hover:text-gold-400 transition-colors">{l}</Link></li>
                   ))}
                 </ul>
