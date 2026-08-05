@@ -207,6 +207,32 @@ export default function HomePage() {
 
         </section>
 
+        {/* ── Mandala + Vedic clock, mobile ──────────────────────────────────
+            On md+ these sit on the banner itself. A phone hero is 224px tall
+            and the two pieces are 224px and 200x228, so overlaying them there
+            would bury the headline. Give them their own band under it instead,
+            side by side, at a size a phone can actually show. */}
+        <div className="md:hidden flex items-start justify-center gap-5 px-4 pt-5 pb-2">
+          <div className="flex flex-col items-center">
+            <img
+              src="/zodiac-mandala.png"
+              alt="Vedic Zodiac Mandala"
+              className="w-28"
+              style={{ animation: 'spinCW 120s linear infinite', willChange: 'transform', backfaceVisibility: 'hidden' }}
+            />
+            <p style={{ fontFamily: 'serif', color: '#C9A84C', fontSize: '0.62rem', letterSpacing: '0.1em', marginTop: '8px', textShadow: '0 0 14px rgba(201,168,76,0.8)', textAlign: 'center' }}>
+              यत्र ब्रह्माण्डे तत्र पिण्डे
+            </p>
+          </div>
+          {/* VedicClock lays out at a fixed 200x228, so scale it inside a box
+              of the scaled size — transform alone would not shrink its slot. */}
+          <div style={{ width: 130, height: 148, overflow: 'hidden', flexShrink: 0 }}>
+            <div style={{ transform: 'scale(0.65)', transformOrigin: 'top left' }}>
+              <VedicClock />
+            </div>
+          </div>
+        </div>
+
         {/* ── CTA Buttons — Row 1 ── */}
         <div className="relative z-10 flex flex-col sm:flex-row gap-3 justify-center items-center pt-3 pb-3 px-4 -mt-[10px]">
           <Link to="/kundali" className="btn-gold px-7 py-3 text-xs font-semibold flex items-center justify-center gap-2">
