@@ -3,6 +3,16 @@ import { auth as authApi } from '../api';
 
 const AuthContext = createContext(null);
 
+// The user record is flat — id, name, email, phone, role, wallet_balance,
+// onboarding_complete — so a shallow compare settles it.
+function sameUser(a, b) {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  const keys = Object.keys(a);
+  if (keys.length !== Object.keys(b).length) return false;
+  return keys.every(k => a[k] === b[k]);
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
@@ -15,7 +25,11 @@ export function AuthProvider({ children }) {
       setToken(savedToken);
       setUser(JSON.parse(savedUser));
       authApi.getMe().then(res => {
-        setUser(res.data);
+        // Hold on to the object we already hydrated when the refresh says the
+        // same thing. A fresh object with identical fields is still a new
+        // identity, and that re-runs every consumer effect keyed on `user` —
+        // which is a second copy of each of their fetches.
+        setUser(prev => (sameUser(prev, res.data) ? prev : res.data));
         localStorage.setItem('astrovyoma_user', JSON.stringify(res.data));
       }).catch(() => {
         localStorage.removeItem('astrovyoma_token');
