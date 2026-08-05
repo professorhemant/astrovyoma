@@ -1,9 +1,16 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { User } = require('../models');
+const { User, Transaction, sequelize } = require('../models');
 const { generateOtp, storeOtp, verifyOtp, secondsUntilResendAllowed, sendPasswordResetEmail } = require('../services/otpService');
 
 const MIN_PASSWORD_LENGTH = 8;
+
+// Credited once, at account creation. Set WELCOME_BONUS=0 to switch the offer
+// off without a deploy — the signup page copy is written for the ₹50 default,
+// so change it there too if this moves.
+const WELCOME_BONUS = Number.isFinite(Number(process.env.WELCOME_BONUS))
+  ? Number(process.env.WELCOME_BONUS)
+  : 50;
 // One reset email per address per minute, so the endpoint can't be used to
 // spam someone's inbox (or burn the Gmail sending quota).
 const RESET_THROTTLE_MS = 60 * 1000;
@@ -24,11 +31,39 @@ async function register(req, res) {
     if (existingUser) return res.status(409).json({ error: 'User already exists with this email or phone' });
 
     const password_hash = await bcrypt.hash(password, 12);
-    const user = await User.create({ name, email: email || null, phone: phone || null, password_hash });
+
+    // The bonus is part of creating the account rather than a follow-up write:
+    // signup is the only moment it can be awarded, so a credit that failed on
+    // its own would leave an account permanently short with nothing in the
+    // ledger to explain it. Both rows land or neither does.
+    const user = await sequelize.transaction(async (t) => {
+      const created = await User.create({
+        name,
+        email: email || null,
+        phone: phone || null,
+        password_hash,
+        wallet_balance: WELCOME_BONUS,
+      }, { transaction: t });
+
+      if (WELCOME_BONUS > 0) {
+        await Transaction.create({
+          user_id:       created.id,
+          type:          'bonus',
+          amount:        WELCOME_BONUS,
+          description:   'Welcome bonus on signup',
+          balance_after: WELCOME_BONUS,
+          reference_id:  `welcome:${created.id}`,
+        }, { transaction: t });
+      }
+
+      return created;
+    });
+
     const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
     res.status(201).json({
       token,
+      welcome_bonus: WELCOME_BONUS,
       user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role, wallet_balance: user.wallet_balance }
     });
   } catch (err) {

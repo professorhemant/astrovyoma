@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { Eye, EyeOff, Loader } from 'lucide-react';
+import { Eye, EyeOff, Loader, Gift } from 'lucide-react';
 import { auth as authApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 
@@ -28,7 +28,10 @@ export default function RegisterPage() {
         password: form.password,
       });
       login(res.data.user, res.data.token);
-      toast.success('Welcome to AstroVyoma! ✦');
+      const bonus = Number(res.data.welcome_bonus) || 0;
+      toast.success(bonus > 0
+        ? `Welcome to AstroVyoma! ₹${bonus} added to your wallet ✦`
+        : 'Welcome to AstroVyoma! ✦');
       navigate('/kundali');
     } catch (err) {
       toast.error(err.response?.data?.error || 'Registration failed');
@@ -51,6 +54,10 @@ export default function RegisterPage() {
           </Link>
           <h1 className="font-serif text-3xl text-gold-400 mb-1">Begin Your Journey</h1>
           <p className="text-gray-300 text-sm">Free Kundali • AI guidance • Expert astrologers</p>
+          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-gold-500/40 bg-gold-500/10 px-4 py-1.5">
+            <Gift className="w-4 h-4 text-gold-400" />
+            <span className="text-gold-300 text-sm">Get <strong className="text-gold-400">₹50</strong> free in your wallet</span>
+          </div>
         </div>
 
         <motion.form onSubmit={handleRegister}
