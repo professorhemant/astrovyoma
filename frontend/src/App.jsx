@@ -108,7 +108,7 @@ function AppLayout() {
             <Route path="/kundali" element={<KundaliPage />} />
             <Route path="/purpose" element={<PurposePage />} />
             <Route path="/astrologers" element={<AstrologersPage />} />
-            <Route path="/pandit" element={<PanditPortalPage />} />
+            <Route path="/pandit-portal" element={<PanditPortalPage />} />
             <Route path="/astrologers/:id" element={<AstrologerDetailPage />} />
             <Route path="/consult/:id" element={<ProtectedRoute><ConsultationPage /></ProtectedRoute>} />
             <Route path="/chat" element={<ChatbotPage />} />

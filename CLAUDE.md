@@ -43,5 +43,7 @@
 - Used for both Lagna (D-1) and Navamsha (D-9) charts — same component, different `lagna` prop
 
 ## Pandit Portal
-- URL: /pandit
+- URL: /pandit-portal (astrologer-side login: online toggle, earnings)
 - Login: mobile 9460307786 / PIN 7786 (Pt. Pramod Kumar Asopa)
+- Do NOT put this back on /pandit — that path is the customer-facing AI avatar
+  (PanditJiPage), which ChatbotPage, TarotPage and FloatingAIButton all link to.
