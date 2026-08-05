@@ -114,7 +114,7 @@ const HERO_OVERLAY_LEFT = '15%';
 // artwork. A tall box on a narrow screen makes object-fit:cover throw away the
 // sides — at 77vh on a phone that is 76% of the width, which slices the
 // headline in half. Keep the box short until there is room to be cinematic.
-const heroBannerClass = 'w-full block object-cover object-center h-56 sm:h-72 md:h-[clamp(300px,77vh,880px)]';
+const heroBannerClass = 'w-full block object-cover object-center h-72 sm:h-80 md:h-[clamp(300px,77vh,880px)]';
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
@@ -168,6 +168,12 @@ export default function HomePage() {
           {/* cover the baked-in text at the top of the image */}
           <div className="absolute inset-x-0 top-0 pointer-events-none h-[55%] md:h-[32%]"
             style={{ background: 'linear-gradient(to bottom, rgba(6,4,18,0.96) 0%, rgba(6,4,18,0.75) 45%, transparent 100%)' }} />
+          {/* Phone only: the painted headline sits about a fifth down the
+              artwork and cover cannot crop it away vertically, so it shows
+              through as a ghost of the real one. Mask that band outright.
+              Desktop keeps its painted headline, so it must not inherit this. */}
+          <div className="absolute inset-x-0 top-0 pointer-events-none h-[31%] md:hidden"
+            style={{ background: 'linear-gradient(to bottom, rgb(6,4,18) 0%, rgb(6,4,18) 80%, transparent 100%)' }} />
           {/* The headline is painted into the artwork, sized for a 3168px-wide
               canvas — on a phone it renders about four pixels tall. Carry it as
               real text here, where it can scale and be read. */}
@@ -179,13 +185,16 @@ export default function HomePage() {
           <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
             style={{ background: 'linear-gradient(to bottom, transparent, #12093A)' }} />
           {/* zodiac mandala overlaid on banner — vertically centered, slightly left */}
+          {/* top: the desktop offset is tuned for a ~693px hero; on a phone the
+              same figure lands the wheel behind the navbar, so anchor it by
+              percentage there, clear of the headline and above the clock. */}
           <div
-            className="absolute hidden md:flex flex-col items-center justify-center pointer-events-none"
-            style={{ top: 'calc(50% - 56px)', left: HERO_OVERLAY_LEFT, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
+            className="absolute flex flex-col items-center justify-center pointer-events-none top-[53%] md:top-[calc(50%-56px)]"
+            style={{ left: HERO_OVERLAY_LEFT, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
             <img
               src="/zodiac-mandala.png"
               alt="Vedic Zodiac Mandala"
-              className="w-56 lg:w-72"
+              className="w-16 md:w-56 lg:w-72"
               style={{
                 animation: 'spinCW 120s linear infinite',
                 willChange: 'transform',
@@ -194,44 +203,24 @@ export default function HomePage() {
               }}
             />
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-              style={{ fontFamily: 'serif', color: '#C9A84C', fontSize: '0.75rem', letterSpacing: '0.12em', marginTop: '10px', textShadow: '0 0 18px rgba(201,168,76,0.8)', textAlign: 'center' }}>
+              className="hidden md:block md:text-xs md:mt-2.5"
+              style={{ fontFamily: 'serif', color: '#C9A84C', letterSpacing: '0.12em', textShadow: '0 0 18px rgba(201,168,76,0.8)', textAlign: 'center' }}>
               यत्र ब्रह्माण्डे तत्र पिण्डे
             </motion.p>
           </div>
 
           {/* Vedic Clock — bottom-left of hero, aligned under mandala */}
-          <div className="absolute hidden md:block pointer-events-none"
+          {/* VedicClock lays out at a fixed 200x228. It is absolutely positioned,
+              so scaling the inner wrapper shrinks it on a phone without
+              disturbing anything around it. */}
+          <div className="absolute pointer-events-none"
             style={{ bottom: '8px', left: HERO_OVERLAY_LEFT, transform: 'translateX(-50%)', zIndex: 10 }}>
-            <VedicClock />
-          </div>
-
-        </section>
-
-        {/* ── Mandala + Vedic clock, mobile ──────────────────────────────────
-            On md+ these sit on the banner itself. A phone hero is 224px tall
-            and the two pieces are 224px and 200x228, so overlaying them there
-            would bury the headline. Give them their own band under it instead,
-            side by side, at a size a phone can actually show. */}
-        <div className="md:hidden flex items-start justify-center gap-5 px-4 pt-5 pb-2">
-          <div className="flex flex-col items-center">
-            <img
-              src="/zodiac-mandala.png"
-              alt="Vedic Zodiac Mandala"
-              className="w-28"
-              style={{ animation: 'spinCW 120s linear infinite', willChange: 'transform', backfaceVisibility: 'hidden' }}
-            />
-            <p style={{ fontFamily: 'serif', color: '#C9A84C', fontSize: '0.62rem', letterSpacing: '0.1em', marginTop: '8px', textShadow: '0 0 14px rgba(201,168,76,0.8)', textAlign: 'center' }}>
-              यत्र ब्रह्माण्डे तत्र पिण्डे
-            </p>
-          </div>
-          {/* VedicClock lays out at a fixed 200x228, so scale it inside a box
-              of the scaled size — transform alone would not shrink its slot. */}
-          <div style={{ width: 130, height: 148, overflow: 'hidden', flexShrink: 0 }}>
-            <div style={{ transform: 'scale(0.65)', transformOrigin: 'top left' }}>
+            <div className="scale-[0.42] md:scale-100 origin-bottom">
               <VedicClock />
             </div>
           </div>
-        </div>
+
+        </section>
 
         {/* ── CTA Buttons — Row 1 ── */}
         <div className="relative z-10 flex flex-col sm:flex-row gap-3 justify-center items-center pt-3 pb-3 px-4 -mt-[10px]">
