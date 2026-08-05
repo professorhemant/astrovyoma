@@ -122,7 +122,7 @@ export default function HomePage() {
 
   useEffect(() => {
     astrologersApi.getAll({ limit: 6 }).then(r => setFeaturedAstrologers(r.data.astrologers || [])).catch(() => {});
-    kundaliApi.getMyKundali().then(r => { if (r.data?.kundali?.lagna) setUserLagna(r.data.kundali.lagna); }).catch(() => {});
+    kundaliApi.getMyKundali().then(r => { if (r.data?.lagna) setUserLagna(r.data.lagna); }).catch(() => {});
   }, []);
 
   async function handleSignClick(sign) {

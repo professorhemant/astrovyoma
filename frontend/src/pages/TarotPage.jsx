@@ -144,7 +144,7 @@ export default function TarotPage() {
   useEffect(() => {
     if (user) {
       kundaliApi.getMyKundali()
-        .then(r => { const k = r.data?.kundali; if (k) setKundaliContext({ lagna: k.lagna }); })
+        .then(r => { const k = r.data; if (k?.lagna) setKundaliContext({ lagna: k.lagna }); })
         .catch(() => {});
     }
   }, [user]);
