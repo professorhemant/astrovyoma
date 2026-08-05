@@ -110,7 +110,11 @@ function SectionDivider() {
 }
 
 const HERO_OVERLAY_LEFT = '15%';
-const heroBannerStyle = { height: 'clamp(300px, 77vh, 880px)', objectFit: 'cover', objectPosition: 'center' };
+// The banner is 3168x1344 (2.36:1) and carries its headline painted into the
+// artwork. A tall box on a narrow screen makes object-fit:cover throw away the
+// sides — at 77vh on a phone that is 76% of the width, which slices the
+// headline in half. Keep the box short until there is room to be cinematic.
+const heroBannerClass = 'w-full block object-cover object-center h-56 sm:h-72 md:h-[clamp(300px,77vh,880px)]';
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
@@ -156,15 +160,21 @@ export default function HomePage() {
           <motion.img
             src="/hero-banner.png"
             alt="AstroVyoma — Unveil Your Destiny, Map Your Cosmic Journey"
-            className="w-full block"
-            style={heroBannerStyle}
+            className={heroBannerClass}
             initial={{ opacity: 0, scale: 1.03 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.2, ease: 'easeOut' }}
           />
           {/* cover the baked-in text at the top of the image */}
-          <div className="absolute inset-x-0 top-0 pointer-events-none"
-            style={{ height: '32%', background: 'linear-gradient(to bottom, rgba(6,4,18,0.96) 0%, rgba(6,4,18,0.75) 45%, transparent 100%)' }} />
+          <div className="absolute inset-x-0 top-0 pointer-events-none h-[55%] md:h-[32%]"
+            style={{ background: 'linear-gradient(to bottom, rgba(6,4,18,0.96) 0%, rgba(6,4,18,0.75) 45%, transparent 100%)' }} />
+          {/* The headline is painted into the artwork, sized for a 3168px-wide
+              canvas — on a phone it renders about four pixels tall. Carry it as
+              real text here, where it can scale and be read. */}
+          <h1 className="absolute inset-x-0 top-16 md:hidden pointer-events-none px-6 pt-2 font-serif text-center leading-snug text-[19px]"
+            style={{ color: '#F3D98B', textShadow: '0 2px 16px rgba(0,0,0,0.9)' }}>
+            Unveil Your Destiny.<br />Map Your Cosmic Journey.
+          </h1>
           {/* bottom fade */}
           <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
             style={{ background: 'linear-gradient(to bottom, transparent, #12093A)' }} />
