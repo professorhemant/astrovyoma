@@ -7,6 +7,7 @@ import AstrologerCard from '../components/AstrologerCard';
 import TarotSection from '../components/TarotSection';
 import VedicClock from '../components/VedicClock';
 import { astrologers as astrologersApi, horoscope as horoscopeApi, kundali as kundaliApi } from '../api';
+import { useAuth } from '../context/AuthContext';
 
 const ZODIAC_SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 const ZODIAC_SYMBOLS = { Aries:'♈',Taurus:'♉',Gemini:'♊',Cancer:'♋',Leo:'♌',Virgo:'♍',Libra:'♎',Scorpio:'♏',Sagittarius:'♐',Capricorn:'♑',Aquarius:'♒',Pisces:'♓' };
@@ -119,11 +120,19 @@ export default function HomePage() {
   const [horoscopeText, setHoroscopeText] = useState('');
   const [userLagna, setUserLagna] = useState(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     astrologersApi.getAll({ limit: 6 }).then(r => setFeaturedAstrologers(r.data.astrologers || [])).catch(() => {});
-    kundaliApi.getMyKundali().then(r => { if (r.data?.lagna) setUserLagna(r.data.lagna); }).catch(() => {});
   }, []);
+
+  // Signed-in only: the chart endpoint needs a token, and asking without one
+  // just earns a 401. Keyed on user so the lagna also follows a login or logout
+  // without a page reload.
+  useEffect(() => {
+    if (!user) { setUserLagna(null); return; }
+    kundaliApi.getMyKundali().then(r => { if (r.data?.lagna) setUserLagna(r.data.lagna); }).catch(() => {});
+  }, [user]);
 
   async function handleSignClick(sign) {
     setSelectedSign(sign);
