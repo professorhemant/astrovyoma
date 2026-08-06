@@ -117,29 +117,45 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden xl:flex items-center gap-1.5 2xl:gap-2">
           {NAV_GROUPS.map(group => (
             <NavDropdown key={group.label} group={group} pathname={location.pathname} />
           ))}
 
-          {/* Talk to AstroVyoma AI — blinking highlight */}
+          {/* Talk to AstroVyoma AI — blinking highlight.
+              Three CTAs plus five dropdowns do not fit a 1280px bar at full
+              size, so the pills run compact and the AI label drops its verb
+              until there is room for it at 2xl. */}
           <Link
             to="/chat"
-            className="text-sm transition-all flex items-center gap-1.5 px-3 py-1 rounded-full border border-gold-400/80 bg-gold-400/15 text-gold-300 font-medium whitespace-nowrap hover:bg-gold-400/25 animate-blink-ai"
+            className="text-xs 2xl:text-sm transition-all flex items-center gap-1.5 px-2.5 2xl:px-3 py-1 rounded-full border border-gold-400/80 bg-gold-400/15 text-gold-300 font-medium whitespace-nowrap hover:bg-gold-400/25 animate-blink-ai"
           >
-            ✦ Talk to AstroVyoma AI
+            {/* Each piece is its own flex item so the gap-1.5 spaces them —
+                a literal space here would stack on top of that gap. */}
+            <span>✦</span>
+            <span className="hidden 2xl:inline">Talk to</span>
+            <span>AstroVyoma AI</span>
           </Link>
 
           {/* The paid path — a solid button so it outranks the dropdowns */}
           <Link
             to="/astrologers"
-            className="btn-gold text-sm px-4 py-1.5 whitespace-nowrap"
+            className="btn-gold text-xs 2xl:text-sm px-3 2xl:px-4 py-1.5 whitespace-nowrap"
           >
             Talk to Astrologer
           </Link>
+
+          {/* Supply side. Outlined rather than solid so it reads as the
+              secondary ask next to the paid path it sits beside. */}
+          <Link
+            to="/join-as-astrologer"
+            className="btn-outline-gold text-xs 2xl:text-sm px-3 2xl:px-4 py-1.5 whitespace-nowrap"
+          >
+            Join As Astrologer
+          </Link>
         </div>
 
-        <div className="hidden md:flex items-center gap-3 flex-shrink-0">
+        <div className="hidden xl:flex items-center gap-3 flex-shrink-0">
           {/* Cart icon */}
           <Link to="/cart" className="relative text-gray-300 hover:text-gold-400 transition-colors p-1">
             <ShoppingCart className="w-5 h-5" />
@@ -199,7 +215,7 @@ export default function Navbar() {
                       <div className="mx-3 my-0.5 border-t border-gold-600/10" />
                       <Link to="/join-as-astrologer" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
                         <span className="w-4 text-center flex-shrink-0">⭐</span>
-                        <span>Become an Astrologer</span>
+                        <span>Join As Astrologer</span>
                       </Link>
                       <div className="mx-3 my-0.5 border-t border-gold-600/10" />
                       <button
@@ -223,7 +239,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile cart icon */}
-        <Link to="/cart" className="md:hidden relative text-gray-300 hover:text-gold-400 transition-colors p-1 ml-auto mr-1">
+        <Link to="/cart" className="xl:hidden relative text-gray-300 hover:text-gold-400 transition-colors p-1 ml-auto mr-1">
           <ShoppingCart className="w-5 h-5" />
           {totalItems > 0 && (
             <span className="absolute -top-1 -right-1 bg-gold-500 text-cosmic-950 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none">
@@ -231,7 +247,7 @@ export default function Navbar() {
             </span>
           )}
         </Link>
-        <button className="md:hidden text-gold-400 p-2" onClick={() => setMenuOpen(!menuOpen)}>
+        <button className="xl:hidden text-gold-400 p-2" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
@@ -243,7 +259,7 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-cosmic-900/95 backdrop-blur-md border-t border-gold-600/20 max-h-[calc(100vh-4rem)] overflow-y-auto"
+            className="xl:hidden bg-cosmic-900/95 backdrop-blur-md border-t border-gold-600/20 max-h-[calc(100vh-4rem)] overflow-y-auto"
           >
             <div className="px-4 py-4 flex flex-col gap-1">
               {/* Both CTAs sit above the fold — they are why most people open this menu */}
@@ -307,7 +323,7 @@ export default function Navbar() {
                     <button onClick={() => { logout(); navigate('/'); }} className="text-red-400 text-sm">Logout</button>
                   </div>
                   <Link to="/join-as-astrologer" className="flex items-center gap-2 text-gray-300 text-sm py-1 hover:text-gold-400">
-                    <span>⭐</span> Become an Astrologer
+                    <span>⭐</span> Join As Astrologer
                   </Link>
                   {user.role === 'admin' && (
                     <Link to="/admin" className="flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-xl px-3 py-2 text-purple-300 hover:bg-purple-500/20 transition-colors">
@@ -320,7 +336,7 @@ export default function Navbar() {
               ) : (
                 <div className="pt-2 mt-1 space-y-2 border-t border-gold-600/10">
                   <Link to="/join-as-astrologer" className="flex items-center gap-2 text-gray-300 text-sm py-1 hover:text-gold-400">
-                    <span>⭐</span> Become an Astrologer
+                    <span>⭐</span> Join As Astrologer
                   </Link>
                   <div className="flex gap-3">
                     <Link to="/login" className="btn-outline-gold px-4 py-2 text-sm flex-1 text-center">Login</Link>
