@@ -16,11 +16,12 @@ import { admin as adminApi } from '../../api';
 // a phone is fine.
 function ImageField({ value, onChange, inputClass }) {
   const [busy, setBusy] = useState(false);
+  const [hover, setHover] = useState(false);
   const inputRef = React.useRef(null);
 
-  async function pick(e) {
-    const file = e.target.files?.[0];
+  async function send(file) {
     if (!file) return;
+    if (!/^image\//.test(file.type)) { toast.error('That is not an image file'); return; }
     setBusy(true);
     try {
       const { data } = await adminApi.uploadImage(file);
@@ -35,8 +36,16 @@ function ImageField({ value, onChange, inputClass }) {
     }
   }
 
+  const pick = (e) => send(e.target.files?.[0]);
+
   return (
-    <div className="space-y-2">
+    <div
+      // Drop a picture straight from the desktop onto the field.
+      onDragOver={e => { e.preventDefault(); setHover(true); }}
+      onDragLeave={() => setHover(false)}
+      onDrop={e => { e.preventDefault(); setHover(false); send(e.dataTransfer.files?.[0]); }}
+      className={`space-y-2 rounded-lg transition-colors ${hover ? 'ring-2 ring-gold-400 ring-offset-2 ring-offset-cosmic-950' : ''}`}>
+      {hover && <p className="text-[11px] text-gold-300">Drop the image here to upload</p>}
       <div className="flex items-center gap-2">
         <input ref={inputRef} type="file" accept="image/*" onChange={pick} className="hidden" />
         <button type="button" onClick={() => inputRef.current?.click()} disabled={busy}
@@ -114,7 +123,7 @@ function Field({ field, value, onChange }) {
 
 // ─── one row ─────────────────────────────────────────────────────────────────
 
-function Row({ item, def, index, count, onSave, onDelete, onMove, onToggle }) {
+function Row({ item, def, index, count, onSave, onDelete, onMove, onToggle, drag }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(item);
   const [saving, setSaving] = useState(false);
@@ -132,9 +141,29 @@ function Row({ item, def, index, count, onSave, onDelete, onMove, onToggle }) {
   }
 
   return (
-    <div className={`border rounded-xl mb-2 transition-colors ${item.is_active ? 'border-gold-600/20 bg-cosmic-900/40' : 'border-cosmic-700 bg-cosmic-900/20'}`}>
+    <div
+      // Only the handle starts a drag, so selecting text in an open row does
+      // not turn into a drag. The row itself still has to accept the drop.
+      draggable={drag.dragging}
+      onDragStart={e => { e.dataTransfer.effectAllowed = 'move'; drag.onStart(index); }}
+      onDragEnd={drag.onEnd}
+      onDragOver={e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; drag.onOver(index); }}
+      onDrop={e => { e.preventDefault(); drag.onDrop(index); }}
+      className={`border rounded-xl mb-2 transition-all
+        ${item.is_active ? 'border-gold-600/20 bg-cosmic-900/40' : 'border-cosmic-700 bg-cosmic-900/20'}
+        ${drag.fromIndex === index ? 'opacity-40' : ''}
+        ${drag.overIndex === index && drag.fromIndex !== null && drag.fromIndex !== index
+          ? 'border-gold-400 ring-1 ring-gold-400/40' : ''}`}>
       <div className="flex items-center gap-2 px-3 py-2.5">
-        <GripVertical className="w-4 h-4 text-gray-600 shrink-0" />
+        <button
+          title="Drag to reorder"
+          onMouseDown={() => drag.setDragging(true)}
+          onMouseUp={() => drag.setDragging(false)}
+          onTouchStart={() => drag.setDragging(true)}
+          onTouchEnd={() => drag.setDragging(false)}
+          className="cursor-grab active:cursor-grabbing text-gray-600 hover:text-gold-400 shrink-0 touch-none">
+          <GripVertical className="w-4 h-4" />
+        </button>
 
         <button onClick={() => setOpen(o => !o)} className="flex-1 text-left min-w-0">
           <span className={`text-sm truncate block ${item.is_active ? 'text-gray-200' : 'text-gray-500 line-through'}`}>
@@ -191,6 +220,9 @@ export default function ContentEditor({ listKey, def }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(null);
+  const [fromIndex, setFromIndex] = useState(null);
+  const [overIndex, setOverIndex] = useState(null);
+  const [dragArmed, setDragArmed] = useState(false);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -233,11 +265,7 @@ export default function ContentEditor({ listKey, def }) {
 
   // Optimistic: the row moves under the cursor, then the order is persisted.
   // On failure the server's order is reloaded rather than left guessed at.
-  async function handleMove(index, delta) {
-    const next = [...items];
-    const target = index + delta;
-    if (target < 0 || target >= next.length) return;
-    [next[index], next[target]] = [next[target], next[index]];
+  async function persistOrder(next) {
     setItems(next);
     try {
       await adminApi.contentReorder(listKey, next.map(i => i.id));
@@ -246,6 +274,35 @@ export default function ContentEditor({ listKey, def }) {
       load();
     }
   }
+
+  async function handleMove(index, delta) {
+    const next = [...items];
+    const target = index + delta;
+    if (target < 0 || target >= next.length) return;
+    [next[index], next[target]] = [next[target], next[index]];
+    await persistOrder(next);
+  }
+
+  // Drag to reorder. The ▲▼ buttons stay — they are easier on a touchscreen and
+  // are the only way to move a row when the list is long enough to scroll.
+  const drag = {
+    dragging: dragArmed,
+    setDragging: setDragArmed,
+    fromIndex,
+    overIndex,
+    onStart: (i) => setFromIndex(i),
+    onOver:  (i) => setOverIndex(i),
+    onEnd:   () => { setFromIndex(null); setOverIndex(null); setDragArmed(false); },
+    onDrop:  async (to) => {
+      const from = fromIndex;
+      setFromIndex(null); setOverIndex(null); setDragArmed(false);
+      if (from === null || from === to) return;
+      const next = [...items];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      await persistOrder(next);
+    },
+  };
 
   async function handleAdd(e) {
     e.preventDefault();
@@ -294,7 +351,8 @@ export default function ContentEditor({ listKey, def }) {
       </div>
 
       <p className="text-[11px] text-gray-600 mb-4">
-        Click a row to edit it. Changes go live the moment you save — no deploy needed.
+        Click a row to edit it, or drag the ⠿ handle to reorder. Changes go live
+        the moment you save — no deploy needed.
       </p>
 
       {loading ? (
@@ -303,7 +361,8 @@ export default function ContentEditor({ listKey, def }) {
         <>
           {items.map((item, i) => (
             <Row key={item.id} item={item} def={def} index={i} count={items.length}
-              onSave={handleSave} onDelete={handleDelete} onMove={handleMove} onToggle={handleToggle} />
+              onSave={handleSave} onDelete={handleDelete} onMove={handleMove} onToggle={handleToggle}
+              drag={drag} />
           ))}
           {items.length === 0 && (
             <p className="text-gray-500 text-sm py-8 text-center">

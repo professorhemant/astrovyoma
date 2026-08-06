@@ -55,6 +55,19 @@ const SETTINGS_GROUPS = [
     ],
   },
   {
+    key: 'layout',
+    label: 'Homepage Layout',
+    help: 'Nudge things around without touching code. Values are in pixels — bigger numbers move things further.',
+    fields: [
+      { key: 'heroButtonGap', label: 'Gap under the banner, narrow windows (px)', type: 'number',
+        default: 12, min: -40, max: 120,
+        help: 'How far the hero buttons sit below the banner when the window is under 1280px wide. Was -10, which is why they touched the artwork.' },
+      { key: 'heroButtonBottom', label: 'Button height above banner bottom, full screen (px)', type: 'number',
+        default: 56, min: 0, max: 400,
+        help: 'On screens 1280px and wider the buttons float over the artwork. Bigger numbers lift them higher up the banner.' },
+    ],
+  },
+  {
     key: 'brand',
     label: 'Branding & SEO',
     help: 'How the site presents itself and appears in search results.',

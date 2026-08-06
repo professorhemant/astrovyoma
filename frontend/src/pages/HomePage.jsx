@@ -135,11 +135,21 @@ export default function HomePage() {
   // arrays above are the fallback: if the request fails the page still renders
   // what it always did rather than showing empty sections.
   const [cms, setCms] = useState(null);
+  const [siteSettings, setSiteSettings] = useState(null);
   useEffect(() => {
     contentApi.bundle(['testimonials', 'home_features', 'how_it_works', 'hero_ctas', 'footer_links'])
-      .then(r => setCms(r.data.lists))
+      .then(r => { setCms(r.data.lists); setSiteSettings(r.data.settings); })
       .catch(() => {});
   }, []);
+
+  // Hero button position is admin-adjustable. Fed in as CSS variables because
+  // the two layouts need different properties — margin below xl where the row
+  // sits in flow, `bottom` from xl up where it floats over the artwork — and an
+  // inline style cannot vary by breakpoint.
+  const heroVars = {
+    '--hero-btn-gap': `${Number.isFinite(siteSettings?.heroButtonGap) ? siteSettings.heroButtonGap : 12}px`,
+    '--hero-btn-bottom': `${Number.isFinite(siteSettings?.heroButtonBottom) ? siteSettings.heroButtonBottom : 56}px`,
+  };
 
   const features     = cms?.home_features?.length ? cms.home_features : FREE_FEATURES;
   const steps        = cms?.how_it_works?.length  ? cms.how_it_works  : HOW_IT_WORKS;
@@ -255,8 +265,9 @@ export default function HomePage() {
               fills the screen, so they float over the artwork instead.
               The scrim is what keeps the outline button readable — without it
               it lands on the bright marble tabletop and disappears. */}
-          <div className="relative z-20 grid grid-cols-2 sm:flex sm:flex-row gap-2.5 sm:gap-3 justify-center items-stretch pt-3 pb-4 px-4 -mt-[10px]
-            xl:absolute xl:left-1/2 xl:-translate-x-1/2 xl:bottom-14 xl:mt-0 xl:w-auto
+          <div style={heroVars}
+            className="relative z-20 grid grid-cols-2 sm:flex sm:flex-row gap-2.5 sm:gap-3 justify-center items-stretch pt-3 pb-4 px-4 mt-[var(--hero-btn-gap)]
+            xl:absolute xl:left-1/2 xl:-translate-x-1/2 xl:bottom-[var(--hero-btn-bottom)] xl:mt-0 xl:w-auto
             xl:px-6 xl:py-3.5 xl:rounded-full xl:border xl:border-gold-600/25 xl:backdrop-blur-md">
             <div className="hidden xl:block absolute inset-0 rounded-full pointer-events-none"
               style={{ background: 'rgba(6,4,18,0.55)', boxShadow: '0 8px 40px rgba(6,4,18,0.55)' }} />

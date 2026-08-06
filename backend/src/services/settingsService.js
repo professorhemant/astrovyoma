@@ -85,6 +85,8 @@ async function getPublicSettings() {
     siteTagline: s.siteTagline,
     metaTitle: s.metaTitle,
     metaDescription: s.metaDescription,
+    heroButtonGap: s.heroButtonGap,
+    heroButtonBottom: s.heroButtonBottom,
   };
 }
 
