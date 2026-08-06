@@ -13,6 +13,7 @@ const TYPE_META = {
   'retrograde-start':{ label:'Retrograde ↻',   color:'bg-orange-500/20 border-orange-500/40 text-orange-300', dot:'bg-orange-400', icon:'↩' },
   'retrograde-end':  { label:'Direct ↺',        color:'bg-emerald-500/20 border-emerald-500/40 text-emerald-300', dot:'bg-emerald-400', icon:'↪' },
   'transit':         { label:'Transit',         color:'bg-cyan-500/20  border-cyan-500/40  text-cyan-300',   dot:'bg-cyan-400',     icon:'🪐' },
+  'ekadashi':        { label:'Ekadashi',        color:'bg-violet-500/20 border-violet-500/40 text-violet-300', dot:'bg-violet-400', icon:'🙏' },
 };
 
 const FILTERS = [
@@ -20,6 +21,7 @@ const FILTERS = [
   { key:'festival',         label:'Festivals' },
   { key:'purnima',          label:'Purnima' },
   { key:'amavasya',         label:'Amavasya' },
+  { key:'ekadashi',         label:'Ekadashi' },
   { key:'eclipse',          label:'Eclipses' },
   { key:'retrograde-start', label:'Retrogrades' },
   { key:'transit',          label:'Transits' },
@@ -120,7 +122,7 @@ export default function FestivalCalendarPage() {
           <div className="text-5xl mb-4">🗓️</div>
           <h1 className="text-3xl font-serif text-gold-400 mb-2">Hindu Festival & Planetary Events Calendar</h1>
           <p className="text-cosmic-300 text-sm max-w-xl mx-auto">
-            Festivals, Purnima, Amavasya, eclipses, planetary retrogrades and transits for 2025–2026.
+            Festivals, Ekadashi, Purnima, Amavasya, eclipses, retrogrades and transits — computed from the Swiss Ephemeris for any month you page to.
           </p>
         </motion.div>
 

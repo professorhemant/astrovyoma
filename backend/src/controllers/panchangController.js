@@ -94,16 +94,10 @@ const RAHU_PART     = { Sunday:8, Monday:2, Tuesday:7, Wednesday:5, Thursday:6, 
 const YAMGANDA_PART = { Sunday:6, Monday:4, Tuesday:2, Wednesday:7, Thursday:5, Friday:3, Saturday:1 };
 const GULIKA_PART   = { Sunday:5, Monday:3, Tuesday:1, Wednesday:6, Thursday:4, Friday:2, Saturday:7 };
 
-const FESTIVALS_2026 = {
-  '2026-01-14':'Makar Sankranti','2026-02-02':'Vasant Panchami','2026-02-26':'Maha Shivratri',
-  '2026-03-13':'Holika Dahan','2026-03-14':'Holi','2026-04-06':'Ram Navami',
-  '2026-04-12':'Hanuman Jayanti','2026-04-13':'Baisakhi','2026-04-28':'Akshaya Tritiya',
-  '2026-05-12':'Buddha Purnima','2026-07-03':'Guru Purnima','2026-08-09':'Raksha Bandhan',
-  '2026-08-16':'Janmashtami','2026-08-25':'Ganesh Chaturthi','2026-09-10':'Anant Chaturdashi',
-  '2026-09-26':'Shardiya Navratri Begins','2026-10-04':'Dussehra','2026-10-17':'Karwa Chauth',
-  '2026-10-20':'Diwali','2026-10-21':'Govardhan Puja','2026-10-22':'Bhai Dooj',
-  '2026-10-25':'Chhath Puja','2026-11-05':'Guru Nanak Jayanti','2026-11-28':'Vivah Panchami',
-};
+// Festivals come from the ephemeris now. The table that used to sit here was
+// 2025's dates relabelled as 2026 — it put Holi on 14 Mar 2026 and Shivratri on
+// 26 Feb 2026, both a year stale, and it disagreed with the events calendar.
+const { festivalFor } = require('../services/festivalEngine');
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -548,7 +542,7 @@ function getPanchangCalendar(req, res) {
         const vara      = VARA[d.getDay()];
         const paksha    = tithiIndex < 15 ? 'S' : 'K'; // Shukla/Krishna
         const tithiNum  = tithiIndex < 15 ? tithiIndex + 1 : tithiIndex - 14;
-        const festivalName = FESTIVALS_2026[dateStr] || null;
+        const festivalName = festivalFor(dateStr);
         const tithiNature  = TITHI_DETAILS[tithi]?.nature || 'Bhadra';
         const isAuspicious = !['Chaturthi','Navami','Chaturdashi'].includes(tithi) && tithiNature !== 'Rikta';
         days.push({ date:dateStr, day, vara, tithi, tithiNum, paksha, nakshatra, festival:festivalName, isAuspicious });

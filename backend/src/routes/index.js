@@ -197,6 +197,7 @@ router.post('/domain-report/generate', domainReportController.generate);
 
 // Festival & Planetary Events Calendar — static data, no auth
 router.get('/events/calendar', eventsCalendarController.getCalendar);
+router.get('/events/year',     eventsCalendarController.getYearEvents);
 
 // Appointments / Scheduling
 router.get('/appointments/slots/:astrologerId',           appointmentController.getSlots);
