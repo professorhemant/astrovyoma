@@ -214,6 +214,13 @@ router.post('/admin/content/:listKey/reset',   auth, adminAuth, contentControlle
 router.put('/admin/content/:listKey/:id',      auth, adminAuth, contentController.update);
 router.delete('/admin/content/:listKey/:id',   auth, adminAuth, contentController.remove);
 
+// ─── image uploads ───────────────────────────────────────────────────────────
+const mediaController = require('../controllers/mediaController');
+router.get('/media/:id',      mediaController.serve);          // public
+router.get('/admin/media',    auth, adminAuth, mediaController.list);
+router.post('/admin/media',   auth, adminAuth, mediaController.uploadMiddleware, mediaController.create);
+router.delete('/admin/media/:id', auth, adminAuth, mediaController.remove);
+
 // Appointments / Scheduling
 router.get('/appointments/slots/:astrologerId',           appointmentController.getSlots);
 router.get('/appointments/my',                            auth, appointmentController.getMyAppointments);

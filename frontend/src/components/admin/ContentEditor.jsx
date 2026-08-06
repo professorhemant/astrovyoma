@@ -2,13 +2,59 @@ import React, { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import {
   Loader, Plus, Trash2, ChevronUp, ChevronDown, Eye, EyeOff,
-  RotateCcw, Save, X, GripVertical,
+  RotateCcw, Save, X, GripVertical, Upload,
 } from 'lucide-react';
 import { admin as adminApi } from '../../api';
 
 // One editor for every list on the site. It renders itself from the schema the
 // server sends, so a new editable list needs no new screen here — the fields,
 // their labels and their help text all arrive as data.
+
+// ─── image field ─────────────────────────────────────────────────────────────
+// Upload from the machine, or paste a URL if the image already lives somewhere.
+// Uploads are resized and converted to WebP server-side, so a photo straight off
+// a phone is fine.
+function ImageField({ value, onChange, inputClass }) {
+  const [busy, setBusy] = useState(false);
+  const inputRef = React.useRef(null);
+
+  async function pick(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setBusy(true);
+    try {
+      const { data } = await adminApi.uploadImage(file);
+      onChange(data.url);
+      const kb = (n) => `${Math.round(n / 1024)} KB`;
+      toast.success(`Uploaded — ${kb(data.originalSize)} shrunk to ${kb(data.size)}`);
+    } catch (err) {
+      toast.error(err?.response?.data?.error || 'Upload failed');
+    } finally {
+      setBusy(false);
+      if (inputRef.current) inputRef.current.value = '';   // allow re-picking the same file
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        <input ref={inputRef} type="file" accept="image/*" onChange={pick} className="hidden" />
+        <button type="button" onClick={() => inputRef.current?.click()} disabled={busy}
+          className="btn-outline-gold px-3 py-1.5 text-xs flex items-center gap-1.5 shrink-0 disabled:opacity-50">
+          {busy ? <Loader className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+          {busy ? 'Uploading…' : 'Upload'}
+        </button>
+        <input type="text" className={inputClass} value={value ?? ''} placeholder="…or paste an image URL"
+          onChange={e => onChange(e.target.value)} />
+        {value && (
+          <button type="button" onClick={() => onChange('')} title="Remove image"
+            className="p-1.5 text-gray-500 hover:text-red-300 shrink-0"><X className="w-4 h-4" /></button>
+        )}
+      </div>
+      {value && <img src={value} alt="" className="h-20 rounded-lg border border-gold-600/20 object-cover" />}
+    </div>
+  );
+}
 
 // ─── one field ───────────────────────────────────────────────────────────────
 
@@ -41,11 +87,13 @@ function Field({ field, value, onChange }) {
           </select>
         );
       case 'image':
+        return <ImageField value={value} onChange={onChange} inputClass={base} />;
+      case 'color':
         return (
-          <div className="space-y-2">
-            <input type="text" className={base} value={value ?? ''} placeholder="Image URL"
-              onChange={e => onChange(e.target.value)} />
-            {value && <img src={value} alt="" className="h-16 rounded-lg border border-gold-600/20 object-cover" />}
+          <div className="flex items-center gap-2">
+            <input type="color" value={value || '#c9a84c'} onChange={e => onChange(e.target.value)}
+              className="w-10 h-9 rounded border border-gold-600/20 bg-cosmic-900 cursor-pointer" />
+            <input type="text" className={base} value={value ?? ''} onChange={e => onChange(e.target.value)} />
           </div>
         );
       default:

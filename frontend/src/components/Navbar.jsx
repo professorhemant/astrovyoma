@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Wallet, Menu, X, User, ChevronDown, ShoppingCart, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { content as contentApi } from '../api';
 
 // One source of truth for the whole menu — desktop dropdowns and the mobile
 // accordions both render from this, so a link can never exist on one and not
@@ -79,9 +80,34 @@ const isPathActive = (pathname, to) =>
 const isGroupActive = (pathname, group) =>
   group.items.some(item => item.to !== '/' && isPathActive(pathname, item.to));
 
+// Rebuilds NAV_GROUPS from the admin's Menu lists. Links whose "Belongs to"
+// does not match any dropdown are dropped rather than silently creating a stray
+// menu — a typo should lose one link, not add a phantom heading.
+function groupsFromCms(groups, items) {
+  if (!groups?.length || !items?.length) return null;
+  const built = groups.map(g => ({
+    label: g.label,
+    items: items
+      .filter(i => (i.group || '').trim().toLowerCase() === (g.label || '').trim().toLowerCase())
+      .map(i => ({ id: i.id, to: i.to, icon: i.icon, label: i.label })),
+  })).filter(g => g.items.length);
+  return built.length ? built : null;
+}
+
 export default function Navbar() {
   const { user, logout } = useAuth();
   const { totalItems } = useCart();
+  const [cmsGroups, setCmsGroups] = useState(null);
+
+  // The hardcoded NAV_GROUPS above stays as the fallback: a failed request must
+  // not leave the site with no navigation at all.
+  useEffect(() => {
+    contentApi.bundle(['nav_groups', 'nav_items'])
+      .then(r => setCmsGroups(groupsFromCms(r.data.lists?.nav_groups, r.data.lists?.nav_items)))
+      .catch(() => {});
+  }, []);
+
+  const navGroups = cmsGroups || NAV_GROUPS;
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -118,7 +144,7 @@ export default function Navbar() {
 
         {/* Desktop nav */}
         <div className="hidden xl:flex items-center gap-1.5 2xl:gap-2">
-          {NAV_GROUPS.map(group => (
+          {navGroups.map(group => (
             <NavDropdown key={group.label} group={group} pathname={location.pathname} />
           ))}
 
@@ -274,7 +300,7 @@ export default function Navbar() {
                 Talk to Astrologer
               </Link>
 
-              {NAV_GROUPS.map(group => {
+              {navGroups.map(group => {
                 const open = openMobileGroup === group.label;
                 return (
                   <div key={group.label}>
@@ -295,8 +321,8 @@ export default function Navbar() {
                           className="overflow-hidden"
                         >
                           <div className="ml-3 border-l border-gold-600/20 pl-3 pb-1">
-                            {group.items.map(item => (
-                              <Link key={item.to} to={item.to}
+                            {group.items.map((item, i) => (
+                              <Link key={item.id || `${item.to}-${i}`} to={item.to}
                                 className={`flex items-center gap-2.5 text-sm py-2 ${isPathActive(location.pathname, item.to) ? 'text-gold-400' : 'text-gray-200'}`}>
                                 <span className="w-4 text-center flex-shrink-0">{item.icon}</span>
                                 <span>{item.label}</span>
@@ -371,8 +397,8 @@ function NavDropdown({ group, pathname }) {
           className="bg-cosmic-900 border border-gold-600/20 rounded-xl overflow-hidden py-1"
           style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.75)' }}
         >
-          {group.items.map(item => (
-            <React.Fragment key={item.to}>
+          {group.items.map((item, i) => (
+            <React.Fragment key={item.id || `${item.to}-${i}`}>
               <Link
                 to={item.to}
                 className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-75 hover:bg-white/5 hover:text-gold-400 ${isPathActive(pathname, item.to) ? 'text-gold-400 bg-white/5' : 'text-gray-300'}`}

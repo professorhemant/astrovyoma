@@ -72,14 +72,64 @@ const FREE_PLAN = {
   notIncluded: ['PDF downloads', 'Extended horoscope', 'Consultations'],
 };
 
-exports.getPlans = (req, res) => {
-  res.json({ plans: [FREE_PLAN, PLANS.silver, PLANS.gold, PLANS.platinum] });
+// Plans are editable under Site Content -> Subscription Plans. The constants
+// above stay as the fallback so pricing never renders empty if the lookup fails.
+//
+// The admin edits features as one-per-line text; the page wants arrays.
+const { ContentItem } = require('../models');
+
+function planFromRow(row) {
+  let d = {};
+  try { d = JSON.parse(row.data); } catch { return null; }
+  if (!d.id) return null;
+  const lines = (s) => String(s || '').split('\n').map(x => x.trim()).filter(Boolean);
+  return {
+    id: d.id,
+    name: d.name || d.id,
+    price: Number(d.price) || 0,
+    yearlyPrice: Number(d.yearlyPrice) || 0,
+    color: d.color || '#c9a84c',
+    icon: d.icon || '✨',
+    ...(d.popular ? { popular: true } : {}),
+    features: lines(d.features),
+    notIncluded: lines(d.notIncluded),
+  };
+}
+
+async function loadPlans() {
+  try {
+    const rows = await ContentItem.findAll({
+      where: { list_key: 'plans', is_active: true },
+      order: [['sort_order', 'ASC']],
+    });
+    const plans = rows.map(planFromRow).filter(Boolean);
+    if (plans.length) return plans;
+  } catch (err) {
+    console.error('[subscriptions] plan lookup failed, using built-in plans:', err.message);
+  }
+  return [FREE_PLAN, PLANS.silver, PLANS.gold, PLANS.platinum];
+}
+
+exports.getPlans = async (req, res) => {
+  try {
+    res.json({ plans: await loadPlans() });
+  } catch (err) {
+    console.error('getPlans error:', err);
+    res.json({ plans: [FREE_PLAN, PLANS.silver, PLANS.gold, PLANS.platinum] });
+  }
 };
+
+// Checkout must price against the same source the page displayed, or an admin
+// changing a price would leave customers charged the old one.
+async function findPlanForCheckout(planId) {
+  const plans = await loadPlans();
+  return plans.find(p => p.id === planId && p.id !== 'free') || PLANS[planId] || null;
+}
 
 exports.createOrder = async (req, res) => {
   try {
     const { planId, billing } = req.body; // billing: 'monthly' | 'yearly'
-    const plan = PLANS[planId];
+    const plan = await findPlanForCheckout(planId);
     if (!plan) return res.status(400).json({ error: 'Invalid plan' });
 
     const amount = billing === 'yearly' ? plan.yearlyPrice : plan.price;

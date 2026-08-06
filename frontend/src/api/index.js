@@ -226,6 +226,16 @@ export const admin = {
   contentDelete:       (key, id)     => api.delete(`/admin/content/${key}/${id}`),
   contentReorder:      (key, ids)    => api.post(`/admin/content/${key}/reorder`, { ids }),
   contentReset:        (key)         => api.post(`/admin/content/${key}/reset`),
+
+  // Image uploads. Let the browser set the multipart boundary itself — naming
+  // the Content-Type by hand omits it and the server cannot parse the body.
+  uploadImage:         (file) => {
+    const fd = new FormData();
+    fd.append('file', file);
+    return api.post('/admin/media', fd);
+  },
+  listMedia:           ()   => api.get('/admin/media'),
+  deleteMedia:         (id) => api.delete(`/admin/media/${id}`),
   getConsultations:    (params) => api.get('/admin/consultations', { params }),
   getTransactions:     (params) => api.get('/admin/transactions', { params }),
   getAppointments:     (params) => api.get('/admin/appointments', { params }),
