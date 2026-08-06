@@ -174,6 +174,7 @@ const LISTS = {
 
   plans: {
     label: 'Subscription Plans',
+    titleField: 'name',
     help: 'Prices and features on the Plans page. Reorder to change the order they appear in.',
     itemLabel: (d) => d.name || 'Plan',
     fields: [
@@ -222,6 +223,7 @@ const LISTS = {
 
   nav_items: {
     label: 'Menu — Links',
+    titleField: 'label',
     help: 'The links inside each dropdown. "Belongs to" decides which dropdown a link appears under.',
     itemLabel: (d) => d.label || 'Link',
     fields: [
@@ -309,7 +311,7 @@ function schemaForClient() {
       key,
       label: def.label,
       help: def.help,
-      titleField: def.fields.find(f => f.required)?.key || def.fields[0]?.key,
+      titleField: def.titleField || def.fields.find(f => f.required)?.key || def.fields[0]?.key,
       fields: def.fields,
     };
   }
