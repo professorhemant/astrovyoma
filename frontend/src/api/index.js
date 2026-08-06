@@ -217,12 +217,27 @@ export const admin = {
   deleteAstrologer:    (id, force) => api.delete(`/admin/astrologers/${id}${force ? '?force=true' : ''}`),
   cleanupDemoAstrologers: () => api.post('/admin/astrologers/cleanup-demo'),
   resetAstrologerPin:  (id) => api.post(`/admin/astrologers/${id}/reset-pin`),
+
+  // Editable content — one generic set of calls for every list on the site.
+  contentSchema:       ()            => api.get('/admin/content/schema'),
+  contentList:         (key)         => api.get(`/admin/content/${key}`),
+  contentCreate:       (key, data)   => api.post(`/admin/content/${key}`, data),
+  contentUpdate:       (key, id, d)  => api.put(`/admin/content/${key}/${id}`, d),
+  contentDelete:       (key, id)     => api.delete(`/admin/content/${key}/${id}`),
+  contentReorder:      (key, ids)    => api.post(`/admin/content/${key}/reorder`, { ids }),
+  contentReset:        (key)         => api.post(`/admin/content/${key}/reset`),
   getConsultations:    (params) => api.get('/admin/consultations', { params }),
   getTransactions:     (params) => api.get('/admin/transactions', { params }),
   getAppointments:     (params) => api.get('/admin/appointments', { params }),
   getRevenue:          ()     => api.get('/admin/revenue'),
   getSettings:         ()     => api.get('/admin/settings'),
   updateSettings:      (data) => api.put('/admin/settings', data),
+};
+
+// Public content feed the site renders from.
+export const content = {
+  bundle: (keys) => api.get('/content/bundle', { params: keys ? { keys: keys.join(',') } : {} }),
+  list:   (key)  => api.get(`/content/${key}`),
 };
 
 export const astrologerApplications = {

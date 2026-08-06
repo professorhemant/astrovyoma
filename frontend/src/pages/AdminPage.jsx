@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { admin as adminApi, astrologerApplications } from '../api';
+import SettingsPanel from '../components/admin/SettingsPanel';
+import ContentTab from '../components/admin/ContentTab';
 import {
   LayoutDashboard, Users, Star, MessageSquare, Wallet,
   Settings, LogOut, Loader, Trash2, Edit2, Plus, X,
   CheckCircle, XCircle, RefreshCw, ChevronLeft, ChevronRight,
   Shield, Bell, AlertTriangle, Calendar, TrendingUp,
-  Phone, Mail, BarChart2, Eye, EyeOff, IndianRupee, FileText, Home, KeyRound
+  Phone, Mail, BarChart2, Eye, EyeOff, IndianRupee, FileText, Home, KeyRound, Pencil
 } from 'lucide-react';
 
 // Applications are the intake queue for Astrologers, so they sit next to them.
@@ -24,6 +26,7 @@ const TABS = [
   { key: 'appointments',  label: 'Appointments',   icon: Calendar },
   { key: 'transactions',  label: 'Transactions',   icon: Wallet },
   { key: 'revenue',       label: 'Revenue',        icon: TrendingUp },
+  { key: 'content',       label: 'Site Content',   icon: Pencil },
   { key: 'settings',      label: 'Settings',       icon: Settings },
 ];
 
@@ -800,111 +803,10 @@ function RevenueTab() {
 }
 
 // ─── SETTINGS ─────────────────────────────────────────────────────────────────
-function SettingsTab() {
-  const [settings, setSettings] = useState({
-    maintenanceMode: false,
-    announcement: '',
-    announcementActive: false,
-    commissionPercent: 20,
-    newUserFreeMinutes: 5,
-    minWalletRecharge: 100,
-    maxWalletRecharge: 10000,
-    platformPhone: '',
-    platformEmail: '',
-    platformWhatsApp: '',
-  });
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    adminApi.getSettings().then(r => setSettings(r.data)).catch(() => toast.error('Failed to load settings')).finally(() => setLoading(false));
-  }, []);
-
-  const set = (key, value) => setSettings(s => ({ ...s, [key]: value }));
-  const toggle = (key) => setSettings(s => ({ ...s, [key]: !s[key] }));
-
-  async function handleSave(e) {
-    e.preventDefault();
-    setSaving(true);
-    try { await adminApi.updateSettings(settings); toast.success('Settings saved'); }
-    catch { toast.error('Failed to save'); }
-    finally { setSaving(false); }
-  }
-
-  if (loading) return <div className="flex justify-center py-10"><Loader className="w-6 h-6 text-gold-400 animate-spin" /></div>;
-
-  return (
-    <div className="max-w-2xl">
-      <h2 className="font-serif text-2xl text-gold-400 mb-6">Site Settings</h2>
-      <form onSubmit={handleSave} className="space-y-6">
-
-        {/* Site controls */}
-        <div className="card-cosmic p-5 space-y-5">
-          <h3 className="text-gold-400 font-medium text-sm uppercase tracking-widest flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> Site Controls</h3>
-          <Toggle checked={settings.maintenanceMode} onChange={() => toggle('maintenanceMode')} label="Maintenance Mode" desc="When on, visitors see a maintenance page instead of the site." color="red" />
-        </div>
-
-        {/* Announcement */}
-        <div className="card-cosmic p-5 space-y-4">
-          <h3 className="text-gold-400 font-medium text-sm uppercase tracking-widest flex items-center gap-2"><Bell className="w-4 h-4" /> Announcement Banner</h3>
-          <textarea value={settings.announcement} onChange={e => set('announcement', e.target.value)}
-            placeholder="Enter announcement text (e.g. 'Free consultation on Guru Purnima!')"
-            rows={2}
-            className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 text-sm focus:outline-none focus:border-gold-500 resize-none" />
-          <Toggle checked={settings.announcementActive} onChange={() => toggle('announcementActive')} label="Show announcement to all users" desc="Displays a banner at the top of every page." />
-        </div>
-
-        {/* Business settings */}
-        <div className="card-cosmic p-5 space-y-4">
-          <h3 className="text-gold-400 font-medium text-sm uppercase tracking-widest flex items-center gap-2"><IndianRupee className="w-4 h-4" /> Business Settings</h3>
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              ['commissionPercent', 'Platform Commission (%)', 'number', '20'],
-              ['newUserFreeMinutes', 'Free Minutes (New Users)', 'number', '5'],
-              ['minWalletRecharge', 'Min Wallet Recharge (₹)', 'number', '100'],
-              ['maxWalletRecharge', 'Max Wallet Recharge (₹)', 'number', '10000'],
-            ].map(([k, label, type, placeholder]) => (
-              <div key={k}>
-                <label className="text-gray-300 text-xs block mb-1">{label}</label>
-                <input type={type} value={settings[k] || ''} onChange={e => set(k, type === 'number' ? parseFloat(e.target.value) : e.target.value)} placeholder={placeholder}
-                  className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-3 py-2 text-gray-200 text-sm focus:outline-none focus:border-gold-500" />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Contact info */}
-        <div className="card-cosmic p-5 space-y-4">
-          <h3 className="text-gold-400 font-medium text-sm uppercase tracking-widest flex items-center gap-2"><Phone className="w-4 h-4" /> Platform Contact Info</h3>
-          <div className="space-y-3">
-            {[
-              ['platformPhone', 'Support Phone', 'tel', Phone],
-              ['platformEmail', 'Support Email', 'email', Mail],
-              ['platformWhatsApp', 'WhatsApp Number', 'tel', Phone],
-            ].map(([k, label, type, Icon]) => (
-              <div key={k}>
-                <label className="text-gray-300 text-xs block mb-1">{label}</label>
-                <div className="relative">
-                  <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                  <input type={type} value={settings[k] || ''} onChange={e => set(k, e.target.value)}
-                    className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl pl-9 pr-3 py-2 text-gray-200 text-sm focus:outline-none focus:border-gold-500" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Sticky so the save action stays reachable — the form is taller than
-            the viewport, which left this button permanently below the fold. */}
-        <div className="sticky bottom-0 -mx-1 px-1 py-3 bg-cosmic-950/95 backdrop-blur border-t border-gold-600/10">
-          <button type="submit" disabled={saving} className="btn-gold w-full py-3 flex items-center justify-center gap-2 disabled:opacity-50">
-            {saving ? <Loader className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />} Save All Settings
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}
+// Settings and content now live in components/admin — both render themselves
+// from the server schema, so adding a setting or a manageable list does not
+// mean hand-wiring another screen in here.
+function SettingsTab() { return <SettingsPanel />; }
 
 // ─── APPLICATIONS ─────────────────────────────────────────────────────────────
 function ApplicationsTab({ onPendingChange }) {
@@ -1101,6 +1003,7 @@ export default function AdminPage() {
     appointments:  <AppointmentsTab />,
     transactions:  <TransactionsTab />,
     revenue:       <RevenueTab />,
+    content:       <ContentTab />,
     settings:      <SettingsTab />,
     applications:  <ApplicationsTab onPendingChange={refreshPending} />,
   };

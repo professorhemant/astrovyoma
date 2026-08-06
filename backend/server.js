@@ -85,6 +85,9 @@ async function start() {
     console.log('Models synchronized');
     await seedAstrologers();
     await seedRealAstrologers();
+    // Fills the editable lists with the copy the site already ships, so moving a
+    // page onto the database looks identical until an admin changes something.
+    await require('./src/controllers/contentController').seedContent();
     app.listen(PORT, () => console.log(`AstroVyoma API running on port ${PORT}`));
   } catch (err) {
     console.error('Failed to start server:', err);

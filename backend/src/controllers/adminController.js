@@ -4,19 +4,10 @@ const { Op } = require('sequelize');
 const { sequelize, User, Astrologer, Consultation, Transaction, Appointment,
         Kundali, Message, Review, Subscription, UserReport, AiChatMessage, OtpCode } = require('../models');
 
-let siteSettings = {
-  maintenanceMode: false,
-  announcement: '',
-  announcementActive: false,
-  commissionPercent: 20,
-  newUserFreeMinutes: 5,
-  minWalletRecharge: 100,
-  maxWalletRecharge: 10000,
-  platformPhone: '',
-  platformEmail: '',
-  platformWhatsApp: '',
-  featuredAstrologerIds: [],
-};
+// Settings live in the site_settings table now. They used to be this module's
+// local state, which meant every restart — and Railway restarts on each deploy —
+// quietly reverted them to defaults while the admin screen still said "Saved".
+const settingsService = require('../services/settingsService');
 
 async function getStats(req, res) {
   try {
@@ -438,13 +429,22 @@ async function getRevenue(req, res) {
   }
 }
 
-function getSiteSettings(req, res) {
-  res.json(siteSettings);
+async function getSiteSettings(req, res) {
+  try {
+    res.json(await settingsService.getSettings({ fresh: true }));
+  } catch (err) {
+    console.error('getSiteSettings error:', err);
+    res.status(500).json({ error: 'Failed to load settings' });
+  }
 }
 
-function updateSiteSettings(req, res) {
-  siteSettings = { ...siteSettings, ...req.body };
-  res.json(siteSettings);
+async function updateSiteSettings(req, res) {
+  try {
+    res.json(await settingsService.updateSettings(req.body));
+  } catch (err) {
+    console.error('updateSiteSettings error:', err);
+    res.status(500).json({ error: 'Failed to save settings' });
+  }
 }
 
 async function setupAdmin(req, res) {

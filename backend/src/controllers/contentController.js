@@ -1,0 +1,237 @@
+// CRUD for every editable list on the site, driven by config/contentSchema.js.
+// One controller serves all of them, so making something editable does not mean
+// writing another one of these.
+
+const { ContentItem } = require('../models');
+const { LISTS, schemaForClient } = require('../config/contentSchema');
+const settingsService = require('../services/settingsService');
+
+function listDef(key) {
+  return Object.prototype.hasOwnProperty.call(LISTS, key) ? LISTS[key] : null;
+}
+
+function parse(item) {
+  let data = {};
+  try { data = JSON.parse(item.data); } catch { /* corrupt row — show it empty rather than 500 */ }
+  return { id: item.id, sort_order: item.sort_order, is_active: item.is_active, ...data };
+}
+
+// Keep only fields the schema declares, and coerce them to the declared type.
+// Stops a stray key from the client becoming permanent site content.
+function sanitise(def, body) {
+  const out = {};
+  for (const field of def.fields) {
+    let v = body[field.key];
+    if (v === undefined) {
+      if (field.default !== undefined) v = field.default;
+      else continue;
+    }
+    if (field.type === 'number') {
+      const n = Number(v);
+      v = Number.isFinite(n) ? n : (field.default ?? 0);
+      if (typeof field.min === 'number') v = Math.max(field.min, v);
+      if (typeof field.max === 'number') v = Math.min(field.max, v);
+    } else if (field.type === 'boolean') {
+      v = v === true || v === 'true';
+    } else {
+      v = v == null ? '' : String(v);
+    }
+    out[field.key] = v;
+  }
+  return out;
+}
+
+function missingRequired(def, data) {
+  return def.fields
+    .filter(f => f.required && (data[f.key] === undefined || String(data[f.key]).trim() === ''))
+    .map(f => f.label);
+}
+
+// ─── schema ──────────────────────────────────────────────────────────────────
+
+exports.getSchema = (req, res) => {
+  res.json(schemaForClient());
+};
+
+// ─── read ────────────────────────────────────────────────────────────────────
+
+async function fetchList(key, { activeOnly }) {
+  const where = { list_key: key };
+  if (activeOnly) where.is_active = true;
+  const rows = await ContentItem.findAll({
+    where,
+    order: [['sort_order', 'ASC'], ['created_at', 'ASC']],
+  });
+  return rows.map(parse);
+}
+
+exports.adminList = async (req, res) => {
+  try {
+    const def = listDef(req.params.listKey);
+    if (!def) return res.status(404).json({ error: 'Unknown list' });
+    res.json({ key: req.params.listKey, label: def.label, items: await fetchList(req.params.listKey, { activeOnly: false }) });
+  } catch (err) {
+    console.error('[content] adminList', err);
+    res.status(500).json({ error: 'Failed to load content' });
+  }
+};
+
+// Public feed the site renders from. Active items only.
+exports.publicList = async (req, res) => {
+  try {
+    const def = listDef(req.params.listKey);
+    if (!def) return res.status(404).json({ error: 'Unknown list' });
+    res.json({ items: await fetchList(req.params.listKey, { activeOnly: true }) });
+  } catch (err) {
+    console.error('[content] publicList', err);
+    res.status(500).json({ error: 'Failed to load content' });
+  }
+};
+
+// Everything the homepage needs in one request, so it is not firing a call per
+// list on first paint.
+exports.publicBundle = async (req, res) => {
+  try {
+    const keys = String(req.query.keys || '').split(',').map(s => s.trim()).filter(Boolean);
+    const wanted = keys.length ? keys.filter(k => listDef(k)) : Object.keys(LISTS);
+    const out = {};
+    await Promise.all(wanted.map(async k => { out[k] = await fetchList(k, { activeOnly: true }); }));
+    res.json({ lists: out, settings: await settingsService.getPublicSettings() });
+  } catch (err) {
+    console.error('[content] publicBundle', err);
+    res.status(500).json({ error: 'Failed to load content' });
+  }
+};
+
+// ─── write ───────────────────────────────────────────────────────────────────
+
+exports.create = async (req, res) => {
+  try {
+    const def = listDef(req.params.listKey);
+    if (!def) return res.status(404).json({ error: 'Unknown list' });
+
+    const data = sanitise(def, req.body || {});
+    const missing = missingRequired(def, data);
+    if (missing.length) return res.status(400).json({ error: `Please fill in: ${missing.join(', ')}` });
+
+    // New rows go to the end.
+    const max = await ContentItem.max('sort_order', { where: { list_key: req.params.listKey } });
+    const item = await ContentItem.create({
+      list_key: req.params.listKey,
+      sort_order: (Number.isFinite(max) ? max : -1) + 1,
+      is_active: req.body?.is_active !== false,
+      data: JSON.stringify(data),
+    });
+    res.status(201).json(parse(item));
+  } catch (err) {
+    console.error('[content] create', err);
+    res.status(500).json({ error: 'Failed to add item' });
+  }
+};
+
+exports.update = async (req, res) => {
+  try {
+    const def = listDef(req.params.listKey);
+    if (!def) return res.status(404).json({ error: 'Unknown list' });
+
+    const item = await ContentItem.findOne({ where: { id: req.params.id, list_key: req.params.listKey } });
+    if (!item) return res.status(404).json({ error: 'Item not found' });
+
+    // Merge over what is stored so a partial save — the is_active toggle, say —
+    // does not wipe the fields it did not send.
+    let existing = {};
+    try { existing = JSON.parse(item.data); } catch { /* start clean */ }
+    const data = sanitise(def, { ...existing, ...(req.body || {}) });
+
+    const missing = missingRequired(def, data);
+    if (missing.length) return res.status(400).json({ error: `Please fill in: ${missing.join(', ')}` });
+
+    item.data = JSON.stringify(data);
+    if (typeof req.body?.is_active === 'boolean') item.is_active = req.body.is_active;
+    await item.save();
+    res.json(parse(item));
+  } catch (err) {
+    console.error('[content] update', err);
+    res.status(500).json({ error: 'Failed to save item' });
+  }
+};
+
+exports.remove = async (req, res) => {
+  try {
+    const def = listDef(req.params.listKey);
+    if (!def) return res.status(404).json({ error: 'Unknown list' });
+    const n = await ContentItem.destroy({ where: { id: req.params.id, list_key: req.params.listKey } });
+    if (!n) return res.status(404).json({ error: 'Item not found' });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[content] remove', err);
+    res.status(500).json({ error: 'Failed to delete item' });
+  }
+};
+
+// Takes the full ordered list of ids. Simpler for the client than up/down deltas
+// and it cannot drift out of step with what is on screen.
+exports.reorder = async (req, res) => {
+  try {
+    const def = listDef(req.params.listKey);
+    if (!def) return res.status(404).json({ error: 'Unknown list' });
+
+    const ids = Array.isArray(req.body?.ids) ? req.body.ids : null;
+    if (!ids) return res.status(400).json({ error: 'ids array required' });
+
+    await Promise.all(ids.map((id, i) =>
+      ContentItem.update({ sort_order: i }, { where: { id, list_key: req.params.listKey } })
+    ));
+    res.json({ items: await fetchList(req.params.listKey, { activeOnly: false }) });
+  } catch (err) {
+    console.error('[content] reorder', err);
+    res.status(500).json({ error: 'Failed to reorder' });
+  }
+};
+
+// Puts a list back to the defaults declared in the schema. The escape hatch for
+// "I have edited this into a mess and want to start again".
+exports.reset = async (req, res) => {
+  try {
+    const def = listDef(req.params.listKey);
+    if (!def) return res.status(404).json({ error: 'Unknown list' });
+
+    await ContentItem.destroy({ where: { list_key: req.params.listKey } });
+    await seedList(req.params.listKey, def, { force: true });
+    res.json({ items: await fetchList(req.params.listKey, { activeOnly: false }) });
+  } catch (err) {
+    console.error('[content] reset', err);
+    res.status(500).json({ error: 'Failed to reset' });
+  }
+};
+
+// ─── seeding ─────────────────────────────────────────────────────────────────
+
+async function seedList(key, def, { force = false } = {}) {
+  if (!def.seed?.length) return 0;
+  if (!force) {
+    const existing = await ContentItem.count({ where: { list_key: key } });
+    if (existing > 0) return 0;
+  }
+  await ContentItem.bulkCreate(def.seed.map((data, i) => ({
+    list_key: key,
+    sort_order: i,
+    is_active: true,
+    data: JSON.stringify(data),
+  })));
+  return def.seed.length;
+}
+
+// Called once at boot. Fills each list with the content the site already shipped
+// with, so switching a page over to the database changes nothing visually until
+// the admin edits something.
+async function seedContent() {
+  let total = 0;
+  for (const [key, def] of Object.entries(LISTS)) {
+    try { total += await seedList(key, def); }
+    catch (err) { console.error(`[content] seed ${key} failed:`, err.message); }
+  }
+  if (total) console.log(`[content] seeded ${total} default item(s)`);
+}
+
+module.exports.seedContent = seedContent;

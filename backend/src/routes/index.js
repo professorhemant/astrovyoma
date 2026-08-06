@@ -200,6 +200,20 @@ router.post('/domain-report/generate', domainReportController.generate);
 router.get('/events/calendar', eventsCalendarController.getCalendar);
 router.get('/events/year',     eventsCalendarController.getYearEvents);
 
+// ─── editable content ────────────────────────────────────────────────────────
+// Public reads for the site to render from; everything that writes is admin-only.
+const contentController = require('../controllers/contentController');
+router.get('/content/bundle',           contentController.publicBundle);
+router.get('/content/:listKey',         contentController.publicList);
+
+router.get('/admin/content/schema',     auth, adminAuth, contentController.getSchema);
+router.get('/admin/content/:listKey',   auth, adminAuth, contentController.adminList);
+router.post('/admin/content/:listKey',  auth, adminAuth, contentController.create);
+router.post('/admin/content/:listKey/reorder', auth, adminAuth, contentController.reorder);
+router.post('/admin/content/:listKey/reset',   auth, adminAuth, contentController.reset);
+router.put('/admin/content/:listKey/:id',      auth, adminAuth, contentController.update);
+router.delete('/admin/content/:listKey/:id',   auth, adminAuth, contentController.remove);
+
 // Appointments / Scheduling
 router.get('/appointments/slots/:astrologerId',           appointmentController.getSlots);
 router.get('/appointments/my',                            auth, appointmentController.getMyAppointments);

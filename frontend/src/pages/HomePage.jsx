@@ -6,7 +6,7 @@ import ZodiacWheel from '../components/ZodiacWheel';
 import AstrologerCard from '../components/AstrologerCard';
 import TarotSection from '../components/TarotSection';
 import VedicClock from '../components/VedicClock';
-import { astrologers as astrologersApi, horoscope as horoscopeApi, kundali as kundaliApi } from '../api';
+import { astrologers as astrologersApi, horoscope as horoscopeApi, kundali as kundaliApi, content as contentApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 
 const ZODIAC_SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
@@ -131,6 +131,22 @@ export default function HomePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  // Homepage copy comes from the admin's Site Content screen. The hardcoded
+  // arrays above are the fallback: if the request fails the page still renders
+  // what it always did rather than showing empty sections.
+  const [cms, setCms] = useState(null);
+  useEffect(() => {
+    contentApi.bundle(['testimonials', 'home_features', 'how_it_works', 'hero_ctas', 'footer_links'])
+      .then(r => setCms(r.data.lists))
+      .catch(() => {});
+  }, []);
+
+  const features     = cms?.home_features?.length ? cms.home_features : FREE_FEATURES;
+  const steps        = cms?.how_it_works?.length  ? cms.how_it_works  : HOW_IT_WORKS;
+  const testimonials = cms?.testimonials?.length  ? cms.testimonials  : TESTIMONIALS;
+  const heroCtas     = cms?.hero_ctas?.length     ? cms.hero_ctas     : null;
+  const footerLinks  = cms?.footer_links?.length  ? cms.footer_links  : null;
+
   useEffect(() => {
     astrologersApi.getAll({ limit: 6 }).then(r => setFeaturedAstrologers(r.data.astrologers || [])).catch(() => {});
   }, []);
@@ -244,15 +260,22 @@ export default function HomePage() {
             xl:px-6 xl:py-3.5 xl:rounded-full xl:border xl:border-gold-600/25 xl:backdrop-blur-md">
             <div className="hidden xl:block absolute inset-0 rounded-full pointer-events-none"
               style={{ background: 'rgba(6,4,18,0.55)', boxShadow: '0 8px 40px rgba(6,4,18,0.55)' }} />
-            <Link to="/kundali" className="relative btn-gold px-3 sm:px-7 py-3 text-xs font-semibold flex items-center justify-center gap-2 xl:whitespace-nowrap">
-              Get Free Kundali <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
-            <Link to="/astrologers" className="relative btn-outline-gold px-3 sm:px-7 py-3 text-xs font-medium flex items-center justify-center gap-2 xl:whitespace-nowrap">
-              Talk to Astrologer
-            </Link>
-            <Link to="/chat" className="relative col-span-2 btn-outline-gold px-3 sm:px-7 py-3 text-xs font-medium flex items-center justify-center gap-2 xl:whitespace-nowrap">
-              <Sparkles className="w-3.5 h-3.5" /> Talk to AstroVyoma AI
-            </Link>
+            {/* Editable under Site Content -> Hero Buttons. An odd button out on
+                a phone spans the row so the two-up grid never leaves a gap. */}
+            {(heroCtas || [
+              { label: 'Get Free Kundali',      to: '/kundali',     style: 'solid'   },
+              { label: 'Talk to Astrologer',    to: '/astrologers', style: 'outline' },
+              { label: 'Talk to AstroVyoma AI', to: '/chat',        style: 'outline' },
+            ]).map((cta, i, all) => (
+              <Link key={cta.id || i} to={cta.to}
+                className={`relative ${cta.style === 'solid' ? 'btn-gold font-semibold' : 'btn-outline-gold font-medium'}
+                  ${all.length % 2 === 1 && i === all.length - 1 ? 'col-span-2 sm:col-span-1' : ''}
+                  px-3 sm:px-7 py-3 text-xs flex items-center justify-center gap-2 xl:whitespace-nowrap`}>
+                {cta.style === 'solid'
+                  ? <>{cta.label} <ChevronRight className="w-3.5 h-3.5" /></>
+                  : <>{/AI/i.test(cta.label) && <Sparkles className="w-3.5 h-3.5" />}{cta.label}</>}
+              </Link>
+            ))}
           </div>
 
         </section>
@@ -311,7 +334,7 @@ export default function HomePage() {
               ✦ Everything Free to Start
             </motion.h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {FREE_FEATURES.map((f,i) => (
+              {features.map((f,i) => (
                 <Link to={f.link} key={f.title}>
                   <motion.div
                     initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
@@ -374,7 +397,7 @@ export default function HomePage() {
               How It Works
             </motion.h2>
             <div className="grid md:grid-cols-3 gap-8">
-              {HOW_IT_WORKS.map((step,i) => (
+              {steps.map((step,i) => (
                 <motion.div key={step.step}
                   initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
                   transition={{delay:i*0.2}} className="text-center">
@@ -536,7 +559,7 @@ export default function HomePage() {
               Lives Transformed by the Stars
             </motion.h2>
             <div className="grid md:grid-cols-3 gap-6">
-              {TESTIMONIALS.map((t,i) => (
+              {testimonials.map((t,i) => (
                 <motion.div key={t.name}
                   initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
                   transition={{delay:i*0.15}}
@@ -574,8 +597,17 @@ export default function HomePage() {
               <div>
                 <h4 className="text-gold-400 text-sm font-medium mb-3">Platform</h4>
                 <ul className="space-y-2 text-gray-400 text-sm">
-                  {[['Kundali','/kundali'],['Find Purpose','/purpose'],['Astrologers','/astrologers'],['Talk to AstroVyoma AI','/chat'],['Blog','/blog'],['About Us','/about'],['Join As Astrologer','/join-as-astrologer']].map(([l,h]) => (
-                    <li key={l}><Link to={h} className="hover:text-gold-400 transition-colors">{l}</Link></li>
+                  {/* Editable under Site Content -> Footer Links. */}
+                  {(footerLinks || [
+                    { label: 'Kundali',              to: '/kundali' },
+                    { label: 'Find Purpose',         to: '/purpose' },
+                    { label: 'Astrologers',          to: '/astrologers' },
+                    { label: 'Talk to AstroVyoma AI', to: '/chat' },
+                    { label: 'Blog',                 to: '/blog' },
+                    { label: 'About Us',             to: '/about' },
+                    { label: 'Join As Astrologer',   to: '/join-as-astrologer' },
+                  ]).map((l, i) => (
+                    <li key={l.id || i}><Link to={l.to} className="hover:text-gold-400 transition-colors">{l.label}</Link></li>
                   ))}
                 </ul>
               </div>
