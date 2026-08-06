@@ -10,10 +10,18 @@ function listDef(key) {
   return Object.prototype.hasOwnProperty.call(LISTS, key) ? LISTS[key] : null;
 }
 
-function parse(item) {
+// Rows are stored as the fields that existed when they were saved. Adding a
+// field to a schema later would otherwise leave every existing row missing it —
+// blank in the editor and absent on the page — so the declared defaults fill the
+// gaps on read.
+function parse(item, def) {
   let data = {};
   try { data = JSON.parse(item.data); } catch { /* corrupt row — show it empty rather than 500 */ }
-  return { id: item.id, sort_order: item.sort_order, is_active: item.is_active, ...data };
+  const withDefaults = {};
+  for (const field of def?.fields || []) {
+    if (data[field.key] === undefined && field.default !== undefined) withDefaults[field.key] = field.default;
+  }
+  return { id: item.id, sort_order: item.sort_order, is_active: item.is_active, ...withDefaults, ...data };
 }
 
 // Keep only fields the schema declares, and coerce them to the declared type.
@@ -62,7 +70,7 @@ async function fetchList(key, { activeOnly }) {
     where,
     order: [['sort_order', 'ASC'], ['created_at', 'ASC']],
   });
-  return rows.map(parse);
+  return rows.map(r => parse(r, listDef(key)));
 }
 
 exports.adminList = async (req, res) => {
@@ -122,7 +130,7 @@ exports.create = async (req, res) => {
       is_active: req.body?.is_active !== false,
       data: JSON.stringify(data),
     });
-    res.status(201).json(parse(item));
+    res.status(201).json(parse(item, def));
   } catch (err) {
     console.error('[content] create', err);
     res.status(500).json({ error: 'Failed to add item' });
@@ -149,7 +157,7 @@ exports.update = async (req, res) => {
     item.data = JSON.stringify(data);
     if (typeof req.body?.is_active === 'boolean') item.is_active = req.body.is_active;
     await item.save();
-    res.json(parse(item));
+    res.json(parse(item, def));
   } catch (err) {
     console.error('[content] update', err);
     res.status(500).json({ error: 'Failed to save item' });

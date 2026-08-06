@@ -179,6 +179,20 @@ export default function HomePage() {
     return { ...fallback, ...(row || {}), id: row?.id };
   };
 
+  // Editor hooks plus the admin's spacing and alignment for a heading.
+  const secProps = (key) => {
+    const row = sec(key);
+    return {
+      'data-edit-item': row.id ? `section_headings:${row.id}` : undefined,
+      'data-edit-flow': row.id ? 'section_headings' : undefined,
+      style: {
+        ...(row.align ? { textAlign: row.align } : {}),
+        ...(Number.isFinite(row.spaceAbove) && row.spaceAbove ? { marginTop: `${row.spaceAbove}px` } : {}),
+        ...(Number.isFinite(row.spaceBelow) && row.spaceBelow ? { marginBottom: `${row.spaceBelow}px` } : {}),
+      },
+    };
+  };
+
   useEffect(() => {
     astrologersApi.getAll({ limit: 6 }).then(r => setFeaturedAstrologers(r.data.astrologers || [])).catch(() => {});
   }, []);
@@ -329,7 +343,7 @@ export default function HomePage() {
           <div className="max-w-4xl mx-auto">
             <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="text-center mb-10">
               <h2 className="font-serif text-4xl md:text-5xl text-gold-400 mb-3"
-                data-edit-item={sec('ai').id && `section_headings:${sec('ai').id}`}>{sec('ai', {heading:'Talk to AstroVyoma AI ✦'}).heading}</h2>
+                {...secProps('ai')}>{sec('ai', {heading:'Talk to AstroVyoma AI ✦'}).heading}</h2>
               <p className="text-gray-400 text-sm">Powered by Vedic wisdom + AI — Your birth chart as context</p>
             </motion.div>
             <motion.div initial={{opacity:0,y:30}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="card-cosmic p-6 rounded-2xl">
@@ -405,7 +419,7 @@ export default function HomePage() {
               className="text-center mb-6">
               <p className="font-devanagari text-gold-500 text-lg mb-2">{sec('purpose', {eyebrow:'किस चीज़ के लिए बने हो?'}).eyebrow}</p>
               <h2 className="font-serif text-4xl md:text-5xl text-white mb-4"
-                data-edit-item={sec('purpose').id && `section_headings:${sec('purpose').id}`}>{sec('purpose', {heading:'What Were You Born For?'}).heading}</h2>
+                {...secProps('purpose')}>{sec('purpose', {heading:'What Were You Born For?'}).heading}</h2>
               <p className="text-gray-300 max-w-2xl mx-auto">{sec('purpose', {subheading:"Your birth chart reveals your soul's purpose, personality, and path"}).subheading}</p>
             </motion.div>
             <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
@@ -440,7 +454,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto">
             <motion.h2 initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
               className="font-serif text-center text-4xl md:text-5xl text-gold-400 mb-16"
-              data-edit-item={sec('howitworks').id && `section_headings:${sec('howitworks').id}`}>
+              {...secProps('howitworks')}>
               {sec('howitworks', {heading:'How It Works'}).heading}
             </motion.h2>
             <div className="grid md:grid-cols-3 gap-8">
@@ -473,7 +487,7 @@ export default function HomePage() {
             <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="text-center mb-10">
               <p className="text-gold-600 text-xs uppercase tracking-widest mb-2">Experience</p>
               <h2 className="font-serif text-4xl md:text-5xl text-gold-400 mb-3"
-                data-edit-item={sec('action').id && `section_headings:${sec('action').id}`}>{sec('action', {heading:'See AstroVyoma in Action'}).heading}</h2>
+                {...secProps('action')}>{sec('action', {heading:'See AstroVyoma in Action'}).heading}</h2>
               <p className="text-gray-400 text-sm">Ancient wisdom, beautifully decoded</p>
             </motion.div>
             <motion.div initial={{opacity:0,scale:0.97}} whileInView={{opacity:1,scale:1}} viewport={{once:true}}
@@ -492,7 +506,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto">
             <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="text-center mb-12">
               <h2 className="font-serif text-4xl md:text-5xl text-gold-400 mb-3"
-                data-edit-item={sec('connect').id && `section_headings:${sec('connect').id}`}>{sec('connect', {heading:'✦ Connect with Your Cosmic Guide'}).heading}</h2>
+                {...secProps('connect')}>{sec('connect', {heading:'✦ Connect with Your Cosmic Guide'}).heading}</h2>
               <p className="text-gray-300">Expert Vedic astrologers, available now</p>
             </motion.div>
             {featuredAstrologers.length > 0 ? (
@@ -540,7 +554,7 @@ export default function HomePage() {
               </motion.div>
               <motion.div initial={{opacity:0,x:30}} whileInView={{opacity:1,x:0}} viewport={{once:true}} className="space-y-6">
                 <h2 className="font-serif text-4xl text-gold-400 leading-tight"
-                  data-edit-item={sec('about').id && `section_headings:${sec('about').id}`}>{sec('about', {heading:'Where Ancient Stars Meet Modern Lives'}).heading}</h2>
+                  {...secProps('about')}>{sec('about', {heading:'Where Ancient Stars Meet Modern Lives'}).heading}</h2>
                 <p className="text-gray-300 leading-relaxed">AstroVyoma bridges 5,000 years of Vedic wisdom with the modern seeker's journey. Your birth chart is a cosmic map of your soul's unique potential.</p>
                 <p className="text-gray-400 leading-relaxed text-sm">Our platform unites India's most respected Jyotishis with cutting-edge AI to provide guidance that is authentically ancient and practically modern.</p>
                 <div className="grid grid-cols-3 gap-4">
@@ -567,7 +581,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto">
             <motion.h2 initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
               className="font-serif text-center text-3xl md:text-4xl text-gold-400 mb-8"
-              data-edit-item={sec('horoscope').id && `section_headings:${sec('horoscope').id}`}>
+              {...secProps('horoscope')}>
               {sec('horoscope', {heading:"Today's Cosmic Guidance"}).heading}
             </motion.h2>
             <div className="flex flex-wrap justify-center gap-2 mb-8">
@@ -607,7 +621,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto">
             <motion.h2 initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
               className="font-serif text-center text-4xl text-gold-400 mb-12"
-              data-edit-item={sec('testimonials').id && `section_headings:${sec('testimonials').id}`}>
+              {...secProps('testimonials')}>
               {sec('testimonials', {heading:'Lives Transformed by the Stars'}).heading}
             </motion.h2>
             <div className="grid md:grid-cols-3 gap-6">

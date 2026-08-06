@@ -41,6 +41,7 @@ export default function VisualEditorTab() {
   const [box, setBox] = useState({ w: 900, h: 700 });
   const frameRef = useRef(null);
   const boxRef = useRef(null);
+  const reloadRef = useRef(null);
 
   // Fit the preview to whatever room the admin column has, so the whole page is
   // reachable without scrolling mid-drag.
@@ -73,6 +74,16 @@ export default function VisualEditorTab() {
         setSelection(e.data.kind === 'none' ? null : e.data);
         return;
       }
+      // Content rows are not part of the settings batch — they save on drop.
+      if (e.data.type === 'commit-item') {
+        adminApi.contentUpdate(e.data.listKey, e.data.id, e.data.values)
+          .then(() => toast.success('Moved — live on the site now'))
+          .catch(err => {
+            toast.error(err?.response?.data?.error || 'Could not save that move');
+            reloadRef.current?.();
+          });
+        return;
+      }
       if (e.data.type !== 'commit') return;      // previews are cosmetic, only keep drops
       setPending(p => ({ ...p, ...e.data.values }));
     }
@@ -85,6 +96,7 @@ export default function VisualEditorTab() {
   const reloadFrame = useCallback(() => {
     if (frameRef.current) frameRef.current.src = frameRef.current.src;
   }, []);
+  reloadRef.current = reloadFrame;
 
   async function save() {
     setSaving(true);
@@ -116,8 +128,8 @@ export default function VisualEditorTab() {
     <div>
       <h2 className="font-serif text-2xl text-gold-400 mb-1">Visual Editor</h2>
       <p className="text-gray-500 text-sm mb-4">
-        This is your real homepage. Drag the outlined pieces — the zodiac wheel,
-        the Vedic clock, the hero buttons — to move them, then Save.
+        This is your real homepage. Click anything outlined to edit it. Gold
+        pieces drag anywhere; headings drag up, down and sideways.
       </p>
 
       <div className="flex flex-wrap items-center gap-2 mb-3">

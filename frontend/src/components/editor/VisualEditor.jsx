@@ -107,7 +107,47 @@ export default function VisualEditor() {
       }
     }
 
+    // Flow elements — headings — drag too, but into spacing and alignment
+    // rather than coordinates. Pinning a heading to a pixel would put it on top
+    // of the section above it as soon as the screen narrows; nudging its margin
+    // and switching its alignment mean the same thing to the eye and survive
+    // every width.
+    function onFlowDown(e) {
+      const el = e.target.closest('[data-edit-flow]');
+      if (!el) return false;
+      const [listKey, id] = (el.dataset.editItem || '').split(':');
+      if (!listKey || !id) return false;
+      e.preventDefault();
+      const cs = getComputedStyle(el);
+      dragRef.current = {
+        flow: true, el, listKey, id,
+        origin: { x: e.clientX, y: e.clientY },
+        start: {
+          spaceAbove: parseFloat(el.style.marginTop) || 0,
+          align: cs.textAlign === 'start' ? 'left' : cs.textAlign,
+        },
+      };
+      setActive('flow');
+      el.setPointerCapture?.(e.pointerId);
+      return true;
+    }
+
+    function resolveFlow(d, e) {
+      const dy = e.clientY - d.origin.y;
+      const dx = e.clientX - d.origin.x;
+      const values = { spaceAbove: Math.round(clamp(d.start.spaceAbove + dy, -80, 200)) };
+      // Sideways is a three-way switch, not a continuum — snap once the drag is
+      // deliberate rather than drifting on every wobble.
+      if (Math.abs(dx) > 60) {
+        const order = ['left', 'center', 'right'];
+        const at = Math.max(0, order.indexOf(d.start.align || 'center'));
+        values.align = order[clamp(at + (dx > 0 ? 1 : -1), 0, 2)];
+      }
+      return values;
+    }
+
     function onPointerDown(e) {
+      if (onFlowDown(e)) return;
       const el = e.target.closest('[data-edit]');
       if (!el) return;
       const key = el.dataset.edit;
@@ -125,6 +165,7 @@ export default function VisualEditor() {
     }
 
     function resolve(d, e) {
+      if (d.flow) return resolveFlow(d, e);
       const hero = heroOf(d.el);
       if (!hero) return null;
       const delta = { x: e.clientX - d.origin.x, y: e.clientY - d.origin.y };
@@ -141,6 +182,7 @@ export default function VisualEditor() {
       }
       const values = resolve(d, e);
       if (!values) return;
+      if (d.flow) { applyFlow(d.el, values); return; }
       applyLocally(d.key, values);
       post(d.key, values, false);
     }
@@ -149,12 +191,24 @@ export default function VisualEditor() {
       const d = dragRef.current;
       if (!d) return;
       const values = resolve(d, e);
-      if (values) {
+      if (values && d.flow) {
+        applyFlow(d.el, values);
+        // Content rows save through the admin's API rather than the settings
+        // batch, so they commit on drop instead of joining the pending list.
+        window.parent?.postMessage(
+          { source: 'astrovyoma-editor', type: 'commit-item',
+            listKey: d.listKey, id: d.id, values }, ORIGIN);
+      } else if (values) {
         applyLocally(d.key, values);
         post(d.key, values, true);
       }
       dragRef.current = null;
       setActive(null);
+    }
+
+    function applyFlow(el, v) {
+      if (v.spaceAbove !== undefined) el.style.marginTop = `${v.spaceAbove}px`;
+      if (v.align) el.style.textAlign = v.align;
     }
 
     // Move the element as the pointer moves, so dragging feels direct rather
@@ -201,6 +255,8 @@ export default function VisualEditor() {
         cursor: pointer;
       }
       [data-edit-item]:hover { outline: 2px solid rgba(120,180,255,0.95); }
+      [data-edit-flow] { cursor: grab; }
+      [data-edit-flow]:active { cursor: grabbing; }
       [data-edit] {
         pointer-events: auto !important;
         cursor: grab;

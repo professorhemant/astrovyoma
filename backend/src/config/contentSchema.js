@@ -157,6 +157,16 @@ const LISTS = {
       { key: 'eyebrow',  label: 'Small line above', type: 'text', help: 'Optional. Devanagari or a short kicker.' },
       { key: 'heading',  label: 'Heading', type: 'text', required: true },
       { key: 'subheading', label: 'Line underneath', type: 'textarea' },
+      // A heading sits in the page flow with sections above and below it, so it
+      // cannot be pinned to a pixel without breaking on a narrower screen.
+      // Spacing and alignment are the honest equivalents of up/down/left/right
+      // and they survive every width.
+      { key: 'align', label: 'Left / right', type: 'select', default: 'center',
+        options: [{ value: 'left', label: 'Left' }, { value: 'center', label: 'Centre' }, { value: 'right', label: 'Right' }],
+        help: 'Drag the heading sideways in the editor to switch this.' },
+      { key: 'spaceAbove', label: 'Space above (px)', type: 'number', default: 0, min: -80, max: 200,
+        help: 'Drag the heading up or down in the editor to change this.' },
+      { key: 'spaceBelow', label: 'Space below (px)', type: 'number', default: 0, min: -80, max: 200 },
     ],
     seed: [
       { key: 'ai',        eyebrow: '', heading: 'Talk to AstroVyoma AI ✦',
