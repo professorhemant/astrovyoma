@@ -1,0 +1,156 @@
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import toast from 'react-hot-toast';
+import { Loader, Save, RotateCcw, Monitor, Laptop, Smartphone, RefreshCw, Undo2 } from 'lucide-react';
+import { admin as adminApi } from '../../api';
+
+// The admin half of the visual editor.
+//
+// The real homepage runs in an iframe with ?editor=1. It reports drags back by
+// postMessage and this side holds the pending changes and does the saving — the
+// page itself never writes, so editor mode in a public browser is inert.
+
+const DEVICES = [
+  { key: 'full',   label: 'Full screen', icon: Monitor,    width: '100%' },
+  { key: 'laptop', label: 'Laptop',      icon: Laptop,     width: '1512px' },
+  { key: 'phone',  label: 'Phone',       icon: Smartphone, width: '390px' },
+];
+
+const FRIENDLY = {
+  mandalaLeft: 'Zodiac wheel — across',
+  mandalaTop: 'Zodiac wheel — down',
+  clockLeft: 'Vedic clock — across',
+  clockBottom: 'Vedic clock — height',
+  heroButtonBottom: 'Hero buttons — height',
+  heroButtonGap: 'Hero buttons — gap',
+};
+
+export default function VisualEditorTab() {
+  const [device, setDevice] = useState('laptop');
+  const [pending, setPending] = useState({});   // setting key -> new value
+  const [saved, setSaved] = useState(null);     // values as last persisted
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const frameRef = useRef(null);
+
+  useEffect(() => {
+    adminApi.getSettings()
+      .then(r => setSaved(r.data))
+      .catch(() => toast.error('Could not load current settings'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Only accept messages from our own origin and our own frame — an iframe is a
+  // door, and this one holds an admin session.
+  useEffect(() => {
+    function onMessage(e) {
+      if (e.origin !== window.location.origin) return;
+      if (e.data?.source !== 'astrovyoma-editor') return;
+      if (frameRef.current && e.source !== frameRef.current.contentWindow) return;
+      if (e.data.type !== 'commit') return;      // previews are cosmetic, only keep drops
+      setPending(p => ({ ...p, ...e.data.values }));
+    }
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, []);
+
+  const dirty = Object.keys(pending).length > 0;
+
+  const reloadFrame = useCallback(() => {
+    if (frameRef.current) frameRef.current.src = frameRef.current.src;
+  }, []);
+
+  async function save() {
+    setSaving(true);
+    try {
+      const { data } = await adminApi.updateSettings(pending);
+      setSaved(data);
+      setPending({});
+      toast.success('Saved — live on the site now');
+    } catch (err) {
+      toast.error(err?.response?.data?.error || 'Failed to save');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function discard() {
+    setPending({});
+    reloadFrame();          // snap the preview back to what is actually stored
+  }
+
+  if (loading) {
+    return <div className="flex justify-center py-16"><Loader className="w-6 h-6 text-gold-400 animate-spin" /></div>;
+  }
+
+  const dev = DEVICES.find(d => d.key === device) || DEVICES[1];
+
+  return (
+    <div>
+      <h2 className="font-serif text-2xl text-gold-400 mb-1">Visual Editor</h2>
+      <p className="text-gray-500 text-sm mb-4">
+        This is your real homepage. Drag the outlined pieces — the zodiac wheel,
+        the Vedic clock, the hero buttons — to move them, then Save.
+      </p>
+
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        {DEVICES.map(({ key, label, icon: Icon }) => (
+          <button key={key} onClick={() => setDevice(key)}
+            className={`px-3 py-1.5 rounded-xl text-xs border flex items-center gap-1.5 transition-colors ${
+              device === key ? 'border-gold-500 text-gold-400 bg-gold-500/10' : 'border-gold-600/20 text-gray-400 hover:text-gray-200'}`}>
+            <Icon className="w-3.5 h-3.5" /> {label}
+          </button>
+        ))}
+
+        <div className="w-px h-5 bg-gold-600/20 mx-1" />
+
+        <button onClick={reloadFrame} title="Reload the preview"
+          className="px-3 py-1.5 rounded-xl text-xs border border-gold-600/20 text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
+          <RefreshCw className="w-3.5 h-3.5" /> Reload
+        </button>
+
+        <div className="ml-auto flex items-center gap-2">
+          {dirty && (
+            <button onClick={discard}
+              className="px-3 py-1.5 rounded-xl text-xs border border-gold-600/20 text-gray-400 hover:text-red-300 flex items-center gap-1.5">
+              <Undo2 className="w-3.5 h-3.5" /> Discard
+            </button>
+          )}
+          <button onClick={save} disabled={!dirty || saving}
+            className="btn-gold px-4 py-1.5 text-xs flex items-center gap-1.5 disabled:opacity-40">
+            {saving ? <Loader className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+            {dirty ? `Save ${Object.keys(pending).length} change${Object.keys(pending).length > 1 ? 's' : ''}` : 'No changes'}
+          </button>
+        </div>
+      </div>
+
+      {dirty && (
+        <div className="mb-3 flex flex-wrap gap-2">
+          {Object.entries(pending).map(([k, v]) => (
+            <span key={k} className="text-[11px] px-2 py-1 rounded-full bg-yellow-500/15 border border-yellow-500/30 text-yellow-200">
+              {FRIENDLY[k] || k}: {saved?.[k]} → {v}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* The frame is the site itself, so what you drag is what visitors see.
+          Scaled down for the wider devices, since the admin column is narrower
+          than the screens being previewed. */}
+      <div className="rounded-2xl border border-gold-600/20 overflow-hidden bg-cosmic-950">
+        <div className="overflow-auto" style={{ maxHeight: '70vh' }}>
+          <iframe
+            ref={frameRef}
+            src="/?editor=1"
+            title="Homepage preview"
+            style={{ width: dev.width, height: '900px', border: 0, display: 'block', margin: '0 auto' }}
+          />
+        </div>
+      </div>
+
+      <p className="text-[11px] text-gray-600 mt-2">
+        Dragging moves things immediately in this preview, but nothing reaches the
+        live site until you press Save. Discard puts the preview back.
+      </p>
+    </div>
+  );
+}

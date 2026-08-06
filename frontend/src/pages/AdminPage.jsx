@@ -5,12 +5,13 @@ import { useAuth } from '../context/AuthContext';
 import { admin as adminApi, astrologerApplications } from '../api';
 import SettingsPanel from '../components/admin/SettingsPanel';
 import ContentTab from '../components/admin/ContentTab';
+import VisualEditorTab from '../components/admin/VisualEditorTab';
 import {
   LayoutDashboard, Users, Star, MessageSquare, Wallet,
   Settings, LogOut, Loader, Trash2, Edit2, Plus, X,
   CheckCircle, XCircle, RefreshCw, ChevronLeft, ChevronRight,
   Shield, Bell, AlertTriangle, Calendar, TrendingUp,
-  Phone, Mail, BarChart2, Eye, EyeOff, IndianRupee, FileText, Home, KeyRound, Pencil
+  Phone, Mail, BarChart2, Eye, EyeOff, IndianRupee, FileText, Home, KeyRound, Pencil, MousePointer2
 } from 'lucide-react';
 
 // Applications are the intake queue for Astrologers, so they sit next to them.
@@ -26,6 +27,7 @@ const TABS = [
   { key: 'appointments',  label: 'Appointments',   icon: Calendar },
   { key: 'transactions',  label: 'Transactions',   icon: Wallet },
   { key: 'revenue',       label: 'Revenue',        icon: TrendingUp },
+  { key: 'design',        label: 'Visual Editor',  icon: MousePointer2 },
   { key: 'content',       label: 'Site Content',   icon: Pencil },
   { key: 'settings',      label: 'Settings',       icon: Settings },
 ];
@@ -1003,6 +1005,7 @@ export default function AdminPage() {
     appointments:  <AppointmentsTab />,
     transactions:  <TransactionsTab />,
     revenue:       <RevenueTab />,
+    design:        <VisualEditorTab />,
     content:       <ContentTab />,
     settings:      <SettingsTab />,
     applications:  <ApplicationsTab onPendingChange={refreshPending} />,

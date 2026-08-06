@@ -8,6 +8,7 @@ import TarotSection from '../components/TarotSection';
 import VedicClock from '../components/VedicClock';
 import { astrologers as astrologersApi, horoscope as horoscopeApi, kundali as kundaliApi, content as contentApi } from '../api';
 import { useAuth } from '../context/AuthContext';
+import VisualEditor from '../components/editor/VisualEditor';
 
 const ZODIAC_SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 const ZODIAC_SYMBOLS = { Aries:'♈',Taurus:'♉',Gemini:'♊',Cancer:'♋',Leo:'♌',Virgo:'♍',Libra:'♎',Scorpio:'♏',Sagittarius:'♐',Capricorn:'♑',Aquarius:'♒',Pisces:'♓' };
@@ -192,8 +193,17 @@ export default function HomePage() {
     }
   }
 
+  // Editor chrome only mounts for the admin's preview frame, never for visitors.
+  // The flag alone is not enough — anyone can type ?editor=1 — so it also has to
+  // be running inside a frame, which only the admin preview does. Nothing here
+  // can save in any case; the admin holds the token and does the writing.
+  const editorMode =
+    new URLSearchParams(window.location.search).get('editor') === '1' &&
+    window.parent !== window;
+
   return (
     <>
+      {editorMode && <VisualEditor />}
       <NebulaBg />
       <StarField />
 
@@ -238,6 +248,7 @@ export default function HomePage() {
               same figure lands the wheel behind the navbar, so anchor it by
               percentage there, clear of the headline and above the clock. */}
           <div
+            data-edit="mandala" data-edit-label="Zodiac wheel"
             className="absolute flex flex-col items-center justify-center pointer-events-none top-[54%] md:top-[var(--mandala-top)]"
             style={{ ...mandalaPos, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
             <img
@@ -262,7 +273,8 @@ export default function HomePage() {
           {/* VedicClock lays out at a fixed 200x228. It is absolutely positioned,
               so scaling the inner wrapper shrinks it on a phone without
               disturbing anything around it. */}
-          <div className="absolute pointer-events-none"
+          <div data-edit="clock" data-edit-label="Vedic clock"
+            className="absolute pointer-events-none"
             style={{ ...clockPos, transform: 'translateX(-50%)', zIndex: 10 }}>
             <div className="scale-[0.38] md:scale-100 origin-bottom">
               <VedicClock />
@@ -278,7 +290,7 @@ export default function HomePage() {
               fills the screen, so they float over the artwork instead.
               The scrim is what keeps the outline button readable — without it
               it lands on the bright marble tabletop and disappears. */}
-          <div style={heroVars}
+          <div data-edit="heroButtons" data-edit-label="Hero buttons" style={heroVars}
             className="relative z-20 grid grid-cols-2 sm:flex sm:flex-row gap-2.5 sm:gap-3 justify-center items-stretch pt-3 pb-4 px-4 mt-[var(--hero-btn-gap)]
             xl:absolute xl:left-1/2 xl:-translate-x-1/2 xl:bottom-[var(--hero-btn-bottom)] xl:mt-0 xl:w-auto
             xl:px-6 xl:py-3.5 xl:rounded-full xl:border xl:border-gold-600/25 xl:backdrop-blur-md">
