@@ -9,10 +9,15 @@ import { admin as adminApi } from '../../api';
 // postMessage and this side holds the pending changes and does the saving — the
 // page itself never writes, so editor mode in a public browser is inert.
 
+// Real pixel sizes, then scaled to fit. The first version put a 900px-tall
+// frame in a 70vh box and let it scroll, which quietly broke dragging: lifting
+// the clock towards the wheel takes the cursor out of the visible slice, the
+// frame stops receiving pointer moves, and the drag commits wherever it was
+// when the cursor left. A 450px move landed as 73px.
 const DEVICES = [
-  { key: 'full',   label: 'Full screen', icon: Monitor,    width: '100%' },
-  { key: 'laptop', label: 'Laptop',      icon: Laptop,     width: '1512px' },
-  { key: 'phone',  label: 'Phone',       icon: Smartphone, width: '390px' },
+  { key: 'full',   label: 'Full screen', icon: Monitor,    width: 1920, height: 1000 },
+  { key: 'laptop', label: 'Laptop',      icon: Laptop,     width: 1512, height: 900 },
+  { key: 'phone',  label: 'Phone',       icon: Smartphone, width: 390,  height: 844 },
 ];
 
 const FRIENDLY = {
@@ -30,7 +35,22 @@ export default function VisualEditorTab() {
   const [saved, setSaved] = useState(null);     // values as last persisted
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [box, setBox] = useState({ w: 900, h: 700 });
   const frameRef = useRef(null);
+  const boxRef = useRef(null);
+
+  // Fit the preview to whatever room the admin column has, so the whole page is
+  // reachable without scrolling mid-drag.
+  useEffect(() => {
+    const measure = () => {
+      const el = boxRef.current;
+      if (!el) return;
+      setBox({ w: el.clientWidth - 16, h: Math.max(320, window.innerHeight - el.getBoundingClientRect().top - 90) });
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [device, loading]);
 
   useEffect(() => {
     adminApi.getSettings()
@@ -83,6 +103,7 @@ export default function VisualEditorTab() {
   }
 
   const dev = DEVICES.find(d => d.key === device) || DEVICES[1];
+  const scale = Math.min(box.w / dev.width, box.h / dev.height, 1);
 
   return (
     <div>
@@ -134,22 +155,27 @@ export default function VisualEditorTab() {
       )}
 
       {/* The frame is the site itself, so what you drag is what visitors see.
-          Scaled down for the wider devices, since the admin column is narrower
-          than the screens being previewed. */}
-      <div className="rounded-2xl border border-gold-600/20 overflow-hidden bg-cosmic-950">
-        <div className="overflow-auto" style={{ maxHeight: '70vh' }}>
+          Scaled to fit rather than scrolled, so a drag never runs off the edge.
+          Pointer coordinates are mapped into the frame's own space by the
+          browser, so the scale does not disturb the drag maths inside it. */}
+      <div ref={boxRef} className="rounded-2xl border border-gold-600/20 overflow-hidden bg-cosmic-950 flex justify-center p-2">
+        <div style={{ width: dev.width * scale, height: dev.height * scale }}>
           <iframe
             ref={frameRef}
             src="/?editor=1"
             title="Homepage preview"
-            style={{ width: dev.width, height: '900px', border: 0, display: 'block', margin: '0 auto' }}
+            style={{
+              width: dev.width, height: dev.height, border: 0, display: 'block',
+              transform: `scale(${scale})`, transformOrigin: 'top left',
+            }}
           />
         </div>
       </div>
 
       <p className="text-[11px] text-gray-600 mt-2">
-        Dragging moves things immediately in this preview, but nothing reaches the
-        live site until you press Save. Discard puts the preview back.
+        Showing {dev.width}×{dev.height} at {Math.round(scale * 100)}%. Dragging moves
+        things immediately in this preview, but nothing reaches the live site until
+        you press Save. Discard puts the preview back.
       </p>
     </div>
   );
