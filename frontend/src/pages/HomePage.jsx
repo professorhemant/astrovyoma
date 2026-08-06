@@ -303,7 +303,7 @@ export default function HomePage() {
               { label: 'Talk to Astrologer',    to: '/astrologers', style: 'outline' },
               { label: 'Talk to AstroVyoma AI', to: '/chat',        style: 'outline' },
             ]).map((cta, i, all) => (
-              <Link key={cta.id || i} to={cta.to}
+              <Link key={cta.id || i} to={cta.to} data-edit-item={cta.id && `hero_ctas:${cta.id}`}
                 className={`relative ${cta.style === 'solid' ? 'btn-gold font-semibold' : 'btn-outline-gold font-medium'}
                   ${all.length % 2 === 1 && i === all.length - 1 ? 'col-span-2 sm:col-span-1' : ''}
                   px-3 sm:px-7 py-3 text-xs flex items-center justify-center gap-2 xl:whitespace-nowrap`}>
@@ -371,7 +371,7 @@ export default function HomePage() {
             </motion.h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {features.map((f,i) => (
-                <Link to={f.link} key={f.title}>
+                <Link to={f.link} key={f.id || f.title} data-edit-item={f.id && `home_features:${f.id}`}>
                   <motion.div
                     initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
                     transition={{delay:i*0.1}}
@@ -434,7 +434,7 @@ export default function HomePage() {
             </motion.h2>
             <div className="grid md:grid-cols-3 gap-8">
               {steps.map((step,i) => (
-                <motion.div key={step.step}
+                <motion.div key={step.id || step.step} data-edit-item={step.id && `how_it_works:${step.id}`}
                   initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
                   transition={{delay:i*0.2}} className="text-center">
                   <motion.div whileHover={{scale:1.1,boxShadow:'0 0 30px rgba(201,168,76,0.35)'}}
@@ -596,7 +596,7 @@ export default function HomePage() {
             </motion.h2>
             <div className="grid md:grid-cols-3 gap-6">
               {testimonials.map((t,i) => (
-                <motion.div key={t.name}
+                <motion.div key={t.id || t.name} data-edit-item={t.id && `testimonials:${t.id}`}
                   initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
                   transition={{delay:i*0.15}}
                   whileHover={{y:-4,boxShadow:'0 0 30px rgba(201,168,76,0.15)'}}
@@ -643,7 +643,7 @@ export default function HomePage() {
                     { label: 'About Us',             to: '/about' },
                     { label: 'Join As Astrologer',   to: '/join-as-astrologer' },
                   ]).map((l, i) => (
-                    <li key={l.id || i}><Link to={l.to} className="hover:text-gold-400 transition-colors">{l.label}</Link></li>
+                    <li key={l.id || i} data-edit-item={l.id && `footer_links:${l.id}`}><Link to={l.to} className="hover:text-gold-400 transition-colors">{l.label}</Link></li>
                   ))}
                 </ul>
               </div>

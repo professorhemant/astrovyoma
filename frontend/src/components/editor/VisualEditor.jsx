@@ -81,6 +81,32 @@ export default function VisualEditor() {
       );
     };
 
+    // Clicking anything editable selects it and asks the admin to open its
+    // properties. Dragging is only offered by the positionable overlays; a
+    // testimonial card cannot be moved to an arbitrary spot without breaking
+    // the layout on a narrower screen, so those are select-and-edit only.
+    function onClick(e) {
+      const item = e.target.closest('[data-edit-item]');
+      const pos  = e.target.closest('[data-edit]');
+      // Half these targets are links. While editing, a click picks the element
+      // rather than following it — otherwise selecting a footer link navigates
+      // the preview away from the page being edited.
+      if (item || pos || e.target.closest('a')) { e.preventDefault(); e.stopPropagation(); }
+      if (item) {
+        const [listKey, id] = (item.dataset.editItem || '').split(':');
+        if (listKey && id) {
+          window.parent?.postMessage(
+            { source: 'astrovyoma-editor', type: 'select', kind: 'item', listKey, id }, ORIGIN);
+        }
+      } else if (pos) {
+        window.parent?.postMessage(
+          { source: 'astrovyoma-editor', type: 'select', kind: 'position',
+            key: pos.dataset.edit, label: pos.dataset.editLabel || pos.dataset.edit }, ORIGIN);
+      } else {
+        window.parent?.postMessage({ source: 'astrovyoma-editor', type: 'select', kind: 'none' }, ORIGIN);
+      }
+    }
+
     function onPointerDown(e) {
       const el = e.target.closest('[data-edit]');
       if (!el) return;
@@ -152,10 +178,12 @@ export default function VisualEditor() {
       }
     }
 
+    document.addEventListener('click', onClick, true);
     document.addEventListener('pointerdown', onPointerDown, true);
     document.addEventListener('pointermove', onPointerMove, true);
     document.addEventListener('pointerup', onPointerUp, true);
     return () => {
+      document.removeEventListener('click', onClick, true);
       document.removeEventListener('pointerdown', onPointerDown, true);
       document.removeEventListener('pointermove', onPointerMove, true);
       document.removeEventListener('pointerup', onPointerUp, true);
@@ -166,6 +194,13 @@ export default function VisualEditor() {
   // Injected rather than put in the stylesheet so none of it ships to visitors.
   return (
     <style>{`
+      [data-edit-item] {
+        outline: 1px dashed rgba(120,180,255,0.45);
+        outline-offset: 3px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      [data-edit-item]:hover { outline: 2px solid rgba(120,180,255,0.95); }
       [data-edit] {
         pointer-events: auto !important;
         cursor: grab;

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { Loader, Save, RotateCcw, Monitor, Laptop, Smartphone, RefreshCw, Undo2 } from 'lucide-react';
 import { admin as adminApi } from '../../api';
+import EditorProperties from './EditorProperties';
 
 // The admin half of the visual editor.
 //
@@ -35,6 +36,8 @@ export default function VisualEditorTab() {
   const [saved, setSaved] = useState(null);     // values as last persisted
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [schema, setSchema] = useState(null);
+  const [selection, setSelection] = useState(null);
   const [box, setBox] = useState({ w: 900, h: 700 });
   const frameRef = useRef(null);
   const boxRef = useRef(null);
@@ -53,9 +56,9 @@ export default function VisualEditorTab() {
   }, [device, loading]);
 
   useEffect(() => {
-    adminApi.getSettings()
-      .then(r => setSaved(r.data))
-      .catch(() => toast.error('Could not load current settings'))
+    Promise.all([adminApi.getSettings(), adminApi.contentSchema()])
+      .then(([v, sc]) => { setSaved(v.data); setSchema(sc.data); })
+      .catch(() => toast.error('Could not load the editor'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -66,6 +69,10 @@ export default function VisualEditorTab() {
       if (e.origin !== window.location.origin) return;
       if (e.data?.source !== 'astrovyoma-editor') return;
       if (frameRef.current && e.source !== frameRef.current.contentWindow) return;
+      if (e.data.type === 'select') {
+        setSelection(e.data.kind === 'none' ? null : e.data);
+        return;
+      }
       if (e.data.type !== 'commit') return;      // previews are cosmetic, only keep drops
       setPending(p => ({ ...p, ...e.data.values }));
     }
@@ -158,6 +165,7 @@ export default function VisualEditorTab() {
           Scaled to fit rather than scrolled, so a drag never runs off the edge.
           Pointer coordinates are mapped into the frame's own space by the
           browser, so the scale does not disturb the drag maths inside it. */}
+      <div className="relative">
       <div ref={boxRef} className="rounded-2xl border border-gold-600/20 overflow-hidden bg-cosmic-950 flex justify-center p-2">
         <div style={{ width: dev.width * scale, height: dev.height * scale }}>
           <iframe
@@ -170,6 +178,19 @@ export default function VisualEditorTab() {
             }}
           />
         </div>
+      </div>
+
+      {/* Floats over the preview so the page keeps its full width. */}
+      <div className={`absolute top-3 right-3 w-72 z-20 transition-opacity ${selection ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <EditorProperties
+          selection={selection}
+          schema={schema}
+          settings={{ ...saved, ...pending }}
+          onSettingsChange={(patch) => setPending(p => ({ ...p, ...patch }))}
+          onAfterChange={reloadFrame}
+          onClose={() => setSelection(null)}
+        />
+      </div>
       </div>
 
       <p className="text-[11px] text-gray-600 mt-2">
