@@ -65,6 +65,23 @@ const SETTINGS_GROUPS = [
       { key: 'heroButtonBottom', label: 'Button height above banner bottom, full screen (px)', type: 'number',
         default: 56, min: 0, max: 400,
         help: 'On screens 1280px and wider the buttons float over the artwork. Bigger numbers lift them higher up the banner.' },
+
+      { key: 'mandalaLeft', label: 'Zodiac wheel — across (%)', type: 'number',
+        default: 15, min: 0, max: 100,
+        help: '0 is the far left of the banner, 100 the far right. This is the centre of the wheel.' },
+      { key: 'mandalaTop', label: 'Zodiac wheel — down (%)', type: 'number',
+        default: 44, min: 0, max: 100,
+        help: '0 is the top of the banner, 100 the bottom. Applies from tablet width up; phones keep a fixed position so the wheel stays clear of the headline.' },
+      { key: 'mandalaSize', label: 'Zodiac wheel — size (px)', type: 'number',
+        default: 288, min: 60, max: 700,
+        help: 'Width of the wheel on a full-size screen.' },
+
+      { key: 'clockLeft', label: 'Vedic clock — across (%)', type: 'number',
+        default: 15, min: 0, max: 100,
+        help: '0 is the far left of the banner, 100 the far right. This is the centre of the clock.' },
+      { key: 'clockBottom', label: 'Vedic clock — up from bottom (px)', type: 'number',
+        default: 8, min: -50, max: 600,
+        help: 'Distance from the bottom edge of the banner. Bigger numbers lift the clock higher.' },
     ],
   },
   {

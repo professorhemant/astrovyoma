@@ -109,7 +109,8 @@ function SectionDivider() {
   );
 }
 
-const HERO_OVERLAY_LEFT = '15%';
+// The mandala and clock now take their position from Settings -> Homepage
+// Layout. 15% was the constant they both used before that.
 // The banner is 3168x1344 (2.36:1) and carries its headline painted into the
 // artwork. A tall box on a narrow screen makes object-fit:cover throw away the
 // sides — at 77vh on a phone that is 76% of the width, which slices the
@@ -146,9 +147,21 @@ export default function HomePage() {
   // the two layouts need different properties — margin below xl where the row
   // sits in flow, `bottom` from xl up where it floats over the artwork — and an
   // inline style cannot vary by breakpoint.
+  const num = (v, fallback) => (Number.isFinite(v) ? v : fallback);
   const heroVars = {
-    '--hero-btn-gap': `${Number.isFinite(siteSettings?.heroButtonGap) ? siteSettings.heroButtonGap : 12}px`,
-    '--hero-btn-bottom': `${Number.isFinite(siteSettings?.heroButtonBottom) ? siteSettings.heroButtonBottom : 56}px`,
+    '--hero-btn-gap': `${num(siteSettings?.heroButtonGap, 12)}px`,
+    '--hero-btn-bottom': `${num(siteSettings?.heroButtonBottom, 56)}px`,
+  };
+  // Defaults match where these sat before they became adjustable, so turning the
+  // controls on moved nothing until someone changes a number.
+  const mandalaPos = {
+    left: `${num(siteSettings?.mandalaLeft, 15)}%`,
+    '--mandala-top': `${num(siteSettings?.mandalaTop, 44)}%`,
+    '--mandala-size': `${num(siteSettings?.mandalaSize, 288)}px`,
+  };
+  const clockPos = {
+    left: `${num(siteSettings?.clockLeft, 15)}%`,
+    bottom: `${num(siteSettings?.clockBottom, 8)}px`,
   };
 
   const features     = cms?.home_features?.length ? cms.home_features : FREE_FEATURES;
@@ -225,12 +238,12 @@ export default function HomePage() {
               same figure lands the wheel behind the navbar, so anchor it by
               percentage there, clear of the headline and above the clock. */}
           <div
-            className="absolute flex flex-col items-center justify-center pointer-events-none top-[54%] md:top-[calc(50%-56px)]"
-            style={{ left: HERO_OVERLAY_LEFT, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
+            className="absolute flex flex-col items-center justify-center pointer-events-none top-[54%] md:top-[var(--mandala-top)]"
+            style={{ ...mandalaPos, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
             <img
               src="/zodiac-mandala.png"
               alt="Vedic Zodiac Mandala"
-              className="w-24 md:w-56 lg:w-72"
+              className="w-24 md:w-56 lg:w-[var(--mandala-size)]"
               style={{
                 animation: 'spinCW 120s linear infinite',
                 willChange: 'transform',
@@ -250,7 +263,7 @@ export default function HomePage() {
               so scaling the inner wrapper shrinks it on a phone without
               disturbing anything around it. */}
           <div className="absolute pointer-events-none"
-            style={{ bottom: '8px', left: HERO_OVERLAY_LEFT, transform: 'translateX(-50%)', zIndex: 10 }}>
+            style={{ ...clockPos, transform: 'translateX(-50%)', zIndex: 10 }}>
             <div className="scale-[0.38] md:scale-100 origin-bottom">
               <VedicClock />
             </div>

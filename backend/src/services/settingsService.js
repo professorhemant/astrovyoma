@@ -87,6 +87,11 @@ async function getPublicSettings() {
     metaDescription: s.metaDescription,
     heroButtonGap: s.heroButtonGap,
     heroButtonBottom: s.heroButtonBottom,
+    mandalaLeft: s.mandalaLeft,
+    mandalaTop: s.mandalaTop,
+    mandalaSize: s.mandalaSize,
+    clockLeft: s.clockLeft,
+    clockBottom: s.clockBottom,
   };
 }
 
