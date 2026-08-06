@@ -114,7 +114,12 @@ const HERO_OVERLAY_LEFT = '15%';
 // artwork. A tall box on a narrow screen makes object-fit:cover throw away the
 // sides — at 77vh on a phone that is 76% of the width, which slices the
 // headline in half. Keep the box short until there is room to be cinematic.
-const heroBannerClass = 'w-full block object-cover object-center h-80 sm:h-96 md:h-[clamp(300px,77vh,880px)]';
+// Laptop and desktop go full-screen: at 2560x1440 and 1512x860 cover trims ~26%
+// off the sides and the sage, mandala, globe and clock all stay in frame. Below
+// xl the hero keeps its letterboxed height — narrower than that the floating CTA
+// pill runs into the Vedic clock at 15% and its labels wrap. Phones keep the
+// short box for the reason above.
+const heroBannerClass = 'w-full block object-cover object-center h-80 sm:h-96 md:h-[clamp(300px,77vh,880px)] xl:h-[100svh]';
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
@@ -157,6 +162,11 @@ export default function HomePage() {
 
         {/* ── Hero Banner ──────────────────────────────────────────────────── */}
         <section className="relative w-full overflow-hidden">
+          {/* Every artwork overlay below anchors to this wrapper, not to the
+              section. On a phone the CTA row sits in flow underneath and makes
+              the section taller than the image — a clock pinned to the section
+              would then float down behind the buttons. */}
+          <div className="relative">
           <motion.img
             src="/hero-banner.png"
             alt="AstroVyoma — Unveil Your Destiny, Map Your Cosmic Journey"
@@ -219,22 +229,33 @@ export default function HomePage() {
               <VedicClock />
             </div>
           </div>
+          </div>
+
+          {/* ── CTA Buttons ── */}
+          {/* The seven tool pills that used to sit here (Tarot, Book Pooja, Astro
+              Mall, Vastu, Namkaran, Festivals, Crystals) now live under Tools ▾
+              and Shop ▾ in the navbar. Only the conversion paths stay on the
+              hero. In flow under the banner below xl:; from xl: up the hero
+              fills the screen, so they float over the artwork instead.
+              The scrim is what keeps the outline button readable — without it
+              it lands on the bright marble tabletop and disappears. */}
+          <div className="relative z-20 grid grid-cols-2 sm:flex sm:flex-row gap-2.5 sm:gap-3 justify-center items-stretch pt-3 pb-4 px-4 -mt-[10px]
+            xl:absolute xl:left-1/2 xl:-translate-x-1/2 xl:bottom-14 xl:mt-0 xl:w-auto
+            xl:px-6 xl:py-3.5 xl:rounded-full xl:border xl:border-gold-600/25 xl:backdrop-blur-md">
+            <div className="hidden xl:block absolute inset-0 rounded-full pointer-events-none"
+              style={{ background: 'rgba(6,4,18,0.55)', boxShadow: '0 8px 40px rgba(6,4,18,0.55)' }} />
+            <Link to="/kundali" className="relative btn-gold px-3 sm:px-7 py-3 text-xs font-semibold flex items-center justify-center gap-2 xl:whitespace-nowrap">
+              Get Free Kundali <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+            <Link to="/astrologers" className="relative btn-outline-gold px-3 sm:px-7 py-3 text-xs font-medium flex items-center justify-center gap-2 xl:whitespace-nowrap">
+              Talk to Astrologer
+            </Link>
+            <Link to="/chat" className="relative col-span-2 btn-outline-gold px-3 sm:px-7 py-3 text-xs font-medium flex items-center justify-center gap-2 xl:whitespace-nowrap">
+              <Sparkles className="w-3.5 h-3.5" /> Talk to AstroVyoma AI
+            </Link>
+          </div>
 
         </section>
-
-        {/* ── CTA Buttons ── */}
-        {/* The seven tool pills that used to sit here (Tarot, Book Pooja, Astro
-            Mall, Vastu, Namkaran, Festivals, Crystals) now live under Tools ▾
-            and Shop ▾ in the navbar. Only the two conversion paths stay on the
-            hero. Two-up on a phone, side by side on desktop. */}
-        <div className="relative z-10 grid grid-cols-2 sm:flex sm:flex-row gap-2.5 sm:gap-3 justify-center items-stretch pt-3 pb-4 px-4 -mt-[10px]">
-          <Link to="/kundali" className="btn-gold px-3 sm:px-7 py-3 text-xs font-semibold flex items-center justify-center gap-2">
-            Get Free Kundali <ChevronRight className="w-3.5 h-3.5" />
-          </Link>
-          <Link to="/astrologers" className="btn-outline-gold px-3 sm:px-7 py-3 text-xs font-medium flex items-center justify-center gap-2">
-            Talk to Astrologer
-          </Link>
-        </div>
 
         {/* ── AI Chatbot Preview ── */}
         <section className="py-16 px-4 md:px-8 lg:px-16 relative z-10">
