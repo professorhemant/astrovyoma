@@ -8,7 +8,7 @@ import {
   Settings, LogOut, Loader, Trash2, Edit2, Plus, X,
   CheckCircle, XCircle, RefreshCw, ChevronLeft, ChevronRight,
   Shield, Bell, AlertTriangle, Calendar, TrendingUp,
-  Phone, Mail, BarChart2, Eye, EyeOff, IndianRupee, FileText, Home
+  Phone, Mail, BarChart2, Eye, EyeOff, IndianRupee, FileText, Home, KeyRound
 } from 'lucide-react';
 
 // Applications are the intake queue for Astrologers, so they sit next to them.
@@ -295,11 +295,59 @@ function UsersTab() {
 // ─── ASTROLOGERS ─────────────────────────────────────────────────────────────
 const EMPTY_ASTRO = { display_name: '', bio: '', phone: '', pin: '', price_per_min: 30, experience_years: 5, specialties: '', languages: 'Hindi, English', free_minutes: 0, photo_url: '', is_verified: true };
 
+// Shown after an approval or a PIN reset. The plaintext exists only in this
+// response — nothing can retrieve it afterwards — so the dialog is modal, has
+// no dismiss-by-backdrop, and offers a copy button rather than asking the admin
+// to transcribe four digits correctly.
+function PinModal({ name, pin, onClose, approved }) {
+  const [copied, setCopied] = useState(false);
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(pin);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error('Could not copy — note the PIN down manually');
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+      <div className={`card-cosmic p-6 max-w-sm w-full text-center border ${approved ? 'border-green-500/30' : 'border-blue-500/30'}`}>
+        {approved
+          ? <CheckCircle className="w-10 h-10 text-green-400 mx-auto mb-3" />
+          : <KeyRound className="w-10 h-10 text-blue-400 mx-auto mb-3" />}
+        <h3 className={`font-serif text-xl mb-2 ${approved ? 'text-green-400' : 'text-blue-300'}`}>
+          {approved ? 'Application Approved' : 'New Portal PIN'}
+        </h3>
+        <p className="text-gray-300 text-sm mb-4">
+          {approved
+            ? <><span className="text-gold-400 font-medium">{name}</span> has been added as an astrologer.</>
+            : <>for <span className="text-gold-400 font-medium">{name}</span></>}
+        </p>
+        <div className="bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 mb-3">
+          <p className="text-gold-400 font-bold text-3xl tracking-widest">{pin}</p>
+        </div>
+        <button onClick={copy} className="btn-outline-gold px-4 py-2 text-xs mb-4 w-full">
+          {copied ? '✓ Copied' : 'Copy PIN'}
+        </button>
+        <p className="text-red-300/80 text-xs mb-4">
+          This is the only time it is shown. It is stored hashed and cannot be
+          looked up again — if it is lost you will have to issue another.
+        </p>
+        <button onClick={onClose} className="btn-gold px-6 py-2 text-sm w-full">Done</button>
+      </div>
+    </div>
+  );
+}
+
 function AstrologersTab() {
   const [astrologers, setAstrologers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [pinModal, setPinModal] = useState(null);
 
   const load = () => {
     setLoading(true);
@@ -379,6 +427,23 @@ function AstrologersTab() {
     } catch { toast.error('Failed'); }
   }
 
+  // The PIN is stored as a bcrypt hash, so a lost one cannot be looked up —
+  // it can only be replaced. Confirm first: this logs the astrologer out of
+  // the portal until they are given the new one.
+  async function handleResetPin(a) {
+    if (!window.confirm(
+      `Issue a new portal PIN for "${a.display_name}"?\n\n` +
+      'Their current PIN stops working immediately, and the new one is shown ' +
+      'only once — you will need to pass it on.'
+    )) return;
+    try {
+      const { data } = await adminApi.resetAstrologerPin(a.id);
+      setPinModal({ name: data.display_name, pin: data.pin });
+    } catch (err) {
+      toast.error(err?.response?.data?.error || 'Failed to reset PIN');
+    }
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -425,8 +490,9 @@ function AstrologersTab() {
                     </button>
                   </td>
                   <td className="py-2 flex items-center gap-2">
-                    <button onClick={() => setForm({ ...a, specialties: Array.isArray(a.specialties) ? a.specialties.join(', ') : a.specialties, languages: Array.isArray(a.languages) ? a.languages.join(', ') : a.languages })} className="text-gold-400 hover:text-gold-300"><Edit2 className="w-4 h-4" /></button>
-                    <button onClick={() => handleDelete(a.id, a.display_name)} className="text-red-400 hover:text-red-300"><Trash2 className="w-4 h-4" /></button>
+                    <button onClick={() => setForm({ ...a, specialties: Array.isArray(a.specialties) ? a.specialties.join(', ') : a.specialties, languages: Array.isArray(a.languages) ? a.languages.join(', ') : a.languages })} className="text-gold-400 hover:text-gold-300" title="Edit"><Edit2 className="w-4 h-4" /></button>
+                    <button onClick={() => handleResetPin(a)} className="text-blue-400 hover:text-blue-300" title="Issue a new portal PIN"><KeyRound className="w-4 h-4" /></button>
+                    <button onClick={() => handleDelete(a.id, a.display_name)} className="text-red-400 hover:text-red-300" title="Delete"><Trash2 className="w-4 h-4" /></button>
                   </td>
                 </tr>
               ))}
@@ -435,6 +501,8 @@ function AstrologersTab() {
           </table>
         </div>
       )}
+
+      {pinModal && <PinModal name={pinModal.name} pin={pinModal.pin} onClose={() => setPinModal(null)} />}
 
       {form && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
@@ -839,7 +907,7 @@ function SettingsTab() {
 }
 
 // ─── APPLICATIONS ─────────────────────────────────────────────────────────────
-function ApplicationsTab() {
+function ApplicationsTab({ onPendingChange }) {
   const [data, setData] = useState({ applications: [], total: 0 });
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -863,6 +931,7 @@ function ApplicationsTab() {
       const r = await astrologerApplications.approve(id);
       setApprovedModal({ name: r.data.astrologer.display_name, pin: r.data.pin });
       load();
+      onPendingChange?.();
     } catch (err) {
       toast.error(err.response?.data?.error || 'Failed to approve');
     }
@@ -875,6 +944,7 @@ function ApplicationsTab() {
       setRejectingId(null);
       setRejectReason('');
       load();
+      onPendingChange?.();
     } catch {
       toast.error('Failed to reject');
     }
@@ -976,22 +1046,15 @@ function ApplicationsTab() {
         </div>
       )}
 
+      {/* Same dialog as a PIN reset — one place to get the copy-and-warn right,
+          and the admin sees identical handling however the PIN was issued. */}
       {approvedModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="card-cosmic p-6 max-w-sm w-full text-center border border-green-500/30">
-            <CheckCircle className="w-10 h-10 text-green-400 mx-auto mb-3" />
-            <h3 className="font-serif text-xl text-green-400 mb-2">Application Approved!</h3>
-            <p className="text-gray-300 text-sm mb-4">
-              <span className="text-gold-400 font-medium">{approvedModal.name}</span> has been added as an astrologer.
-            </p>
-            <div className="bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 mb-5">
-              <p className="text-gray-400 text-xs mb-1">Portal Login PIN</p>
-              <p className="text-gold-400 font-bold text-3xl tracking-widest">{approvedModal.pin}</p>
-              <p className="text-gray-500 text-xs mt-1">Share this PIN with the astrologer — it won't be shown again.</p>
-            </div>
-            <button onClick={() => setApprovedModal(null)} className="btn-gold px-6 py-2 text-sm">Done</button>
-          </div>
-        </div>
+        <PinModal
+          name={approvedModal.name}
+          pin={approvedModal.pin}
+          approved
+          onClose={() => setApprovedModal(null)}
+        />
       )}
     </div>
   );
@@ -1003,12 +1066,25 @@ export default function AdminPage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [pendingCount, setPendingCount] = useState(0);
 
   useEffect(() => {
     if (loading) return;
     if (!user) { navigate('/login'); return; }
     if (user.role !== 'admin') { navigate('/'); toast.error('Admin access required'); }
   }, [user, loading, navigate]);
+
+  // Applications waiting on a decision are otherwise invisible until someone
+  // opens the tab, so the count rides on the tab itself. Asking for one row is
+  // enough — `total` carries the full count.
+  const refreshPending = useCallback(() => {
+    if (!user || user.role !== 'admin') return;
+    astrologerApplications.getAll({ status: 'pending', limit: 1 })
+      .then(r => setPendingCount(r.data.total || 0))
+      .catch(() => { /* a missing badge should never break the panel */ });
+  }, [user]);
+
+  useEffect(() => { refreshPending(); }, [refreshPending]);
 
   if (loading) return (
     <div className="min-h-screen bg-cosmic-950 flex items-center justify-center">
@@ -1026,7 +1102,7 @@ export default function AdminPage() {
     transactions:  <TransactionsTab />,
     revenue:       <RevenueTab />,
     settings:      <SettingsTab />,
-    applications:  <ApplicationsTab />,
+    applications:  <ApplicationsTab onPendingChange={refreshPending} />,
   };
 
   return (
@@ -1047,13 +1123,28 @@ export default function AdminPage() {
           </button>
         </div>
         <nav className="flex-1 py-4 space-y-1 px-2 overflow-y-auto">
-          {TABS.map(({ key, label, icon: Icon }) => (
-            <button key={key} onClick={() => setTab(key)} title={label}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${tab === key ? 'bg-gold-500/10 text-gold-400' : 'text-gray-400 hover:text-gray-200 hover:bg-cosmic-800'}`}>
-              <Icon className="w-4 h-4 shrink-0" />
-              {sidebarOpen && <span>{label}</span>}
-            </button>
-          ))}
+          {TABS.map(({ key, label, icon: Icon }) => {
+            const badge = key === 'applications' ? pendingCount : 0;
+            return (
+              <button key={key} onClick={() => setTab(key)} title={badge ? `${label} — ${badge} pending` : label}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${tab === key ? 'bg-gold-500/10 text-gold-400' : 'text-gray-400 hover:text-gray-200 hover:bg-cosmic-800'}`}>
+                <span className="relative shrink-0">
+                  <Icon className="w-4 h-4" />
+                  {/* Collapsed sidebar has no room for the pill, so the count
+                      rides on the icon as a dot instead of vanishing. */}
+                  {badge > 0 && !sidebarOpen && (
+                    <span className="absolute -top-1.5 -right-1.5 w-2 h-2 rounded-full bg-yellow-400" />
+                  )}
+                </span>
+                {sidebarOpen && <span>{label}</span>}
+                {sidebarOpen && badge > 0 && (
+                  <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/40">
+                    {badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </nav>
         <div className="p-2 border-t border-gold-600/10 space-y-1">
           <button onClick={() => navigate('/')} title="View Site"
@@ -1082,14 +1173,22 @@ export default function AdminPage() {
           </button>
           <div className="w-px h-5 bg-gold-600/20 shrink-0" />
           <div className="flex overflow-x-auto scrollbar-none gap-1 py-1">
-            {TABS.map(({ key, label, icon: Icon }) => (
-              <button key={key} onClick={() => setTab(key)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-colors shrink-0
-                  ${tab === key ? 'bg-gold-500/15 text-gold-400 border border-gold-500/30' : 'text-gray-400 hover:text-gray-200 hover:bg-cosmic-800'}`}>
-                <Icon className="w-3.5 h-3.5 shrink-0" />
-                {label}
-              </button>
-            ))}
+            {TABS.map(({ key, label, icon: Icon }) => {
+              const badge = key === 'applications' ? pendingCount : 0;
+              return (
+                <button key={key} onClick={() => setTab(key)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-colors shrink-0
+                    ${tab === key ? 'bg-gold-500/15 text-gold-400 border border-gold-500/30' : 'text-gray-400 hover:text-gray-200 hover:bg-cosmic-800'}`}>
+                  <Icon className="w-3.5 h-3.5 shrink-0" />
+                  {label}
+                  {badge > 0 && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/40">
+                      {badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 

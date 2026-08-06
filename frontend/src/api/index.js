@@ -216,6 +216,7 @@ export const admin = {
   updateAstrologer:    (id, data) => api.put(`/admin/astrologers/${id}`, data),
   deleteAstrologer:    (id, force) => api.delete(`/admin/astrologers/${id}${force ? '?force=true' : ''}`),
   cleanupDemoAstrologers: () => api.post('/admin/astrologers/cleanup-demo'),
+  resetAstrologerPin:  (id) => api.post(`/admin/astrologers/${id}/reset-pin`),
   getConsultations:    (params) => api.get('/admin/consultations', { params }),
   getTransactions:     (params) => api.get('/admin/transactions', { params }),
   getAppointments:     (params) => api.get('/admin/appointments', { params }),

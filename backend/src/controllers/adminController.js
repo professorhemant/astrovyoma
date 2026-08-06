@@ -252,6 +252,27 @@ async function createAstrologer(req, res) {
   }
 }
 
+// The portal PIN is only ever stored as a bcrypt hash, so the plaintext shown
+// once at approval is unrecoverable. Without this, an astrologer who loses it
+// is locked out of the pandit portal with no way back in.
+async function resetAstrologerPin(req, res) {
+  try {
+    const { id } = req.params;
+    const astrologer = await Astrologer.findByPk(id);
+    if (!astrologer) return res.status(404).json({ error: 'Astrologer not found' });
+
+    const pin = String(Math.floor(1000 + Math.random() * 9000));
+    astrologer.pin_hash = await bcrypt.hash(pin, 10);
+    await astrologer.save();
+
+    // Returned in the clear exactly once — the caller has to hand it over now.
+    res.json({ success: true, display_name: astrologer.display_name, pin });
+  } catch (err) {
+    console.error('resetAstrologerPin error:', err);
+    res.status(500).json({ error: 'Failed to reset PIN' });
+  }
+}
+
 async function updateAstrologer(req, res) {
   try {
     const { id } = req.params;
@@ -447,7 +468,7 @@ async function setupAdmin(req, res) {
 
 module.exports = {
   getStats, getUsers, updateUser, deleteUser, cleanupDemoAstrologers,
-  getAstrologers, createAstrologer, updateAstrologer, deleteAstrologer,
+  getAstrologers, createAstrologer, updateAstrologer, deleteAstrologer, resetAstrologerPin,
   getConsultations, getTransactions, getAppointments, getRevenue,
   getSiteSettings, updateSiteSettings,
   setupAdmin,
