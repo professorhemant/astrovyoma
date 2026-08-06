@@ -11,16 +11,20 @@ import {
   Phone, Mail, BarChart2, Eye, EyeOff, IndianRupee, FileText, Home
 } from 'lucide-react';
 
+// Applications are the intake queue for Astrologers, so they sit next to them.
+// Tacked on after Settings they read as a site-configuration screen, and a
+// pandit's application looks like it landed somewhere in the user settings
+// rather than in the astrologer pipeline it actually belongs to.
 const TABS = [
-  { key: 'overview',      label: 'Overview',      icon: LayoutDashboard },
+  { key: 'overview',      label: 'Overview',       icon: LayoutDashboard },
   { key: 'users',         label: 'Users',          icon: Users },
   { key: 'astrologers',   label: 'Astrologers',    icon: Star },
+  { key: 'applications',  label: 'Applications',   icon: FileText },
   { key: 'consultations', label: 'Consultations',  icon: MessageSquare },
   { key: 'appointments',  label: 'Appointments',   icon: Calendar },
   { key: 'transactions',  label: 'Transactions',   icon: Wallet },
   { key: 'revenue',       label: 'Revenue',        icon: TrendingUp },
   { key: 'settings',      label: 'Settings',       icon: Settings },
-  { key: 'applications',  label: 'Applications',   icon: FileText },
 ];
 
 // Tailwind scans source text at build time, so an interpolated class name like
