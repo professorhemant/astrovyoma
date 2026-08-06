@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { Loader, Save, Trash2, X, Upload, Plus } from 'lucide-react';
+import { Loader, Save, Trash2, X, Upload, Plus, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { admin as adminApi } from '../../api';
 
 // The properties panel for whatever is selected in the preview.
@@ -91,8 +91,40 @@ function Input({ field, value, onChange }) {
   return <input type="text" className={base} value={value ?? ''} onChange={e => onChange(e.target.value)} />;
 }
 
+// A four-way move control on every selection.
+//
+// What the arrows do depends on what the thing is, because "move left" cannot
+// mean the same for something floating over the banner as for a card in a row:
+//   positioned  nudge its coordinates
+//   heading     up/down changes the space above it, left/right its alignment
+//   list row    move it earlier or later among its siblings
+// Same control, honest behaviour underneath.
+function MoveControls({ hint, onMove, busy }) {
+  const btn = 'w-8 h-8 rounded-lg border border-gold-600/25 text-gold-300 hover:bg-gold-500/15 disabled:opacity-30 flex items-center justify-center';
+  return (
+    <div className="mb-3 pb-3 border-b border-gold-600/10">
+      <label className="block text-[11px] text-gold-400/80 mb-1.5">Move</label>
+      <div className="flex items-center gap-3">
+        <div className="grid grid-cols-3 gap-1 w-[104px]">
+          <span />
+          <button disabled={busy} onClick={() => onMove('up')} className={btn} title="Up"><ChevronUp className="w-4 h-4" /></button>
+          <span />
+          <button disabled={busy} onClick={() => onMove('left')} className={btn} title="Left"><ChevronLeft className="w-4 h-4" /></button>
+          <span />
+          <button disabled={busy} onClick={() => onMove('right')} className={btn} title="Right"><ChevronRight className="w-4 h-4" /></button>
+          <span />
+          <button disabled={busy} onClick={() => onMove('down')} className={btn} title="Down"><ChevronDown className="w-4 h-4" /></button>
+          <span />
+        </div>
+        <p className="text-[10px] text-gray-500 flex-1">{hint}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function EditorProperties({ selection, schema, settings, onSettingsChange, onAfterChange, onClose }) {
   const [draft, setDraft] = useState(null);
+  const [siblings, setSiblings] = useState([]);
   const [busy, setBusy] = useState(false);
 
   // Load the selected row. Settings selections need no fetch — the admin
@@ -104,6 +136,7 @@ export default function EditorProperties({ selection, schema, settings, onSettin
     adminApi.contentList(selection.listKey)
       .then(r => {
         if (cancelled) return;
+        setSiblings(r.data.items);
         setDraft(r.data.items.find(i => i.id === selection.id) || null);
       })
       .catch(() => toast.error('Could not load that item'));
@@ -127,8 +160,34 @@ export default function EditorProperties({ selection, schema, settings, onSettin
     const group = (schema?.settingsGroups || []).find(g => g.key === 'layout');
     const prefix = { mandala: 'mandala', clock: 'clock', heroButtons: 'heroButton' }[selection.key] || '';
     const fields = (group?.fields || []).filter(f => f.key.startsWith(prefix));
+    // 1% sideways, 8px vertically — a visible nudge without overshooting.
+    const nudge = (dir) => {
+      const cur = (k, d) => (Number.isFinite(settings?.[k]) ? settings[k] : d);
+      if (selection.key === 'mandala') {
+        if (dir === 'left')  return onSettingsChange({ mandalaLeft: Math.max(0, cur('mandalaLeft', 15) - 1) });
+        if (dir === 'right') return onSettingsChange({ mandalaLeft: Math.min(100, cur('mandalaLeft', 15) + 1) });
+        if (dir === 'up')    return onSettingsChange({ mandalaTop: Math.max(0, cur('mandalaTop', 44) - 1) });
+        return onSettingsChange({ mandalaTop: Math.min(100, cur('mandalaTop', 44) + 1) });
+      }
+      if (selection.key === 'clock') {
+        if (dir === 'left')  return onSettingsChange({ clockLeft: Math.max(0, cur('clockLeft', 15) - 1) });
+        if (dir === 'right') return onSettingsChange({ clockLeft: Math.min(100, cur('clockLeft', 15) + 1) });
+        if (dir === 'up')    return onSettingsChange({ clockBottom: cur('clockBottom', 8) + 8 });
+        return onSettingsChange({ clockBottom: Math.max(-50, cur('clockBottom', 8) - 8) });
+      }
+      // The hero buttons are centred, so only their height is adjustable.
+      if (dir === 'up')   return onSettingsChange({ heroButtonBottom: cur('heroButtonBottom', 56) + 8 });
+      if (dir === 'down') return onSettingsChange({ heroButtonBottom: Math.max(0, cur('heroButtonBottom', 56) - 8) });
+    };
+
     return (
       <Panel title={selection.label} onClose={onClose}>
+        <MoveControls
+          onMove={nudge}
+          hint={selection.key === 'heroButtons'
+            ? 'Up and down change the height over the banner. These buttons stay centred.'
+            : 'Nudges it 1% sideways or 8px up and down. Dragging in the preview is faster for big moves.'}
+        />
         <p className="text-[11px] text-gray-500 mb-3">
           Drag it in the preview, or type exact numbers here.
         </p>
@@ -197,8 +256,54 @@ export default function EditorProperties({ selection, schema, settings, onSettin
     } finally { setBusy(false); }
   }
 
+  // Headings move by spacing and alignment; everything else moves by changing
+  // places with the sibling before or after it.
+  const isHeading = selection.listKey === 'section_headings';
+  const index = siblings.findIndex(i => i.id === selection.id);
+
+  async function move(dir) {
+    if (isHeading) {
+      const next = { ...draft };
+      const order = ['left', 'center', 'right'];
+      if (dir === 'up')    next.spaceAbove = Math.max(-80, (Number(next.spaceAbove) || 0) - 8);
+      if (dir === 'down')  next.spaceAbove = Math.min(200, (Number(next.spaceAbove) || 0) + 8);
+      if (dir === 'left' || dir === 'right') {
+        const at = Math.max(0, order.indexOf(next.align || 'center'));
+        next.align = order[Math.max(0, Math.min(2, at + (dir === 'right' ? 1 : -1)))];
+      }
+      setDraft(next);
+      setBusy(true);
+      try {
+        await adminApi.contentUpdate(selection.listKey, selection.id, next);
+        onAfterChange?.();
+      } catch { toast.error('Could not move that'); }
+      finally { setBusy(false); }
+      return;
+    }
+
+    const delta = (dir === 'left' || dir === 'up') ? -1 : 1;
+    const to = index + delta;
+    if (index < 0 || to < 0 || to >= siblings.length) return;
+    const ids = siblings.map(i => i.id);
+    [ids[index], ids[to]] = [ids[to], ids[index]];
+    setBusy(true);
+    try {
+      const { data } = await adminApi.contentReorder(selection.listKey, ids);
+      setSiblings(data.items);
+      onAfterChange?.();
+    } catch { toast.error('Could not move that'); }
+    finally { setBusy(false); }
+  }
+
   return (
     <Panel title={def.label} onClose={onClose}>
+      <MoveControls
+        busy={busy}
+        onMove={move}
+        hint={isHeading
+          ? 'Up and down change the space above. Left and right change its alignment.'
+          : `Swaps places with the one before or after it. Currently ${index + 1} of ${siblings.length}.`}
+      />
       {def.fields.map(f => (
         <div key={f.key} className="mb-3">
           <label className="block text-[11px] text-gold-400/80 mb-1">
@@ -228,12 +333,12 @@ export default function EditorProperties({ selection, schema, settings, onSettin
 
 function Panel({ title, onClose, children }) {
   return (
-    <div className="border border-gold-600/25 rounded-xl bg-cosmic-900/60 overflow-hidden">
+    <div className="border border-gold-600/40 rounded-xl bg-cosmic-900 overflow-hidden shadow-2xl shadow-black/60">
       <div className="flex items-center justify-between px-3 py-2 border-b border-gold-600/15 bg-cosmic-900">
         <span className="text-xs font-medium text-gold-400">{title}</span>
         <button onClick={onClose} className="text-gray-500 hover:text-gray-300"><X className="w-3.5 h-3.5" /></button>
       </div>
-      <div className="p-3 max-h-[62vh] overflow-y-auto">{children}</div>
+      <div className="p-3 max-h-[62vh] overflow-y-auto bg-cosmic-900">{children}</div>
     </div>
   );
 }
