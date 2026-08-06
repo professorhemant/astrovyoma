@@ -162,6 +162,9 @@ export default function EditorProperties({ selection, schema, settings, onSettin
       await adminApi.contentUpdate(selection.listKey, selection.id, draft);
       toast.success('Saved — live on the site now');
       onAfterChange?.();
+      // Close on success. Leaving it open over a preview that is reloading
+      // underneath reads as though the save had not taken.
+      onClose?.();
     } catch (err) {
       toast.error(err?.response?.data?.error || 'Failed to save');
     } finally { setBusy(false); }

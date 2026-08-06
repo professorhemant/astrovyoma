@@ -147,6 +147,52 @@ const LISTS = {
     ],
   },
 
+  section_headings: {
+    label: 'Section Headings',
+    help: 'The heading and the line under it for each block of the homepage. The Section id ties a row to its place on the page — leave it alone.',
+    titleField: 'heading',
+    fields: [
+      { key: 'key',      label: 'Section id', type: 'text', required: true,
+        help: 'Which section this belongs to. Changing it detaches the heading from its section.' },
+      { key: 'eyebrow',  label: 'Small line above', type: 'text', help: 'Optional. Devanagari or a short kicker.' },
+      { key: 'heading',  label: 'Heading', type: 'text', required: true },
+      { key: 'subheading', label: 'Line underneath', type: 'textarea' },
+    ],
+    seed: [
+      { key: 'ai',        eyebrow: '', heading: 'Talk to AstroVyoma AI ✦',
+        subheading: 'Powered by Vedic wisdom + AI — Your birth chart as context' },
+      { key: 'purpose',   eyebrow: 'किस चीज़ के लिए बने हो?', heading: 'What Were You Born For?',
+        subheading: "Your birth chart reveals your soul's purpose, personality, and path" },
+      { key: 'howitworks', eyebrow: '', heading: 'How It Works', subheading: '' },
+      { key: 'action',    eyebrow: '', heading: 'See AstroVyoma in Action', subheading: '' },
+      { key: 'connect',   eyebrow: '', heading: '✦ Connect with Your Cosmic Guide', subheading: '' },
+      { key: 'about',     eyebrow: '', heading: 'Where Ancient Stars Meet Modern Lives', subheading: '' },
+      { key: 'horoscope', eyebrow: '', heading: "Today's Cosmic Guidance", subheading: '' },
+      { key: 'testimonials', eyebrow: '', heading: 'Lives Transformed by the Stars', subheading: '' },
+    ],
+  },
+
+  purpose_cards: {
+    label: 'Purpose Cards',
+    help: 'The three cards under "What Were You Born For?".',
+    titleField: 'title',
+    fields: [
+      { key: 'icon',     label: 'Emoji',    type: 'text' },
+      { key: 'subtitle', label: 'Small label above', type: 'text' },
+      { key: 'title',    label: 'Title',    type: 'text', required: true },
+      { key: 'desc',     label: 'Description', type: 'textarea' },
+      { key: 'link',     label: 'Links to', type: 'text', help: 'A path on this site, e.g. /purpose' },
+    ],
+    seed: [
+      { icon: '🌟', subtitle: 'Your Nature', title: 'Swabhav', link: '/purpose',
+        desc: 'Discover your innate personality traits, strengths, and patterns written in the stars at the moment of your birth' },
+      { icon: '☯',  subtitle: 'Your Life Purpose', title: 'Karma Path', link: '/purpose',
+        desc: 'Understand your dharma — the unique contribution your soul came to make in this lifetime, guided by your Nakshatra' },
+      { icon: '💠', subtitle: 'Sun, Moon & Lagna', title: 'Personality', link: '/kundali',
+        desc: 'Your Sun, Moon, and Ascendant form a cosmic trinity. Uncover the layers of who you truly are' },
+    ],
+  },
+
   home_features: {
     label: 'Homepage Feature Cards',
     help: 'The free-tools grid on the homepage.',

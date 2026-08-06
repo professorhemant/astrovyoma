@@ -139,7 +139,7 @@ export default function HomePage() {
   const [cms, setCms] = useState(null);
   const [siteSettings, setSiteSettings] = useState(null);
   useEffect(() => {
-    contentApi.bundle(['testimonials', 'home_features', 'how_it_works', 'hero_ctas', 'footer_links'])
+    contentApi.bundle(['testimonials', 'home_features', 'how_it_works', 'hero_ctas', 'footer_links', 'section_headings', 'purpose_cards'])
       .then(r => { setCms(r.data.lists); setSiteSettings(r.data.settings); })
       .catch(() => {});
   }, []);
@@ -170,6 +170,14 @@ export default function HomePage() {
   const testimonials = cms?.testimonials?.length  ? cms.testimonials  : TESTIMONIALS;
   const heroCtas     = cms?.hero_ctas?.length     ? cms.hero_ctas     : null;
   const footerLinks  = cms?.footer_links?.length  ? cms.footer_links  : null;
+  const purposeCards = cms?.purpose_cards?.length ? cms.purpose_cards : null;
+
+  // Section headings are looked up by their id. An unknown id falls back to the
+  // text the page shipped with, so a mistyped id loses the edit, not the heading.
+  const sec = (key, fallback) => {
+    const row = (cms?.section_headings || []).find(r => r.key === key);
+    return { ...fallback, ...(row || {}), id: row?.id };
+  };
 
   useEffect(() => {
     astrologersApi.getAll({ limit: 6 }).then(r => setFeaturedAstrologers(r.data.astrologers || [])).catch(() => {});
@@ -320,7 +328,8 @@ export default function HomePage() {
         <section className="py-16 px-4 md:px-8 lg:px-16 relative z-10">
           <div className="max-w-4xl mx-auto">
             <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="text-center mb-10">
-              <h2 className="font-serif text-4xl md:text-5xl text-gold-400 mb-3">Talk to AstroVyoma AI ✦</h2>
+              <h2 className="font-serif text-4xl md:text-5xl text-gold-400 mb-3"
+                data-edit-item={sec('ai').id && `section_headings:${sec('ai').id}`}>{sec('ai', {heading:'Talk to AstroVyoma AI ✦'}).heading}</h2>
               <p className="text-gray-400 text-sm">Powered by Vedic wisdom + AI — Your birth chart as context</p>
             </motion.div>
             <motion.div initial={{opacity:0,y:30}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="card-cosmic p-6 rounded-2xl">
@@ -394,17 +403,18 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto">
             <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
               className="text-center mb-6">
-              <p className="font-devanagari text-gold-500 text-lg mb-2">किस चीज़ के लिए बने हो?</p>
-              <h2 className="font-serif text-4xl md:text-5xl text-white mb-4">What Were You Born For?</h2>
-              <p className="text-gray-300 max-w-2xl mx-auto">Your birth chart reveals your soul's purpose, personality, and path</p>
+              <p className="font-devanagari text-gold-500 text-lg mb-2">{sec('purpose', {eyebrow:'किस चीज़ के लिए बने हो?'}).eyebrow}</p>
+              <h2 className="font-serif text-4xl md:text-5xl text-white mb-4"
+                data-edit-item={sec('purpose').id && `section_headings:${sec('purpose').id}`}>{sec('purpose', {heading:'What Were You Born For?'}).heading}</h2>
+              <p className="text-gray-300 max-w-2xl mx-auto">{sec('purpose', {subheading:"Your birth chart reveals your soul's purpose, personality, and path"}).subheading}</p>
             </motion.div>
             <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
-              {[
+              {(purposeCards || [
                 {title:'Swabhav',      subtitle:'Your Nature',       icon:'🌟', desc:'Discover your innate personality traits, strengths, and patterns written in the stars at the moment of your birth', link:'/purpose'},
                 {title:'Karma Path',   subtitle:'Your Life Purpose', icon:'☯',  desc:'Understand your dharma — the unique contribution your soul came to make in this lifetime, guided by your Nakshatra', link:'/purpose'},
                 {title:'Personality',  subtitle:'Sun, Moon & Lagna', icon:'💠', desc:'Your Sun, Moon, and Ascendant form a cosmic trinity. Uncover the layers of who you truly are', link:'/kundali'},
-              ].map((card,i) => (
-                <motion.div key={card.title}
+              ]).map((card,i) => (
+                <motion.div key={card.id || card.title} data-edit-item={card.id && `purpose_cards:${card.id}`}
                   initial={{opacity:0,y:30}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
                   transition={{delay:i*0.15}}
                   whileHover={{y:-6,boxShadow:'0 0 40px rgba(201,168,76,0.2)'}}
@@ -429,8 +439,9 @@ export default function HomePage() {
         <section className="py-16 px-4 md:px-8 lg:px-16 relative z-10">
           <div className="max-w-7xl mx-auto">
             <motion.h2 initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
-              className="font-serif text-center text-4xl md:text-5xl text-gold-400 mb-16">
-              How It Works
+              className="font-serif text-center text-4xl md:text-5xl text-gold-400 mb-16"
+              data-edit-item={sec('howitworks').id && `section_headings:${sec('howitworks').id}`}>
+              {sec('howitworks', {heading:'How It Works'}).heading}
             </motion.h2>
             <div className="grid md:grid-cols-3 gap-8">
               {steps.map((step,i) => (
@@ -461,7 +472,8 @@ export default function HomePage() {
           <div className="max-w-5xl mx-auto">
             <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="text-center mb-10">
               <p className="text-gold-600 text-xs uppercase tracking-widest mb-2">Experience</p>
-              <h2 className="font-serif text-4xl md:text-5xl text-gold-400 mb-3">See AstroVyoma in Action</h2>
+              <h2 className="font-serif text-4xl md:text-5xl text-gold-400 mb-3"
+                data-edit-item={sec('action').id && `section_headings:${sec('action').id}`}>{sec('action', {heading:'See AstroVyoma in Action'}).heading}</h2>
               <p className="text-gray-400 text-sm">Ancient wisdom, beautifully decoded</p>
             </motion.div>
             <motion.div initial={{opacity:0,scale:0.97}} whileInView={{opacity:1,scale:1}} viewport={{once:true}}
@@ -479,7 +491,8 @@ export default function HomePage() {
         <section className="py-16 px-4 md:px-8 lg:px-16 relative z-10">
           <div className="max-w-7xl mx-auto">
             <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="text-center mb-12">
-              <h2 className="font-serif text-4xl md:text-5xl text-gold-400 mb-3">✦ Connect with Your Cosmic Guide</h2>
+              <h2 className="font-serif text-4xl md:text-5xl text-gold-400 mb-3"
+                data-edit-item={sec('connect').id && `section_headings:${sec('connect').id}`}>{sec('connect', {heading:'✦ Connect with Your Cosmic Guide'}).heading}</h2>
               <p className="text-gray-300">Expert Vedic astrologers, available now</p>
             </motion.div>
             {featuredAstrologers.length > 0 ? (
@@ -526,7 +539,8 @@ export default function HomePage() {
                 </div>
               </motion.div>
               <motion.div initial={{opacity:0,x:30}} whileInView={{opacity:1,x:0}} viewport={{once:true}} className="space-y-6">
-                <h2 className="font-serif text-4xl text-gold-400 leading-tight">Where Ancient Stars Meet Modern Lives</h2>
+                <h2 className="font-serif text-4xl text-gold-400 leading-tight"
+                  data-edit-item={sec('about').id && `section_headings:${sec('about').id}`}>{sec('about', {heading:'Where Ancient Stars Meet Modern Lives'}).heading}</h2>
                 <p className="text-gray-300 leading-relaxed">AstroVyoma bridges 5,000 years of Vedic wisdom with the modern seeker's journey. Your birth chart is a cosmic map of your soul's unique potential.</p>
                 <p className="text-gray-400 leading-relaxed text-sm">Our platform unites India's most respected Jyotishis with cutting-edge AI to provide guidance that is authentically ancient and practically modern.</p>
                 <div className="grid grid-cols-3 gap-4">
@@ -552,8 +566,9 @@ export default function HomePage() {
         <section id="horoscope-strip" className="py-16 px-4 md:px-8 lg:px-16 relative z-10">
           <div className="max-w-7xl mx-auto">
             <motion.h2 initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
-              className="font-serif text-center text-3xl md:text-4xl text-gold-400 mb-8">
-              Today's Cosmic Guidance
+              className="font-serif text-center text-3xl md:text-4xl text-gold-400 mb-8"
+              data-edit-item={sec('horoscope').id && `section_headings:${sec('horoscope').id}`}>
+              {sec('horoscope', {heading:"Today's Cosmic Guidance"}).heading}
             </motion.h2>
             <div className="flex flex-wrap justify-center gap-2 mb-8">
               {ZODIAC_SIGNS.map(sign => (
@@ -591,8 +606,9 @@ export default function HomePage() {
         <section className="py-16 px-4 md:px-8 lg:px-16 relative z-10">
           <div className="max-w-7xl mx-auto">
             <motion.h2 initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
-              className="font-serif text-center text-4xl text-gold-400 mb-12">
-              Lives Transformed by the Stars
+              className="font-serif text-center text-4xl text-gold-400 mb-12"
+              data-edit-item={sec('testimonials').id && `section_headings:${sec('testimonials').id}`}>
+              {sec('testimonials', {heading:'Lives Transformed by the Stars'}).heading}
             </motion.h2>
             <div className="grid md:grid-cols-3 gap-6">
               {testimonials.map((t,i) => (

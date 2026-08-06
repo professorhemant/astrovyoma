@@ -222,14 +222,45 @@ async function seedList(key, def, { force = false } = {}) {
   return def.seed.length;
 }
 
+// "Is it empty? then fill it" is not safe against two boots at once — both can
+// read empty before either writes, and the list seeds twice. One instance makes
+// that unlikely, but a deploy that briefly overlaps old and new containers is
+// exactly the case that breaks it, and it did happen locally when two dev
+// servers were up together: eight headings became forty.
+//
+// Rather than lock, clean up after: identical rows in the same list are removed,
+// keeping the earliest. Seed rows are identical by construction, so this catches
+// a double seed while leaving genuine edits — which will differ — alone.
+async function dedupeList(key) {
+  const rows = await ContentItem.findAll({
+    where: { list_key: key },
+    order: [['sort_order', 'ASC'], ['created_at', 'ASC']],
+  });
+  const seen = new Set();
+  const doomed = [];
+  for (const row of rows) {
+    if (seen.has(row.data)) doomed.push(row.id);
+    else seen.add(row.data);
+  }
+  if (doomed.length) {
+    await ContentItem.destroy({ where: { id: doomed } });
+    console.warn(`[content] removed ${doomed.length} duplicate row(s) from ${key}`);
+  }
+  return doomed.length;
+}
+
 // Called once at boot. Fills each list with the content the site already shipped
 // with, so switching a page over to the database changes nothing visually until
 // the admin edits something.
 async function seedContent() {
   let total = 0;
   for (const [key, def] of Object.entries(LISTS)) {
-    try { total += await seedList(key, def); }
-    catch (err) { console.error(`[content] seed ${key} failed:`, err.message); }
+    try {
+      total += await seedList(key, def);
+      await dedupeList(key);
+    } catch (err) {
+      console.error(`[content] seed ${key} failed:`, err.message);
+    }
   }
   if (total) console.log(`[content] seeded ${total} default item(s)`);
 }
