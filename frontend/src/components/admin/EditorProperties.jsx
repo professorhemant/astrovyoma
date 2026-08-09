@@ -11,6 +11,16 @@ import { admin as adminApi } from '../../api';
 //   position — one of the draggable hero overlays. Its numbers are editable by
 //              hand as well as by dragging, since typing 40 is easier than
 //              dragging to exactly 40.
+//
+// Everything saved from here is live immediately, matching the rest of the
+// editor. The one button called Save is the one below, and it names the thing
+// it saves — there is no second Save in the toolbar to confuse it with.
+
+// "Testimonials" → "testimonial". Buttons and confirmations name the thing they
+// act on, so Save cannot be mistaken for saving the whole page.
+function singular(label = '') {
+  return label.replace(/ies$/, 'y').replace(/s$/, '').toLowerCase();
+}
 
 function Input({ field, value, onChange }) {
   const base = 'w-full bg-cosmic-900 border border-gold-600/20 rounded-lg px-2.5 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-gold-500';
@@ -91,6 +101,33 @@ function Input({ field, value, onChange }) {
   return <input type="text" className={base} value={value ?? ''} onChange={e => onChange(e.target.value)} />;
 }
 
+// A setting that writes as soon as you are done with it.
+//
+// Applying every keystroke would send "4" on the way to "40" and put the wheel
+// somewhere it was never asked to go, so typed fields hold a local value and
+// commit when they lose focus or you press Enter. Switches, pickers and dropdowns
+// have no half-typed state, so they commit at once.
+function LiveField({ field, value, onCommit }) {
+  const typed = !['boolean', 'select', 'color', 'image'].includes(field.type);
+  const [local, setLocal] = useState(value);
+
+  // Follow the stored value when it moves underneath us — dragging the same
+  // element in the preview should update the number shown here.
+  useEffect(() => { setLocal(value); }, [value]);
+
+  if (!typed) return <Input field={field} value={value} onChange={onCommit} />;
+
+  const commit = () => {
+    if (local === '' || local === undefined || local === value) { setLocal(value); return; }
+    onCommit(local);
+  };
+  return (
+    <span onBlur={commit} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); commit(); } }}>
+      <Input field={field} value={local} onChange={setLocal} />
+    </span>
+  );
+}
+
 // A four-way move control on every selection.
 //
 // What the arrows do depends on what the thing is, because "move left" cannot
@@ -122,10 +159,11 @@ function MoveControls({ hint, onMove, busy }) {
   );
 }
 
-export default function EditorProperties({ selection, schema, settings, onSettingsChange, onAfterChange, onClose }) {
+export default function EditorProperties({ selection, schema, settings, onSettingsChange, onRecord, onAfterChange, onClose }) {
   const [draft, setDraft] = useState(null);
   const [siblings, setSiblings] = useState([]);
   const [busy, setBusy] = useState(false);
+  const original = React.useRef(null);   // the row as loaded, so Undo has something to restore
 
   // Load the selected row. Settings selections need no fetch — the admin
   // already holds them.
@@ -136,8 +174,10 @@ export default function EditorProperties({ selection, schema, settings, onSettin
     adminApi.contentList(selection.listKey)
       .then(r => {
         if (cancelled) return;
+        const row = r.data.items.find(i => i.row_id === selection.id) || null;
         setSiblings(r.data.items);
-        setDraft(r.data.items.find(i => i.id === selection.id) || null);
+        setDraft(row);
+        original.current = row ? { ...row } : null;
       })
       .catch(() => toast.error('Could not load that item'));
     return () => { cancelled = true; };
@@ -148,9 +188,10 @@ export default function EditorProperties({ selection, schema, settings, onSettin
       <div className="text-xs text-gray-500 p-4 border border-dashed border-gold-600/20 rounded-xl">
         Click anything outlined in the preview to edit it.
         <br /><br />
-        <span className="text-gold-500/70">Gold outline</span> — can be dragged to move.
+        <span className="text-gold-500/70">Gold outline</span> — drag it anywhere over the banner.
         <br />
-        <span className="text-blue-300/70">Blue outline</span> — click to edit its text, image and links.
+        <span className="text-blue-300/70">Blue outline</span> — click to edit its text, images and
+        links, or drag it into a different place in its row.
       </div>
     );
   }
@@ -189,18 +230,19 @@ export default function EditorProperties({ selection, schema, settings, onSettin
             : 'Nudges it 1% sideways or 8px up and down. Dragging in the preview is faster for big moves.'}
         />
         <p className="text-[11px] text-gray-500 mb-3">
-          Drag it in the preview, or type exact numbers here.
+          Drag it in the preview, or type exact numbers here and press Enter.
         </p>
         {fields.map(f => (
           <div key={f.key} className="mb-3">
             <label className="block text-[11px] text-gold-400/80 mb-1">{f.label}</label>
-            <Input field={f} value={settings?.[f.key]}
-              onChange={v => onSettingsChange({ [f.key]: v })} />
+            <LiveField field={f} value={settings?.[f.key]}
+              onCommit={v => onSettingsChange({ [f.key]: v })} />
             {f.help && <p className="text-[10px] text-gray-600 mt-1">{f.help}</p>}
           </div>
         ))}
         <p className="text-[10px] text-gray-600">
-          Changes here join the pending list — press Save above to publish them.
+          Saved to the live site as soon as you change them. Undo above takes
+          back the last change.
         </p>
       </Panel>
     );
@@ -219,6 +261,10 @@ export default function EditorProperties({ selection, schema, settings, onSettin
     setBusy(true);
     try {
       await adminApi.contentUpdate(selection.listKey, selection.id, draft);
+      if (original.current) {
+        onRecord?.({ kind: 'item', listKey: selection.listKey, id: selection.id,
+          patch: original.current, label: `this ${singular(def.label)}` });
+      }
       toast.success('Saved — live on the site now');
       onAfterChange?.();
       // Close on success. Leaving it open over a preview that is reloading
@@ -230,7 +276,7 @@ export default function EditorProperties({ selection, schema, settings, onSettin
   }
 
   async function remove() {
-    if (!window.confirm(`Delete this ${def.label.replace(/s$/, '').toLowerCase()}?\n\nIt disappears from the site immediately and cannot be undone.`)) return;
+    if (!window.confirm(`Delete this ${singular(def.label)}?\n\nIt disappears from the site immediately and cannot be undone.`)) return;
     setBusy(true);
     try {
       await adminApi.contentDelete(selection.listKey, selection.id);
@@ -259,7 +305,7 @@ export default function EditorProperties({ selection, schema, settings, onSettin
   // Headings move by spacing and alignment; everything else moves by changing
   // places with the sibling before or after it.
   const isHeading = selection.listKey === 'section_headings';
-  const index = siblings.findIndex(i => i.id === selection.id);
+  const index = siblings.findIndex(i => i.row_id === selection.id);
 
   async function move(dir) {
     if (isHeading) {
@@ -271,10 +317,13 @@ export default function EditorProperties({ selection, schema, settings, onSettin
         const at = Math.max(0, order.indexOf(next.align || 'center'));
         next.align = order[Math.max(0, Math.min(2, at + (dir === 'right' ? 1 : -1)))];
       }
+      const before = { spaceAbove: draft.spaceAbove, align: draft.align };
       setDraft(next);
       setBusy(true);
       try {
         await adminApi.contentUpdate(selection.listKey, selection.id, next);
+        onRecord?.({ kind: 'item', listKey: selection.listKey, id: selection.id,
+          patch: before, label: 'that move' });
         onAfterChange?.();
       } catch { toast.error('Could not move that'); }
       finally { setBusy(false); }
@@ -284,12 +333,14 @@ export default function EditorProperties({ selection, schema, settings, onSettin
     const delta = (dir === 'left' || dir === 'up') ? -1 : 1;
     const to = index + delta;
     if (index < 0 || to < 0 || to >= siblings.length) return;
-    const ids = siblings.map(i => i.id);
+    const was = siblings.map(i => i.row_id);
+    const ids = [...was];
     [ids[index], ids[to]] = [ids[to], ids[index]];
     setBusy(true);
     try {
       const { data } = await adminApi.contentReorder(selection.listKey, ids);
       setSiblings(data.items);
+      onRecord?.({ kind: 'reorder', listKey: selection.listKey, ids: was, label: 'that move' });
       onAfterChange?.();
     } catch { toast.error('Could not move that'); }
     finally { setBusy(false); }
@@ -302,7 +353,7 @@ export default function EditorProperties({ selection, schema, settings, onSettin
         onMove={move}
         hint={isHeading
           ? 'Up and down change the space above. Left and right change its alignment.'
-          : `Swaps places with the one before or after it. Currently ${index + 1} of ${siblings.length}.`}
+          : `Swaps places with the one before or after it — or just drag it in the preview. Currently ${index + 1} of ${siblings.length}.`}
       />
       {def.fields.map(f => (
         <div key={f.key} className="mb-3">
@@ -315,8 +366,9 @@ export default function EditorProperties({ selection, schema, settings, onSettin
       ))}
 
       <div className="flex gap-1.5 pt-2 border-t border-gold-600/10">
-        <button onClick={save} disabled={busy} className="btn-gold px-3 py-1.5 text-[11px] flex items-center gap-1 disabled:opacity-40">
-          {busy ? <Loader className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />} Save
+        <button onClick={save} disabled={busy} className="btn-gold px-3 py-1.5 text-[11px] flex items-center gap-1 disabled:opacity-40"
+          title={`Save the text and images of this ${singular(def.label)}`}>
+          {busy ? <Loader className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />} Save {singular(def.label)}
         </button>
         <button onClick={addAnother} disabled={busy}
           className="btn-outline-gold px-3 py-1.5 text-[11px] flex items-center gap-1 disabled:opacity-40">

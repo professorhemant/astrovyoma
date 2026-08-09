@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { blog } from '../api';
+import RichText from '../components/RichText';
+import { parseBlocks } from '../utils/richText';
 
 const CAT_COLORS = {
   'Vedic Astrology': 'bg-violet-500/20 text-violet-300 border-violet-500/30',
@@ -13,36 +15,6 @@ const CAT_COLORS = {
   'Vastu':           'bg-amber-500/20  text-amber-300   border-amber-500/30',
   'Remedies':        'bg-teal-500/20   text-teal-300    border-teal-500/30',
 };
-
-function ContentBlock({ block }) {
-  switch (block.type) {
-    case 'h2':
-      return <h2 className="text-xl font-serif text-gold-400 mt-8 mb-3">{block.text}</h2>;
-    case 'h3':
-      return <h3 className="text-lg font-serif text-gold-300 mt-6 mb-2">{block.text}</h3>;
-    case 'p':
-      return <p className="text-cosmic-200 leading-relaxed mb-4">{block.text}</p>;
-    case 'ul':
-      return (
-        <ul className="space-y-2 mb-4 ml-2">
-          {block.items.map((item, i) => (
-            <li key={i} className="flex items-start gap-2 text-cosmic-200 text-sm leading-relaxed">
-              <span className="text-gold-500 mt-1 shrink-0">▸</span>
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-      );
-    case 'callout':
-      return (
-        <div className="my-5 p-4 rounded-xl border-l-4 border-gold-500 bg-gold-500/10 text-cosmic-200 text-sm leading-relaxed italic">
-          {block.text}
-        </div>
-      );
-    default:
-      return null;
-  }
-}
 
 function RelatedCard({ article }) {
   return (
@@ -88,7 +60,9 @@ export default function BlogArticlePage() {
   );
 
   const catCls = CAT_COLORS[article.category] || 'bg-cosmic-700 text-cosmic-300 border-cosmic-600';
-  const headings = article.content.filter(b => b.type === 'h2');
+  // The table of contents is the article's own headings, read back out of
+  // whatever the author typed.
+  const headings = parseBlocks(article.body).filter(b => b.type === 'h2');
 
   return (
     <div className="min-h-screen pt-32 pb-16 px-4">
@@ -127,7 +101,7 @@ export default function BlogArticlePage() {
 
             {/* Content */}
             <div className="card-cosmic p-6 sm:p-8">
-              {article.content.map((block, i) => <ContentBlock key={i} block={block} />)}
+              <RichText content={article.body} />
             </div>
 
             {/* Tags */}

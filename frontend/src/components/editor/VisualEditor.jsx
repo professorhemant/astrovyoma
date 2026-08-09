@@ -107,6 +107,94 @@ export default function VisualEditor() {
       }
     }
 
+    // Cards, steps, testimonials and footer links drag into position among
+    // their own siblings.
+    //
+    // Not to a pixel — a card pinned to a coordinate lands on its neighbour the
+    // moment the grid drops from six columns to two. What moves is its place in
+    // the row, which is the thing that actually survives every screen width, and
+    // it is reached by dragging rather than by pressing an arrow to swap.
+    //
+    // Every measurement is taken once, at grab time, and never re-read. Reading
+    // live rects while the cards are already shifting is what makes home-made
+    // drag lists oscillate: the card moves, the layout moves under it, the hit
+    // test flips back, and it flickers between two slots for as long as you hold
+    // it. Frozen rects cannot chase themselves.
+    function onCardDown(e) {
+      const el = e.target.closest('[data-edit-item]');
+      // Headings drag as flow; anything inside a positioned overlay is dragged
+      // by the overlay itself.
+      if (!el || el.matches('[data-edit-flow]') || el.closest('[data-edit]')) return false;
+      const [listKey, id] = (el.dataset.editItem || '').split(':');
+      if (!listKey || !id) return false;
+
+      const parent = el.parentElement;
+      if (!parent) return false;
+      const peers = Array.from(parent.children)
+        .filter(c => (c.dataset?.editItem || '').startsWith(`${listKey}:`));
+      if (peers.length < 2 || !peers.includes(el)) return false;
+
+      const at = peers.indexOf(el);
+      // No preventDefault here. A grab that never turns into a drag has to stay
+      // a click, or clicking a card to edit it would stop working.
+      dragRef.current = {
+        card: true, el, listKey, parent, peers,
+        ids: peers.map(p => p.dataset.editItem.split(':')[1]),
+        rects: peers.map(p => p.getBoundingClientRect()),
+        origin: { x: e.clientX, y: e.clientY },
+        from: at, to: at, moved: false,
+      };
+      return true;
+    }
+
+    function beginCardDrag(d, e) {
+      d.moved = true;
+      d.el.style.zIndex = '60';
+      d.el.style.position = 'relative';
+      d.el.style.opacity = '0.92';
+      for (const p of d.peers) if (p !== d.el) p.style.transition = 'transform .18s ease';
+      // Keep receiving moves even if the cursor runs off the card or out of the
+      // frame, so letting go outside still drops it where it was headed. The
+      // document listeners work without it, so a browser that refuses the
+      // capture costs nothing.
+      try { d.el.setPointerCapture?.(e.pointerId); } catch { /* not a live pointer */ }
+      setActive('card');
+    }
+
+    function layoutCards(d, dx, dy) {
+      const order = [...d.ids];
+      order.splice(d.to, 0, ...order.splice(d.from, 1));
+      d.order = order;
+      d.peers.forEach((p, i) => {
+        if (p === d.el) return;
+        const to = d.rects[order.indexOf(d.ids[i])];
+        p.style.transform = `translate(${to.left - d.rects[i].left}px, ${to.top - d.rects[i].top}px)`;
+      });
+      d.el.style.transform = `translate(${dx}px, ${dy}px)`;
+    }
+
+    function clearCards(d) {
+      for (const p of d.peers) {
+        p.style.transform = '';
+        p.style.transition = '';
+        p.style.zIndex = '';
+        p.style.position = '';
+        p.style.opacity = '';
+      }
+    }
+
+    function resolveCard(d, e) {
+      const dx = e.clientX - d.origin.x;
+      const dy = e.clientY - d.origin.y;
+      // A few pixels of slop, so a slightly shaky click is still a click.
+      if (!d.moved && Math.hypot(dx, dy) < 6) return;
+      if (!d.moved) beginCardDrag(d, e);
+      const hit = d.rects.findIndex(r =>
+        e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom);
+      if (hit >= 0) d.to = hit;
+      layoutCards(d, dx, dy);
+    }
+
     // Flow elements — headings — drag too, but into spacing and alignment
     // rather than coordinates. Pinning a heading to a pixel would put it on top
     // of the section above it as soon as the screen narrows; nudging its margin
@@ -148,6 +236,7 @@ export default function VisualEditor() {
 
     function onPointerDown(e) {
       if (onFlowDown(e)) return;
+      if (onCardDown(e)) return;
       const el = e.target.closest('[data-edit]');
       if (!el) return;
       const key = el.dataset.edit;
@@ -180,6 +269,7 @@ export default function VisualEditor() {
         setHint(el ? { key: el.dataset.edit, label: el.dataset.editLabel || el.dataset.edit } : null);
         return;
       }
+      if (d.card) { resolveCard(d, e); return; }
       const values = resolve(d, e);
       if (!values) return;
       if (d.flow) { applyFlow(d.el, values); return; }
@@ -190,6 +280,22 @@ export default function VisualEditor() {
     function onPointerUp(e) {
       const d = dragRef.current;
       if (!d) return;
+      if (d.card) {
+        // Put the cards back where the DOM says they are and let the reload
+        // that follows the save show the real new order. Animating them into
+        // place here would only be undone a moment later.
+        clearCards(d);
+        if (d.moved && d.to !== d.from) {
+          window.parent?.postMessage(
+            { source: 'astrovyoma-editor', type: 'commit-reorder',
+              listKey: d.listKey, ids: d.order }, ORIGIN);
+        }
+        // A grab that never became a drag falls through to the click handler,
+        // which selects the card as it always did.
+        dragRef.current = null;
+        setActive(null);
+        return;
+      }
       const values = resolve(d, e);
       if (values && d.flow) {
         applyFlow(d.el, values);
@@ -252,11 +358,15 @@ export default function VisualEditor() {
         outline: 1px dashed rgba(120,180,255,0.45);
         outline-offset: 3px;
         border-radius: 6px;
-        cursor: pointer;
+        cursor: grab;
       }
       [data-edit-item]:hover { outline: 2px solid rgba(120,180,255,0.95); }
       [data-edit-flow] { cursor: grab; }
       [data-edit-flow]:active { cursor: grabbing; }
+      ${active === 'card' ? `
+        [data-edit-item] { cursor: grabbing !important; }
+        [data-edit-item]:hover { outline: 1px dashed rgba(120,180,255,0.45); }
+      ` : ''}
       [data-edit] {
         pointer-events: auto !important;
         cursor: grab;

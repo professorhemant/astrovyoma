@@ -32,7 +32,10 @@ export default function ProductCard({ product, index = 0 }) {
       {/* Image area */}
       <Link to={`/mall/product/${product.id}`} className="block relative">
         <div className={`aspect-square bg-gradient-to-br ${cs.grad} flex items-center justify-center relative overflow-hidden`}>
-          <span className="text-7xl group-hover:scale-110 transition-transform duration-300">{cs.icon}</span>
+          {product.image
+            ? <img src={product.image} alt={product.name} loading="lazy"
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            : <span className="text-7xl group-hover:scale-110 transition-transform duration-300">{cs.icon}</span>}
           {/* Badges */}
           {product.isBestseller && (
             <span className="absolute top-2 left-2 bg-gold-500 text-cosmic-950 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">

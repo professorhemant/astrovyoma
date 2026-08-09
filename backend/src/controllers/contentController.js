@@ -14,6 +14,11 @@ function listDef(key) {
 // field to a schema later would otherwise leave every existing row missing it —
 // blank in the editor and absent on the page — so the declared defaults fill the
 // gaps on read.
+// `row_id` is the row's own database id and is written last, so a list that
+// declares a field of its own called `id` — Subscription Plans has one, so does
+// the shop — cannot overwrite the handle the admin needs to address the row.
+// Editing a plan used to fail for exactly that reason: the admin asked the
+// server to update the plan called "gold" and there is no row with that id.
 function parse(item, def) {
   let data = {};
   try { data = JSON.parse(item.data); } catch { /* corrupt row — show it empty rather than 500 */ }
@@ -21,7 +26,11 @@ function parse(item, def) {
   for (const field of def?.fields || []) {
     if (data[field.key] === undefined && field.default !== undefined) withDefaults[field.key] = field.default;
   }
-  return { id: item.id, sort_order: item.sort_order, is_active: item.is_active, ...withDefaults, ...data };
+  return {
+    id: item.id, sort_order: item.sort_order, is_active: item.is_active,
+    ...withDefaults, ...data,
+    row_id: item.id,
+  };
 }
 
 // Keep only fields the schema declares, and coerce them to the declared type.

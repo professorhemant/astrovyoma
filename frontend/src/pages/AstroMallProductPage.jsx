@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { ShoppingCart, ChevronLeft, ChevronDown } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
+import RichText from '../components/RichText';
 import { mall } from '../api';
 
 const CATEGORY_STYLE = {
@@ -102,7 +103,10 @@ export default function AstroMallProductPage() {
             <motion.div initial={{ opacity:0, x:-20 }} animate={{ opacity:1, x:0 }}>
               <div className={`aspect-square rounded-3xl bg-gradient-to-br ${cs.grad} flex items-center justify-center border border-gold-500/25 relative overflow-hidden`}
                 style={{ boxShadow:'0 0 60px rgba(201,168,76,0.08)' }}>
-                <span className="text-[120px]">{cs.icon}</span>
+                {product.image
+                  ? <img src={product.image} alt={product.name}
+                      className="absolute inset-0 w-full h-full object-cover" />
+                  : <span className="text-[120px]">{cs.icon}</span>}
                 {product.isBestseller && (
                   <div className="absolute top-4 left-4 bg-gold-500 text-cosmic-950 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
                     Bestseller
@@ -215,7 +219,7 @@ export default function AstroMallProductPage() {
             <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.1 }}
               className="bg-cosmic-800/40 border border-gold-500/40 rounded-2xl p-6">
               <h3 className="text-gold-400 font-serif font-semibold text-lg mb-3">About This Product</h3>
-              <p className="text-gray-300 text-sm leading-relaxed">{product.description}</p>
+              <RichText content={product.description} />
               <div className="mt-4 grid grid-cols-2 gap-3">
                 {product.weight && (
                   <div className="bg-cosmic-900/50 rounded-xl p-3">

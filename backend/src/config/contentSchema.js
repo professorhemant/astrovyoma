@@ -16,12 +16,34 @@
 //   url       link, validated loosely
 //   color     colour picker
 
+const { ARTICLES } = require('../data/blogArticles');
+const { PRODUCTS, CATEGORY_META, PURPOSE_META } = require('../data/mallProducts');
+
+// Long text is written as plain typing with four rules, not as HTML or JSON.
+// The site parses it back into headings, paragraphs, bullets and callouts.
+// Kept in step with frontend/src/utils/richText.js.
+const BODY_HELP =
+  'Start a line with ## for a heading, ### for a smaller one, - for a bullet, ' +
+  'and > for a highlighted note. Wrap words in **two stars** to make them bold. ' +
+  'Everything else becomes a paragraph — leave a blank line between them.';
+
+function blocksToText(blocks) {
+  return (blocks || []).map(b => {
+    if (b.type === 'h2') return `## ${b.text}`;
+    if (b.type === 'h3') return `### ${b.text}`;
+    if (b.type === 'callout') return `> ${b.text}`;
+    if (b.type === 'ul') return (b.items || []).map(i => `- ${i}`).join('\n');
+    return b.text || '';
+  }).join('\n\n');
+}
+
 // ─── SETTINGS ────────────────────────────────────────────────────────────────
 // Singletons. One value each, grouped for the Settings screen.
 
 const SETTINGS_GROUPS = [
   {
     key: 'controls',
+    public: true,
     label: 'Site Controls',
     help: 'Switches that affect the whole site immediately.',
     fields: [
@@ -46,6 +68,7 @@ const SETTINGS_GROUPS = [
   },
   {
     key: 'contact',
+    public: true,
     label: 'Contact Details',
     help: 'Shown in the footer and on contact links.',
     fields: [
@@ -56,6 +79,7 @@ const SETTINGS_GROUPS = [
   },
   {
     key: 'layout',
+    public: true,
     label: 'Homepage Layout',
     help: 'Nudge things around without touching code. Values are in pixels — bigger numbers move things further.',
     fields: [
@@ -85,7 +109,68 @@ const SETTINGS_GROUPS = [
     ],
   },
   {
+    key: 'about',
+    public: true,
+    label: 'About Page — Wording',
+    help: 'Every line of writing on the About page. The cards and figures on that ' +
+          'page are lists of their own, further down this screen.',
+    fields: [
+      { key: 'aboutEyebrow',  label: 'Small line above the title', type: 'text', default: '✦ Our Story' },
+      { key: 'aboutTitle',    label: 'Big title', type: 'text', default: 'Where Cosmic Wisdom' },
+      { key: 'aboutTitleTwo', label: 'Second line of the title', type: 'text', default: 'Meets Digital Precision',
+        help: 'Shown in white under the gold first line. Leave empty for a one-line title.' },
+      { key: 'aboutIntro',    label: 'Opening paragraph', type: 'textarea',
+        default: "India's premier digital sanctuary for authentic Vedic science, cosmic counseling, and astrological foresight — built by the finest astrological minds of the current era." },
+
+      { key: 'aboutGenesisEyebrow', label: 'Genesis — small line', type: 'text', default: '✦ The Genesis' },
+      { key: 'aboutGenesisHeading', label: 'Genesis — heading', type: 'text', default: 'The Genesis of a Cosmic Revolution' },
+      { key: 'aboutGenesisOne',     label: 'Genesis — first paragraph', type: 'textarea',
+        default: 'For centuries, the truest secrets of the cosmos were guarded in sacred lineages or lost in the noise of commercial, unverified predictions. AstroVyoma was born out of a collective realization among India’s top astrological minds: the modern world deserves clarity, not superstition.' },
+      { key: 'aboutGenesisTwo',     label: 'Genesis — second paragraph', type: 'textarea',
+        default: 'We realized that while technology can connect people, only genuine, deeply researched spiritual insight can guide them. By blending rigorous astronomical calculation with intuitive Vedic mastery, our founders built a bridge between the ancient Rishis and the 21st-century seeker.' },
+      { key: 'aboutMissionLabel',   label: 'Mission — label', type: 'text', default: '🌟 Our Mission' },
+      { key: 'aboutMission',        label: 'Mission — the sentence', type: 'textarea',
+        default: 'To demystify ancient stellar wisdom and deliver it with absolute mathematical precision to the modern world.' },
+      { key: 'aboutDreamTitle',     label: 'Side card — title', type: 'text', default: 'A Collaborative Dream' },
+      { key: 'aboutDreamText',      label: 'Side card — text', type: 'textarea',
+        default: 'For the first time in digital history, the stalwarts of Vedic Astrology, KP System, Numerology, Lal Kitab, and Vastu Shastra have united under one cosmic canopy.' },
+      { key: 'aboutDreamTags',      label: 'Side card — tags', type: 'text',
+        default: 'Vedic Astrology, KP System, Numerology, Lal Kitab, Vastu Shastra',
+        help: 'Separated by commas.' },
+
+      { key: 'aboutPillarsEyebrow', label: 'Pillars — small line', type: 'text', default: '✦ Our Foundation' },
+      { key: 'aboutPillarsHeading', label: 'Pillars — heading', type: 'text', default: 'The AstroVyoma Pillars' },
+      { key: 'aboutPillarsIntro',   label: 'Pillars — line underneath', type: 'textarea',
+        default: 'Why our guild is unrivaled — when you step into the universe of AstroVyoma, you are not just getting a reading, you are consulting a powerhouse of cosmic knowledge.' },
+
+      { key: 'aboutMasteryEyebrow', label: 'Mastery — small line', type: 'text', default: '✦ Our Mastery' },
+      { key: 'aboutMasteryHeading', label: 'Mastery — heading', type: 'text', default: 'Meet the Architects of Your Destiny' },
+      { key: 'aboutMasteryIntro',   label: 'Mastery — line underneath', type: 'textarea',
+        default: 'Our core panel represents the gold standard of contemporary Indian astrology — each domain mastered with decades of practice and scholarship.' },
+
+      { key: 'aboutQuote',      label: 'The big quote', type: 'textarea',
+        default: 'The stars that govern the universe also reside within you. We do not predict your future; we empower you to co-create it with the cosmos.' },
+      { key: 'aboutQuoteLabel', label: 'Under the quote', type: 'text', default: '✦ The AstroVyoma Promise ✦' },
+
+      { key: 'aboutPromisesEyebrow', label: 'Promises — small line', type: 'text', default: '✦ Our Commitment' },
+      { key: 'aboutPromisesHeading', label: 'Promises — heading', type: 'text', default: 'Our Sacred Promise to You' },
+      { key: 'aboutPromisesIntro',   label: 'Promises — line underneath', type: 'textarea',
+        default: 'We understand that seeking astrological guidance requires immense trust. We honor your journey with three unshakeable promises.' },
+
+      { key: 'aboutCtaEyebrow', label: 'Closing — small line', type: 'text', default: '✦ Begin Your Journey' },
+      { key: 'aboutCtaHeading', label: 'Closing — heading', type: 'text', default: 'Your Journey Beyond the Stars Begins Here' },
+      { key: 'aboutCtaOne',     label: 'Closing — first paragraph', type: 'textarea',
+        default: "You didn't arrive at AstroVyoma by accident. In the language of the cosmos, synchronization is everything." },
+      { key: 'aboutCtaTwo',     label: 'Closing — second paragraph', type: 'textarea',
+        default: "Whether you are standing at a crossroads in your career, searching for your soul's counterpart, or seeking profound inner peace — the finest minds of the current era are waiting to map your path." },
+      { key: 'aboutBadges',     label: 'Closing — reassurance badges', type: 'textarea',
+        default: '🔒 Data Secure\n🕉️ Vedic Authentic\n🤖 AI Enhanced\n⚡ Instant Results',
+        help: 'One per line, emoji first then the words.' },
+    ],
+  },
+  {
     key: 'brand',
+    public: true,
     label: 'Branding & SEO',
     help: 'How the site presents itself and appears in search results.',
     fields: [
@@ -355,6 +440,319 @@ const LISTS = {
       { group: 'Shop',      icon: '🏡', label: 'Vastu Pooja',  to: '/vastu-pooja' },
       { group: 'Shop',      icon: '💎', label: 'Plans',        to: '/plans' },
     ],
+  },
+
+  pages: {
+    label: 'Pages',
+    titleField: 'title',
+    help: 'Whole pages of writing — Terms, Privacy, and any new page you want to add. ' +
+          'The web address is made from the "Page address" below, so a page with terms ' +
+          'in that box lives at /terms. Add a Footer Link pointing at the same address ' +
+          'to give people a way to reach it.',
+    itemLabel: (d) => d.title || 'Page',
+    fields: [
+      { key: 'slug',  label: 'Page address', type: 'text', required: true,
+        help: 'Lowercase, no spaces — terms, privacy, refunds. This becomes the web address, so changing it breaks any link that already points here.' },
+      { key: 'title', label: 'Page title', type: 'text', required: true },
+      { key: 'intro', label: 'Line under the title', type: 'textarea',
+        help: 'Optional. A sentence introducing the page.' },
+      { key: 'icon',  label: 'Emoji', type: 'text', default: '📜' },
+      { key: 'body',  label: 'The page itself', type: 'richtext', required: true, help: BODY_HELP },
+      { key: 'updatedNote', label: 'Footnote', type: 'text',
+        help: 'Optional. Shown small at the bottom, e.g. "Last updated August 2026".' },
+    ],
+    seed: [
+      {
+        slug: 'terms', title: 'Terms of Service', icon: '📜',
+        intro: 'The agreement between you and AstroVyoma when you use this site.',
+        updatedNote: 'Last updated August 2026',
+        body: [
+          '## Who we are',
+          'AstroVyoma is an online platform for Vedic astrology. We provide free astrological calculations, paid consultations with independent astrologers, subscription plans, and a shop for related items. By using the site you agree to these terms.',
+          '## What our readings are, and what they are not',
+          'Astrological readings, reports, horoscopes and chatbot replies on this site are offered for guidance and reflection. They are not a substitute for professional medical, legal, financial or psychological advice.',
+          '> Please do not delay seeking help from a qualified doctor, lawyer or financial adviser because of anything you read here.',
+          'Decisions you take after a reading remain yours. We do not guarantee any particular outcome, and no prediction on this site should be treated as a certainty.',
+          '## Your account',
+          '- You must be 18 or older to create an account and to book a paid consultation.',
+          '- Keep your login details to yourself. Anything done through your account is treated as done by you.',
+          '- Give accurate birth details. A chart calculated from the wrong date, time or place will be wrong, and that is not a fault we can correct afterwards.',
+          '- One person, one account. Accounts may not be shared, sold or transferred.',
+          '## Astrologers on the platform',
+          'Astrologers listed here are independent practitioners, not our employees. We check credentials before listing anyone, but the advice given in a consultation is theirs. Consultations are charged per minute from your wallet balance and stop when you end the session or the balance runs out.',
+          '## Money',
+          '- Wallet balance is added in advance and spent on consultations and reports.',
+          '- Prices shown include applicable taxes unless stated otherwise.',
+          '- Subscription plans renew for the period you chose until you cancel. Cancelling stops the next renewal; it does not refund the period already running.',
+          '- Wallet balance is not transferable and cannot be withdrawn as cash.',
+          '## Refunds',
+          'If a consultation fails for a technical reason on our side, or an astrologer does not join, write to us and we will return those minutes to your wallet. Refunds are not given because you disagreed with a prediction. Requests should reach us within seven days of the session.',
+          '## What you may not do',
+          '- Use the site to harass, threaten or defraud anyone, including our astrologers.',
+          '- Copy, scrape or resell reports, charts or written content from the site.',
+          '- Try to break, overload or gain unauthorised access to any part of the platform.',
+          '- Represent yourself as an AstroVyoma astrologer when you are not.',
+          '## Content you post',
+          'Reviews and messages you submit stay yours, but you give us permission to display them on the site. We may remove anything abusive, misleading or unlawful.',
+          '## Where we stand if something goes wrong',
+          'We work to keep the site accurate and available, but we cannot promise it will never be interrupted or never contain an error. To the extent the law allows, our liability for any claim connected to the site is limited to the amount you paid us in the three months before it arose.',
+          '## Changes',
+          'These terms may change as the platform changes. The current version is always the one on this page, and continuing to use the site after a change means you accept it.',
+          '## Governing law',
+          'These terms are governed by the laws of India, and the courts of Rajasthan have jurisdiction over any dispute.',
+          '## Reaching us',
+          'Questions about these terms can go to the support address shown in the footer of every page.',
+        ].join('\n\n'),
+      },
+      {
+        slug: 'privacy', title: 'Privacy Policy', icon: '🔐',
+        intro: 'What we collect, why we collect it, and what you can ask us to do with it.',
+        updatedNote: 'Last updated August 2026',
+        body: [
+          '## The short version',
+          'We collect what we need to calculate your chart, run your account and take payment. We do not sell your data. Your birth details and consultation history are private to you and to the astrologer you consult.',
+          '## What we collect',
+          '- **Account details** — your name, mobile number and email address.',
+          '- **Birth details** — date, time and place of birth. These are what the whole site runs on: without them there is no chart.',
+          '- **Consultation records** — who you spoke to, when, for how long, and the chat messages exchanged.',
+          '- **Payment records** — amounts, dates and the reference our payment provider gives us. We never see or store your card number.',
+          '- **Technical data** — device, browser and approximate location from your IP address, used to keep the service working and secure.',
+          '## Why we collect it',
+          'To calculate your kundali and reports, to connect you with an astrologer, to take and record payment, to answer support requests, to detect fraud and abuse, and to meet legal obligations. We use your birth details for astrological calculation and nothing else.',
+          '## Who else sees it',
+          '- The astrologer you book, who sees your name, chart and question so they can advise you.',
+          '- Our payment provider, to process a transaction.',
+          '- Our hosting and communication providers, who store or transmit data on our behalf under contract.',
+          '- Authorities, where the law requires it.',
+          '> We do not sell your personal data, and we do not pass it to advertisers.',
+          '## The AI assistant',
+          'Questions you ask the AI chatbot are sent to our AI provider to generate a reply, together with your chart if you asked for a personalised answer. Do not type anything into it you would not want leaving your device.',
+          '## How long we keep it',
+          'Account and birth details are kept while your account exists. Consultation and payment records are kept for as long as tax and accounting rules require, usually eight years. Delete your account and we remove your personal details, keeping only what those rules oblige us to hold.',
+          '## Keeping it safe',
+          'Traffic is encrypted in transit, passwords are stored hashed rather than in plain text, and access to the database is limited to the people who run the platform. No system is perfectly secure, so we also tell you promptly if something goes wrong.',
+          '## What you can ask for',
+          '- A copy of the data we hold about you.',
+          '- A correction, if something is wrong.',
+          '- Deletion of your account and personal details.',
+          '- To stop marketing messages, which you can also do from any message we send.',
+          'Write to the support address in the footer and we will respond within thirty days.',
+          '## Cookies',
+          'We use cookies to keep you logged in and to remember your preferences. We do not use advertising cookies. Blocking cookies in your browser will stop you from staying signed in.',
+          '## Children',
+          'The site is not intended for anyone under 18, and we do not knowingly collect data from children. If you believe a child has given us their details, tell us and we will remove them.',
+          '## Changes',
+          'If this policy changes materially we will say so on the site. The date at the foot of this page is always the version in force.',
+        ].join('\n\n'),
+      },
+    ],
+  },
+
+  blog_posts: {
+    label: 'Blog Articles',
+    titleField: 'title',
+    help: 'Everything on the Blog page. Hide an article instead of deleting it if you might want it back.',
+    itemLabel: (d) => d.title || 'Article',
+    fields: [
+      { key: 'title',    label: 'Headline', type: 'text', required: true },
+      { key: 'slug',     label: 'Web address', type: 'text', required: true,
+        help: 'Lowercase words joined by dashes — mercury-retrograde-2025. Changing it breaks links people have already shared.' },
+      { key: 'category', label: 'Category', type: 'text',
+        help: 'Articles are grouped and filtered by this on the blog page, so keep the spelling consistent.' },
+      { key: 'icon',     label: 'Emoji', type: 'text', default: '✦' },
+      { key: 'excerpt',  label: 'Summary', type: 'textarea',
+        help: 'The couple of lines shown on the blog listing and under the headline.' },
+      { key: 'author',   label: 'Written by', type: 'text', default: 'AstroVyoma Editorial' },
+      { key: 'date',     label: 'Date', type: 'text', help: 'YYYY-MM-DD, e.g. 2026-08-09.' },
+      { key: 'readTime', label: 'Minutes to read', type: 'number', default: 5, min: 1, max: 90 },
+      { key: 'tags',     label: 'Tags', type: 'text', help: 'Separated by commas. Used for the related-articles list.' },
+      { key: 'body',     label: 'The article', type: 'richtext', required: true, help: BODY_HELP },
+    ],
+    seed: ARTICLES.map(a => ({
+      title: a.title, slug: a.slug, category: a.category, icon: a.icon,
+      excerpt: a.excerpt, author: a.author, date: a.date, readTime: a.readTime,
+      tags: (a.tags || []).join(', '),
+      body: blocksToText(a.content),
+    })),
+  },
+
+  about_stats: {
+    label: 'About — Numbers',
+    titleField: 'label',
+    help: 'The four figures across the About page.',
+    itemLabel: (d) => d.label || 'Number',
+    fields: [
+      { key: 'icon',  label: 'Emoji',  type: 'text' },
+      { key: 'value', label: 'Figure', type: 'text', required: true, help: 'e.g. 10,000+' },
+      { key: 'label', label: 'What it counts', type: 'text', required: true },
+    ],
+    seed: [
+      { icon: '📜', value: '5,000+',  label: 'Years of Vedic Wisdom' },
+      { icon: '🔭', value: '12+',     label: 'Expert Astrologers' },
+      { icon: '🌟', value: '10,000+', label: 'Lives Guided' },
+      { icon: '🔐', value: '100%',    label: 'Confidential & Secure' },
+    ],
+  },
+
+  about_pillars: {
+    label: 'About — Pillars',
+    titleField: 'title',
+    help: 'The "AstroVyoma Pillars" cards on the About page.',
+    itemLabel: (d) => d.title || 'Pillar',
+    fields: [
+      { key: 'emoji', label: 'Emoji', type: 'text' },
+      { key: 'title', label: 'Title', type: 'text', required: true },
+      { key: 'desc',  label: 'Description', type: 'textarea' },
+      { key: 'tone',  label: 'Colour', type: 'select', default: 'gold',
+        options: [{ value: 'gold', label: 'Gold' }, { value: 'violet', label: 'Violet' },
+                  { value: 'emerald', label: 'Green' }, { value: 'blue', label: 'Blue' }] },
+    ],
+    seed: [
+      { emoji: '🏛️', tone: 'gold', title: 'The Elite Brain Trust',
+        desc: "Our panel doesn't consist of hobbyists. It features celebrated authors, institutional scholars, and trusted advisors to industry captains, global tech leaders, and innovators." },
+      { emoji: '🤝', tone: 'violet', title: 'Power of Collaboration',
+        desc: 'Unlike standalone consultations, AstroVyoma operates as a collaborative guild. For complex life blueprints, our top experts cross-verify planetary transits and charts to deliver unprecedented accuracy.' },
+      { emoji: '☮️', tone: 'emerald', title: 'No Fear-Mongering',
+        desc: 'We strictly forbid regressive, fear-inducing predictions. Our astrologers view a birth chart not as a fixed script of doom, but as a cosmic roadmap filled with potential and possibility.' },
+      { emoji: '🔬', tone: 'blue', title: 'Scientific Remedial Measures',
+        desc: 'Our remedies are practical, energetic, and lifestyle-oriented — combining psychological grounding, gemstone science, sound frequencies (Mantras), and spatial alignment (Vastu).' },
+    ],
+  },
+
+  about_expertise: {
+    label: 'About — What We Practise',
+    titleField: 'title',
+    help: 'The disciplines listed on the About page.',
+    itemLabel: (d) => d.title || 'Discipline',
+    fields: [
+      { key: 'icon',     label: 'Emoji', type: 'text' },
+      { key: 'title',    label: 'Discipline', type: 'text', required: true },
+      { key: 'approach', label: 'How we work with it', type: 'textarea' },
+      { key: 'result',   label: 'What it gives you', type: 'text' },
+      { key: 'tone',     label: 'Colour', type: 'select', default: 'gold',
+        options: [{ value: 'gold', label: 'Gold' }, { value: 'violet', label: 'Violet' },
+                  { value: 'emerald', label: 'Green' }, { value: 'blue', label: 'Blue' }] },
+    ],
+    seed: [
+      { icon: '🪐', tone: 'gold', title: 'Traditional Vedic & KP Astrology',
+        approach: 'Pinpoint timing of events using exact planetary degrees.',
+        result: 'Clarity on Career, Finance & Relationships' },
+      { icon: '🔢', tone: 'violet', title: 'Advanced Numerology',
+        approach: 'Harmonizing your name and birth frequencies with cosmic vibrations.',
+        result: 'Enhanced personal branding and luck alignment' },
+      { icon: '🏠', tone: 'emerald', title: 'Scientific Vastu Shastra',
+        approach: 'Aligning living and digital workspaces with elemental energies.',
+        result: 'Accelerated growth, peace, and abundance' },
+    ],
+  },
+
+  about_promises: {
+    label: 'About — Our Promises',
+    titleField: 'title',
+    help: 'The three promises near the foot of the About page.',
+    itemLabel: (d) => d.title || 'Promise',
+    fields: [
+      { key: 'emoji', label: 'Emoji', type: 'text' },
+      { key: 'title', label: 'Promise', type: 'text', required: true },
+      { key: 'desc',  label: 'Description', type: 'textarea' },
+    ],
+    seed: [
+      { emoji: '🔐', title: 'Absolute Confidentiality',
+        desc: 'Your birth data and life challenges are treated with the highest level of data security and spiritual privacy. What you share stays sacred.' },
+      { emoji: '⚖️', title: 'Uncompromising Integrity',
+        desc: 'If a chart shows a challenging period, we present it with honesty — immediately followed by the exact cosmic tools required to navigate it.' },
+      { emoji: '📿', title: 'Authentic Lineage',
+        desc: 'Every consultant on AstroVyoma is strictly vetted for credentialing, ethical standards, and predictive accuracy. No shortcuts, no imposters.' },
+    ],
+  },
+
+  mall_categories: {
+    label: 'Shop — Categories',
+    titleField: 'label',
+    help: 'The kinds of item the Astro Mall sells. The "Category id" is what ties a ' +
+          'product to its category, so changing one here means changing it on every ' +
+          'product that used it.',
+    itemLabel: (d) => d.label || 'Category',
+    fields: [
+      { key: 'key',   label: 'Category id', type: 'text', required: true,
+        help: 'Lowercase, no spaces — gemstones, rudraksha. Products refer to this exact word.' },
+      { key: 'label', label: 'Shown as', type: 'text', required: true },
+      { key: 'icon',  label: 'Emoji', type: 'text' },
+      { key: 'color', label: 'Colour', type: 'color', default: '#c9a84c' },
+      { key: 'desc',  label: 'One-line description', type: 'text' },
+    ],
+    seed: Object.entries(CATEGORY_META).map(([key, m]) => ({ key, ...m })),
+  },
+
+  mall_purposes: {
+    label: 'Shop — Shop by Purpose',
+    titleField: 'label',
+    help: 'What people are shopping for — money, love, protection. A product can be ' +
+          'listed under several of these.',
+    itemLabel: (d) => d.label || 'Purpose',
+    fields: [
+      { key: 'key',   label: 'Purpose id', type: 'text', required: true,
+        help: 'Lowercase, no spaces — money, love. Products refer to this exact word.' },
+      { key: 'label', label: 'Shown as', type: 'text', required: true },
+      { key: 'icon',  label: 'Emoji', type: 'text' },
+      { key: 'color', label: 'Colour', type: 'color', default: '#c9a84c' },
+      { key: 'desc',  label: 'One-line description', type: 'text' },
+    ],
+    seed: Object.entries(PURPOSE_META).map(([key, m]) => ({ key, ...m })),
+  },
+
+  mall_products: {
+    label: 'Shop — Products',
+    titleField: 'name',
+    help: 'Everything on sale in the Astro Mall. To take something off sale without ' +
+          'losing it, switch "In stock" off, or hide the row entirely.',
+    itemLabel: (d) => d.name || 'Product',
+    fields: [
+      { key: 'name',  label: 'Product name', type: 'text', required: true },
+      { key: 'id',    label: 'Product code', type: 'text', required: true,
+        help: 'Lowercase words joined by dashes — blue-sapphire-5r. It is the product’s web address and how carts remember it, so changing it on a product people have already bought or bookmarked will break those links.' },
+      { key: 'category', label: 'Category', type: 'select',
+        options: Object.entries(CATEGORY_META).map(([value, m]) => ({ value, label: `${m.icon} ${m.label}` })),
+        default: Object.keys(CATEGORY_META)[0] },
+      { key: 'purposes', label: 'Shop-by-purpose', type: 'text',
+        help: `Separated by commas. Use these words: ${Object.keys(PURPOSE_META).join(', ')}.` },
+      { key: 'image', label: 'Photo', type: 'image',
+        help: 'Optional. Without one the card shows the category emoji, as it does now.' },
+
+      { key: 'price',         label: 'Price (₹)', type: 'number', default: 0, min: 0 },
+      { key: 'originalPrice', label: 'Was (₹)', type: 'number', default: 0, min: 0,
+        help: 'Shown struck through next to the price. Set it to 0 to show no discount.' },
+      { key: 'isInStock',     label: 'In stock', type: 'boolean', default: true },
+      { key: 'isBestseller',  label: 'Bestseller badge', type: 'boolean', default: false },
+      { key: 'isFeatured',    label: 'Show on the shop front page', type: 'boolean', default: false },
+
+      { key: 'shortDesc',   label: 'One-line description', type: 'textarea',
+        help: 'The sentence under the name on the product card.' },
+      { key: 'description', label: 'Full description', type: 'richtext', help: BODY_HELP },
+      { key: 'benefits',    label: 'Benefits', type: 'textarea', help: 'One per line.' },
+      { key: 'howToUse',    label: 'How to use it', type: 'textarea' },
+
+      { key: 'planet',   label: 'Planet',  type: 'text' },
+      { key: 'zodiac',   label: 'Suits which signs', type: 'text', help: 'Separated by commas, e.g. Capricorn, Aquarius.' },
+      { key: 'bestDay',  label: 'Best day to wear it', type: 'text' },
+      { key: 'bestTime', label: 'Best time', type: 'text' },
+
+      { key: 'weight',        label: 'Weight / size', type: 'text' },
+      { key: 'material',      label: 'Material', type: 'text' },
+      { key: 'certification', label: 'Certification', type: 'text' },
+
+      { key: 'rating',      label: 'Star rating', type: 'number', default: 5, min: 0, max: 5 },
+      { key: 'reviewCount', label: 'Number of reviews', type: 'number', default: 0, min: 0 },
+      { key: 'tags',        label: 'Tags', type: 'text', help: 'Separated by commas. Used by the search box.' },
+    ],
+    seed: PRODUCTS.map(p => ({
+      ...p,
+      purposes: (p.purposes || []).join(', '),
+      zodiac:   (p.zodiac || []).join(', '),
+      tags:     (p.tags || []).join(', '),
+      benefits: (p.benefits || []).join('\n'),
+      image: '',
+    })),
   },
 
   hero_ctas: {

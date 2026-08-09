@@ -66,6 +66,7 @@ import MuhurtaPage              from './pages/MuhurtaPage';
 import VastuPoojaPage           from './pages/VastuPoojaPage';
 import YogaFinderPage           from './pages/YogaFinderPage';
 import AboutUsPage              from './pages/AboutUsPage';
+import ContentPage              from './pages/ContentPage';
 import JoinAsAstrologerPage    from './pages/JoinAsAstrologerPage';
 
 function ProtectedRoute({ children }) {
@@ -162,6 +163,11 @@ function AppLayout() {
             <Route path="/yoga-finder"           element={<YogaFinderPage />} />
             <Route path="/about"                 element={<AboutUsPage />} />
             <Route path="/join-as-astrologer"   element={<JoinAsAstrologerPage />} />
+            {/* Last but one: any single-word address the app has not claimed
+                above is looked up as a page written in the admin — /terms,
+                /privacy, and anything added later. Static paths outrank this,
+                so nothing above can be shadowed by it. */}
+            <Route path="/:slug" element={<ContentPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </motion.div>

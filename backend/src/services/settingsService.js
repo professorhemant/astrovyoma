@@ -8,7 +8,7 @@
 // silently serving defaults after a restart was not.
 
 const { SiteSetting } = require('../models');
-const { SETTING_FIELDS, defaultSettings } = require('../config/contentSchema');
+const { SETTING_FIELDS, SETTINGS_GROUPS, defaultSettings } = require('../config/contentSchema');
 
 const TTL_MS = 15_000;
 
@@ -71,28 +71,24 @@ async function updateSettings(patch) {
   return getSettings({ fresh: true });
 }
 
-// The handful of settings the public site needs. Never send commission or
-// anything else operational to an unauthenticated caller.
+// Which settings an unauthenticated caller may see.
+//
+// This used to be a hand-written list of keys, which meant every new editable
+// line of wording needed remembering here too — and forgetting shipped a field
+// the admin could edit and the site would never show. It is now taken from the
+// schema: a group marked `public` is readable by the site, and one that is not —
+// Business Settings, which holds our commission — never leaves the server.
+const PUBLIC_KEYS = SETTINGS_GROUPS
+  .filter(g => g.public)
+  .flatMap(g => g.fields.map(f => f.key));
+
 async function getPublicSettings() {
   const s = await getSettings();
-  return {
-    maintenanceMode: s.maintenanceMode,
-    announcement: s.announcementActive ? s.announcement : '',
-    announcementActive: s.announcementActive,
-    platformPhone: s.platformPhone,
-    platformEmail: s.platformEmail,
-    platformWhatsApp: s.platformWhatsApp,
-    siteTagline: s.siteTagline,
-    metaTitle: s.metaTitle,
-    metaDescription: s.metaDescription,
-    heroButtonGap: s.heroButtonGap,
-    heroButtonBottom: s.heroButtonBottom,
-    mandalaLeft: s.mandalaLeft,
-    mandalaTop: s.mandalaTop,
-    mandalaSize: s.mandalaSize,
-    clockLeft: s.clockLeft,
-    clockBottom: s.clockBottom,
-  };
+  const out = {};
+  for (const key of PUBLIC_KEYS) out[key] = s[key];
+  // The banner is only news when it is switched on.
+  out.announcement = s.announcementActive ? s.announcement : '';
+  return out;
 }
 
 module.exports = { getSettings, updateSettings, getPublicSettings };

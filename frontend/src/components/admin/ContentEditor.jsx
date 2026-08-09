@@ -87,7 +87,9 @@ function Field({ field, value, onChange }) {
         );
       case 'textarea':
       case 'richtext':
-        return <textarea rows={field.type === 'richtext' ? 5 : 3} className={`${base} resize-y`}
+        // A whole page or article is written in one of these, so richtext gets
+        // room to work in rather than a five-line slot to scroll inside.
+        return <textarea rows={field.type === 'richtext' ? 18 : 3} className={`${base} resize-y leading-relaxed`}
           value={value ?? ''} onChange={e => onChange(e.target.value)} />;
       case 'select':
         return (
@@ -135,7 +137,7 @@ function Row({ item, def, index, count, onSave, onDelete, onMove, onToggle, drag
 
   async function save() {
     setSaving(true);
-    const ok = await onSave(item.id, draft);
+    const ok = await onSave(item.row_id, draft);
     setSaving(false);
     if (ok) setOpen(false);
   }
@@ -237,7 +239,7 @@ export default function ContentEditor({ listKey, def }) {
   async function handleSave(id, draft) {
     try {
       const { data } = await adminApi.contentUpdate(listKey, id, draft);
-      setItems(list => list.map(i => (i.id === id ? data : i)));
+      setItems(list => list.map(i => (i.row_id === id ? data : i)));
       toast.success('Saved — live on the site now');
       return true;
     } catch (err) {
@@ -249,16 +251,16 @@ export default function ContentEditor({ listKey, def }) {
   async function handleDelete(item, title) {
     if (!window.confirm(`Delete "${title}"?\n\nThis removes it from the site immediately and cannot be undone.`)) return;
     try {
-      await adminApi.contentDelete(listKey, item.id);
-      setItems(list => list.filter(i => i.id !== item.id));
+      await adminApi.contentDelete(listKey, item.row_id);
+      setItems(list => list.filter(i => i.row_id !== item.row_id));
       toast.success('Deleted');
     } catch { toast.error('Failed to delete'); }
   }
 
   async function handleToggle(item) {
     try {
-      const { data } = await adminApi.contentUpdate(listKey, item.id, { is_active: !item.is_active });
-      setItems(list => list.map(i => (i.id === item.id ? data : i)));
+      const { data } = await adminApi.contentUpdate(listKey, item.row_id, { is_active: !item.is_active });
+      setItems(list => list.map(i => (i.row_id === item.row_id ? data : i)));
       toast.success(data.is_active ? 'Now showing on the site' : 'Hidden from the site');
     } catch { toast.error('Failed'); }
   }
@@ -268,7 +270,7 @@ export default function ContentEditor({ listKey, def }) {
   async function persistOrder(next) {
     setItems(next);
     try {
-      await adminApi.contentReorder(listKey, next.map(i => i.id));
+      await adminApi.contentReorder(listKey, next.map(i => i.row_id));
     } catch {
       toast.error('Could not save the new order');
       load();
@@ -360,7 +362,7 @@ export default function ContentEditor({ listKey, def }) {
       ) : (
         <>
           {items.map((item, i) => (
-            <Row key={item.id} item={item} def={def} index={i} count={items.length}
+            <Row key={item.row_id} item={item} def={def} index={i} count={items.length}
               onSave={handleSave} onDelete={handleDelete} onMove={handleMove} onToggle={handleToggle}
               drag={drag} />
           ))}
