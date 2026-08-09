@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img"><ellipse cx="200" cy="200" rx="175" ry="175" fill="url(#glow)" opacity="0.6"/>
+    <defs><radialGradient id="glow"><stop offset="0" stop-color="#D98B54" stop-opacity="0.75"/>
+    <stop offset="0.55" stop-color="#D98B54" stop-opacity="0.18"/>
+    <stop offset="1" stop-color="#D98B54" stop-opacity="0"/></radialGradient></defs>
+    <ellipse cx="200" cy="340" rx="140" ry="24" fill="#000" opacity="0.28"/>
+    <polygon points="142.49,88.87 177.13,123.51 177.13,172.49 142.49,207.13 93.51,207.13 58.87,172.49 58.87,123.51 93.51,88.87" fill="#2C6BD8" stroke="#7FB6FF" stroke-width="3"/>
+    <polygon points="130.25,118.44 147.56,135.75 147.56,160.25 130.25,177.56 105.75,177.56 88.44,160.25 88.44,135.75 105.75,118.44" fill="#7FB6FF" opacity="0.85"/>
+    <circle cx="284" cy="154" r="60" fill="#7E4620" stroke="#B4703C" stroke-width="3"/>
+    <circle cx="266" cy="134.8" r="16.8" fill="#fff" opacity="0.45"/>
+    <rect x="138" y="212" width="124" height="124" rx="6"
+      fill="none" stroke="#F0B08A" stroke-width="4"/>
+    <polygon points="200,229.36 238.66,296.32 161.34,296.32" fill="none" stroke="#F0B08A" stroke-width="3.5"/>
+    <polygon points="238.66,251.68 200,318.64 161.34,251.68" fill="none" stroke="#F0B08A" stroke-width="3.5"/>
+    <circle cx="200" cy="274" r="3.5" fill="#F0B08A"/></svg>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img"><defs><radialGradient id="rd" cx="0.34" cy="0.3">
+  <stop offset="0" stop-color="#B4703C"/><stop offset="0.55" stop-color="#7E4620"/>
+  <stop offset="1" stop-color="#42230E"/></radialGradient></defs><ellipse cx="200" cy="200" rx="165" ry="165" fill="url(#glow)" opacity="0.5"/>
+    <defs><radialGradient id="glow"><stop offset="0" stop-color="#8A5A2B" stop-opacity="0.75"/>
+    <stop offset="0.55" stop-color="#8A5A2B" stop-opacity="0.18"/>
+    <stop offset="1" stop-color="#8A5A2B" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="126" r="92" fill="url(#rd)"/>
+    <circle cx="203.83" cy="108" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="239.5" cy="125.31" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="214.66" cy="184.81" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="178.01" cy="137.2" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="170.57" cy="90.93" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="240.25" cy="72.58" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="228.27" cy="138.59" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="190.07" cy="177.1" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="126.89" cy="128.55" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="190.37" cy="90.05" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="251.5" cy="98.62" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="214.69" cy="142.9" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="174.43" cy="161.19" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="140.53" cy="100.76" r="4.6" fill="#5B3418" opacity="0.42"/><path d="M 200 36.76 Q 85.28 126 200 215.24"
+      fill="none" stroke="#3A210E" stroke-width="4.14"
+      opacity="0.48" stroke-linecap="round"/><path d="M 200 36.76 Q 161.76 126 200 215.24"
+      fill="none" stroke="#3A210E" stroke-width="6.9"
+      opacity="0.73" stroke-linecap="round"/><path d="M 200 36.76 Q 238.24 126 200 215.24"
+      fill="none" stroke="#3A210E" stroke-width="6.9"
+      opacity="0.73" stroke-linecap="round"/><path d="M 200 36.76 Q 314.72 126 200 215.24"
+      fill="none" stroke="#3A210E" stroke-width="4.14"
+      opacity="0.48" stroke-linecap="round"/>
+    <circle cx="200" cy="126" r="92" fill="none" stroke="#33200E" stroke-width="6.44" opacity="0.8"/>
+    <ellipse cx="168.72" cy="91.04" rx="22.08" ry="13.8" fill="#fff" opacity="0.3"/><circle cx="200" cy="274" r="92" fill="url(#rd)"/>
+    <circle cx="203.83" cy="256" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="239.5" cy="273.31" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="214.66" cy="332.81" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="178.01" cy="285.2" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="170.57" cy="238.93" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="240.25" cy="220.58" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="228.27" cy="286.59" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="190.07" cy="325.1" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="126.89" cy="276.55" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="190.37" cy="238.05" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="251.5" cy="246.62" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="214.69" cy="290.9" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="174.43" cy="309.19" r="4.6" fill="#5B3418" opacity="0.42"/><circle cx="140.53" cy="248.76" r="4.6" fill="#5B3418" opacity="0.42"/><path d="M 200 184.76 Q 85.28 274 200 363.24"
+      fill="none" stroke="#3A210E" stroke-width="4.14"
+      opacity="0.48" stroke-linecap="round"/><path d="M 200 184.76 Q 161.76 274 200 363.24"
+      fill="none" stroke="#3A210E" stroke-width="6.9"
+      opacity="0.73" stroke-linecap="round"/><path d="M 200 184.76 Q 238.24 274 200 363.24"
+      fill="none" stroke="#3A210E" stroke-width="6.9"
+      opacity="0.73" stroke-linecap="round"/><path d="M 200 184.76 Q 314.72 274 200 363.24"
+      fill="none" stroke="#3A210E" stroke-width="4.14"
+      opacity="0.48" stroke-linecap="round"/>
+    <circle cx="200" cy="274" r="92" fill="none" stroke="#33200E" stroke-width="6.44" opacity="0.8"/>
+    <ellipse cx="168.72" cy="239.04" rx="22.08" ry="13.8" fill="#fff" opacity="0.3"/><path d="M 138 200 q 62 26 124 0 q -62 -26 -124 0 z" fill="#5B3418" opacity="0.85"/></svg>

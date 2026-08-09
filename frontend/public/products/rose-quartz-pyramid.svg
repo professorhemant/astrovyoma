@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img"><ellipse cx="200" cy="200" rx="165" ry="165" fill="url(#glow)" opacity="0.5"/>
+    <defs><radialGradient id="glow"><stop offset="0" stop-color="#F5AEC6" stop-opacity="0.75"/>
+    <stop offset="0.55" stop-color="#F5AEC6" stop-opacity="0.18"/>
+    <stop offset="1" stop-color="#F5AEC6" stop-opacity="0"/></radialGradient></defs>
+    <ellipse cx="200" cy="308" rx="150" ry="22" fill="#000" opacity="0.28"/>
+    <polygon points="200,131 50,296 308,296" fill="#F09BB6"/>
+    <polygon points="200,131 308,296 233,254" fill="#A45372"/>
+    <polygon points="200,131 50,296 185,296" fill="#FFD3E0" opacity="0.55"/>
+    <polygon points="200,131 50,296 308,296" fill="none" stroke="#FFD3E0" stroke-width="2.5" opacity="0.8"/>
+    <path d="M 200 131 L 308 296" stroke="#FFD3E0" stroke-width="2" opacity="0.6"/></svg>

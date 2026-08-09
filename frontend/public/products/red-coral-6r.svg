@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img">
+    <ellipse cx="200" cy="200" rx="165" ry="165" fill="url(#glow)" opacity="0.5"/>
+    <defs><radialGradient id="glow"><stop offset="0" stop-color="#F26A4C" stop-opacity="0.75"/>
+    <stop offset="0.55" stop-color="#F26A4C" stop-opacity="0.18"/>
+    <stop offset="1" stop-color="#F26A4C" stop-opacity="0"/></radialGradient></defs>
+    <ellipse cx="200" cy="200" rx="132" ry="104" fill="#7E2114"/>
+    <ellipse cx="200" cy="200" rx="126" ry="98" fill="url(#dome)"/>
+    <ellipse cx="160.4" cy="162.56" rx="39.6" ry="20.8" fill="#fff" opacity="0.42"/>
+    <ellipse cx="236.96" cy="235.36" rx="44.88" ry="20.8" fill="#FF9F86" opacity="0.22"/>
+    <defs><radialGradient id="dome" cx="0.34" cy="0.28">
+      <stop offset="0" stop-color="#FF9F86"/><stop offset="0.55" stop-color="#E2523A"/>
+      <stop offset="1" stop-color="#7E2114"/></radialGradient></defs></svg>

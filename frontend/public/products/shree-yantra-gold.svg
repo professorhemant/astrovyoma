@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img"><linearGradient id="m" x1="0" y1="0" x2="0.35" y2="1">
+    <stop offset="0" stop-color="#F6E27A"/><stop offset="0.42" stop-color="#C9A227"/>
+    <stop offset="0.62" stop-color="#F6E27A"/><stop offset="1" stop-color="#6E5210"/></linearGradient><ellipse cx="200" cy="200" rx="165" ry="165" fill="url(#glow)" opacity="0.5"/>
+    <defs><radialGradient id="glow"><stop offset="0" stop-color="#E8C547" stop-opacity="0.75"/>
+    <stop offset="0.55" stop-color="#E8C547" stop-opacity="0.18"/>
+    <stop offset="1" stop-color="#E8C547" stop-opacity="0"/></radialGradient></defs>
+    <rect x="50" y="50" width="300" height="300" rx="4"
+      fill="none" stroke="url(#m)" stroke-width="4" opacity="0.55"/>
+    <path d="M 50 50 L 166 50
+      L 166 34
+      L 234 34
+      L 234 50 L 350 50"
+      fill="none" stroke="url(#m)" stroke-width="7" stroke-linejoin="round"/><path d="M 350 50 L 350 166
+      L 366 166
+      L 366 234
+      L 350 234 L 350 350"
+      fill="none" stroke="url(#m)" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M 350 350 L 166 350
+      L 166 366
+      L 234 366
+      L 234 350 L 50 350"
+      fill="none" stroke="url(#m)" stroke-width="7" stroke-linejoin="round"/><path d="M 50 350 L 50 166
+      L 34 166
+      L 34 234
+      L 50 234 L 50 50"
+      fill="none" stroke="url(#m)" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M 200 104 Q 180.28 95.77 200 80 Q 219.72 95.77 200 104 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 236.74 111.31 Q 221.67 96.16 245.92 89.13 Q 258.11 111.25 236.74 111.31 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/><path d="M 267.88 132.12 Q 259.76 112.35 284.85 115.15 Q 287.65 140.24 267.88 132.12 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 288.69 163.26 Q 288.75 141.89 310.87 154.08 Q 303.84 178.33 288.69 163.26 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/><path d="M 296 200 Q 304.23 180.28 320 200 Q 304.23 219.72 296 200 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 288.69 236.74 Q 303.84 221.67 310.87 245.92 Q 288.75 258.11 288.69 236.74 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/><path d="M 267.88 267.88 Q 287.65 259.76 284.85 284.85 Q 259.76 287.65 267.88 267.88 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 236.74 288.69 Q 258.11 288.75 245.92 310.87 Q 221.67 303.84 236.74 288.69 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/><path d="M 200 296 Q 219.72 304.23 200 320 Q 180.28 304.23 200 296 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 163.26 288.69 Q 178.33 303.84 154.08 310.87 Q 141.89 288.75 163.26 288.69 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/><path d="M 132.12 267.88 Q 140.24 287.65 115.15 284.85 Q 112.35 259.76 132.12 267.88 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 111.31 236.74 Q 111.25 258.11 89.13 245.92 Q 96.16 221.67 111.31 236.74 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/><path d="M 104 200 Q 95.77 219.72 80 200 Q 95.77 180.28 104 200 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 111.31 163.26 Q 96.16 178.33 89.13 154.08 Q 111.25 141.89 111.31 163.26 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/><path d="M 132.12 132.12 Q 112.35 140.24 115.15 115.15 Q 140.24 112.35 132.12 132.12 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 163.26 111.31 Q 141.89 111.25 154.08 89.13 Q 178.33 96.16 163.26 111.31 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/>
+    <path d="M 200 130 Q 171.05 126.24 200 108 Q 228.95 126.24 200 130 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 249.5 150.5 Q 231.69 127.37 265.05 134.95 Q 272.63 168.31 249.5 150.5 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/><path d="M 270 200 Q 273.76 171.05 292 200 Q 273.76 228.95 270 200 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 249.5 249.5 Q 272.63 231.69 265.05 265.05 Q 231.69 272.63 249.5 249.5 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/><path d="M 200 270 Q 228.95 273.76 200 292 Q 171.05 273.76 200 270 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 150.5 249.5 Q 168.31 272.63 134.95 265.05 Q 127.37 231.69 150.5 249.5 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/><path d="M 130 200 Q 126.24 228.95 108 200 Q 126.24 171.05 130 200 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 150.5 150.5 Q 127.37 168.31 134.95 134.95 Q 168.31 127.37 150.5 150.5 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/>
+    <circle cx="200" cy="200" r="70" fill="none" stroke="url(#m)" stroke-width="3" opacity="0.7"/>
+    <polygon points="200,161.67 141.76,246.12 258.24,246.12" fill="none" stroke="url(#m)" stroke-width="3" opacity="0.92"/><polygon points="200,159.53 154.24,225.88 245.76,225.88" fill="none" stroke="url(#m)" stroke-width="3" opacity="0.92"/><polygon points="200,161.36 168.8,206.6 231.2,206.6" fill="none" stroke="url(#m)" stroke-width="3" opacity="0.92"/><polygon points="200,163.2 182.32,188.84 217.68,188.84" fill="none" stroke="url(#m)" stroke-width="3" opacity="0.92"/>
+    <polygon points="200,237.27 136.56,145.28 263.44,145.28" fill="none" stroke="url(#m)" stroke-width="3" opacity="0.92"/><polygon points="200,238.42 150.08,166.04 249.92,166.04" fill="none" stroke="url(#m)" stroke-width="3" opacity="0.92"/><polygon points="200,238.58 163.6,185.8 236.4,185.8" fill="none" stroke="url(#m)" stroke-width="3" opacity="0.92"/><polygon points="200,236.74 177.12,203.56 222.88,203.56" fill="none" stroke="url(#m)" stroke-width="3" opacity="0.92"/><polygon points="200,235.87 188.56,219.28 211.44,219.28" fill="none" stroke="url(#m)" stroke-width="3" opacity="0.92"/>
+    <circle cx="200" cy="200" r="6" fill="url(#m)"/></svg>

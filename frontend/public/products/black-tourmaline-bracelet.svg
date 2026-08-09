@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img"><ellipse cx="200" cy="200" rx="165" ry="165" fill="url(#glow)" opacity="0.5"/>
+    <defs><radialGradient id="glow"><stop offset="0" stop-color="#5A6272" stop-opacity="0.75"/>
+    <stop offset="0.55" stop-color="#5A6272" stop-opacity="0.18"/>
+    <stop offset="1" stop-color="#5A6272" stop-opacity="0"/></radialGradient></defs>
+    <circle cx="200" cy="200" r="112" fill="none" stroke="#2A1B4E" stroke-width="3" opacity="0.55"/>
+    <circle cx="200" cy="88" r="30" fill="#2E3440"/>
+      <circle cx="200" cy="88" r="30" fill="url(#sheen)"/>
+      <circle cx="191" cy="78.4" r="9" fill="#fff" opacity="0.45"/><circle cx="248.59" cy="99.09" r="30" fill="#2E3440"/>
+      <circle cx="248.59" cy="99.09" r="30" fill="url(#sheen)"/>
+      <circle cx="239.59" cy="89.49" r="9" fill="#fff" opacity="0.45"/><circle cx="287.57" cy="130.17" r="30" fill="#2E3440"/>
+      <circle cx="287.57" cy="130.17" r="30" fill="url(#sheen)"/>
+      <circle cx="278.57" cy="120.57" r="9" fill="#fff" opacity="0.45"/><circle cx="309.19" cy="175.08" r="30" fill="#2E3440"/>
+      <circle cx="309.19" cy="175.08" r="30" fill="url(#sheen)"/>
+      <circle cx="300.19" cy="165.48" r="9" fill="#fff" opacity="0.45"/><circle cx="309.19" cy="224.92" r="30" fill="#2E3440"/>
+      <circle cx="309.19" cy="224.92" r="30" fill="url(#sheen)"/>
+      <circle cx="300.19" cy="215.32" r="9" fill="#fff" opacity="0.45"/><circle cx="287.57" cy="269.83" r="30" fill="#2E3440"/>
+      <circle cx="287.57" cy="269.83" r="30" fill="url(#sheen)"/>
+      <circle cx="278.57" cy="260.23" r="9" fill="#fff" opacity="0.45"/><circle cx="248.59" cy="300.91" r="30" fill="#2E3440"/>
+      <circle cx="248.59" cy="300.91" r="30" fill="url(#sheen)"/>
+      <circle cx="239.59" cy="291.31" r="9" fill="#fff" opacity="0.45"/><circle cx="200" cy="312" r="30" fill="#2E3440"/>
+      <circle cx="200" cy="312" r="30" fill="url(#sheen)"/>
+      <circle cx="191" cy="302.4" r="9" fill="#fff" opacity="0.45"/><circle cx="151.41" cy="300.91" r="30" fill="#2E3440"/>
+      <circle cx="151.41" cy="300.91" r="30" fill="url(#sheen)"/>
+      <circle cx="142.41" cy="291.31" r="9" fill="#fff" opacity="0.45"/><circle cx="112.43" cy="269.83" r="30" fill="#2E3440"/>
+      <circle cx="112.43" cy="269.83" r="30" fill="url(#sheen)"/>
+      <circle cx="103.43" cy="260.23" r="9" fill="#fff" opacity="0.45"/><circle cx="90.81" cy="224.92" r="30" fill="#2E3440"/>
+      <circle cx="90.81" cy="224.92" r="30" fill="url(#sheen)"/>
+      <circle cx="81.81" cy="215.32" r="9" fill="#fff" opacity="0.45"/><circle cx="90.81" cy="175.08" r="30" fill="#2E3440"/>
+      <circle cx="90.81" cy="175.08" r="30" fill="url(#sheen)"/>
+      <circle cx="81.81" cy="165.48" r="9" fill="#fff" opacity="0.45"/><circle cx="112.43" cy="130.17" r="30" fill="#2E3440"/>
+      <circle cx="112.43" cy="130.17" r="30" fill="url(#sheen)"/>
+      <circle cx="103.43" cy="120.57" r="9" fill="#fff" opacity="0.45"/><circle cx="151.41" cy="99.09" r="30" fill="#2E3440"/>
+      <circle cx="151.41" cy="99.09" r="30" fill="url(#sheen)"/>
+      <circle cx="142.41" cy="89.49" r="9" fill="#fff" opacity="0.45"/>
+    <defs><radialGradient id="sheen" cx="0.33" cy="0.3">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.5"/>
+      <stop offset="0.6" stop-color="#fff" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.3"/></radialGradient></defs></svg>

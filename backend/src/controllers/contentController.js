@@ -266,6 +266,39 @@ async function dedupeList(key) {
   return doomed.length;
 }
 
+// Seeding only ever fills an empty list, which is right — it must not undo the
+// admin's edits. But it leaves a gap: when a field is added to a schema that
+// already has rows in the wild, those rows never receive its default. For the
+// shop's product artwork that would have meant the drawings shipped and the
+// live shop kept showing the category emoji for ever, because its 29 rows were
+// seeded the day before the pictures existed.
+//
+// So: for the named fields only, a row that is still empty takes the value from
+// the seed entry it matches. A row someone has already filled in is left alone,
+// and running it again does nothing.
+async function backfill(listKey, matchField, fields) {
+  const def = listDef(listKey);
+  if (!def?.seed?.length) return 0;
+  const rows = await ContentItem.findAll({ where: { list_key: listKey } });
+  let touched = 0;
+  for (const row of rows) {
+    let data;
+    try { data = JSON.parse(row.data); } catch { continue; }
+    const seed = def.seed.find(s => s[matchField] === data[matchField]);
+    if (!seed) continue;
+    let changed = false;
+    for (const f of fields) {
+      if (!data[f] && seed[f]) { data[f] = seed[f]; changed = true; }
+    }
+    if (changed) {
+      row.data = JSON.stringify(data);
+      await row.save();
+      touched++;
+    }
+  }
+  return touched;
+}
+
 // Called once at boot. Fills each list with the content the site already shipped
 // with, so switching a page over to the database changes nothing visually until
 // the admin edits something.
@@ -280,6 +313,13 @@ async function seedContent() {
     }
   }
   if (total) console.log(`[content] seeded ${total} default item(s)`);
+
+  try {
+    const filled = await backfill('mall_products', 'id', ['image']);
+    if (filled) console.log(`[content] gave ${filled} product(s) their artwork`);
+  } catch (err) {
+    console.error('[content] product artwork backfill failed:', err.message);
+  }
 }
 
 module.exports.seedContent = seedContent;

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img"><linearGradient id="m" x1="0" y1="0" x2="0.35" y2="1">
+    <stop offset="0" stop-color="#F0B08A"/><stop offset="0.42" stop-color="#B87333"/>
+    <stop offset="0.62" stop-color="#F0B08A"/><stop offset="1" stop-color="#5E3616"/></linearGradient><ellipse cx="200" cy="200" rx="165" ry="165" fill="url(#glow)" opacity="0.5"/>
+    <defs><radialGradient id="glow"><stop offset="0" stop-color="#D98B54" stop-opacity="0.75"/>
+    <stop offset="0.55" stop-color="#D98B54" stop-opacity="0.18"/>
+    <stop offset="1" stop-color="#D98B54" stop-opacity="0"/></radialGradient></defs>
+    <rect x="40" y="70" width="320" height="270" rx="18"
+      fill="none" stroke="url(#m)" stroke-width="5" opacity="0.7"/>
+    <polygon points="112,122 74,168 150,168" fill="url(#m)" opacity="0.95"/>
+      <polygon points="112,122 112,168 150,168" fill="#000" opacity="0.22"/><polygon points="200,122 162,168 238,168" fill="url(#m)" opacity="0.95"/>
+      <polygon points="200,122 200,168 238,168" fill="#000" opacity="0.22"/><polygon points="288,122 250,168 326,168" fill="url(#m)" opacity="0.95"/>
+      <polygon points="288,122 288,168 326,168" fill="#000" opacity="0.22"/><polygon points="112,184 74,230 150,230" fill="url(#m)" opacity="0.95"/>
+      <polygon points="112,184 112,230 150,230" fill="#000" opacity="0.22"/><polygon points="200,184 162,230 238,230" fill="url(#m)" opacity="0.95"/>
+      <polygon points="200,184 200,230 238,230" fill="#000" opacity="0.22"/><polygon points="288,184 250,230 326,230" fill="url(#m)" opacity="0.95"/>
+      <polygon points="288,184 288,230 326,230" fill="#000" opacity="0.22"/><polygon points="112,246 74,292 150,292" fill="url(#m)" opacity="0.95"/>
+      <polygon points="112,246 112,292 150,292" fill="#000" opacity="0.22"/><polygon points="200,246 162,292 238,292" fill="url(#m)" opacity="0.95"/>
+      <polygon points="200,246 200,292 238,292" fill="#000" opacity="0.22"/><polygon points="288,246 250,292 326,292" fill="url(#m)" opacity="0.95"/>
+      <polygon points="288,246 288,292 326,292" fill="#000" opacity="0.22"/></svg>

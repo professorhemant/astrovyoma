@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img"><linearGradient id="m" x1="0" y1="0" x2="0.35" y2="1">
+    <stop offset="0" stop-color="#F0B08A"/><stop offset="0.42" stop-color="#B87333"/>
+    <stop offset="0.62" stop-color="#F0B08A"/><stop offset="1" stop-color="#5E3616"/></linearGradient><ellipse cx="200" cy="200" rx="165" ry="165" fill="url(#glow)" opacity="0.5"/>
+    <defs><radialGradient id="glow"><stop offset="0" stop-color="#D98B54" stop-opacity="0.75"/>
+    <stop offset="0.55" stop-color="#D98B54" stop-opacity="0.18"/>
+    <stop offset="1" stop-color="#D98B54" stop-opacity="0"/></radialGradient></defs><rect x="50" y="50" width="300" height="300" rx="4"
+      fill="none" stroke="url(#m)" stroke-width="4" opacity="0.55"/>
+    <path d="M 50 50 L 166 50
+      L 166 34
+      L 234 34
+      L 234 50 L 350 50"
+      fill="none" stroke="url(#m)" stroke-width="7" stroke-linejoin="round"/><path d="M 350 50 L 350 166
+      L 366 166
+      L 366 234
+      L 350 234 L 350 350"
+      fill="none" stroke="url(#m)" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M 350 350 L 166 350
+      L 166 366
+      L 234 366
+      L 234 350 L 50 350"
+      fill="none" stroke="url(#m)" stroke-width="7" stroke-linejoin="round"/><path d="M 50 350 L 50 166
+      L 34 166
+      L 34 234
+      L 50 234 L 50 50"
+      fill="none" stroke="url(#m)" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M 200 108 Q 162.4 104.19 200 82 Q 237.6 104.19 200 108 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 265.05 134.95 Q 241.16 105.67 283.44 116.56 Q 294.33 158.84 265.05 134.95 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/><path d="M 292 200 Q 295.81 162.4 318 200 Q 295.81 237.6 292 200 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 265.05 265.05 Q 294.33 241.16 283.44 283.44 Q 241.16 294.33 265.05 265.05 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/><path d="M 200 292 Q 237.6 295.81 200 318 Q 162.4 295.81 200 292 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 134.95 265.05 Q 158.84 294.33 116.56 283.44 Q 105.67 241.16 134.95 265.05 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/><path d="M 108 200 Q 104.19 237.6 82 200 Q 104.19 162.4 108 200 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 134.95 134.95 Q 105.67 158.84 116.56 116.56 Q 158.84 105.67 134.95 134.95 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/>
+    <circle cx="200" cy="200" r="92" fill="none" stroke="url(#m)" stroke-width="3" opacity="0.75"/>
+    <circle cx="200" cy="200" r="66" fill="none" stroke="url(#m)" stroke-width="2" opacity="0.5"/>
+    <polygon points="200,138 253.69,231 146.31,231"
+    fill="none" stroke="url(#m)" stroke-width="3.5" opacity="0.9"/><polygon points="253.69,169 200,262 146.31,169"
+    fill="none" stroke="url(#m)" stroke-width="3.5" opacity="0.9"/><polygon points="200,166 229.44,217 170.56,217"
+    fill="none" stroke="url(#m)" stroke-width="3.5" opacity="0.9"/>
+    <circle cx="200" cy="200" r="7" fill="url(#m)"/></svg>

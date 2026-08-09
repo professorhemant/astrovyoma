@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img"><linearGradient id="m" x1="0" y1="0" x2="0.35" y2="1">
+    <stop offset="0" stop-color="#F3DFA0"/><stop offset="0.42" stop-color="#C6A44E"/>
+    <stop offset="0.62" stop-color="#F3DFA0"/><stop offset="1" stop-color="#6B5320"/></linearGradient><ellipse cx="200" cy="200" rx="165" ry="165" fill="url(#glow)" opacity="0.5"/>
+    <defs><radialGradient id="glow"><stop offset="0" stop-color="#DCC067" stop-opacity="0.75"/>
+    <stop offset="0.55" stop-color="#DCC067" stop-opacity="0.18"/>
+    <stop offset="1" stop-color="#DCC067" stop-opacity="0"/></radialGradient></defs><rect x="50" y="50" width="300" height="300" rx="4"
+      fill="none" stroke="url(#m)" stroke-width="4" opacity="0.55"/>
+    <path d="M 50 50 L 166 50
+      L 166 34
+      L 234 34
+      L 234 50 L 350 50"
+      fill="none" stroke="url(#m)" stroke-width="7" stroke-linejoin="round"/><path d="M 350 50 L 350 166
+      L 366 166
+      L 366 234
+      L 350 234 L 350 350"
+      fill="none" stroke="url(#m)" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M 350 350 L 166 350
+      L 166 366
+      L 234 366
+      L 234 350 L 50 350"
+      fill="none" stroke="url(#m)" stroke-width="7" stroke-linejoin="round"/><path d="M 50 350 L 50 166
+      L 34 166
+      L 34 234
+      L 50 234 L 50 50"
+      fill="none" stroke="url(#m)" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M 200 106 Q 161.67 102.33 200 80 Q 238.33 102.33 200 106 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 266.47 133.53 Q 241.96 103.83 284.85 115.15 Q 296.17 158.04 266.47 133.53 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/><path d="M 294 200 Q 297.67 161.67 320 200 Q 297.67 238.33 294 200 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 266.47 266.47 Q 296.17 241.96 284.85 284.85 Q 241.96 296.17 266.47 266.47 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/><path d="M 200 294 Q 238.33 297.67 200 320 Q 161.67 297.67 200 294 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 133.53 266.47 Q 158.04 296.17 115.15 284.85 Q 103.83 241.96 133.53 266.47 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/><path d="M 106 200 Q 102.33 238.33 80 200 Q 102.33 161.67 106 200 z"
+      fill="url(#m)" opacity="0.72" stroke="url(#m)" stroke-width="1.5"/><path d="M 133.53 133.53 Q 103.83 158.04 115.15 115.15 Q 158.04 103.83 133.53 133.53 z"
+      fill="url(#m)" opacity="0.5" stroke="url(#m)" stroke-width="1.5"/>
+    <circle cx="200" cy="200" r="94" fill="none" stroke="url(#m)" stroke-width="3" opacity="0.75"/>
+    <polygon points="267.55,161 200,278 132.45,161" fill="none" stroke="url(#m)" stroke-width="4" opacity="0.95"/>
+    <polygon points="239.84,177 200,246 160.16,177" fill="none" stroke="url(#m)" stroke-width="3" opacity="0.8"/>
+    <circle cx="200" cy="200" r="7" fill="url(#m)"/></svg>

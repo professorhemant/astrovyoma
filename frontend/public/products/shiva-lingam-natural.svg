@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img"><linearGradient id="m" x1="0" y1="0" x2="0.35" y2="1">
+    <stop offset="0" stop-color="#F3DFA0"/><stop offset="0.42" stop-color="#C6A44E"/>
+    <stop offset="0.62" stop-color="#F3DFA0"/><stop offset="1" stop-color="#6B5320"/></linearGradient><ellipse cx="200" cy="200" rx="165" ry="165" fill="url(#glow)" opacity="0.5"/>
+    <defs><radialGradient id="glow"><stop offset="0" stop-color="#DCC067" stop-opacity="0.75"/>
+    <stop offset="0.55" stop-color="#DCC067" stop-opacity="0.18"/>
+    <stop offset="1" stop-color="#DCC067" stop-opacity="0"/></radialGradient></defs>
+    <ellipse cx="200" cy="316" rx="130" ry="28" fill="#000" opacity="0.28"/>
+    <path d="M 60 304 q 0 -34 46 -34 h 188 q 46 0 46 34 q 0 26 -46 26 h -188 q -46 0 -46 -26 z"
+      fill="url(#m)" opacity="0.9"/>
+    <path d="M 126 272 q 0 -142 74 -142 q 74 0 74 142 z" fill="url(#stone)"/>
+    <path d="M 126 272 q 0 -142 74 -142 q 74 0 74 142 z" fill="none" stroke="#2C2A33" stroke-width="3" opacity="0.5"/>
+    <path d="M 156 194 q 44 -18 88 0" fill="none" stroke="#FFF3D0" stroke-width="7" opacity="0.75" stroke-linecap="round"/>
+    <path d="M 160 216 q 40 -16 80 0" fill="none" stroke="#FFF3D0" stroke-width="6" opacity="0.55" stroke-linecap="round"/>
+    <defs><linearGradient id="stone" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#8E8A93"/><stop offset="0.45" stop-color="#5E5A63"/>
+      <stop offset="1" stop-color="#332F38"/></linearGradient></defs></svg>

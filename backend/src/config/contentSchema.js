@@ -751,7 +751,9 @@ const LISTS = {
       zodiac:   (p.zodiac || []).join(', '),
       tags:     (p.tags || []).join(', '),
       benefits: (p.benefits || []).join('\n'),
-      image: '',
+      // Drawn artwork, one per product, in frontend/public/products.
+      // Replaceable from the admin the moment a real photograph exists.
+      image: `/products/${p.id}.svg`,
     })),
   },
 
