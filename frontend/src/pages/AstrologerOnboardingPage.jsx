@@ -194,7 +194,7 @@ export default function AstrologerOnboardingPage() {
               {t('obEarnShare', '60–75%')}
             </p>
             <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed mb-10">
-              {t('obEarnIntro', 'Your share of every consultation, before anything else is taken. The share rises with your rating and the hours you keep.')}
+              {t('obEarnIntro', 'Your share of every consultation, before anything else is taken.')}
             </p>
 
             <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto text-left">

@@ -190,7 +190,7 @@ const SETTINGS_GROUPS = [
         help: 'Shown large at the top of the earnings section. Must match what the platform actually pays out — the split is set in Business Settings.' },
       { key: 'obEarnHeading', label: 'Earnings — heading', type: 'text', default: 'What You Earn' },
       { key: 'obEarnIntro',   label: 'Earnings — line underneath', type: 'textarea',
-        default: 'Your share of every consultation, before anything else is taken. The share rises with your rating and the hours you keep.' },
+        default: 'Your share of every consultation, before anything else is taken.' },
       { key: 'obPayoutDay',   label: 'Earnings — when you are paid', type: 'text',
         default: 'Every Monday, for the week before',
         help: 'A promise to your astrologers. Change it here the moment it stops being true.' },
