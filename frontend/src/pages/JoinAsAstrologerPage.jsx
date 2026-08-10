@@ -109,7 +109,9 @@ export default function JoinAsAstrologerPage() {
       <div className="text-center py-12 px-4">
         <div className="text-gold-400 text-3xl mb-3">✦</div>
         <h1 className="font-serif text-4xl md:text-5xl text-gold-400 mb-3">Join AstroVyoma as an Astrologer</h1>
-        <p className="text-gray-400 text-lg">Share your cosmic wisdom with thousands of seekers</p>
+        {/* "…with thousands of seekers" was the same untrue claim as the badge
+            below it, just in prose. */}
+        <p className="text-gray-400 text-lg">Join the founding panel and set your own terms</p>
 
         <div className="flex flex-wrap justify-center gap-4 mt-8">
           {[
