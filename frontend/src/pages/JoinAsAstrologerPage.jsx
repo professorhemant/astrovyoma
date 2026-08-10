@@ -114,7 +114,11 @@ export default function JoinAsAstrologerPage() {
         <div className="flex flex-wrap justify-center gap-4 mt-8">
           {[
             { icon: '₹', label: '60% Earnings', sub: 'Your share of every consultation' },
-            { icon: '👥', label: '10,000+ Users', sub: 'Active seekers on the platform' },
+            // Was "10,000+ Users — Active seekers on the platform". There were
+            // two accounts, one of them the admin, and no consultation had ever
+            // been given. An astrologer decides to join on the strength of these
+            // three boxes, so every one of them has to be something we can show.
+            { icon: '🆓', label: 'No Joining Fee', sub: 'No registration or subscription charge' },
             { icon: '⏰', label: 'Flexible Hours', sub: 'Work on your own schedule' },
           ].map(b => (
             <div key={b.label} className="card-cosmic px-6 py-4 text-center min-w-[160px]">
