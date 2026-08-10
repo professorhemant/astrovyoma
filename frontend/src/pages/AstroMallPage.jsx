@@ -178,7 +178,10 @@ export default function AstroMallPage() {
                   ? `✨ ${activePurpose.charAt(0).toUpperCase() + activePurpose.slice(1)} Products`
                   : search
                   ? `Search: "${search}"`
-                  : '⭐ Bestsellers & Featured'}
+                  // The unfiltered grid is every product in the shop, not a
+                  // selection. It called itself "Bestsellers & Featured"
+                  // while nothing had ever been sold.
+                  : '✨ All Products'}
               </h2>
               {!loading && (
                 <span className="text-gray-200 text-sm">({products.length} products)</span>
