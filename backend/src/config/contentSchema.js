@@ -638,20 +638,25 @@ const LISTS = {
   },
 
   about_stats: {
-    label: 'About — Numbers',
+    label: 'About — Highlights',
     titleField: 'label',
-    help: 'The four figures across the About page.',
-    itemLabel: (d) => d.label || 'Number',
+    // These were counts — "12+ Expert Astrologers", "10,000+ Lives Guided" —
+    // against 3 astrologers and no consultations. They say what the site does
+    // instead, which is true on the first day as well as the thousandth.
+    help: 'The four highlights across the About page. Keep them to what the ' +
+          'site actually does — a count of users or readings has to be true ' +
+          'the day somebody checks it.',
+    itemLabel: (d) => d.label || 'Highlight',
     fields: [
       { key: 'icon',  label: 'Emoji',  type: 'text' },
-      { key: 'value', label: 'Figure', type: 'text', required: true, help: 'e.g. 10,000+' },
-      { key: 'label', label: 'What it counts', type: 'text', required: true },
+      { key: 'value', label: 'Headline', type: 'text', required: true, help: 'The big word, e.g. Detailed' },
+      { key: 'label', label: 'What it refers to', type: 'text', required: true, help: 'The line underneath, e.g. Kundli Analysis' },
     ],
     seed: [
-      { icon: '📜', value: '5,000+',  label: 'Years of Vedic Wisdom' },
-      { icon: '🔭', value: '12+',     label: 'Expert Astrologers' },
-      { icon: '🌟', value: '10,000+', label: 'Lives Guided' },
-      { icon: '🔐', value: '100%',    label: 'Confidential & Secure' },
+      { icon: '🔭', value: 'Detailed',   label: 'Kundli Analysis' },
+      { icon: '🌟', value: 'Actionable', label: 'Life Remedies' },
+      { icon: '🔭', value: 'Real-Time',  label: 'Chart Generation' },
+      { icon: '🌟', value: 'Daily',      label: 'Horoscope Updates' },
     ],
   },
 

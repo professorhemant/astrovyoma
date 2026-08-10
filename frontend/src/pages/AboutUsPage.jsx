@@ -72,10 +72,10 @@ function Divider() {
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
 const STATS = [
-  { value: '5,000+', label: 'Years of Vedic Wisdom', icon: '📜' },
-  { value: '12+',    label: 'Expert Astrologers',     icon: '🔭' },
-  { value: '10,000+',label: 'Lives Guided',           icon: '🌟' },
-  { value: '100%',   label: 'Confidential & Secure',  icon: '🔐' },
+  { value: 'Detailed',   label: 'Kundli Analysis',    icon: '🔭' },
+  { value: 'Actionable', label: 'Life Remedies',      icon: '🌟' },
+  { value: 'Real-Time',  label: 'Chart Generation',   icon: '🔭' },
+  { value: 'Daily',      label: 'Horoscope Updates',  icon: '🌟' },
 ];
 
 // ── Pillars ───────────────────────────────────────────────────────────────────
