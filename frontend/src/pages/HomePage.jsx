@@ -23,9 +23,9 @@ const FREE_FEATURES = [
 ];
 
 const TESTIMONIALS = [
-  { name: 'Priyanka Mehta', location: 'Mumbai', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Priyanka&backgroundColor=ffdfbf', rating: 5, text: 'AstroVyoma changed my life. Pandit Raj Sharma predicted my job change 6 months before it happened. His accuracy left me speechless. I now consult him for every major decision.' },
-  { name: 'Arjun Singh', location: 'Delhi', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Arjun&backgroundColor=b6e3f4', rating: 5, text: "Dr. Meera Joshi's reading of my relationship challenges was uncannily accurate. Her remedies actually worked. My marriage transformed within 3 months. Eternally grateful." },
-  { name: 'Kavya Nair', location: 'Bangalore', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Kavya&backgroundColor=d1d4f9', rating: 5, text: "The free Kundali reading opened my eyes to patterns I'd never understood. The AI chat answered my questions at 2 AM when I was anxious. Incredible platform." },
+  { heading: 'Calculated, not guessed', text: 'Charts are computed with the Swiss Ephemeris using the Lahiri ayanamsha and Whole Sign houses — the same standard professional astrologers work to.' },
+  { heading: 'Free where it matters', text: 'Your full birth chart, planetary positions, dashas and nakshatra reading cost nothing, and no card is asked for.' },
+  { heading: 'You decide what you spend', text: 'Consultations are charged by the minute from your wallet, only while you are talking, and you can stop at any moment.' },
 ];
 
 const HOW_IT_WORKS = [
@@ -622,7 +622,7 @@ export default function HomePage() {
             <motion.h2 initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
               className="font-serif text-center text-4xl text-gold-400 mb-12"
               {...secProps('testimonials')}>
-              {sec('testimonials', {heading:'Lives Transformed by the Stars'}).heading}
+              {sec('testimonials', {heading:'Why AstroVyoma'}).heading}
             </motion.h2>
             <div className="grid md:grid-cols-3 gap-6">
               {testimonials.map((t,i) => (
@@ -631,17 +631,32 @@ export default function HomePage() {
                   transition={{delay:i*0.15}}
                   whileHover={{y:-4,boxShadow:'0 0 30px rgba(201,168,76,0.15)'}}
                   className="card-cosmic p-6 transition-all">
-                  <div className="flex gap-0.5 mb-4">
-                    {Array.from({length:5}).map((_,j) => <Star key={j} className="w-4 h-4 fill-gold-400 text-gold-400" />)}
-                  </div>
-                  <p className="text-gray-300 text-sm leading-relaxed mb-6 italic">"{t.text}"</p>
-                  <div className="flex items-center gap-3">
-                    <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full border border-gold-600/30" />
-                    <div>
-                      <div className="text-gold-400 text-sm font-medium">{t.name}</div>
-                      <div className="text-gray-400 text-xs">{t.location}</div>
-                    </div>
-                  </div>
+                  {/* Stars, quote marks and a face are what make a card read as
+                      somebody's testimony. They appear only when a real person
+                      is named — otherwise the card is plainly a statement about
+                      the service, which is what it is. */}
+                  {t.name ? (
+                    <>
+                      <div className="flex gap-0.5 mb-4">
+                        {Array.from({length:5}).map((_,j) => <Star key={j} className="w-4 h-4 fill-gold-400 text-gold-400" />)}
+                      </div>
+                      <p className="text-gray-300 text-sm leading-relaxed mb-6 italic">"{t.text}"</p>
+                      <div className="flex items-center gap-3">
+                        <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full border border-gold-600/30" />
+                        <div>
+                          <div className="text-gold-400 text-sm font-medium">{t.name}</div>
+                          <div className="text-gray-400 text-xs">{t.location}</div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {t.heading && (
+                        <h3 className="text-gold-400 font-medium text-sm mb-3">{t.heading}</h3>
+                      )}
+                      <p className="text-gray-300 text-sm leading-relaxed">{t.text}</p>
+                    </>
+                  )}
                 </motion.div>
               ))}
             </div>

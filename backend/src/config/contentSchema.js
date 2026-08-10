@@ -250,26 +250,37 @@ const SETTINGS_GROUPS = [
 
 const LISTS = {
   testimonials: {
-    label: 'Testimonials',
-    help: 'The "Lives Transformed by the Stars" cards on the homepage.',
-    itemLabel: (d) => d.name || 'Testimonial',
+    label: 'Homepage — Why AstroVyoma',
+    // These were three invented customers praising two astrologers who were not
+    // on the platform, on a site that had never hosted a consultation. They are
+    // now statements about what the site does, each one checkable.
+    //
+    // The card still renders a real testimonial properly: fill in a name and it
+    // comes back with the photograph and the stars. Leave the name empty and it
+    // renders as a plain statement, which is what an honest new site has.
+    help: 'The three cards near the foot of the homepage. Leave "Name" empty ' +
+          'for a plain statement about the service. Fill it in only for a real ' +
+          'testimonial from a real person who has agreed to it — a name and ' +
+          'stars against words nobody said is the one thing here that can get ' +
+          'you into trouble.',
+    itemLabel: (d) => d.name || d.heading || 'Card',
     fields: [
-      { key: 'name',     label: 'Name',        type: 'text', required: true },
-      { key: 'location', label: 'City',        type: 'text' },
-      { key: 'rating',   label: 'Stars',       type: 'number', default: 5, min: 1, max: 5 },
-      { key: 'text',     label: 'What they said', type: 'textarea', required: true },
-      { key: 'avatar',   label: 'Photo',       type: 'image' },
+      { key: 'heading',  label: 'Small gold heading', type: 'text',
+        help: 'Used when there is no name, e.g. "Calculated, not guessed".' },
+      { key: 'text',     label: 'The words', type: 'textarea', required: true },
+      { key: 'name',     label: 'Name', type: 'text',
+        help: 'Only for a real, consented testimonial. Empty means this card is a plain statement.' },
+      { key: 'location', label: 'City', type: 'text' },
+      { key: 'rating',   label: 'Stars', type: 'number', default: 5, min: 1, max: 5 },
+      { key: 'avatar',   label: 'Photo', type: 'image' },
     ],
     seed: [
-      { name: 'Priyanka Mehta', location: 'Mumbai', rating: 5,
-        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Priyanka&backgroundColor=ffdfbf',
-        text: 'AstroVyoma changed my life. Pandit Raj Sharma predicted my job change 6 months before it happened. His accuracy left me speechless. I now consult him for every major decision.' },
-      { name: 'Arjun Singh', location: 'Delhi', rating: 5,
-        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Arjun&backgroundColor=b6e3f4',
-        text: "Dr. Meera Joshi's reading of my relationship challenges was uncannily accurate. Her remedies actually worked. My marriage transformed within 3 months. Eternally grateful." },
-      { name: 'Kavya Nair', location: 'Bangalore', rating: 5,
-        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Kavya&backgroundColor=d1d4f9',
-        text: "The free Kundali reading opened my eyes to patterns I'd never understood. The AI chat answered my questions at 2 AM when I was anxious. Incredible platform." },
+      { heading: 'Calculated, not guessed',
+        text: 'Charts are computed with the Swiss Ephemeris using the Lahiri ayanamsha and Whole Sign houses — the same standard professional astrologers work to.' },
+      { heading: 'Free where it matters',
+        text: 'Your full birth chart, planetary positions, dashas and nakshatra reading cost nothing, and no card is asked for.' },
+      { heading: 'You decide what you spend',
+        text: 'Consultations are charged by the minute from your wallet, only while you are talking, and you can stop at any moment.' },
     ],
   },
 
@@ -324,7 +335,7 @@ const LISTS = {
       { key: 'connect',   eyebrow: '', heading: '✦ Connect with Your Cosmic Guide', subheading: '' },
       { key: 'about',     eyebrow: '', heading: 'Where Ancient Stars Meet Modern Lives', subheading: '' },
       { key: 'horoscope', eyebrow: '', heading: "Today's Cosmic Guidance", subheading: '' },
-      { key: 'testimonials', eyebrow: '', heading: 'Lives Transformed by the Stars', subheading: '' },
+      { key: 'testimonials', eyebrow: '', heading: 'Why AstroVyoma', subheading: '' },
     ],
   },
 
