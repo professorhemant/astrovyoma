@@ -84,6 +84,7 @@ router.get('/admin/appointments',               auth, adminAuth, adminController
 router.get('/admin/revenue',                    auth, adminAuth, adminController.getRevenue);
 router.get('/admin/payouts',                    auth, adminAuth, payoutController.getPending);
 router.post('/admin/payouts/pay',               auth, adminAuth, payoutController.payAstrologer);
+router.post('/admin/payouts/undo',              auth, adminAuth, payoutController.undoPayout);
 
 // Astrologer application routes
 router.post('/astrologer/apply', astrologerApplicationController.submitApplication);

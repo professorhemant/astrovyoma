@@ -16,8 +16,11 @@ const { startOfWeek } = earningsService;
 async function getPending(req, res) {
   try {
     const upto = req.query.week === 'last' ? startOfWeek() : null;
-    const data = await earningsService.pendingByAstrologer({ upto });
-    res.json({ ...data, upto: upto ? upto.toISOString() : null });
+    const [data, recent] = await Promise.all([
+      earningsService.pendingByAstrologer({ upto }),
+      earningsService.recentPayouts({ limit: 10 }),
+    ]);
+    res.json({ ...data, recent, upto: upto ? upto.toISOString() : null });
   } catch (err) {
     console.error('getPending payouts error:', err);
     res.status(500).json({ error: 'Failed to load payouts' });
@@ -49,4 +52,25 @@ async function payAstrologer(req, res) {
   }
 }
 
-module.exports = { getPending, payAstrologer };
+// Put a payout recorded in error back to owed.
+async function undoPayout(req, res) {
+  try {
+    const { astrologer_id, earning_ids } = req.body || {};
+    if (!astrologer_id || !Array.isArray(earning_ids) || !earning_ids.length) {
+      return res.status(400).json({ error: 'astrologer_id and earning_ids are required' });
+    }
+
+    const result = await earningsService.undoPayout(astrologer_id, earning_ids);
+    if (!result.restored) {
+      return res.json({ restored: 0, amount: 0, message: 'Nothing to undo — it may already have been reversed.' });
+    }
+
+    console.log(`[payout] undone: ${result.restored} earning(s), ₹${result.amount} back to owed for astrologer ${astrologer_id}`);
+    res.json(result);
+  } catch (err) {
+    console.error('undoPayout error:', err);
+    res.status(500).json({ error: 'Failed to undo the payout' });
+  }
+}
+
+module.exports = { getPending, payAstrologer, undoPayout };

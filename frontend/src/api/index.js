@@ -242,6 +242,7 @@ export const admin = {
   getRevenue:          ()     => api.get('/admin/revenue'),
   getPayouts:          (params) => api.get('/admin/payouts', { params }),
   payAstrologer:       (data) => api.post('/admin/payouts/pay', data),
+  undoPayout:          (data) => api.post('/admin/payouts/undo', data),
   getSettings:         ()     => api.get('/admin/settings'),
   updateSettings:      (data) => api.put('/admin/settings', data),
 };

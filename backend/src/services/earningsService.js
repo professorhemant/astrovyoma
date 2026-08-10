@@ -215,7 +215,75 @@ async function payAstrologer(astrologerId, earningIds, reference) {
   return { paid: count, amount: round2(sum(rows, 'net_amount')) };
 }
 
+// Payout runs already recorded, newest first.
+//
+// A run is the set of rows one press settled, which markPaid stamps with the
+// same paid_at — so astrologer + paid_at + reference identifies it without
+// needing a payouts table of its own.
+async function recentPayouts({ limit = 10 } = {}) {
+  const rows = await AstrologerEarning.findAll({
+    where: { status: 'paid' },
+    order: [['paid_at', 'DESC']],
+  });
+  if (!rows.length) return [];
+
+  const astrologers = await Astrologer.findAll({
+    where: { id: { [Op.in]: [...new Set(rows.map(r => r.astrologer_id))] } },
+    attributes: ['id', 'display_name'],
+  });
+  const byId = new Map(astrologers.map(a => [a.id, a]));
+
+  const runs = new Map();
+  for (const r of rows) {
+    const at = r.paid_at ? new Date(r.paid_at).toISOString() : 'unknown';
+    const key = `${r.astrologer_id}|${at}|${r.payout_reference || ''}`;
+    if (!runs.has(key)) {
+      runs.set(key, {
+        key,
+        astrologer_id: r.astrologer_id,
+        display_name: byId.get(r.astrologer_id)?.display_name || 'Astrologer no longer listed',
+        reference: r.payout_reference || null,
+        paid_at: r.paid_at,
+        amount: 0, consultations: 0, earning_ids: [],
+      });
+    }
+    const run = runs.get(key);
+    run.amount += parseFloat(r.net_amount || 0);
+    run.consultations += 1;
+    run.earning_ids.push(r.id);
+  }
+
+  return [...runs.values()]
+    .map(r => ({ ...r, amount: round2(r.amount) }))
+    .slice(0, limit);
+}
+
+// Put a mistakenly recorded payout back to owed.
+//
+// Recording a payment is a claim that money left a bank account, and people get
+// that wrong — the wrong row, the wrong astrologer, a transfer that then failed.
+// Without this the only remedy was editing the database by hand, which is a
+// worse thing to ask of somebody than a button.
+//
+// Scoped by astrologer_id as well as by id for the same reason paying is, and
+// it only touches rows that are currently paid, so a double press changes
+// nothing the second time.
+async function undoPayout(astrologerId, earningIds) {
+  if (!astrologerId || !earningIds?.length) return { restored: 0, amount: 0 };
+
+  const rows = await AstrologerEarning.findAll({
+    where: { id: { [Op.in]: earningIds }, astrologer_id: astrologerId, status: 'paid' },
+  });
+  if (!rows.length) return { restored: 0, amount: 0 };
+
+  const [count] = await AstrologerEarning.update(
+    { status: 'pending', paid_at: null, payout_reference: null },
+    { where: { id: { [Op.in]: rows.map(r => r.id) }, astrologer_id: astrologerId, status: 'paid' } }
+  );
+  return { restored: count, amount: round2(sum(rows, 'net_amount')) };
+}
+
 module.exports = {
   recordConsultationEarning, summaryFor, markPaid, split, startOfWeek,
-  pendingByAstrologer, payAstrologer,
+  pendingByAstrologer, payAstrologer, recentPayouts, undoPayout,
 };

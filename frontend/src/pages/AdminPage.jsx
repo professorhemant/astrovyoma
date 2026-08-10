@@ -825,6 +825,7 @@ function PayoutsTab() {
   const [paying, setPaying] = useState(null);       // astrologer_id mid-flight
   const [confirming, setConfirming] = useState(null); // astrologer_id awaiting confirmation
   const [reference, setReference] = useState('');
+  const [undoing, setUndoing] = useState(null);     // run key mid-flight
 
   const load = useCallback(() => {
     setLoading(true);
@@ -859,9 +860,30 @@ function PayoutsTab() {
     }
   }
 
+  async function undoRun(run) {
+    setUndoing(run.key);
+    try {
+      const { data: res } = await adminApi.undoPayout({
+        astrologer_id: run.astrologer_id,
+        earning_ids:   run.earning_ids,
+      });
+      if (res.restored) {
+        toast.success(`₹${res.amount.toLocaleString('en-IN')} put back as owed to ${run.display_name}`);
+      } else {
+        toast(res.message || 'Nothing to undo');
+      }
+      load();
+    } catch {
+      toast.error('Failed to undo the payout');
+    } finally {
+      setUndoing(null);
+    }
+  }
+
   if (loading) return <div className="flex justify-center py-20"><Loader className="w-8 h-8 text-gold-400 animate-spin" /></div>;
 
   const groups = data?.groups || [];
+  const recent = data?.recent || [];
 
   return (
     <div>
@@ -943,8 +965,10 @@ function PayoutsTab() {
                 </div>
               </div>
 
-              {/* Confirmation. Marking a run paid cannot be undone from this
-                  screen, so it asks once and says so. */}
+              {/* Confirmation. It is reversible now, but it still asks — the
+                  astrologer sees the change in their portal immediately, and
+                  telling somebody they have been paid when they have not is
+                  worth one extra click to avoid. */}
               {confirming === g.astrologer_id && (
                 <div className="mt-4 pt-4 border-t border-gold-600/10">
                   <p className="text-gray-300 text-sm mb-1">
@@ -952,7 +976,8 @@ function PayoutsTab() {
                   </p>
                   <p className="text-gray-500 text-xs mb-3">
                     Recording it marks {g.consultations} consultation{g.consultations === 1 ? '' : 's'} as paid and
-                    removes {g.consultations === 1 ? 'it' : 'them'} from their portal’s outstanding total. This cannot be undone here.
+                    removes {g.consultations === 1 ? 'it' : 'them'} from their portal’s outstanding total.
+                    If you record it by mistake you can undo it below.
                   </p>
                   <div className="flex flex-wrap items-center gap-2">
                     <input value={reference} onChange={e => setReference(e.target.value)}
@@ -971,6 +996,39 @@ function PayoutsTab() {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Recently recorded, so a payout entered in error can be put back.
+          Undoing does not move money either — it only restores what the
+          ledger says is owed. */}
+      {recent.length > 0 && (
+        <div className="mt-10">
+          <h3 className="text-gold-400 font-medium mb-1">Recently recorded</h3>
+          <p className="text-gray-500 text-xs mb-4 max-w-2xl leading-relaxed">
+            Recorded the wrong one? Undo puts it back as owed and it reappears in the
+            astrologer’s portal. It does not reverse a bank transfer you have already made.
+          </p>
+          <div className="space-y-2">
+            {recent.map(r => (
+              <div key={r.key} className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-cosmic-900/50 border border-gold-600/10 px-4 py-3">
+                <div className="min-w-0">
+                  <p className="text-gray-300 text-sm">
+                    {r.display_name} · <span className="text-gold-400">₹{r.amount.toLocaleString('en-IN')}</span>
+                  </p>
+                  <p className="text-gray-600 text-xs mt-0.5">
+                    {r.consultations} consultation{r.consultations === 1 ? '' : 's'}
+                    {r.paid_at && ` · ${new Date(r.paid_at).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`}
+                    {r.reference ? ` · ${r.reference}` : ' · no reference'}
+                  </p>
+                </div>
+                <button onClick={() => undoRun(r)} disabled={undoing === r.key}
+                  className="px-3 py-1.5 rounded-lg text-xs text-gray-300 border border-gold-600/20 hover:text-gold-400 hover:border-gold-500/40 transition-colors disabled:opacity-60">
+                  {undoing === r.key ? 'Undoing…' : 'Undo'}
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
