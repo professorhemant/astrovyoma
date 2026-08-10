@@ -124,6 +124,16 @@ export default function JoinAsAstrologerPage() {
             </div>
           ))}
         </div>
+
+        {/* Nobody should have to apply to find out the terms — the kit sets out
+            the split, the code of conduct and what joining involves in full. */}
+        <p className="text-gray-500 text-sm mt-8">
+          Want the full picture first?{' '}
+          <Link to="/astrologer-kit" className="text-gold-400 hover:underline">
+            Read the astrologer’s kit
+          </Link>{' '}
+          — earnings, papers, the code of conduct and every step of joining.
+        </p>
       </div>
 
       {/* Form */}

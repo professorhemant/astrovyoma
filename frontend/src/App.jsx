@@ -68,6 +68,7 @@ import YogaFinderPage           from './pages/YogaFinderPage';
 import AboutUsPage              from './pages/AboutUsPage';
 import ContentPage              from './pages/ContentPage';
 import JoinAsAstrologerPage    from './pages/JoinAsAstrologerPage';
+import AstrologerOnboardingPage from './pages/AstrologerOnboardingPage';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -163,6 +164,7 @@ function AppLayout() {
             <Route path="/yoga-finder"           element={<YogaFinderPage />} />
             <Route path="/about"                 element={<AboutUsPage />} />
             <Route path="/join-as-astrologer"   element={<JoinAsAstrologerPage />} />
+            <Route path="/astrologer-kit"        element={<AstrologerOnboardingPage />} />
             {/* Last but one: any single-word address the app has not claimed
                 above is looked up as a page written in the admin — /terms,
                 /privacy, and anything added later. Static paths outrank this,

@@ -169,6 +169,64 @@ const SETTINGS_GROUPS = [
     ],
   },
   {
+    key: 'onboarding',
+    public: true,
+    label: 'Astrologer Kit — Wording',
+    help: 'Every line of writing on the astrologer onboarding kit, the page an ' +
+          'astrologer reads before applying. The cards, steps and questions on ' +
+          'that page are lists of their own, further down this screen.',
+    fields: [
+      { key: 'obEyebrow', label: 'Small line above the title', type: 'text', default: '✦ For Astrologers' },
+      { key: 'obTitle',   label: 'Big title', type: 'text', default: 'The Astrologer’s Kit' },
+      { key: 'obTitleTwo', label: 'Second line of the title', type: 'text', default: 'Everything Before You Join',
+        help: 'Shown in white under the gold first line. Leave empty for a one-line title.' },
+      { key: 'obIntro',   label: 'Opening paragraph', type: 'textarea',
+        default: 'What we ask of you, what you get in return, and exactly how joining works — set out in full before you fill in a single form.' },
+
+      { key: 'obEarnShare',   label: 'Headline earnings figure', type: 'text', default: '60–75%',
+        help: 'Shown large at the top of the earnings section. Must match what the platform actually pays out — the split is set in Business Settings.' },
+      { key: 'obEarnHeading', label: 'Earnings — heading', type: 'text', default: 'What You Earn' },
+      { key: 'obEarnIntro',   label: 'Earnings — line underneath', type: 'textarea',
+        default: 'Your share of every consultation, before anything else is taken. The share rises with your rating and the hours you keep.' },
+      { key: 'obPayoutDay',   label: 'Earnings — when you are paid', type: 'text',
+        default: 'Every Monday, for the week before',
+        help: 'A promise to your astrologers. Change it here the moment it stops being true.' },
+      { key: 'obPayoutMin',   label: 'Earnings — smallest payout', type: 'text', default: '₹500',
+        help: 'Anything under this carries over to the following week.' },
+      { key: 'obPayoutNote',  label: 'Earnings — the small print', type: 'textarea',
+        default: 'Paid by bank transfer or UPI to the account you verified. Nothing is deducted beyond the platform share and whatever tax the law requires.' },
+
+      { key: 'obCriteriaHeading', label: 'Who can join — heading', type: 'text', default: 'Who We Are Looking For' },
+      { key: 'obCriteriaIntro',   label: 'Who can join — line underneath', type: 'textarea',
+        default: 'Meet these and you should expect to be accepted. We would rather turn away a good astrologer than take one who trades on fear.' },
+
+      { key: 'obDocsHeading', label: 'Papers — heading', type: 'text', default: 'Papers to Keep Ready' },
+      { key: 'obDocsIntro',   label: 'Papers — line underneath', type: 'textarea',
+        default: 'Nothing is asked for until after the conversation, but having these to hand shortens verification to a couple of days.' },
+
+      { key: 'obStepsHeading', label: 'How it works — heading', type: 'text', default: 'How Joining Works' },
+      { key: 'obStepsIntro',   label: 'How it works — line underneath', type: 'textarea',
+        default: 'Six steps, about a fortnight end to end, and a person at every one of them.' },
+
+      { key: 'obKitHeading', label: 'What you get — heading', type: 'text', default: 'What You Get on Day One' },
+      { key: 'obKitIntro',   label: 'What you get — line underneath', type: 'textarea',
+        default: 'The whole kit, handed over the moment your profile goes up. There is nothing further to buy.' },
+
+      { key: 'obConductHeading', label: 'What we ask — heading', type: 'text', default: 'What We Ask of You' },
+      { key: 'obConductIntro',   label: 'What we ask — line underneath', type: 'textarea',
+        default: 'The code every astrologer on the panel agrees to. It is short, and it is the whole of it.' },
+
+      { key: 'obFaqHeading', label: 'Questions — heading', type: 'text', default: 'Questions Astrologers Ask' },
+
+      { key: 'obCtaHeading', label: 'Closing — heading', type: 'text', default: 'Ready to Join the Panel?' },
+      { key: 'obCtaText',    label: 'Closing — paragraph', type: 'textarea',
+        default: 'The application takes about fifteen minutes and commits you to nothing. If your practice fits AstroVyoma you will hear from a person within three working days.' },
+      { key: 'obCtaButton',  label: 'Closing — button text', type: 'text', default: 'Apply to Join' },
+      { key: 'obCtaHelp',    label: 'Closing — line under the button', type: 'textarea',
+        default: 'Would rather ask something first? Write to us and an astrologer on the panel will answer, not a sales desk.' },
+    ],
+  },
+  {
     key: 'brand',
     public: true,
     label: 'Branding & SEO',
@@ -772,6 +830,170 @@ const LISTS = {
       { label: 'Get Free Kundali',      to: '/kundali',     style: 'solid' },
       { label: 'Talk to Astrologer',    to: '/astrologers', style: 'outline' },
       { label: 'Talk to AstroVyoma AI', to: '/chat',        style: 'outline' },
+    ],
+  },
+
+  // ── The astrologer onboarding kit ──────────────────────────────────────────
+  // Everything an astrologer is told before and just after they join, in six
+  // lists so each part can be changed on its own. These are terms people will
+  // hold us to, so they are worded as commitments and kept editable — a payout
+  // day or a commission share that changes must be changeable without a deploy.
+  onboarding_criteria: {
+    label: 'Joining — Who Can Join',
+    titleField: 'title',
+    help: 'What an astrologer must have before applying. Keep these honest — an ' +
+          'applicant who meets every line here should expect to be accepted.',
+    itemLabel: (d) => d.title || 'Requirement',
+    fields: [
+      { key: 'emoji', label: 'Emoji', type: 'text' },
+      { key: 'title', label: 'Requirement', type: 'text', required: true },
+      { key: 'desc',  label: 'What it means', type: 'textarea' },
+    ],
+    seed: [
+      { emoji: '📿', title: 'At least 3 years of practice',
+        desc: 'Consulting real people, not only study. Longer practice raises the per-minute rate you can ask for.' },
+      { emoji: '🎓', title: 'A tradition you can name',
+        desc: 'Vedic, KP, Nadi, Lal Kitab, numerology, Vastu, tarot — guru-shishya lineage counts as much as an institutional certificate.' },
+      { emoji: '🗣️', title: 'Fluent in Hindi or English',
+        desc: 'Any further language you speak widens the seekers matched to you and is shown on your profile.' },
+      { emoji: '📱', title: 'A smartphone and steady internet',
+        desc: 'Consultations run over chat and call in the browser. Nothing to install.' },
+      { emoji: '☮️', title: 'No fear-based predictions',
+        desc: 'A hard rule, not a preference. A difficult period is delivered with the remedy beside it, never as doom to be paid away.' },
+    ],
+  },
+
+  onboarding_documents: {
+    label: 'Joining — Papers to Keep Ready',
+    titleField: 'title',
+    help: 'What verification asks for. Anything marked not required can be left ' +
+          'out without holding up the application.',
+    itemLabel: (d) => d.title || 'Document',
+    fields: [
+      { key: 'title',    label: 'Document', type: 'text', required: true },
+      { key: 'why',      label: 'Why it is needed', type: 'text' },
+      { key: 'required', label: 'Required', type: 'boolean', default: true },
+    ],
+    seed: [
+      { title: 'Photo ID (Aadhaar, PAN or passport)', required: true,
+        why: 'Confirms you are who the profile says you are.' },
+      { title: 'PAN card', required: true,
+        why: 'Needed before any payout can be released.' },
+      { title: 'Bank account details or UPI id', required: true,
+        why: 'Where your earnings are sent.' },
+      { title: 'Certificates or proof of lineage', required: false,
+        why: 'Shown on your profile as credentials. Strengthens an application without being compulsory.' },
+      { title: 'A clear photograph of yourself', required: true,
+        why: 'Your profile picture. Seekers choose an astrologer they can see.' },
+    ],
+  },
+
+  onboarding_steps: {
+    label: 'Joining — How It Works',
+    titleField: 'title',
+    help: 'The steps from applying to taking your first consultation. The timing ' +
+          'shown against each step is a promise to the applicant — change it here ' +
+          'if it stops being true.',
+    itemLabel: (d) => d.title || 'Step',
+    fields: [
+      { key: 'title',   label: 'Step', type: 'text', required: true },
+      { key: 'desc',    label: 'What happens', type: 'textarea' },
+      { key: 'timing',  label: 'How long it takes', type: 'text', help: 'e.g. Within 3 working days' },
+    ],
+    seed: [
+      { title: 'Send the application', timing: '15 minutes',
+        desc: 'The form on Join as Astrologer asks for your details, your practice and the per-minute rate you want. Nothing is charged and nothing is committed.' },
+      { title: 'We read it', timing: 'Within 3 working days',
+        desc: 'A person reads every application. If your practice fits AstroVyoma you are called; if not, you are told plainly rather than left waiting.' },
+      { title: 'A conversation', timing: 'About 30 minutes',
+        desc: 'A call with a senior astrologer on the panel. Part chart discussion, part how you handle a frightened client. It is not an examination.' },
+      { title: 'Papers and verification', timing: '2 to 4 working days',
+        desc: 'ID, PAN and bank details are checked. Certificates you supply are added to your profile as credentials.' },
+      { title: 'Your profile goes up', timing: '1 working day',
+        desc: 'Photo, biography, disciplines, languages and rate. You approve how it reads before it is published.' },
+      { title: 'Go online and take your first consultation', timing: 'Same day',
+        desc: 'Switch yourself online in the Pandit Portal and seekers can reach you. Go offline whenever you want; nobody is penalised for being unavailable.' },
+    ],
+  },
+
+  onboarding_kit: {
+    label: 'Joining — What You Get',
+    titleField: 'title',
+    help: 'The parts of the kit handed to an astrologer on joining — the tools, ' +
+          'the page, the support. One card each.',
+    itemLabel: (d) => d.title || 'Component',
+    fields: [
+      { key: 'emoji', label: 'Emoji', type: 'text' },
+      { key: 'title', label: 'What it is', type: 'text', required: true },
+      { key: 'desc',  label: 'Description', type: 'textarea' },
+      { key: 'tone',  label: 'Colour', type: 'select', default: 'gold',
+        options: [{ value: 'gold', label: 'Gold' }, { value: 'violet', label: 'Violet' },
+                  { value: 'emerald', label: 'Green' }, { value: 'blue', label: 'Blue' }] },
+    ],
+    seed: [
+      { emoji: '🪪', tone: 'gold', title: 'Your own profile page',
+        desc: 'A page on AstroVyoma carrying your photograph, biography, disciplines, languages, credentials and rate — a link you can share anywhere as your own.' },
+      { emoji: '🎛️', tone: 'violet', title: 'The Pandit Portal',
+        desc: 'Your working screen. Switch online or offline in one tap, see who is waiting, and watch what you have earned build up through the day.' },
+      { emoji: '💬', tone: 'blue', title: 'Chat and call consultations',
+        desc: 'Both run in the browser with per-minute billing handled for you. Your personal number is never shown to a seeker.' },
+      { emoji: '📅', tone: 'emerald', title: 'Appointments and pooja bookings',
+        desc: 'Seekers can book a slot ahead of time or commission a pooja. Both arrive in your portal with the birth details already filled in.' },
+      { emoji: '📊', tone: 'gold', title: 'An earnings record',
+        desc: 'Every consultation listed with its minutes, what the seeker paid and what came to you. Nothing about your payout is hidden from you.' },
+      { emoji: '🤝', tone: 'violet', title: 'The panel behind you',
+        desc: 'A complex chart can be taken to the wider panel for a second reading. You are joined to a guild, not left alone with a queue.' },
+    ],
+  },
+
+  onboarding_conduct: {
+    label: 'Joining — What We Ask of You',
+    titleField: 'title',
+    help: 'The code every astrologer on the panel agrees to. Breaking one of these ' +
+          'is the only thing that gets someone taken off the platform.',
+    itemLabel: (d) => d.title || 'Rule',
+    fields: [
+      { key: 'title', label: 'Rule', type: 'text', required: true },
+      { key: 'desc',  label: 'What it means in practice', type: 'textarea' },
+    ],
+    seed: [
+      { title: 'Never trade on fear',
+        desc: 'No predictions of death, no curses, no danger that can only be lifted by paying more. A hard period is named together with what can be done about it.' },
+      { title: 'Never sell a remedy you profit from privately',
+        desc: 'Gemstones and rudraksha are recommended on merit. If a seeker wants to buy, point them at the Astro Mall or anywhere they like — not at yourself.' },
+      { title: 'Keep what you are told',
+        desc: 'Birth details and what a seeker tells you stay between you and them. Not repeated, not reused, not discussed elsewhere.' },
+      { title: 'Say when you do not know',
+        desc: 'An honest "the chart does not show this clearly" is respected here. A confident invention is not.' },
+      { title: 'Keep the hours you advertise',
+        desc: 'Being offline is fine at any time. Showing yourself online and not answering is not — it costs the seeker their wait.' },
+      { title: 'Consult off the platform and it ends',
+        desc: 'Taking a seeker you met here to a private arrangement removes you from the panel. It is the one thing there is no second conversation about.' },
+    ],
+  },
+
+  onboarding_faqs: {
+    label: 'Joining — Questions Astrologers Ask',
+    titleField: 'question',
+    help: 'The questions that come up before someone applies.',
+    itemLabel: (d) => d.question || 'Question',
+    fields: [
+      { key: 'question', label: 'Question', type: 'text', required: true },
+      { key: 'answer',   label: 'Answer', type: 'textarea' },
+    ],
+    seed: [
+      { question: 'Does it cost anything to join?',
+        answer: 'No. There is no joining fee, no registration charge and no subscription. AstroVyoma earns only its share of a consultation you have actually given.' },
+      { question: 'Do I have to work fixed hours?',
+        answer: 'No. You are visible to seekers only while you have set yourself online, and you can go offline at any moment. There is no minimum.' },
+      { question: 'Can I keep my own clients and my own practice?',
+        answer: 'Yes. Your practice outside AstroVyoma is entirely yours. The one rule is that a seeker who came to you through the platform stays on the platform.' },
+      { question: 'Who decides my rate?',
+        answer: 'You propose a per-minute rate when you apply and it is agreed with you before your profile goes up. You can ask for it to be changed later as your reviews build.' },
+      { question: 'What if a seeker disputes a consultation?',
+        answer: 'It is read by a person, both sides are heard, and you are told the outcome. A refund is not taken out of your earnings without you being told why.' },
+      { question: 'What happens if my application is turned down?',
+        answer: 'You are told, and told why. You are welcome to apply again once the reason has been addressed — most often it is years of practice.' },
     ],
   },
 };
