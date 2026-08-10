@@ -59,8 +59,10 @@ const SETTINGS_GROUPS = [
     label: 'Business Settings',
     help: 'Money and limits. These take effect on the next consultation or recharge.',
     fields: [
-      { key: 'commissionPercent',  label: 'Platform commission (%)', type: 'number', default: 20, min: 0, max: 100,
-        help: 'Share the platform keeps from each paid consultation.' },
+      { key: 'commissionPercent',  label: 'Platform commission (%)', type: 'number', default: 30, min: 0, max: 100,
+        help: 'The share AstroVyoma keeps from each paid consultation — not the ' +
+              'astrologer’s share. At 30 the astrologer receives 70. Keep this ' +
+              'inside the range the astrologer kit advertises.' },
       { key: 'newUserFreeMinutes', label: 'Free minutes for new users', type: 'number', default: 5, min: 0, max: 120 },
       { key: 'minWalletRecharge',  label: 'Minimum wallet recharge (₹)', type: 'number', default: 100, min: 1 },
       { key: 'maxWalletRecharge',  label: 'Maximum wallet recharge (₹)', type: 'number', default: 10000, min: 1 },
