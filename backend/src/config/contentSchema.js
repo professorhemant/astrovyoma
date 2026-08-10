@@ -61,9 +61,9 @@ const SETTINGS_GROUPS = [
     fields: [
       { key: 'commissionPercent',  label: 'Platform commission (%)', type: 'number', default: 40, min: 0, max: 100,
         help: 'The share AstroVyoma keeps from each paid consultation — not the ' +
-              'astrologer’s share. At 40 the astrologer receives 60. Keep this ' +
-              'inside the range the astrologer kit advertises: above 40 and the ' +
-              'kit’s 60–75% promise stops being true.' },
+              'astrologer’s share. At 40 the astrologer receives 60, which is what ' +
+              'the astrologer kit and the Join page both advertise. Change this and ' +
+              'the headline figure in Astrologer Kit — Wording must change with it.' },
       { key: 'newUserFreeMinutes', label: 'Free minutes for new users', type: 'number', default: 5, min: 0, max: 120 },
       { key: 'minWalletRecharge',  label: 'Minimum wallet recharge (₹)', type: 'number', default: 100, min: 1 },
       { key: 'maxWalletRecharge',  label: 'Maximum wallet recharge (₹)', type: 'number', default: 10000, min: 1 },
@@ -186,7 +186,7 @@ const SETTINGS_GROUPS = [
       { key: 'obIntro',   label: 'Opening paragraph', type: 'textarea',
         default: 'What we ask of you, what you get in return, and exactly how joining works — set out in full before you fill in a single form.' },
 
-      { key: 'obEarnShare',   label: 'Headline earnings figure', type: 'text', default: '60–75%',
+      { key: 'obEarnShare',   label: 'Headline earnings figure', type: 'text', default: '60%',
         help: 'Shown large at the top of the earnings section. Must match what the platform actually pays out — the split is set in Business Settings.' },
       { key: 'obEarnHeading', label: 'Earnings — heading', type: 'text', default: 'What You Earn' },
       { key: 'obEarnIntro',   label: 'Earnings — line underneath', type: 'textarea',

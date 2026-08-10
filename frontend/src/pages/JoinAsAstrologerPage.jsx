@@ -113,7 +113,7 @@ export default function JoinAsAstrologerPage() {
 
         <div className="flex flex-wrap justify-center gap-4 mt-8">
           {[
-            { icon: '₹', label: '60-75% Earnings', sub: 'Industry-leading revenue share' },
+            { icon: '₹', label: '60% Earnings', sub: 'Your share of every consultation' },
             { icon: '👥', label: '10,000+ Users', sub: 'Active seekers on the platform' },
             { icon: '⏰', label: 'Flexible Hours', sub: 'Work on your own schedule' },
           ].map(b => (
@@ -217,7 +217,7 @@ export default function JoinAsAstrologerPage() {
                   <input type="number" min="10" value={form.price_per_min} onChange={e => set('price_per_min', e.target.value)}
                     className={inputClass('price_per_min')} />
                   {errors.price_per_min && <p className="text-red-400 text-xs mt-1">{errors.price_per_min}</p>}
-                  <p className="text-gray-600 text-xs mt-1">Platform takes 25-40%; you keep 60-75%</p>
+                  <p className="text-gray-600 text-xs mt-1">Platform takes 40%; you keep 60%</p>
                 </div>
               </div>
             )}

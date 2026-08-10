@@ -191,7 +191,7 @@ export default function AstrologerOnboardingPage() {
             </p>
             <p className="font-serif text-6xl md:text-7xl text-gold-400 mb-4"
                style={{ textShadow: '0 0 50px rgba(201,168,76,0.4)' }}>
-              {t('obEarnShare', '60–75%')}
+              {t('obEarnShare', '60%')}
             </p>
             <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed mb-10">
               {t('obEarnIntro', 'Your share of every consultation, before anything else is taken.')}
