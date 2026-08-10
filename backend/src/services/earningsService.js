@@ -9,7 +9,7 @@
 // payout run and the portal's earnings screen both read. Paying it out is a
 // bank transfer somebody makes; marking those rows paid is markPaid below.
 
-const { AstrologerEarning, Consultation, User } = require('../models');
+const { AstrologerEarning, Consultation, Astrologer, User } = require('../models');
 const { Op } = require('sequelize');
 const settingsService = require('./settingsService');
 
@@ -141,4 +141,81 @@ async function markPaid(earningIds, reference) {
   return count;
 }
 
-module.exports = { recordConsultationEarning, summaryFor, markPaid, split, startOfWeek };
+// Who is owed what, one group per astrologer — the payout run.
+//
+// A payout is one bank transfer to one person, so the grouping is by astrologer
+// rather than a flat list of consultations. `upto` cuts the run off at a date:
+// the kit promises payment on a Monday for the week before, so paying up to
+// last Sunday leaves this week's earnings to the next run rather than paying a
+// part-week.
+//
+// The earning ids travel back with each group so the pay call settles exactly
+// the rows that were totalled here, not whatever is pending by the time the
+// button is pressed.
+async function pendingByAstrologer({ upto = null } = {}) {
+  const where = { status: { [Op.ne]: 'paid' } };
+  if (upto) where.created_at = { [Op.lte]: upto };
+
+  const rows = await AstrologerEarning.findAll({ where, order: [['created_at', 'ASC']] });
+  if (!rows.length) return { groups: [], totalAmount: 0, totalCount: 0 };
+
+  const astrologers = await Astrologer.findAll({
+    where: { id: { [Op.in]: [...new Set(rows.map(r => r.astrologer_id))] } },
+    attributes: ['id', 'display_name', 'phone'],
+  });
+  const byId = new Map(astrologers.map(a => [a.id, a]));
+
+  const groups = new Map();
+  for (const r of rows) {
+    if (!groups.has(r.astrologer_id)) {
+      const a = byId.get(r.astrologer_id);
+      groups.set(r.astrologer_id, {
+        astrologer_id: r.astrologer_id,
+        // An earning whose astrologer row has since been deleted must still be
+        // visible — the money is owed to a person, not to a row.
+        display_name: a?.display_name || 'Astrologer no longer listed',
+        phone: a?.phone || null,
+        amount: 0, gross: 0, consultations: 0, minutes: 0,
+        oldest: r.created_at, newest: r.created_at,
+        earning_ids: [],
+      });
+    }
+    const g = groups.get(r.astrologer_id);
+    g.amount += parseFloat(r.net_amount || 0);
+    g.gross  += parseFloat(r.gross_amount || 0);
+    g.minutes += r.duration_mins || 0;
+    g.consultations += 1;
+    g.earning_ids.push(r.id);
+    if (new Date(r.created_at) < new Date(g.oldest)) g.oldest = r.created_at;
+    if (new Date(r.created_at) > new Date(g.newest)) g.newest = r.created_at;
+  }
+
+  const list = [...groups.values()]
+    .map(g => ({ ...g, amount: round2(g.amount), gross: round2(g.gross) }))
+    .sort((a, b) => b.amount - a.amount);
+
+  return {
+    groups: list,
+    totalAmount: round2(list.reduce((n, g) => n + g.amount, 0)),
+    totalCount: rows.length,
+  };
+}
+
+// Settle one astrologer's run. Scoped to that astrologer as well as to the ids,
+// so a stale or tampered id list can never settle somebody else's earnings.
+async function payAstrologer(astrologerId, earningIds, reference) {
+  if (!astrologerId || !earningIds?.length) return { paid: 0, amount: 0 };
+
+  const rows = await AstrologerEarning.findAll({
+    where: { id: { [Op.in]: earningIds }, astrologer_id: astrologerId, status: { [Op.ne]: 'paid' } },
+  });
+  if (!rows.length) return { paid: 0, amount: 0 };
+
+  const count = await markPaid(rows.map(r => r.id), reference);
+  return { paid: count, amount: round2(sum(rows, 'net_amount')) };
+}
+
+module.exports = {
+  recordConsultationEarning, summaryFor, markPaid, split, startOfWeek,
+  pendingByAstrologer, payAstrologer,
+};

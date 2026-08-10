@@ -11,7 +11,8 @@ import {
   Settings, LogOut, Loader, Trash2, Edit2, Plus, X,
   CheckCircle, XCircle, RefreshCw, ChevronLeft, ChevronRight,
   Shield, Bell, AlertTriangle, Calendar, TrendingUp,
-  Phone, Mail, BarChart2, Eye, EyeOff, IndianRupee, FileText, Home, KeyRound, Pencil, MousePointer2
+  Phone, Mail, BarChart2, Eye, EyeOff, IndianRupee, FileText, Home, KeyRound, Pencil, MousePointer2,
+  Banknote
 } from 'lucide-react';
 
 // Applications are the intake queue for Astrologers, so they sit next to them.
@@ -27,6 +28,7 @@ const TABS = [
   { key: 'appointments',  label: 'Appointments',   icon: Calendar },
   { key: 'transactions',  label: 'Transactions',   icon: Wallet },
   { key: 'revenue',       label: 'Revenue',        icon: TrendingUp },
+  { key: 'payouts',       label: 'Payouts',        icon: Banknote },
   { key: 'design',        label: 'Visual Editor',  icon: MousePointer2 },
   { key: 'content',       label: 'Site Content',   icon: Pencil },
   { key: 'settings',      label: 'Settings',       icon: Settings },
@@ -141,6 +143,7 @@ function Overview({ setTab }) {
             { label: 'View Consultations', tab: 'consultations', color: 'text-purple-400' },
             { label: 'Appointments', tab: 'appointments', color: 'text-green-400' },
             { label: 'Revenue Report', tab: 'revenue', color: 'text-gold-400' },
+            { label: 'Pay Astrologers', tab: 'payouts', color: 'text-emerald-400' },
             { label: 'Site Settings', tab: 'settings', color: 'text-gray-300' },
           ].map(({ label, tab, color }) => (
             <button key={tab} onClick={() => setTab(tab)}
@@ -808,6 +811,172 @@ function RevenueTab() {
 // Settings and content now live in components/admin — both render themselves
 // from the server schema, so adding a setting or a manageable list does not
 // mean hand-wiring another screen in here.
+// ── Payouts ──────────────────────────────────────────────────────────────────
+// What is owed to each astrologer, and a way to record having paid it.
+//
+// Nothing here moves money — no bank is connected. The order is deliberate:
+// you make the transfer in your banking app, then come back and record it. So
+// the button says "Record payment", not "Pay", and it asks for the reference
+// from the transfer you just made.
+function PayoutsTab() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [lastWeekOnly, setLastWeekOnly] = useState(true);
+  const [paying, setPaying] = useState(null);       // astrologer_id mid-flight
+  const [confirming, setConfirming] = useState(null); // astrologer_id awaiting confirmation
+  const [reference, setReference] = useState('');
+
+  const load = useCallback(() => {
+    setLoading(true);
+    adminApi.getPayouts(lastWeekOnly ? { week: 'last' } : {})
+      .then(r => setData(r.data))
+      .catch(() => toast.error('Failed to load payouts'))
+      .finally(() => setLoading(false));
+  }, [lastWeekOnly]);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function recordPayment(group) {
+    setPaying(group.astrologer_id);
+    try {
+      const { data: res } = await adminApi.payAstrologer({
+        astrologer_id: group.astrologer_id,
+        earning_ids:   group.earning_ids,
+        reference:     reference.trim() || undefined,
+      });
+      if (res.paid) {
+        toast.success(`Recorded ₹${res.amount.toLocaleString('en-IN')} paid to ${group.display_name}`);
+      } else {
+        toast(res.message || 'Nothing left to settle');
+      }
+      setConfirming(null);
+      setReference('');
+      load();
+    } catch {
+      toast.error('Failed to record the payout');
+    } finally {
+      setPaying(null);
+    }
+  }
+
+  if (loading) return <div className="flex justify-center py-20"><Loader className="w-8 h-8 text-gold-400 animate-spin" /></div>;
+
+  const groups = data?.groups || [];
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
+        <h2 className="font-serif text-2xl text-gold-400">Payouts</h2>
+        <button onClick={load} className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gold-400 transition-colors">
+          <RefreshCw className="w-3.5 h-3.5" /> Refresh
+        </button>
+      </div>
+
+      <p className="text-gray-500 text-sm mb-6 max-w-2xl leading-relaxed">
+        What each astrologer has earned and not yet been paid. This screen does not
+        send money — make the transfer from your bank, then record it here so their
+        portal stops showing it as owed.
+      </p>
+
+      {/* Week filter */}
+      <div className="flex flex-wrap items-center gap-2 mb-6">
+        {[
+          { on: true,  label: 'Up to last Sunday', hint: 'What the kit promises: paid on a Monday, for the week before' },
+          { on: false, label: 'Everything outstanding', hint: 'Includes consultations given this week' },
+        ].map(o => (
+          <button key={String(o.on)} onClick={() => setLastWeekOnly(o.on)} title={o.hint}
+            className={`px-3 py-1.5 rounded-lg text-xs border transition-colors ${
+              lastWeekOnly === o.on
+                ? 'bg-gold-500/10 text-gold-400 border-gold-500/40'
+                : 'text-gray-400 border-gold-600/20 hover:text-gray-200'
+            }`}>
+            {o.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Total */}
+      <div className="card-cosmic p-6 mb-6">
+        <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Total to pay out</p>
+        <p className="font-serif text-3xl text-gold-400">
+          ₹{(data?.totalAmount || 0).toLocaleString('en-IN')}
+        </p>
+        <p className="text-gray-500 text-xs mt-1">
+          {groups.length} astrologer{groups.length === 1 ? '' : 's'} · {data?.totalCount || 0} consultation{data?.totalCount === 1 ? '' : 's'}
+        </p>
+      </div>
+
+      {groups.length === 0 ? (
+        <div className="card-cosmic p-10 text-center">
+          <p className="text-gray-400 text-sm">Nothing is owed for this period.</p>
+          <p className="text-gray-600 text-xs mt-1">
+            Earnings appear here as soon as a paid consultation ends.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {groups.map(g => (
+            <div key={g.astrologer_id} className="card-cosmic p-5">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <h3 className="text-gray-200 font-medium">{g.display_name}</h3>
+                  <p className="text-gray-500 text-xs mt-1">
+                    {g.phone ? `${g.phone} · ` : ''}
+                    {g.consultations} consultation{g.consultations === 1 ? '' : 's'} · {g.minutes} min
+                  </p>
+                  <p className="text-gray-600 text-xs mt-0.5">
+                    {new Date(g.oldest).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                    {' – '}
+                    {new Date(g.newest).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                    {' · seekers paid ₹'}{g.gross.toLocaleString('en-IN')}
+                  </p>
+                </div>
+
+                <div className="text-right shrink-0">
+                  <p className="font-serif text-2xl text-gold-400">₹{g.amount.toLocaleString('en-IN')}</p>
+                  {confirming !== g.astrologer_id && (
+                    <button onClick={() => { setConfirming(g.astrologer_id); setReference(''); }}
+                      className="mt-2 px-4 py-1.5 rounded-lg text-xs bg-gold-500/10 text-gold-400 border border-gold-500/40 hover:bg-gold-500/20 transition-colors">
+                      Record payment
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Confirmation. Marking a run paid cannot be undone from this
+                  screen, so it asks once and says so. */}
+              {confirming === g.astrologer_id && (
+                <div className="mt-4 pt-4 border-t border-gold-600/10">
+                  <p className="text-gray-300 text-sm mb-1">
+                    Have you already transferred ₹{g.amount.toLocaleString('en-IN')} to {g.display_name}?
+                  </p>
+                  <p className="text-gray-500 text-xs mb-3">
+                    Recording it marks {g.consultations} consultation{g.consultations === 1 ? '' : 's'} as paid and
+                    removes {g.consultations === 1 ? 'it' : 'them'} from their portal’s outstanding total. This cannot be undone here.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input value={reference} onChange={e => setReference(e.target.value)}
+                      placeholder="Bank reference / UTR (optional)"
+                      className="flex-1 min-w-[200px] bg-cosmic-900 border border-gold-600/20 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-gold-500" />
+                    <button onClick={() => recordPayment(g)} disabled={paying === g.astrologer_id}
+                      className="px-4 py-2 rounded-lg text-xs btn-gold disabled:opacity-60">
+                      {paying === g.astrologer_id ? 'Recording…' : 'Yes, mark as paid'}
+                    </button>
+                    <button onClick={() => { setConfirming(null); setReference(''); }}
+                      className="px-4 py-2 rounded-lg text-xs text-gray-400 hover:text-gray-200 border border-gold-600/20 transition-colors">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SettingsTab() { return <SettingsPanel />; }
 
 // ─── APPLICATIONS ─────────────────────────────────────────────────────────────
@@ -1005,6 +1174,7 @@ export default function AdminPage() {
     appointments:  <AppointmentsTab />,
     transactions:  <TransactionsTab />,
     revenue:       <RevenueTab />,
+    payouts:       <PayoutsTab />,
     design:        <VisualEditorTab />,
     content:       <ContentTab />,
     settings:      <SettingsTab />,

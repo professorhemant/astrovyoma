@@ -42,6 +42,7 @@ const reportHistoryController   = require('../controllers/reportHistoryControlle
 const agoraService = require('../services/agoraService');
 const panditController = require('../controllers/panditController');
 const adminController = require('../controllers/adminController');
+const payoutController = require('../controllers/payoutController');
 const astrologerApplicationController = require('../controllers/astrologerApplicationController');
 const jwt = require('jsonwebtoken');
 
@@ -81,6 +82,8 @@ router.get('/admin/settings',                   auth, adminAuth, adminController
 router.put('/admin/settings',                   auth, adminAuth, adminController.updateSiteSettings);
 router.get('/admin/appointments',               auth, adminAuth, adminController.getAppointments);
 router.get('/admin/revenue',                    auth, adminAuth, adminController.getRevenue);
+router.get('/admin/payouts',                    auth, adminAuth, payoutController.getPending);
+router.post('/admin/payouts/pay',               auth, adminAuth, payoutController.payAstrologer);
 
 // Astrologer application routes
 router.post('/astrologer/apply', astrologerApplicationController.submitApplication);

@@ -240,6 +240,8 @@ export const admin = {
   getTransactions:     (params) => api.get('/admin/transactions', { params }),
   getAppointments:     (params) => api.get('/admin/appointments', { params }),
   getRevenue:          ()     => api.get('/admin/revenue'),
+  getPayouts:          (params) => api.get('/admin/payouts', { params }),
+  payAstrologer:       (data) => api.post('/admin/payouts/pay', data),
   getSettings:         ()     => api.get('/admin/settings'),
   updateSettings:      (data) => api.put('/admin/settings', data),
 };
