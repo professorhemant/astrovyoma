@@ -110,6 +110,7 @@ router.get('/kundali/pdf/detailed/hindi', auth, kundaliController.downloadDetail
 router.post('/pandit/login', panditController.panditLogin);
 router.get('/pandit/me', panditAuth, panditController.getStatus);
 router.patch('/pandit/status', panditAuth, panditController.toggleStatus);
+router.get('/pandit/earnings', panditAuth, panditController.getEarnings);
 
 // Astrologer routes
 router.get('/astrologers', astrologerController.getAstrologers);

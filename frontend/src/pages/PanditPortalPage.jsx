@@ -14,12 +14,19 @@ export default function PanditPortalPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [toggling, setToggling] = useState(false);
+  const [earnings, setEarnings] = useState(null);
 
   useEffect(() => {
     if (!token) return;
-    axios.get(`${API}/pandit/me`, { headers: { Authorization: `Bearer ${token}` } })
+    const headers = { Authorization: `Bearer ${token}` };
+    axios.get(`${API}/pandit/me`, { headers })
       .then(r => setPandit(r.data))
       .catch(() => { localStorage.removeItem(TOKEN_KEY); setToken(null); });
+    // Earnings failing must not sign anybody out — only /pandit/me decides
+    // whether the token is still good.
+    axios.get(`${API}/pandit/earnings`, { headers })
+      .then(r => setEarnings(r.data))
+      .catch(() => {});
   }, [token]);
 
   async function handleLogin(e) {
@@ -178,6 +185,70 @@ export default function PanditPortalPage() {
             }`}>
             {toggling ? 'Updating…' : pandit.is_online ? 'Go Offline' : 'Go Live'}
           </button>
+        </div>
+
+        {/* Earnings. The kit promises a payout every Monday for the week before,
+            so the two figures shown largest are what is owed and what this week
+            has brought in — the ones an astrologer checks against that promise. */}
+        <div className="mt-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-xs text-gold-600 uppercase tracking-widest">Earnings</h3>
+            {earnings && (
+              <span className="text-[11px] text-gray-500">
+                {earnings.consultations} consultation{earnings.consultations === 1 ? '' : 's'}
+              </span>
+            )}
+          </div>
+
+          {!earnings ? (
+            <p className="text-gray-500 text-xs text-center py-4">Loading…</p>
+          ) : earnings.consultations === 0 ? (
+            <p className="text-gray-500 text-xs text-center py-4 leading-relaxed">
+              No paid consultations yet. Your share of each one appears here as soon as it ends.
+            </p>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div className="rounded-2xl border border-gold-500/30 bg-gold-600/10 px-4 py-3">
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Awaiting payout</p>
+                  <p className="text-gold-400 font-serif text-xl">₹{earnings.pendingAmount.toLocaleString('en-IN')}</p>
+                </div>
+                <div className="rounded-2xl border border-gold-600/20 bg-cosmic-900/60 px-4 py-3">
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">This week</p>
+                  <p className="text-gray-200 font-serif text-xl">₹{earnings.weekAmount.toLocaleString('en-IN')}</p>
+                </div>
+              </div>
+
+              <div className="flex justify-between text-[11px] text-gray-500 px-1 mb-4">
+                <span>Today ₹{earnings.todayAmount.toLocaleString('en-IN')}</span>
+                <span>Paid out ₹{earnings.paidAmount.toLocaleString('en-IN')}</span>
+                <span>Lifetime ₹{earnings.lifetimeAmount.toLocaleString('en-IN')}</span>
+              </div>
+
+              <div className="space-y-2 max-h-56 overflow-y-auto">
+                {earnings.recent.map(r => (
+                  <div key={r.id} className="flex items-center justify-between gap-3 rounded-xl bg-cosmic-900/50 border border-gold-600/10 px-3 py-2">
+                    <div className="min-w-0">
+                      <p className="text-gray-300 text-xs">
+                        {r.duration_mins} min{r.mode ? ` · ${r.mode}` : ''}
+                      </p>
+                      <p className="text-gray-600 text-[10px] mt-0.5">
+                        {new Date(r.at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                        {' · '}seeker paid ₹{r.gross_amount.toLocaleString('en-IN')}
+                        {' · '}platform {r.commission_percent}%
+                      </p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-gold-400 text-sm">₹{r.net_amount.toLocaleString('en-IN')}</p>
+                      <p className={`text-[10px] ${r.status === 'paid' ? 'text-green-500/70' : 'text-gray-600'}`}>
+                        {r.status === 'paid' ? 'paid' : 'pending'}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         <AnimatePresence>

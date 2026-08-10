@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Astrologer } = require('../models');
+const earningsService = require('../services/earningsService');
 
 async function panditLogin(req, res) {
   try {
@@ -73,4 +74,15 @@ async function getStatus(req, res) {
   }
 }
 
-module.exports = { panditLogin, toggleStatus, getStatus };
+// An astrologer's own earnings. Reads only their own rows — the token carries
+// the astrologer id, and nothing in the request can point it at anybody else.
+async function getEarnings(req, res) {
+  try {
+    res.json(await earningsService.summaryFor(req.pandit.panditId));
+  } catch (err) {
+    console.error('getEarnings error:', err);
+    res.status(500).json({ error: 'Failed to fetch earnings' });
+  }
+}
+
+module.exports = { panditLogin, toggleStatus, getStatus, getEarnings };
