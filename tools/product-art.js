@@ -514,18 +514,22 @@ function svg(body) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SIZE} ${SIZE}" width="${SIZE}" height="${SIZE}" role="img">${body}</svg>\n`;
 }
 
-const { PRODUCTS } = require('../backend/src/data/mallProducts');
+const { PRODUCTS, PHOTOGRAPHED } = require('../backend/src/data/mallProducts');
 
 fs.mkdirSync(OUT, { recursive: true });
-let made = 0;
+let made = 0, skipped = 0;
 const missing = [];
 for (const p of PRODUCTS) {
+  // A product with a real photograph does not need a drawing, and writing one
+  // would leave an unused file next to the picture actually being served.
+  if (PHOTOGRAPHED.includes(p.id)) { skipped++; continue; }
   const draw = ART[p.id];
   if (!draw) { missing.push(p.id); continue; }
   fs.writeFileSync(path.join(OUT, `${p.id}.svg`), svg(draw()));
   made++;
 }
-console.log(`wrote ${made} of ${PRODUCTS.length} into frontend/public/products/`);
+console.log(`drew ${made} of ${PRODUCTS.length} into frontend/public/products/` +
+            (skipped ? ` (${skipped} have photographs)` : ''));
 if (missing.length) {
   console.error(`no artwork defined for: ${missing.join(', ')}`);
   process.exitCode = 1;

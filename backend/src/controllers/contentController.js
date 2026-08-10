@@ -274,9 +274,15 @@ async function dedupeList(key) {
 // seeded the day before the pictures existed.
 //
 // So: for the named fields only, a row that is still empty takes the value from
-// the seed entry it matches. A row someone has already filled in is left alone,
-// and running it again does nothing.
-async function backfill(listKey, matchField, fields) {
+// the seed entry it matches.
+//
+// `ours` widens that by one step. Artwork we ship can also be *replaced* by
+// artwork we ship — a drawing swapped for a photograph, say — and without this
+// the shop would keep the drawing for ever because the field was not empty. The
+// test is deliberately narrow: only a value we recognise as our own is
+// overwritten. Anything uploaded from the admin lives under a different path
+// and is never touched.
+async function backfill(listKey, matchField, fields, ours = () => false) {
   const def = listDef(listKey);
   if (!def?.seed?.length) return 0;
   const rows = await ContentItem.findAll({ where: { list_key: listKey } });
@@ -288,7 +294,8 @@ async function backfill(listKey, matchField, fields) {
     if (!seed) continue;
     let changed = false;
     for (const f of fields) {
-      if (!data[f] && seed[f]) { data[f] = seed[f]; changed = true; }
+      if (!seed[f] || data[f] === seed[f]) continue;
+      if (!data[f] || ours(data[f])) { data[f] = seed[f]; changed = true; }
     }
     if (changed) {
       row.data = JSON.stringify(data);
@@ -315,8 +322,11 @@ async function seedContent() {
   if (total) console.log(`[content] seeded ${total} default item(s)`);
 
   try {
-    const filled = await backfill('mall_products', 'id', ['image']);
-    if (filled) console.log(`[content] gave ${filled} product(s) their artwork`);
+    // Anything under /products/ is a drawing or photograph that shipped with the
+    // site. An admin upload lands under /uploads/ and is left alone.
+    const filled = await backfill('mall_products', 'id', ['image'],
+      (v) => typeof v === 'string' && v.startsWith('/products/'));
+    if (filled) console.log(`[content] updated artwork on ${filled} product(s)`);
   } catch (err) {
     console.error('[content] product artwork backfill failed:', err.message);
   }

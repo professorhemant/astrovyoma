@@ -483,4 +483,13 @@ const PRODUCTS = [
 
 // ── Controller functions ────────────────────────────────────────────────────
 
-module.exports = { PRODUCTS, CATEGORY_META, PURPOSE_META };
+// Products for which a real photograph exists, in
+// frontend/public/products/<code>.png. Everything else uses the drawn artwork
+// at <code>.svg. Both the schema (which decides the stored image path) and
+// tools/product-art.js (which knows not to bother drawing these) read this, so
+// the two cannot drift apart.
+//
+// Originals as supplied are kept in tools/photos, so a cut-out can be redone.
+const PHOTOGRAPHED = ['ek-mukhi-kaju', '7-mukhi-rudraksha', '5-mukhi-mala'];
+
+module.exports = { PRODUCTS, CATEGORY_META, PURPOSE_META, PHOTOGRAPHED };

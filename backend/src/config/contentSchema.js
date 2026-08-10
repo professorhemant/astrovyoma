@@ -17,7 +17,7 @@
 //   color     colour picker
 
 const { ARTICLES } = require('../data/blogArticles');
-const { PRODUCTS, CATEGORY_META, PURPOSE_META } = require('../data/mallProducts');
+const { PRODUCTS, CATEGORY_META, PURPOSE_META, PHOTOGRAPHED } = require('../data/mallProducts');
 
 // Long text is written as plain typing with four rules, not as HTML or JSON.
 // The site parses it back into headings, paragraphs, bullets and callouts.
@@ -751,9 +751,9 @@ const LISTS = {
       zodiac:   (p.zodiac || []).join(', '),
       tags:     (p.tags || []).join(', '),
       benefits: (p.benefits || []).join('\n'),
-      // Drawn artwork, one per product, in frontend/public/products.
-      // Replaceable from the admin the moment a real photograph exists.
-      image: `/products/${p.id}.svg`,
+      // A photograph where one exists, otherwise the drawn artwork. Both live
+      // in frontend/public/products; either is replaceable from the admin.
+      image: `/products/${p.id}.${PHOTOGRAPHED.includes(p.id) ? 'png' : 'svg'}`,
     })),
   },
 
