@@ -93,9 +93,16 @@ export default function AstrologerDetailPage() {
             <div className="flex-1">
               <h1 className="font-serif text-3xl text-gold-400 mb-1">{astrologer.display_name}</h1>
               <div className="flex flex-wrap items-center gap-4 text-sm text-gray-200 mb-3">
-                <span className="flex items-center gap-1"><Star className="w-4 h-4 fill-gold-400 text-gold-400" />{parseFloat(astrologer.rating).toFixed(1)} ({astrologer.total_reviews?.toLocaleString()} reviews)</span>
+                {/* Rating and consultation count appear once they have been
+                    earned. Experience and languages are stated by the
+                    astrologer and stand on their own. */}
+                {astrologer.total_reviews > 0 && (
+                  <span className="flex items-center gap-1"><Star className="w-4 h-4 fill-gold-400 text-gold-400" />{parseFloat(astrologer.rating).toFixed(1)} ({astrologer.total_reviews.toLocaleString()} reviews)</span>
+                )}
                 <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{astrologer.experience_years} years experience</span>
-                <span className="flex items-center gap-1"><Award className="w-4 h-4" />{astrologer.completed_orders?.toLocaleString()} consultations</span>
+                {astrologer.completed_orders > 0 && (
+                  <span className="flex items-center gap-1"><Award className="w-4 h-4" />{astrologer.completed_orders.toLocaleString()} consultations</span>
+                )}
                 <span className="flex items-center gap-1"><Globe className="w-4 h-4" />{(astrologer.languages || []).join(', ')}</span>
               </div>
 

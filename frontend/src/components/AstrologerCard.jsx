@@ -61,17 +61,21 @@ export default function AstrologerCard({ astrologer }) {
               <BadgeCheck className="w-3.5 h-3.5 text-gold-400 flex-shrink-0" />
             )}
           </div>
-          <div className="flex items-center gap-1 mt-0.5">
-            <Star className="w-3 h-3 fill-gold-400 text-gold-400" />
-            <span className="text-gold-400 text-xs font-medium">{parseFloat(astrologer.rating).toFixed(1)}</span>
-            {astrologer.total_reviews > 0 && (
+          {/* A rating needs reviews behind it. Every astrologer starts on the
+              model's default of 5.0, so showing the star before anyone has
+              rated them advertises a perfect score nobody gave. The count
+              below already says "New" until there are consultations. */}
+          {astrologer.total_reviews > 0 && (
+            <div className="flex items-center gap-1 mt-0.5">
+              <Star className="w-3 h-3 fill-gold-400 text-gold-400" />
+              <span className="text-gold-400 text-xs font-medium">{parseFloat(astrologer.rating).toFixed(1)}</span>
               <span className="text-gray-400 text-xs">
                 ({astrologer.total_reviews >= 1000
                   ? `${(astrologer.total_reviews / 1000).toFixed(1)}k`
                   : astrologer.total_reviews})
               </span>
-            )}
-          </div>
+            </div>
+          )}
           <p className="text-gray-400 text-xs mt-0.5">
             {astrologer.experience_years} yrs exp •{' '}
             {astrologer.completed_orders >= 1000

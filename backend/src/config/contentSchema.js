@@ -804,7 +804,10 @@ const LISTS = {
       { key: 'originalPrice', label: 'Was (₹)', type: 'number', default: 0, min: 0,
         help: 'Shown struck through next to the price. Set it to 0 to show no discount.' },
       { key: 'isInStock',     label: 'In stock', type: 'boolean', default: true },
-      { key: 'isBestseller',  label: 'Bestseller badge', type: 'boolean', default: false },
+      { key: 'isBestseller',  label: 'Bestseller badge', type: 'boolean', default: false,
+        help: 'Switch on only for something that genuinely sells well. Ten ' +
+              'products shipped with this on before anything had ever been ' +
+              'sold, which is a claim about sales that had not happened.' },
       { key: 'isFeatured',    label: 'Show on the shop front page', type: 'boolean', default: false },
 
       { key: 'shortDesc',   label: 'One-line description', type: 'textarea',
