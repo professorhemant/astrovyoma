@@ -657,6 +657,10 @@ const LISTS = {
       { icon: '🌟', value: 'Actionable', label: 'Life Remedies' },
       { icon: '🔭', value: 'Real-Time',  label: 'Chart Generation' },
       { icon: '🌟', value: 'Daily',      label: 'Horoscope Updates' },
+      // These two survived the cull of invented figures: one is a claim about
+      // the tradition, the other about how we hold data. Neither counts users.
+      { icon: '📜', value: '5,000+',     label: 'Years of Vedic Wisdom' },
+      { icon: '🔐', value: '100%',       label: 'Confidential & Secure' },
     ],
   },
 

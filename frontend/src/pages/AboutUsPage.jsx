@@ -72,10 +72,12 @@ function Divider() {
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
 const STATS = [
-  { value: 'Detailed',   label: 'Kundli Analysis',    icon: '🔭' },
-  { value: 'Actionable', label: 'Life Remedies',      icon: '🌟' },
-  { value: 'Real-Time',  label: 'Chart Generation',   icon: '🔭' },
-  { value: 'Daily',      label: 'Horoscope Updates',  icon: '🌟' },
+  { value: 'Detailed',   label: 'Kundli Analysis',      icon: '🔭' },
+  { value: 'Actionable', label: 'Life Remedies',        icon: '🌟' },
+  { value: 'Real-Time',  label: 'Chart Generation',     icon: '🔭' },
+  { value: 'Daily',      label: 'Horoscope Updates',    icon: '🌟' },
+  { value: '5,000+',     label: 'Years of Vedic Wisdom', icon: '📜' },
+  { value: '100%',       label: 'Confidential & Secure', icon: '🔐' },
 ];
 
 // ── Pillars ───────────────────────────────────────────────────────────────────
@@ -207,7 +209,9 @@ export default function AboutUsPage() {
       {/* ── Stats bar ───────────────────────────────────────────────────── */}
       <section className="relative z-10 py-10 px-4 md:px-8"
         style={{ background: 'linear-gradient(90deg, rgba(201,168,76,0.04) 0%, rgba(201,168,76,0.10) 50%, rgba(201,168,76,0.04) 100%)', borderTop: '1px solid rgba(201,168,76,0.12)', borderBottom: '1px solid rgba(201,168,76,0.12)' }}>
-        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
+        {/* Three across, not four: there are six highlights, and four columns
+            leaves a stranded pair on the second row. */}
+        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-6">
           {stats.map((s, i) => (
             <motion.div key={s.id || s.label} {...fadeUp(i * 0.08)} className="text-center">
               <div className="text-3xl mb-1">{s.icon}</div>
