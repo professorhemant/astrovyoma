@@ -47,12 +47,20 @@ async function startConsultation(req, res) {
       });
     }
 
-    // And refuse when the wallet cannot cover the first minute, rather than
-    // discovering it at the end — endConsultation completes the session either
-    // way, so an unfunded call is work the astrologer never gets paid for.
+    // Free minutes are a first-time trial with this astrologer, not a standing
+    // allowance — otherwise "2 Min Free" is an unlimited supply of free
+    // two-minute calls. One prior consultation with them uses it up.
     const perMin = parseFloat(astrologer.price_per_min) || 0;
     const freeMinutes = Number(astrologer.free_minutes) || 0;
-    if (freeMinutes < 1 && perMin > 0) {
+    const priorCount = await Consultation.count({
+      where: { user_id: req.user.id, astrologer_id },
+    });
+    const trialApplies = freeMinutes > 0 && priorCount === 0;
+
+    // And refuse when the wallet cannot cover the first billable minute, rather
+    // than discovering it at the end — endConsultation completes the session
+    // either way, so an unfunded call is work the astrologer never gets paid for.
+    if (!trialApplies && perMin > 0) {
       const seeker = await User.findByPk(req.user.id);
       if (parseFloat(seeker?.wallet_balance || 0) < perMin) {
         return res.status(402).json({
@@ -73,11 +81,15 @@ async function startConsultation(req, res) {
       concern_category: concern_category || 'general',
       status: 'active',
       agora_channel: channelName,
-      started_at: new Date()
+      started_at: new Date(),
+      // Recorded on the row so the trial is decided once, at the start, and the
+      // seeker cannot be billed differently from what they were told.
+      is_free_trial: trialApplies,
     });
 
     res.status(201).json({
       consultation,
+      free_minutes: trialApplies ? freeMinutes : 0,
       agora: { token, appId, channel: channelName }
     });
   } catch (err) {
@@ -106,7 +118,13 @@ async function endConsultation(req, res) {
 
     const astrologer = await Astrologer.findByPk(consultation.astrologer_id);
     const costPerMin = astrologer ? parseFloat(astrologer.price_per_min) : 30;
-    const totalCost = durationMins * costPerMin;
+
+    // A trial discounts its free minutes off the bill; it does not make the
+    // whole session free. is_free_trial used to skip the debit outright, so an
+    // astrologer offering "2 Min Free" worked an hour for nothing.
+    const freeMins = consultation.is_free_trial ? (Number(astrologer?.free_minutes) || 0) : 0;
+    const billableMins = Math.max(0, durationMins - freeMins);
+    const totalCost = billableMins * costPerMin;
 
     // The debit's result used to be discarded, so a seeker whose wallet had run
     // dry ended the consultation having paid nothing and nobody was any the
@@ -114,7 +132,7 @@ async function endConsultation(req, res) {
     // helps no one — but the astrologer is credited only for money that
     // actually moved.
     let paid = false;
-    if (!consultation.is_free_trial && totalCost > 0) {
+    if (totalCost > 0) {
       const debit = await deductPerMinute(req.user.id, consultation.astrologer_id, totalCost);
       paid = debit?.success === true;
       if (!paid) {
@@ -136,7 +154,7 @@ async function endConsultation(req, res) {
           astrologerId:   consultation.astrologer_id,
           userId:         req.user.id,
           grossAmount:    totalCost,
-          durationMins,
+          durationMins:   billableMins,
         });
       } catch (err) {
         // The seeker has already been debited. Failing their request now would
@@ -146,7 +164,14 @@ async function endConsultation(req, res) {
       }
     }
 
-    res.json({ consultation, duration_mins: durationMins, total_cost: totalCost, paid });
+    res.json({
+      consultation,
+      duration_mins: durationMins,
+      free_mins_applied: freeMins,
+      billable_mins: billableMins,
+      total_cost: totalCost,
+      paid,
+    });
   } catch (err) {
     console.error('endConsultation error:', err);
     res.status(500).json({ error: 'Failed to end consultation' });
