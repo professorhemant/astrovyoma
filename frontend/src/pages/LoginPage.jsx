@@ -89,6 +89,25 @@ export default function LoginPage() {
           New to AstroVyoma?{' '}
           <Link to="/register" className="text-gold-400 hover:text-gold-300">Create free account</Link>
         </p>
+
+        {/* This form signs you in as a seeker. An astrologer who uses it gets a
+            customer account with a wallet and stays offline to everyone — which
+            is exactly how a caller ended up waiting in an empty channel. Say so
+            here, where the wrong turn is being taken. */}
+        <div className="mt-6 pt-5 border-t border-gold-600/15 text-center">
+          <p className="text-gray-400 text-xs">
+            Are you an astrologer on AstroVyoma?
+          </p>
+          <Link
+            to="/pandit-portal"
+            className="inline-flex items-center gap-1.5 mt-1.5 text-gold-400 hover:text-gold-300 text-sm"
+          >
+            Sign in to the Pandit Portal →
+          </Link>
+          <p className="text-gray-500 text-[11px] mt-1">
+            Your phone number and 4-digit PIN. That is where you go online to take calls.
+          </p>
+        </div>
       </motion.div>
     </div>
   );

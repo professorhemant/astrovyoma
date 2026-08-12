@@ -612,6 +612,7 @@ export default function HomePage() {
                     { label: 'Blog',                 to: '/blog' },
                     { label: 'About Us',             to: '/about' },
                     { label: 'Join As Astrologer',   to: '/join-as-astrologer' },
+                    { label: 'Astrologer Login',     to: '/pandit-portal' },
                   ]).map((l, i) => (
                     <li key={l.id || i} data-edit-item={l.row_id && `footer_links:${l.row_id}`}><Link to={l.to} className="hover:text-gold-400 transition-colors">{l.label}</Link></li>
                   ))}

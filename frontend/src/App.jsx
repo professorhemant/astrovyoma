@@ -7,6 +7,7 @@ import { CartProvider } from './context/CartContext';
 import CosmicBackground from './components/CosmicBackground';
 import Navbar from './components/Navbar';
 import FloatingAIButton from './components/FloatingAIButton';
+import AstrologerPortalNotice from './components/AstrologerPortalNotice';
 
 import HomePage from './pages/HomePage';
 import KundaliPage from './pages/KundaliPage';
@@ -94,6 +95,8 @@ function AppLayout() {
       {/* Persistent background — never unmounts on navigation */}
       <CosmicBackground />
       {!isConsultation && !isAdmin && <Navbar />}
+      {/* Only renders when the signed-in seeker shares a phone with an astrologer. */}
+      {!isConsultation && !isAdmin && <AstrologerPortalNotice />}
       {!isAdmin && <FloatingAIButton />}
 
       <AnimatePresence mode="wait" initial={false}>

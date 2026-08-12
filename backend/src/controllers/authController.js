@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { User, Transaction, sequelize } = require('../models');
+const { User, Transaction, Astrologer, sequelize } = require('../models');
 const { generateOtp, storeOtp, verifyOtp, secondsUntilResendAllowed, sendPasswordResetEmail } = require('../services/otpService');
 
 const MIN_PASSWORD_LENGTH = 8;
@@ -105,8 +105,30 @@ async function getMe(req, res) {
     const user = await User.findByPk(req.user.id, {
       attributes: { exclude: ['password_hash'] }
     });
-    res.json(user);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    // An astrologer signing in the ordinary way lands here — a seeker account
+    // with a wallet — and nothing tells her she is on the wrong side of the
+    // site. Seema Sharma did exactly that on 2026-08-12: signed in, saw her own
+    // name in the header, and stayed offline to customers, so a seeker called
+    // her and sat in an empty channel. Match on phone and let the front end say
+    // so. Last ten digits, because the two records are typed at different times
+    // by different people and one carries a +91.
+    let astrologerProfile = null;
+    const digits = String(user.phone || '').replace(/\D/g, '').slice(-10);
+    if (digits.length === 10) {
+      const candidates = await Astrologer.findAll({ attributes: ['id', 'display_name', 'phone', 'is_online'] });
+      const match = candidates.find(a =>
+        String(a.phone || '').replace(/\D/g, '').slice(-10) === digits
+      );
+      if (match) {
+        astrologerProfile = { display_name: match.display_name, is_online: match.is_online };
+      }
+    }
+
+    res.json({ ...user.toJSON(), astrologer_profile: astrologerProfile });
   } catch (err) {
+    console.error('getMe error:', err);
     res.status(500).json({ error: 'Failed to get user' });
   }
 }

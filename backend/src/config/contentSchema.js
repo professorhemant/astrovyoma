@@ -427,6 +427,7 @@ const LISTS = {
       { label: 'Blog',                 to: '/blog' },
       { label: 'About Us',             to: '/about' },
       { label: 'Join As Astrologer',   to: '/join-as-astrologer' },
+      { label: 'Astrologer Login',     to: '/pandit-portal' },
     ],
   },
 
