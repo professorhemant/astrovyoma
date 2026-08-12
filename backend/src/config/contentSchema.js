@@ -326,8 +326,6 @@ const LISTS = {
       { key: 'spaceBelow', label: 'Space below (px)', type: 'number', default: 0, min: -80, max: 200 },
     ],
     seed: [
-      { key: 'ai',        eyebrow: '', heading: 'Talk to AstroVyoma AI ✦',
-        subheading: 'Powered by Vedic wisdom + AI — Your birth chart as context' },
       { key: 'purpose',   eyebrow: 'किस चीज़ के लिए बने हो?', heading: 'What Were You Born For?',
         subheading: "Your birth chart reveals your soul's purpose, personality, and path" },
       { key: 'howitworks', eyebrow: '', heading: 'How It Works', subheading: '' },
