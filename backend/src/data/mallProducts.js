@@ -484,7 +484,7 @@ const PRODUCTS = [
 // ── Controller functions ────────────────────────────────────────────────────
 
 // Products for which a real photograph exists, in
-// frontend/public/products/<code>.png. Everything else uses the drawn artwork
+// frontend/public/products/<code>.webp. Everything else uses the drawn artwork
 // at <code>.svg. Both the schema (which decides the stored image path) and
 // tools/product-art.js (which knows not to bother drawing these) read this, so
 // the two cannot drift apart.

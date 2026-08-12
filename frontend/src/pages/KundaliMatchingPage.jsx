@@ -211,7 +211,7 @@ export default function KundaliMatchingPage() {
       {/* Hero Image */}
       <div className="relative w-full h-64 md:h-80 lg:h-96 overflow-hidden mt-16">
         <img
-          src="/kundali-hero.png"
+          src="/kundali-hero.webp"
           alt="Kundali Matching"
           className="w-full h-full object-cover object-center"
         />

@@ -835,7 +835,7 @@ const LISTS = {
       benefits: (p.benefits || []).join('\n'),
       // A photograph where one exists, otherwise the drawn artwork. Both live
       // in frontend/public/products; either is replaceable from the admin.
-      image: `/products/${p.id}.${PHOTOGRAPHED.includes(p.id) ? 'png' : 'svg'}`,
+      image: `/products/${p.id}.${PHOTOGRAPHED.includes(p.id) ? 'webp' : 'svg'}`,
     })),
   },
 

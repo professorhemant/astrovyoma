@@ -194,7 +194,7 @@ export default function NumerologyPage() {
 
       {/* Hero Image */}
       <div className="relative w-full h-64 md:h-80 lg:h-96 overflow-hidden mt-16">
-        <img src="/numerology-hero.png" alt="Numerology" className="w-full h-full object-cover object-center" />
+        <img src="/numerology-hero.webp" alt="Numerology" className="w-full h-full object-cover object-center" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-cosmic-950" />
       </div>
 

@@ -252,7 +252,7 @@ export default function TarotPage() {
 
       {/* Hero Image */}
       <div className="relative w-full h-64 md:h-80 lg:h-96 overflow-hidden mt-16">
-        <img src="/tarot-hero.png" alt="Tarot" className="w-full h-full object-cover object-center" />
+        <img src="/tarot-hero.webp" alt="Tarot" className="w-full h-full object-cover object-center" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0d0728]" />
       </div>
 

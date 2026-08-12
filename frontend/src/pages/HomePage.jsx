@@ -234,7 +234,7 @@ export default function HomePage() {
               would then float down behind the buttons. */}
           <div className="relative">
           <motion.img
-            src="/hero-banner.png"
+            src="/hero-banner.webp"
             alt="AstroVyoma — Unveil Your Destiny, Map Your Cosmic Journey"
             className={heroBannerClass}
             initial={{ opacity: 0, scale: 1.03 }}
@@ -269,7 +269,7 @@ export default function HomePage() {
             className="absolute flex flex-col items-center justify-center pointer-events-none top-[54%] md:top-[var(--mandala-top)]"
             style={{ ...mandalaPos, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
             <img
-              src="/zodiac-mandala.png"
+              src="/zodiac-mandala.webp"
               alt="Vedic Zodiac Mandala"
               className="w-24 md:w-56 lg:w-[var(--mandala-size)]"
               style={{

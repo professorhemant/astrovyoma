@@ -220,7 +220,7 @@ const REAL_ASTROLOGERS = [
   {
     display_name: 'Pt. Pramod Kumar Asopa',
     phone: '+919460307786',
-    photo_url: '/pandits/pramod-kumar-asopa.png',
+    photo_url: '/pandits/pramod-kumar-asopa.webp',
     bio: 'Pt. Pramod Kumar Asopa is a highly revered Vedic Pandit from Rajasthan with over 40 years of dedicated practice in Jyotish Shastra. At 64, his deep mastery of Sanskrit scriptures and traditional Vedic methods brings unparalleled clarity and accuracy to every consultation. He specializes in Kundali analysis, Vedic remedies, and sacred rituals, offering guidance rooted in the timeless wisdom of Sanatan Dharma.',
     specialties: ['Vedic Astrology', 'Kundali Reading', 'Vedic Remedies', 'Pooja & Rituals', 'Muhurta'],
     languages: ['Hindi', 'Sanskrit'],
