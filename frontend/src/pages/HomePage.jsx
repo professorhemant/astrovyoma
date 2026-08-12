@@ -267,10 +267,10 @@ export default function HomePage() {
           <HeroMarquee
             text={siteSettings?.heroMarqueeText ?? ''}
             left={num(siteSettings?.heroMarqueeLeft, 63)}
-            top={num(siteSettings?.heroMarqueeTop, 63)}
-            width={num(siteSettings?.heroMarqueeWidth, 52)}
+            top={num(siteSettings?.heroMarqueeTop, 59)}
+            width={num(siteSettings?.heroMarqueeWidth, 32)}
             speed={num(siteSettings?.heroMarqueeSpeed, 26)}
-            size={num(siteSettings?.heroMarqueeSize, 15)}
+            size={num(siteSettings?.heroMarqueeSize, 17)}
           />
           {/* zodiac mandala overlaid on banner — vertically centered, slightly left */}
           {/* top: the desktop offset is tuned for a ~693px hero; on a phone the

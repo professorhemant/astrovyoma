@@ -34,10 +34,10 @@ const FADE = 'linear-gradient(to right, transparent 0%, #000 26%, #000 88%, tran
 export default function HeroMarquee({
   text,
   left  = 63,   // % across the artwork — the palm
-  top   = 63,   // % down the artwork
-  width = 52,   // % of the artwork the text travels across before it fades
+  top   = 59,   // % down the artwork
+  width = 32,   // % of the artwork the text travels across before it fades
   speed = 26,   // seconds for one full pass
-  size  = 15,   // px
+  size  = 17,   // px
 }) {
   if (!text || !text.trim()) return null;
 
