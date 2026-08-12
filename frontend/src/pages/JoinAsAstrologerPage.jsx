@@ -93,10 +93,24 @@ export default function JoinAsAstrologerPage() {
         <div className="card-cosmic p-10 max-w-md w-full text-center border border-green-500/30">
           <div className="text-4xl mb-4">✦</div>
           <h2 className="font-serif text-2xl text-green-400 mb-3">Application Submitted!</h2>
-          <p className="text-gray-300 text-sm leading-relaxed mb-6">
+          <p className="text-gray-300 text-sm leading-relaxed mb-4">
             Thank you <span className="text-gold-400 font-medium">{form.name}</span>! We have received your application.
             Our team will review it and contact you at <span className="text-gold-400">{form.email}</span> within 3-5 business days.
           </p>
+          {/* Say now what arrives on approval, so the email is expected rather
+              than mistaken for spam — and so nobody hunts for a way in on the
+              ordinary login page, which only ever makes them a customer. */}
+          <div className="text-left bg-cosmic-900/60 border border-gold-600/15 rounded-xl p-4 mb-6">
+            <p className="text-gold-400 text-xs font-semibold mb-2">If you are approved</p>
+            <p className="text-gray-400 text-xs leading-relaxed">
+              You will get an email with a link to your <strong className="text-gray-300">Pandit Portal</strong>,
+              plus a 4-digit PIN. You sign in there with your mobile number and that PIN,
+              and switch yourself online — that is what puts you in front of seekers.
+              <br /><br />
+              It is a separate sign-in from the ordinary site login, which only ever
+              makes you a customer.
+            </p>
+          </div>
           <Link to="/astrologers" className="btn-gold px-6 py-2.5 text-sm inline-block">Browse Astrologers</Link>
         </div>
       </div>

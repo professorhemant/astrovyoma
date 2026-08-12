@@ -160,4 +160,63 @@ async function sendPasswordResetEmail(email, otp) {
   );
 }
 
-module.exports = { generateOtp, storeOtp, verifyOtp, secondsUntilResendAllowed, sendOtpEmail, sendPasswordResetEmail };
+// ── Astrologer approval ──────────────────────────────────────────────────────
+// The application form promises "our team will review it and contact you at
+// <email>", and until now nothing ever did. An approval minted a PIN, showed it
+// to the admin once, and left the astrologer with no address to log in at, no
+// login id and no PIN — so unless someone remembered to message them by hand,
+// an approved astrologer simply never appeared online.
+async function sendAstrologerApprovalEmail(email, { name, phone, pin, portalUrl }) {
+  const html = `
+      <div style="font-family:sans-serif;max-width:520px;margin:auto;background:#0d0728;color:#f0e6c0;padding:32px;border-radius:12px;">
+        <h2 style="color:#C9A84C;font-family:serif;margin-bottom:8px;">&#10022; AstroVyoma</h2>
+        <p style="color:#d4c48a;font-size:18px;margin-bottom:8px;">Namaste ${name}, your application is approved.</p>
+        <p style="color:#9e8a6a;font-size:14px;margin-bottom:24px;">
+          You now have an astrologer account. Seekers cannot reach you until you sign in
+          and switch yourself online, so please do that first.
+        </p>
+
+        <p style="color:#d4c48a;margin-bottom:8px;font-size:14px;"><strong>1.</strong> Open your Pandit Portal</p>
+        <p style="margin:0 0 20px;"><a href="${portalUrl}" style="color:#C9A84C;font-size:15px;">${portalUrl}</a></p>
+
+        <p style="color:#d4c48a;margin-bottom:8px;font-size:14px;"><strong>2.</strong> Sign in with these</p>
+        <table style="width:100%;background:#1a0a3a;border-radius:8px;padding:4px;margin-bottom:20px;">
+          <tr><td style="padding:12px 16px;color:#9e8a6a;font-size:13px;">Mobile number</td>
+              <td style="padding:12px 16px;color:#C9A84C;font-size:18px;font-weight:bold;text-align:right;">${phone}</td></tr>
+          <tr><td style="padding:12px 16px;color:#9e8a6a;font-size:13px;">4-digit PIN</td>
+              <td style="padding:12px 16px;color:#C9A84C;font-size:24px;font-weight:bold;letter-spacing:6px;text-align:right;">${pin}</td></tr>
+        </table>
+
+        <p style="color:#d4c48a;margin-bottom:8px;font-size:14px;"><strong>3.</strong> Switch the toggle to Online</p>
+        <p style="color:#9e8a6a;font-size:13px;margin-bottom:24px;">
+          That is what puts you in front of seekers. Go offline again whenever you like —
+          nobody is penalised for being unavailable.
+        </p>
+
+        <p style="color:#9e8a6a;font-size:12px;border-top:1px solid #2a1a4a;padding-top:16px;">
+          The Pandit Portal is not the same as the ordinary site login. Signing in on the
+          main site makes you a customer and will not put you online.
+          Keep this PIN private; ask us to reset it if it is ever seen by anyone else.
+        </p>
+      </div>
+    `;
+  await deliver(email, 'Your AstroVyoma astrologer account is ready', html, 'ASTRO-APPROVED', pin);
+}
+
+async function sendAstrologerRejectionEmail(email, { name, reason }) {
+  const html = `
+      <div style="font-family:sans-serif;max-width:520px;margin:auto;background:#0d0728;color:#f0e6c0;padding:32px;border-radius:12px;">
+        <h2 style="color:#C9A84C;font-family:serif;margin-bottom:8px;">&#10022; AstroVyoma</h2>
+        <p style="color:#d4c48a;font-size:16px;margin-bottom:16px;">Namaste ${name},</p>
+        <p style="color:#9e8a6a;font-size:14px;margin-bottom:16px;">
+          Thank you for applying to join AstroVyoma. We are not able to take your
+          application forward at this time.
+        </p>
+        ${reason ? `<p style="color:#d4c48a;font-size:14px;background:#1a0a3a;padding:16px;border-radius:8px;margin-bottom:16px;">${reason}</p>` : ''}
+        <p style="color:#9e8a6a;font-size:13px;">You are welcome to apply again in future.</p>
+      </div>
+    `;
+  await deliver(email, 'About your AstroVyoma application', html, 'ASTRO-REJECTED', '-');
+}
+
+module.exports = { generateOtp, storeOtp, verifyOtp, secondsUntilResendAllowed, sendOtpEmail, sendPasswordResetEmail, sendAstrologerApprovalEmail, sendAstrologerRejectionEmail };

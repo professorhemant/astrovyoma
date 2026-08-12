@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const { sendAstrologerApprovalEmail, sendAstrologerRejectionEmail } = require('../services/otpService');
 const { Op } = require('sequelize');
 const { AstrologerApplication, Astrologer } = require('../models');
 
@@ -88,7 +89,25 @@ async function approveApplication(req, res) {
     application.status = 'approved';
     await application.save();
 
-    res.json({ success: true, astrologer, pin });
+    // Tell the astrologer, since nothing else will. Failing to send must not
+    // fail the approval — the admin still has the PIN on screen and can pass it
+    // on — but it is reported back so they know to do that by hand.
+    let emailed = false;
+    let emailError = null;
+    try {
+      await sendAstrologerApprovalEmail(application.email, {
+        name: application.name,
+        phone: application.phone,
+        pin,
+        portalUrl: `${(process.env.FRONTEND_URL || '').split(',')[0].trim()}/pandit-portal`,
+      });
+      emailed = true;
+    } catch (err) {
+      emailError = err.message;
+      console.error('[astrologer] approval email failed for', application.email, err.message);
+    }
+
+    res.json({ success: true, astrologer, pin, emailed, email_error: emailError, email: application.email });
   } catch (err) {
     console.error('approveApplication error:', err);
     res.status(500).json({ error: 'Failed to approve application' });
@@ -105,7 +124,18 @@ async function rejectApplication(req, res) {
     application.rejection_reason = req.body.reason || null;
     await application.save();
 
-    res.json({ success: true });
+    let emailed = false;
+    try {
+      await sendAstrologerRejectionEmail(application.email, {
+        name: application.name,
+        reason: application.rejection_reason,
+      });
+      emailed = true;
+    } catch (err) {
+      console.error('[astrologer] rejection email failed for', application.email, err.message);
+    }
+
+    res.json({ success: true, emailed });
   } catch (err) {
     console.error('rejectApplication error:', err);
     res.status(500).json({ error: 'Failed to reject application' });

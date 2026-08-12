@@ -307,7 +307,7 @@ const EMPTY_ASTRO = { display_name: '', bio: '', phone: '', pin: '', price_per_m
 // response — nothing can retrieve it afterwards — so the dialog is modal, has
 // no dismiss-by-backdrop, and offers a copy button rather than asking the admin
 // to transcribe four digits correctly.
-function PinModal({ name, pin, onClose, approved }) {
+function PinModal({ name, pin, onClose, approved, emailed, email }) {
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -340,6 +340,21 @@ function PinModal({ name, pin, onClose, approved }) {
         <button onClick={copy} className="btn-outline-gold px-4 py-2 text-xs mb-4 w-full">
           {copied ? '✓ Copied' : 'Copy PIN'}
         </button>
+        {/* Whether the astrologer was actually told. Without this the admin
+            cannot tell a delivered email from a silent failure, and an approved
+            astrologer who never hears from anyone simply never comes online. */}
+        {emailed === true && (
+          <p className="text-green-300/90 text-xs mb-3 bg-green-900/20 border border-green-500/25 rounded-lg px-3 py-2">
+            Emailed to {email} with the portal link, their mobile number and this PIN.
+            Nothing more to do.
+          </p>
+        )}
+        {emailed === false && (
+          <p className="text-amber-300/90 text-xs mb-3 bg-amber-900/20 border border-amber-500/30 rounded-lg px-3 py-2">
+            The email did not send. Pass the PIN on yourself, along with the
+            portal address {'{site}'}/pandit-portal and their mobile number.
+          </p>
+        )}
         <p className="text-red-300/80 text-xs mb-4">
           This is the only time it is shown. It is stored hashed and cannot be
           looked up again — if it is lost you will have to issue another.
@@ -1061,7 +1076,12 @@ function ApplicationsTab({ onPendingChange }) {
   async function handleApprove(id) {
     try {
       const r = await astrologerApplications.approve(id);
-      setApprovedModal({ name: r.data.astrologer.display_name, pin: r.data.pin });
+      setApprovedModal({
+        name: r.data.astrologer.display_name,
+        pin: r.data.pin,
+        emailed: r.data.emailed,
+        email: r.data.email,
+      });
       load();
       onPendingChange?.();
     } catch (err) {
@@ -1225,6 +1245,8 @@ function ApplicationsTab({ onPendingChange }) {
           name={approvedModal.name}
           pin={approvedModal.pin}
           approved
+          emailed={approvedModal.emailed}
+          email={approvedModal.email}
           onClose={() => setApprovedModal(null)}
         />
       )}
