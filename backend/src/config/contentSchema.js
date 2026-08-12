@@ -331,7 +331,6 @@ const LISTS = {
       { key: 'purpose',   eyebrow: 'किस चीज़ के लिए बने हो?', heading: 'What Were You Born For?',
         subheading: "Your birth chart reveals your soul's purpose, personality, and path" },
       { key: 'howitworks', eyebrow: '', heading: 'How It Works', subheading: '' },
-      { key: 'action',    eyebrow: '', heading: 'See AstroVyoma in Action', subheading: '' },
       { key: 'connect',   eyebrow: '', heading: '✦ Connect with Your Cosmic Guide', subheading: '' },
       { key: 'about',     eyebrow: '', heading: 'Where Ancient Stars Meet Modern Lives', subheading: '' },
       { key: 'horoscope', eyebrow: '', heading: "Today's Cosmic Guidance", subheading: '' },

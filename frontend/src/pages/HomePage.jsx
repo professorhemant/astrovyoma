@@ -481,25 +481,9 @@ export default function HomePage() {
 
         <SectionDivider />
 
-        {/* ── Video ── */}
-        <section className="py-16 px-4 md:px-8 lg:px-16 relative z-10">
-          <div className="max-w-5xl mx-auto">
-            <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="text-center mb-10">
-              <p className="text-gold-600 text-xs uppercase tracking-widest mb-2">Experience</p>
-              <h2 className="font-serif text-4xl md:text-5xl text-gold-400 mb-3"
-                {...secProps('action')}>{sec('action', {heading:'See AstroVyoma in Action'}).heading}</h2>
-              <p className="text-gray-400 text-sm">Ancient wisdom, beautifully decoded</p>
-            </motion.div>
-            <motion.div initial={{opacity:0,scale:0.97}} whileInView={{opacity:1,scale:1}} viewport={{once:true}}
-              transition={{duration:0.6}}
-              className="relative rounded-2xl overflow-hidden border border-gold-600/20 shadow-[0_0_60px_rgba(201,168,76,0.12)]">
-              <video src="/astro.mp4" autoPlay muted loop playsInline controls className="w-full block" />
-              <div className="absolute inset-0 pointer-events-none rounded-2xl ring-1 ring-inset ring-gold-600/10" />
-            </motion.div>
-          </div>
-        </section>
-
-        <SectionDivider />
+        {/* The video section that sat here moved to components/VideoShowcase.jsx —
+            6 MB every visitor paid for before asking. Drop it on any page with
+            <VideoShowcase />. */}
 
         {/* ── Live Astrologers ── */}
         <section className="py-16 px-4 md:px-8 lg:px-16 relative z-10">
