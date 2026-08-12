@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, PhoneOff, Mic, MicOff, Video, VideoOff, Loader } from 'lucide-react';
 import axios from 'axios';
+import { describeCallError } from '../utils/callErrors';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -134,12 +135,10 @@ export default function PanditCallPanel({ token, isOnline, displayName }) {
       setCall({ id: c.id, mode: data.mode, seeker: data.seeker_name });
       setIncoming([]);
     } catch (err) {
-      const name = String(err?.name || '');
-      if (/NotAllowedError|NotFoundError|NotReadableError|PermissionDenied/i.test(name)) {
-        setError('Your microphone is blocked. Allow it in the browser, then answer again.');
-      } else {
-        setError(err?.response?.data?.error || 'Could not join the call.');
-      }
+      // Logged as well as shown: the message on screen is for the astrologer,
+      // this is for whoever has to work out why it happened.
+      console.error('[pandit call] join failed', { code: err?.code, name: err?.name, message: err?.message }, err);
+      setError(describeCallError(err, { video: c.mode === 'video' }));
       await teardown();
     } finally {
       setJoining(false);

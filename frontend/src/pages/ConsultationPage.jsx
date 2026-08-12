@@ -6,6 +6,7 @@ import { Send, Mic, MicOff, Video, VideoOff, PhoneOff, Clock, Wallet, Star } fro
 import ChatMessage from '../components/ChatMessage';
 import { consultations as consultationsApi, reviews as reviewsApi, markConsultationConnected, getConsultationStatus } from '../api';
 import { useAuth } from '../context/AuthContext';
+import { describeCallError } from '../utils/callErrors';
 
 // ASTROLOGER_REPLIES lived here — eight canned lines served as if the
 // astrologer had written them. Gone with the chat panel.
@@ -180,18 +181,17 @@ export default function ConsultationPage() {
       // failure sent the seeker off checking their internet. Name it correctly,
       // and do not say "demo mode" — there is no such thing as a demo on a call
       // somebody is paying for.
-      const name = String(err?.name || '');
-      const micProblem = /NotAllowedError|NotFoundError|NotReadableError|PermissionDenied/i.test(name);
+      // Agora throws its own exception type carrying a `code`, not the DOM's
+      // NotAllowedError, so matching on name alone missed a plainly blocked
+      // microphone and reported it as a connection fault.
+      const signal = [err?.code, err?.name, err?.message].filter(Boolean).join(' ');
+      const micProblem = /PERMISSION_DENIED|NotAllowedError|SecurityError|NOT_READABLE|NotReadableError|DEVICE_NOT_FOUND|NotFoundError/i.test(signal);
       if (micProblem) {
         setFailure('mic');
-        toast.error(
-          mode === 'video'
-            ? 'AstroVyoma needs your camera and microphone. Allow them in your browser, then try again.'
-            : 'AstroVyoma needs your microphone. Allow it in your browser, then try again.'
-        );
+        toast.error(describeCallError(err, { video: mode === 'video' }));
       } else {
         setFailure('connect');
-        toast.error('Could not connect the call. You have not been charged.');
+        toast.error(describeCallError(err, { video: mode === 'video' }) + ' You have not been charged.');
         startDemoMedia();
       }
     }
