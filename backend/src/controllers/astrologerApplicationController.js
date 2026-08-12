@@ -112,4 +112,27 @@ async function rejectApplication(req, res) {
   }
 }
 
-module.exports = { submitApplication, getApplications, approveApplication, rejectApplication };
+// Removes the application form itself, for clearing out test entries and
+// duplicates. It does NOT touch an astrologer created from it: approve() builds
+// a standalone Astrologer row with no reference back here, so deleting an
+// approved application removes the paperwork and leaves the astrologer live on
+// the site. Removing them is a separate job on the Astrologers screen — which is
+// the safer way round, since the alternative is tidying the admin and silently
+// taking somebody off the site.
+async function deleteApplication(req, res) {
+  try {
+    const { id } = req.params;
+    const application = await AstrologerApplication.findByPk(id);
+    if (!application) return res.status(404).json({ error: 'Application not found' });
+
+    const wasApproved = application.status === 'approved';
+    await application.destroy();
+
+    res.json({ success: true, was_approved: wasApproved });
+  } catch (err) {
+    console.error('deleteApplication error:', err);
+    res.status(500).json({ error: 'Failed to delete application' });
+  }
+}
+
+module.exports = { submitApplication, getApplications, approveApplication, rejectApplication, deleteApplication };

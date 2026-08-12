@@ -91,6 +91,7 @@ router.post('/astrologer/apply', astrologerApplicationController.submitApplicati
 router.get('/admin/applications', auth, adminAuth, astrologerApplicationController.getApplications);
 router.post('/admin/applications/:id/approve', auth, adminAuth, astrologerApplicationController.approveApplication);
 router.post('/admin/applications/:id/reject', auth, adminAuth, astrologerApplicationController.rejectApplication);
+router.delete('/admin/applications/:id', auth, adminAuth, astrologerApplicationController.deleteApplication);
 
 // Auth routes
 router.post('/auth/register', authController.register);

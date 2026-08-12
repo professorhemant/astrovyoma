@@ -257,6 +257,7 @@ export const astrologerApplications = {
   getAll: (params) => api.get('/admin/applications', { params }),
   approve: (id) => api.post(`/admin/applications/${id}/approve`),
   reject: (id, data) => api.post(`/admin/applications/${id}/reject`, data),
+  remove: (id) => api.delete(`/admin/applications/${id}`),
 };
 
 export default api;

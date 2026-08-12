@@ -1046,6 +1046,7 @@ function ApplicationsTab({ onPendingChange }) {
   const [approvedModal, setApprovedModal] = useState(null);
   const [rejectingId, setRejectingId] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
+  const [deletingId, setDeletingId] = useState(null);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -1078,6 +1079,23 @@ function ApplicationsTab({ onPendingChange }) {
       onPendingChange?.();
     } catch {
       toast.error('Failed to reject');
+    }
+  }
+
+  // Deletes the application form only. An astrologer created by approving it is
+  // a separate record and stays on the site — remove them from the Astrologers
+  // screen if that is what you want. There is no undo, hence the confirm step.
+  async function handleDelete(id) {
+    try {
+      const r = await astrologerApplications.remove(id);
+      toast.success(r.data.was_approved
+        ? 'Application deleted. The astrologer it created is still on the site — remove them under Astrologers.'
+        : 'Application deleted');
+      setDeletingId(null);
+      load();
+      onPendingChange?.();
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to delete');
     }
   }
 
@@ -1136,6 +1154,7 @@ function ApplicationsTab({ onPendingChange }) {
                   <td className="py-2 pr-3 text-gray-500 text-xs">{new Date(a.created_at).toLocaleDateString('en-IN')}</td>
                   <td className="py-2 pr-3"><span className={statusBadge(a.status)}>{a.status}</span></td>
                   <td className="py-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                     {a.status === 'pending' && (
                       <div className="flex items-center gap-2">
                         <button onClick={() => handleApprove(a.id)}
@@ -1165,6 +1184,28 @@ function ApplicationsTab({ onPendingChange }) {
                     {a.status === 'rejected' && a.rejection_reason && (
                       <span className="text-gray-500 text-xs italic">{a.rejection_reason}</span>
                     )}
+
+                    {/* Delete is offered on every row, whatever the status —
+                        clearing out test entries is the main reason to want it,
+                        and those are usually already approved. */}
+                    {deletingId === a.id ? (
+                      <span className="flex items-center gap-1.5">
+                        <span className="text-gray-400 text-xs">Delete this application?</span>
+                        <button onClick={() => handleDelete(a.id)}
+                          className="px-2 py-1 rounded text-xs bg-red-900/70 text-red-200 hover:bg-red-900 transition-colors">
+                          Delete
+                        </button>
+                        <button onClick={() => setDeletingId(null)}
+                          className="text-gray-500 hover:text-gray-300"><X className="w-3 h-3" /></button>
+                      </span>
+                    ) : (
+                      <button onClick={() => setDeletingId(a.id)}
+                        title="Remove this application. An astrologer already created from it stays on the site."
+                        className="px-2 py-1 rounded text-xs text-gray-500 hover:text-red-300 hover:bg-red-900/30 transition-colors">
+                        Delete
+                      </button>
+                    )}
+                    </div>
                   </td>
                 </tr>
               ))}
