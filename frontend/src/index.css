@@ -25,6 +25,40 @@
   }
 }
 
+@layer components {
+  /* These live in the components layer, not utilities, on purpose. In the
+     utilities layer this class tied with Tailwind's own padding utilities and
+     won on source order, so `input-cosmic pl-10` still rendered 16px of left
+     padding and the icon sat on top of the placeholder — "Mobile Number" read
+     as "obile Number". Components lose to utilities, which is the whole point
+     of the layer. */
+  .input-cosmic {
+    background: rgba(8, 5, 30, 0.75);
+    border: 1px solid rgba(201, 168, 76, 0.22);
+    border-radius: 0.75rem;
+    padding: 0.6rem 1rem;
+    color: #e5e7eb;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-size: 0.875rem;
+  }
+
+  .input-cosmic:focus {
+    border-color: rgba(201, 168, 76, 0.55);
+    box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.1);
+  }
+
+  .input-cosmic::placeholder {
+    color: rgba(156, 163, 175, 0.45);
+  }
+
+  .input-cosmic option {
+    background: #0d0a2e;
+    color: #e5e7eb;
+  }
+}
+
 @layer utilities {
   .text-glow-gold {
     text-shadow: 0 0 20px rgba(201, 168, 76, 0.7), 0 0 40px rgba(201, 168, 76, 0.3);
@@ -74,32 +108,6 @@
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Ccircle cx='12' cy='18' r='0.7' fill='rgba(255,255,255,0.35)'/%3E%3Ccircle cx='55' cy='7' r='0.5' fill='rgba(255,255,255,0.25)'/%3E%3Ccircle cx='90' cy='35' r='0.8' fill='rgba(255,255,255,0.3)'/%3E%3Ccircle cx='140' cy='12' r='0.6' fill='rgba(255,255,255,0.2)'/%3E%3Ccircle cx='180' cy='55' r='0.5' fill='rgba(255,255,255,0.28)'/%3E%3Ccircle cx='30' cy='80' r='0.7' fill='rgba(255,255,255,0.22)'/%3E%3Ccircle cx='75' cy='110' r='0.5' fill='rgba(255,255,255,0.3)'/%3E%3Ccircle cx='120' cy='90' r='0.9' fill='rgba(255,255,255,0.18)'/%3E%3Ccircle cx='165' cy='130' r='0.6' fill='rgba(255,255,255,0.25)'/%3E%3Ccircle cx='8' cy='155' r='0.5' fill='rgba(255,255,255,0.3)'/%3E%3Ccircle cx='50' cy='180' r='0.7' fill='rgba(255,255,255,0.2)'/%3E%3Ccircle cx='100' cy='170' r='0.5' fill='rgba(255,255,255,0.28)'/%3E%3Ccircle cx='150' cy='190' r='0.6' fill='rgba(255,255,255,0.22)'/%3E%3Ccircle cx='190' cy='160' r='0.8' fill='rgba(255,255,255,0.18)'/%3E%3Ccircle cx='170' cy='80' r='0.5' fill='rgba(255,255,255,0.32)'/%3E%3Ccircle cx='35' cy='140' r='0.4' fill='rgba(201,168,76,0.2)'/%3E%3Ccircle cx='110' cy='50' r='0.4' fill='rgba(201,168,76,0.15)'/%3E%3Ccircle cx='185' cy='20' r='0.4' fill='rgba(201,168,76,0.18)'/%3E%3C/svg%3E");
     background-repeat: repeat;
     background-size: auto, auto, auto, 200px 200px;
-  }
-
-  .input-cosmic {
-    background: rgba(8, 5, 30, 0.75);
-    border: 1px solid rgba(201, 168, 76, 0.22);
-    border-radius: 0.75rem;
-    padding: 0.6rem 1rem;
-    color: #e5e7eb;
-    width: 100%;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    font-size: 0.875rem;
-  }
-
-  .input-cosmic:focus {
-    border-color: rgba(201, 168, 76, 0.55);
-    box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.1);
-  }
-
-  .input-cosmic::placeholder {
-    color: rgba(156, 163, 175, 0.45);
-  }
-
-  .input-cosmic option {
-    background: #0d0a2e;
-    color: #e5e7eb;
   }
 
   .section-divider-gold {

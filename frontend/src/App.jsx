@@ -85,6 +85,11 @@ function AppLayout() {
   const location = useLocation();
   const isConsultation = location.pathname.startsWith('/consult/');
   const isAdmin = location.pathname.startsWith('/admin');
+  // The Pandit Portal is an astrologer's workplace, not a shop. Carrying the
+  // customer navbar there put Kundali, Horoscope, Shop, a cart and a wallet
+  // balance across the top of a staff login — and the "go to the Pandit Portal"
+  // banner on the Pandit Portal.
+  const isPortal = location.pathname.startsWith('/pandit-portal');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -94,10 +99,10 @@ function AppLayout() {
     <>
       {/* Persistent background — never unmounts on navigation */}
       <CosmicBackground />
-      {!isConsultation && !isAdmin && <Navbar />}
+      {!isConsultation && !isAdmin && !isPortal && <Navbar />}
       {/* Only renders when the signed-in seeker shares a phone with an astrologer. */}
-      {!isConsultation && !isAdmin && <AstrologerPortalNotice />}
-      {!isAdmin && <FloatingAIButton />}
+      {!isConsultation && !isAdmin && !isPortal && <AstrologerPortalNotice />}
+      {!isAdmin && !isPortal && <FloatingAIButton />}
 
       <AnimatePresence mode="wait" initial={false}>
         <motion.div

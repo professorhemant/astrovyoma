@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, Lock, LogOut, Wifi, WifiOff, IndianRupee, Clock } from 'lucide-react';
 import axios from 'axios';
@@ -120,6 +121,18 @@ export default function PanditPortalPage() {
               {loading ? 'Logging in…' : 'Login'}
             </button>
           </form>
+
+          {/* Says which door this is, since an astrologer arriving here has
+              often just tried the customer login — and gives a way back out,
+              now that the site navbar is not carried onto this page. */}
+          <p className="text-gray-500 text-[11px] text-center mt-6 leading-relaxed">
+            For astrologers on AstroVyoma. Sign in with the mobile number and
+            4-digit PIN we emailed you.
+            <br />
+            <Link to="/" className="text-gold-600 hover:text-gold-400 transition-colors">
+              ← Back to AstroVyoma
+            </Link>
+          </p>
         </motion.div>
       </div>
     );
