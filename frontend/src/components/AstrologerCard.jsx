@@ -37,7 +37,7 @@ export default function AstrologerCard({ astrologer }) {
           <div className={`w-16 h-16 rounded-full overflow-hidden border-2 transition-all ${astrologer.is_verified ? 'border-gold-400/70' : 'border-gold-600/40 group-hover:border-gold-400/70'}`}
             style={astrologer.is_verified ? { boxShadow: '0 0 12px rgba(201,168,76,0.35)' } : {}}>
             <img
-              src={astrologer.photo_url}
+              src={astrologer.photo_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(astrologer.display_name)}`}
               alt={astrologer.display_name}
               className="w-full h-full object-cover"
               onError={e => { e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${astrologer.display_name}`; }}

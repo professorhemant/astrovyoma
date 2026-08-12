@@ -15,6 +15,20 @@ export default function AstrologerDetailPage() {
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
 
+  // Loads the profile. This went missing when the call buttons were being
+  // rewritten — a block edit took the fetch out along with the code it was
+  // meant to remove, so `loading` stayed true forever and the page sat on
+  // "Loading profile…". It builds clean either way, which is exactly why a
+  // green build proves nothing about behaviour.
+  useEffect(() => {
+    let alive = true;
+    astrologersApi.getById(id)
+      .then(res => { if (alive) setAstrologer(res.data); })
+      .catch(() => { if (alive) toast.error('Astrologer not found'); })
+      .finally(() => { if (alive) setLoading(false); });
+    return () => { alive = false; };
+  }, [id]);
+
   async function handleConsult(mode) {
     if (!user) { toast.error('Please login to start a consultation'); navigate('/login'); return; }
     // Stop before the call screen rather than after it. The server refuses too —
@@ -64,7 +78,7 @@ export default function AstrologerDetailPage() {
             <div className="flex flex-col items-center md:items-start gap-4">
               <div className="relative">
                 <img
-                  src={astrologer.photo_url}
+                  src={astrologer.photo_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(astrologer.display_name)}`}
                   alt={astrologer.display_name}
                   className="w-28 h-28 rounded-full border-4 border-gold-600/40"
                   onError={e => { e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${astrologer.display_name}`; }}
@@ -107,11 +121,9 @@ export default function AstrologerDetailPage() {
                 {user && <span>• Wallet: ₹{parseFloat(user.wallet_balance || 0).toFixed(0)}</span>}
               </div>
 
-              {/* Audio and video followed Chat off this page. All three needed an
-                  astrologer on the other end, and the Pandit Portal has no
-                  screen that can take any of them — a seeker who pressed Call
-                  waited on "Connecting…" until they gave up. Booking a time is
-                  the one thing here that can actually be honoured. */}
+              {/* Calls are live again now that the Pandit Portal rings and can
+                  be answered. Both are disabled while she is offline: an offline
+                  astrologer is not polling, so the call would ring nowhere. */}
               <div className="flex flex-wrap gap-3">
                 <button onClick={() => handleConsult('audio')} disabled={starting || !astrologer.is_online}
                   className="btn-gold px-6 py-3 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
