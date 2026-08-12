@@ -76,6 +76,9 @@ async function start() {
       isPostgres
         ? `ALTER TABLE astrologers ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT false`
         : `ALTER TABLE astrologers ADD COLUMN is_featured INTEGER DEFAULT 0`,
+      isPostgres
+        ? `ALTER TABLE consultations ADD COLUMN IF NOT EXISTS connected_at TIMESTAMP WITH TIME ZONE`
+        : `ALTER TABLE consultations ADD COLUMN connected_at DATETIME`,
     ];
     for (const sql of migrations) {
       try { await sequelize.query(sql); } catch (_) { /* column already exists */ }

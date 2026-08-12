@@ -31,6 +31,12 @@ export default function AstrologerDetailPage() {
 
   async function handleConsult(mode) {
     if (!user) { toast.error('Please login to start a consultation'); navigate('/login'); return; }
+    // Stop before the call screen rather than after it. The server refuses too
+    // — this is only so the seeker hears it sooner and in plainer words.
+    if (!astrologer.is_online) {
+      toast.error(`${astrologer.display_name} is offline right now. Schedule an appointment instead.`);
+      return;
+    }
     if (parseFloat(user.wallet_balance) < parseFloat(astrologer.price_per_min)) {
       toast.error('Insufficient wallet balance. Please recharge.');
       navigate('/wallet');

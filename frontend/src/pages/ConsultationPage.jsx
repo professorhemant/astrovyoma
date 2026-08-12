@@ -4,19 +4,11 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { Send, Mic, MicOff, Video, VideoOff, PhoneOff, Clock, Wallet, Star } from 'lucide-react';
 import ChatMessage from '../components/ChatMessage';
-import { consultations as consultationsApi, reviews as reviewsApi } from '../api';
+import { consultations as consultationsApi, reviews as reviewsApi, markConsultationConnected } from '../api';
 import { useAuth } from '../context/AuthContext';
 
-const ASTROLOGER_REPLIES = [
-  "I can see this clearly in your chart. The planetary configuration at your birth strongly suggests a period of transformation ahead.",
-  "Your question touches a deep area of your chart. Saturn's position indicates discipline is the key to unlocking this area of your life.",
-  "The Nakshatra energy you carry gives me insight here. Your current Dasha period is deeply relevant — the cosmos is speaking to you.",
-  "Jupiter's transit over your natal Moon brings expansion and opportunity. This is a favorable time for the matter you've asked about.",
-  "The Lagna lord's placement shows clearly that your inner strength is your greatest resource right now. Trust it.",
-  "I sense the weight of this question. Your Rahu-Ketu axis shows exactly where the karmic tension in this matter lies.",
-  "Looking at your 7th house and Venus placement, the answer your heart already knows is the correct one.",
-  "The cosmic timing here is significant. Your Mahadasha lord is giving you exactly the experience needed for your soul's growth.",
-];
+// ASTROLOGER_REPLIES lived here — eight canned lines served as if the
+// astrologer had written them. Gone with the chat panel.
 
 function AudioWaveform({ active }) {
   const bars = [4, 7, 5, 9, 6, 8, 4, 10, 7, 5, 9, 6];
@@ -50,18 +42,15 @@ export default function ConsultationPage() {
   const astrologerSpecialties = searchParams.get('specialties') ? JSON.parse(searchParams.get('specialties')) : [];
   const pricePerMin = parseFloat(searchParams.get('price') || '30');
 
-  const [messages, setMessages] = useState([{
-    id: 'welcome',
-    sender_type: 'astrologer',
-    content: `Namaste 🙏 I am ${astrologerName}. The cosmos has guided you here for a reason. Please share what is on your mind and heart — I am fully present with you.`,
-    created_at: new Date().toISOString()
-  }]);
-  const [input, setInput] = useState('');
-  const [sending, setSending] = useState(false);
+  // The transcript opened with a fabricated greeting signed in the astrologer's
+  // name, before he had said anything. It went with the chat panel.
+  const [messages, setMessages] = useState([]);
   const [elapsed, setElapsed] = useState(0);
   const [micMuted, setMicMuted] = useState(false);
   const [camOff, setCamOff] = useState(false);
   const [agoraConnected, setAgoraConnected] = useState(false);
+  // Whether the astrologer has actually joined. Drives the meter and the notice.
+  const [astrologerJoined, setAstrologerJoined] = useState(false);
   const [demoMediaActive, setDemoMediaActive] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
   const [rating, setRating] = useState(0);
@@ -125,6 +114,12 @@ export default function ConsultationPage() {
         await client.subscribe(remoteUser, mediaType);
         if (mediaType === 'video') remoteUser.videoTrack?.play('remote-video-container');
         if (mediaType === 'audio') remoteUser.audioTrack?.play();
+        // The astrologer is really here. This is what starts the meter — the
+        // seeker's own join does not, because joining an empty channel and
+        // waiting is not a consultation. Server-side it is idempotent, so
+        // firing again when a camera comes on cannot restart the clock.
+        markConsultationConnected(id).catch(() => {});
+        setAstrologerJoined(true);
       });
 
       await client.join(appId, channel, agoraToken === 'null' ? null : agoraToken, null);
@@ -347,11 +342,22 @@ export default function ConsultationPage() {
           model writing in his name. It is gone rather than fixed: on a voice or
           video call the conversation happens on the call. */}
       <div className="flex-1 flex items-end justify-center p-4">
-        <p className="text-center text-gray-500 text-xs max-w-sm">
-          You are connected to {astrologerName} by {mode === 'video' ? 'video' : 'voice'}.
-          <br />
-          ₹{pricePerMin}/min • Session active
-        </p>
+        {astrologerJoined ? (
+          <p className="text-center text-gray-500 text-xs max-w-sm">
+            You are connected to {astrologerName} by {mode === 'video' ? 'video' : 'voice'}.
+            <br />
+            ₹{pricePerMin}/min • charging from the moment they joined
+          </p>
+        ) : (
+          <p className="text-center text-amber-300/80 text-xs max-w-sm">
+            Waiting for {astrologerName} to join.
+            <br />
+            <span className="text-gray-500">
+              You are not being charged. Billing starts only when they join —
+              hang up any time and this costs you nothing.
+            </span>
+          </p>
+        )}
       </div>
     </div>
   );

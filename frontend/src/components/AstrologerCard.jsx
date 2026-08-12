@@ -116,12 +116,20 @@ export default function AstrologerCard({ astrologer }) {
           so Call is what this card offers. The AI is one tap away and honest
           about what it is. Chat returns the day there is an inbox to answer it. */}
       <div className="flex flex-col gap-2 mt-1" onClick={e => e.stopPropagation()}>
+        {/* Offline means nobody picks up. Offering Call anyway is how a seeker
+            ends up waiting alone in an empty channel. */}
         <button
           onClick={() => handleConsult('audio')}
-          className="w-full flex items-center justify-center gap-1.5 py-2 rounded-full btn-gold text-xs font-semibold"
+          disabled={!astrologer.is_online}
+          title={astrologer.is_online ? undefined : `${astrologer.display_name} is offline`}
+          className={`w-full flex items-center justify-center gap-1.5 py-2 rounded-full text-xs font-semibold ${
+            astrologer.is_online
+              ? 'btn-gold'
+              : 'bg-cosmic-800 border border-gold-600/15 text-gray-500 cursor-not-allowed'
+          }`}
         >
           <Phone className="w-3.5 h-3.5" />
-          Call
+          {astrologer.is_online ? 'Call' : 'Offline'}
         </button>
         <Link
           to="/chat"

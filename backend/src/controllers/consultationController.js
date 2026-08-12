@@ -37,6 +37,32 @@ async function startConsultation(req, res) {
       });
     }
 
+    // An offline astrologer cannot pick up. A seeker called one on 2026-08-12,
+    // sat on "Waiting for her to join...", hung up after 31 seconds and was
+    // charged a full minute — she was never going to answer.
+    if (!astrologer.is_online) {
+      return res.status(409).json({
+        error: `${astrologer.display_name} is offline right now. Book an appointment, or pick an astrologer showing as available.`,
+        astrologer_offline: true,
+      });
+    }
+
+    // And refuse when the wallet cannot cover the first minute, rather than
+    // discovering it at the end — endConsultation completes the session either
+    // way, so an unfunded call is work the astrologer never gets paid for.
+    const perMin = parseFloat(astrologer.price_per_min) || 0;
+    const freeMinutes = Number(astrologer.free_minutes) || 0;
+    if (freeMinutes < 1 && perMin > 0) {
+      const seeker = await User.findByPk(req.user.id);
+      if (parseFloat(seeker?.wallet_balance || 0) < perMin) {
+        return res.status(402).json({
+          error: `You need at least ₹${perMin} in your wallet to start this consultation.`,
+          required: perMin,
+          balance: parseFloat(seeker?.wallet_balance || 0),
+        });
+      }
+    }
+
     const channelName = `consult_${uuidv4().replace(/-/g, '')}`;
     const { token, appId } = generateToken(channelName, 0);
 
@@ -67,8 +93,16 @@ async function endConsultation(req, res) {
     if (consultation.user_id !== req.user.id) return res.status(403).json({ error: 'Unauthorized' });
 
     const endTime = new Date();
-    const startTime = new Date(consultation.started_at);
-    const durationMins = Math.max(1, Math.ceil((endTime - startTime) / 60000));
+
+    // Bill from the moment the astrologer joined, never from started_at.
+    // started_at is stamped when the record is created — before the seeker has
+    // even opened the call screen — so a call that never connected used to bill
+    // a full minute of wall-clock waiting. No connection means no consultation
+    // happened and nothing is owed.
+    const connectedAt = consultation.connected_at ? new Date(consultation.connected_at) : null;
+    const durationMins = connectedAt
+      ? Math.max(1, Math.ceil((endTime - connectedAt) / 60000))
+      : 0;
 
     const astrologer = await Astrologer.findByPk(consultation.astrologer_id);
     const costPerMin = astrologer ? parseFloat(astrologer.price_per_min) : 30;
@@ -80,7 +114,7 @@ async function endConsultation(req, res) {
     // helps no one — but the astrologer is credited only for money that
     // actually moved.
     let paid = false;
-    if (!consultation.is_free_trial) {
+    if (!consultation.is_free_trial && totalCost > 0) {
       const debit = await deductPerMinute(req.user.id, consultation.astrologer_id, totalCost);
       paid = debit?.success === true;
       if (!paid) {
@@ -157,4 +191,27 @@ async function sendMessage(req, res) {
   }
 }
 
-module.exports = { startConsultation, endConsultation, getMessages, sendMessage };
+// Called by the seeker's call screen the first time the astrologer publishes
+// audio or video — that is the only moment we know the two are actually
+// together. The seeker's own join does not count: in the incident that prompted
+// this, the seeker joined an empty channel and waited alone.
+//
+// Idempotent: the client fires it on every publish event, and only the first
+// one counts, so a camera turning on mid-call cannot restart the clock.
+async function markConnected(req, res) {
+  try {
+    const consultation = await Consultation.findByPk(req.params.id);
+    if (!consultation) return res.status(404).json({ error: 'Consultation not found' });
+    if (consultation.user_id !== req.user.id) return res.status(403).json({ error: 'Unauthorized' });
+
+    if (!consultation.connected_at) {
+      await consultation.update({ connected_at: new Date() });
+    }
+    res.json({ connected_at: consultation.connected_at });
+  } catch (err) {
+    console.error('markConnected error:', err);
+    res.status(500).json({ error: 'Failed to mark connected' });
+  }
+}
+
+module.exports = { startConsultation, endConsultation, markConnected, getMessages, sendMessage };

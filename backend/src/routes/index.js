@@ -125,6 +125,7 @@ router.patch('/astrologers/status', auth, astrologerController.updateOnlineStatu
 // Consultation routes
 router.get('/consultations/my', auth, consultationAiController.getMyConsultations);
 router.post('/consultations/start', auth, consultationController.startConsultation);
+router.post('/consultations/:id/connected', auth, consultationController.markConnected);
 router.post('/consultations/:id/end', auth, consultationController.endConsultation);
 router.get('/consultations/:id/messages', auth, consultationController.getMessages);
 router.post('/consultations/:id/messages', auth, consultationController.sendMessage);

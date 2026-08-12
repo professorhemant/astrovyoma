@@ -260,4 +260,8 @@ export const astrologerApplications = {
   remove: (id) => api.delete(`/admin/applications/${id}`),
 };
 
+// Marks the point the astrologer actually joined. Billing runs from here, not
+// from when the seeker opened the screen.
+export const markConsultationConnected = (id) => api.post(`/consultations/${id}/connected`);
+
 export default api;
