@@ -3,10 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, MessageCircle, ChevronRight, Sparkles } from 'lucide-react';
 import ZodiacWheel from '../components/ZodiacWheel';
-import AstrologerCard from '../components/AstrologerCard';
 import TarotSection from '../components/TarotSection';
 import VedicClock from '../components/VedicClock';
-import { astrologers as astrologersApi, horoscope as horoscopeApi, kundali as kundaliApi, content as contentApi } from '../api';
+import { horoscope as horoscopeApi, kundali as kundaliApi, content as contentApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 import VisualEditor from '../components/editor/VisualEditor';
 
@@ -126,7 +125,6 @@ const heroBannerClass = 'w-full block object-cover object-center h-80 sm:h-96 md
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
-  const [featuredAstrologers, setFeaturedAstrologers] = useState([]);
   const [selectedSign, setSelectedSign]   = useState(null);
   const [horoscopeText, setHoroscopeText] = useState('');
   const [userLagna, setUserLagna] = useState(null);
@@ -193,9 +191,6 @@ export default function HomePage() {
     };
   };
 
-  useEffect(() => {
-    astrologersApi.getAll({ limit: 6 }).then(r => setFeaturedAstrologers(r.data.astrologers || [])).catch(() => {});
-  }, []);
 
   // Signed-in only: the chart endpoint needs a token, and asking without one
   // just earns a 401. Keyed on user so the lagna also follows a login or logout
@@ -485,36 +480,9 @@ export default function HomePage() {
             6 MB every visitor paid for before asking. Drop it on any page with
             <VideoShowcase />. */}
 
-        {/* ── Live Astrologers ── */}
-        <section className="py-16 px-4 md:px-8 lg:px-16 relative z-10">
-          <div className="max-w-7xl mx-auto">
-            <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="text-center mb-12">
-              <h2 className="font-serif text-4xl md:text-5xl text-gold-400 mb-3"
-                {...secProps('connect')}>{sec('connect', {heading:'✦ Connect with Your Cosmic Guide'}).heading}</h2>
-              <p className="text-gray-300">Expert Vedic astrologers, available now</p>
-            </motion.div>
-            {featuredAstrologers.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
-                {featuredAstrologers.map((a,i) => (
-                  <motion.div key={a.id}
-                    initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
-                    transition={{delay:i*0.1}}>
-                    <AstrologerCard astrologer={a} />
-                  </motion.div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center text-gray-400 py-8">Loading astrologers...</div>
-            )}
-            <div className="text-center">
-              <Link to="/astrologers" className="btn-outline-gold px-8 py-3 text-sm inline-flex items-center gap-2">
-                View All Astrologers <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        <SectionDivider />
+        {/* The astrologer band that sat here moved to components/FeaturedAstrologers.jsx.
+            Astrologers are still reached from the menu and /astrologers. Drop the band
+            on any page with <FeaturedAstrologers />. */}
 
         {/* ── Tarot Section ── */}
         <TarotSection userLagna={userLagna} />
