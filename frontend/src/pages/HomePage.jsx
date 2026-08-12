@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ChevronRight, Sparkles } from 'lucide-react';
 import ZodiacWheel from '../components/ZodiacWheel';
+import HeroMarquee from '../components/HeroMarquee';
 import TarotSection from '../components/TarotSection';
 import VedicClock from '../components/VedicClock';
 import { horoscope as horoscopeApi, kundali as kundaliApi, content as contentApi } from '../api';
@@ -260,6 +261,17 @@ export default function HomePage() {
           {/* bottom fade */}
           <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
             style={{ background: 'linear-gradient(to bottom, transparent, #12093A)' }} />
+          {/* Tagline streaming out of the rishi's open right palm. Positions
+              itself against the artwork rather than the window — see the
+              component for why that distinction matters here. */}
+          <HeroMarquee
+            text={siteSettings?.heroMarqueeText ?? ''}
+            left={num(siteSettings?.heroMarqueeLeft, 63)}
+            top={num(siteSettings?.heroMarqueeTop, 63)}
+            width={num(siteSettings?.heroMarqueeWidth, 52)}
+            speed={num(siteSettings?.heroMarqueeSpeed, 26)}
+            size={num(siteSettings?.heroMarqueeSize, 15)}
+          />
           {/* zodiac mandala overlaid on banner — vertically centered, slightly left */}
           {/* top: the desktop offset is tuned for a ~693px hero; on a phone the
               same figure lands the wheel behind the navbar, so anchor it by
