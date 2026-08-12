@@ -55,7 +55,6 @@ import LalKitabPage from './pages/LalKitabPage';
 import LuckyPage from './pages/LuckyPage';
 import FestivalCalendarPage from './pages/FestivalCalendarPage';
 import PlansPage from './pages/PlansPage';
-import ChatConsultPage from './pages/ChatConsultPage';
 import BlogPage from './pages/BlogPage';
 import BlogArticlePage from './pages/BlogArticlePage';
 import CrystalGuidePage from './pages/CrystalGuidePage';
@@ -83,7 +82,7 @@ function ProtectedRoute({ children }) {
 
 function AppLayout() {
   const location = useLocation();
-  const isConsultation = location.pathname.startsWith('/consult/') || location.pathname.startsWith('/chat-consult/');
+  const isConsultation = location.pathname.startsWith('/consult/');
   const isAdmin = location.pathname.startsWith('/admin');
 
   useEffect(() => {
@@ -152,7 +151,9 @@ function AppLayout() {
             <Route path="/lucky" element={<LuckyPage />} />
             <Route path="/festivals" element={<FestivalCalendarPage />} />
             <Route path="/plans" element={<PlansPage />} />
-            <Route path="/chat-consult/:id" element={<ProtectedRoute><ChatConsultPage /></ProtectedRoute>} />
+            {/* /chat-consult is withdrawn — see consultationController.startConsultation.
+                The paid chat it opened was answered by an AI in the astrologer's name.
+                ChatConsultPage stays in the repo for whenever he has an inbox. */}
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/blog/:slug" element={<BlogArticlePage />} />
             <Route path="/crystals" element={<CrystalGuidePage />} />

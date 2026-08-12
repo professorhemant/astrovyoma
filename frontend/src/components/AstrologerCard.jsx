@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { MessageCircle, Phone, Star, BadgeCheck } from 'lucide-react';
 
 export default function AstrologerCard({ astrologer }) {
@@ -110,21 +110,26 @@ export default function AstrologerCard({ astrologer }) {
       </div>
 
       {/* Action buttons */}
-      <div className="flex gap-2 mt-1" onClick={e => e.stopPropagation()}>
-        <button
-          onClick={() => handleConsult('chat')}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full btn-gold text-xs font-semibold"
-        >
-          <MessageCircle className="w-3.5 h-3.5" />
-          Chat
-        </button>
+      {/* Chat used to sit beside Call. It was never a conversation with this
+          person — the Pandit Portal has no inbox, so an AI answered in his name
+          while the seeker paid his per-minute rate. Call reaches him for real,
+          so Call is what this card offers. The AI is one tap away and honest
+          about what it is. Chat returns the day there is an inbox to answer it. */}
+      <div className="flex flex-col gap-2 mt-1" onClick={e => e.stopPropagation()}>
         <button
           onClick={() => handleConsult('audio')}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full btn-outline-gold text-xs font-semibold"
+          className="w-full flex items-center justify-center gap-1.5 py-2 rounded-full btn-gold text-xs font-semibold"
         >
           <Phone className="w-3.5 h-3.5" />
           Call
         </button>
+        <Link
+          to="/chat"
+          className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 hover:text-gold-400 transition-colors"
+        >
+          <MessageCircle className="w-3 h-3" />
+          Prefer typing? Ask AstroVyoma AI — free
+        </Link>
       </div>
     </motion.div>
   );

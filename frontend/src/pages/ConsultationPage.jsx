@@ -191,33 +191,10 @@ export default function ConsultationPage() {
     setShowRating(true);
   }
 
-  async function handleSend() {
-    if (!input.trim() || sending) return;
-    setSending(true);
-    const userMsg = { id: Date.now(), sender_type: 'user', content: input, created_at: new Date().toISOString() };
-    setMessages(prev => [...prev, userMsg]);
-    const sent = input;
-    setInput('');
-
-    try { await consultationsApi.sendMessage(id, { content: sent }); } catch {}
-
-    setIsReplying(true);
-    try {
-      const aiRes = await consultationsApi.aiReply(id, {
-        message: sent,
-        astrologer_name: astrologerName,
-        astrologer_specialties: astrologerSpecialties
-      });
-      const reply = { id: Date.now() + 1, sender_type: 'astrologer', content: aiRes.data.reply, created_at: new Date().toISOString() };
-      setMessages(prev => [...prev, reply]);
-    } catch {
-      const fallback = { id: Date.now() + 1, sender_type: 'astrologer', content: 'The cosmic energies are intense right now. Please share your question again and I will guide you.', created_at: new Date().toISOString() };
-      setMessages(prev => [...prev, fallback]);
-    } finally {
-      setIsReplying(false);
-    }
-    setSending(false);
-  }
+  // handleSend is gone with the text panel below. It sent the seeker's question
+  // to a language model prompted to answer as the astrologer by name, stored the
+  // reply as if he had written it, and showed "<his name> is typing..." while it
+  // generated. On a call screen, the conversation is the call.
 
   const formatTime = s => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
   const estimatedCost = (elapsed / 60 * pricePerMin).toFixed(2);
@@ -365,41 +342,16 @@ export default function ConsultationPage() {
         </div>
       )}
 
-      {/* Chat messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{ maxHeight: mode !== 'chat' ? 'calc(100vh - 380px)' : 'calc(100vh - 140px)' }}>
-        {messages.map(msg => (
-          <ChatMessage key={msg.id} message={msg} isUser={msg.sender_type === 'user'} senderName={msg.sender_type === 'astrologer' ? astrologerName : null} />
-        ))}
-        {isReplying && (
-          <div className="flex items-center gap-2 text-gray-300 text-sm">
-            <div className="flex gap-1">
-              {[0, 1, 2].map(i => (
-                <motion.div key={i} animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: i * 0.2 }}
-                  className="w-1.5 h-1.5 rounded-full bg-gold-400" />
-              ))}
-            </div>
-            <span className="text-xs">{astrologerName} is typing...</span>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Input */}
-      <div className="p-4 border-t border-gold-600/10 bg-cosmic-900/80 backdrop-blur-sm">
-        <div className="flex gap-3 max-w-4xl mx-auto">
-          <input
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
-            placeholder="Type your question..."
-            className="flex-1 bg-cosmic-800 border border-gold-600/20 rounded-full px-5 py-3 text-gray-200 text-sm focus:outline-none focus:border-gold-500/60 transition-colors"
-          />
-          <button onClick={handleSend} disabled={sending || !input.trim()}
-            className="bg-gradient-to-r from-gold-600 to-gold-400 text-cosmic-950 font-semibold rounded-full px-5 py-3 hover:opacity-90 transition-opacity disabled:opacity-40 flex items-center gap-1">
-            <Send className="w-4 h-4" />
-          </button>
-        </div>
-        <p className="text-center text-gray-700 text-xs mt-2">₹{pricePerMin}/min • Session active</p>
+      {/* The text panel that sat here — messages, a send box, and a
+          "<astrologer> is typing..." indicator — was answered by a language
+          model writing in his name. It is gone rather than fixed: on a voice or
+          video call the conversation happens on the call. */}
+      <div className="flex-1 flex items-end justify-center p-4">
+        <p className="text-center text-gray-500 text-xs max-w-sm">
+          You are connected to {astrologerName} by {mode === 'video' ? 'video' : 'voice'}.
+          <br />
+          ₹{pricePerMin}/min • Session active
+        </p>
       </div>
     </div>
   );

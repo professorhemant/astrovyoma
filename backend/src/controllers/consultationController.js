@@ -12,17 +12,28 @@ async function startConsultation(req, res) {
     const astrologer = await Astrologer.findByPk(astrologer_id);
     if (!astrologer) return res.status(404).json({ error: 'Astrologer not found' });
 
+    // Paid chat is withdrawn, and refusing it here rather than only in the UI is
+    // the point: nothing reached the astrologer. The Pandit Portal has no inbox,
+    // so a seeker's messages went to a language model prompted to answer as him
+    // by name, at his per-minute rate, with no notice on the screen. Voice and
+    // video genuinely connect to him, so they stay. Bring this back only
+    // alongside an inbox he can answer from.
+    if (mode === 'chat') {
+      return res.status(410).json({
+        error: 'Chat consultations are not available. Voice and video reach the astrologer directly, or ask AstroVyoma AI free at /chat.',
+        mode_unavailable: 'chat',
+      });
+    }
+
     // Refuse a voice/video consultation when Agora is not configured, BEFORE
     // creating the record. Creating it would set started_at and status active,
     // and endConsultation bills duration x price_per_min — so the user would be
-    // charged for a call that could never connect. Chat needs no Agora and is
-    // unaffected.
+    // charged for a call that could never connect.
     const needsRtc = mode === 'video' || mode === 'audio';
     if (needsRtc && !agoraConfigured()) {
       return res.status(503).json({
-        error: 'Voice and video calls are temporarily unavailable. Please use chat instead.',
+        error: 'Voice and video calls are temporarily unavailable. Please try again shortly.',
         mode_unavailable: mode,
-        chat_available: true,
       });
     }
 

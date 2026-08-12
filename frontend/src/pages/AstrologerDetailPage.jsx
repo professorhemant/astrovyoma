@@ -14,7 +14,10 @@ export default function AstrologerDetailPage() {
   const [astrologer, setAstrologer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
-  const defaultMode = searchParams.get('mode') || null;
+  // ?mode= auto-starts a consultation on load. Only the two modes that reach a
+  // real person are honoured — a stale ?mode=chat link must not start anything.
+  const requested = searchParams.get('mode');
+  const defaultMode = requested === 'audio' || requested === 'video' ? requested : null;
 
   useEffect(() => {
     astrologersApi.getById(id).then(res => setAstrologer(res.data)).catch(() => toast.error('Astrologer not found')).finally(() => setLoading(false));
@@ -42,15 +45,11 @@ export default function AstrologerDetailPage() {
         price: astrologer.price_per_min,
         specialties: JSON.stringify(astrologer.specialties || [])
       });
-      if (mode === 'chat') {
-        navigate(`/chat-consult/${res.data.consultation.id}?${params.toString()}`);
-      } else {
-        params.set('mode', mode);
-        params.set('channel', res.data.agora.channel);
-        params.set('token', res.data.agora.token);
-        params.set('appId', res.data.agora.appId);
-        navigate(`/consult/${res.data.consultation.id}?${params.toString()}`);
-      }
+      params.set('mode', mode);
+      params.set('channel', res.data.agora.channel);
+      params.set('token', res.data.agora.token);
+      params.set('appId', res.data.agora.appId);
+      navigate(`/consult/${res.data.consultation.id}?${params.toString()}`);
     } catch (err) {
       toast.error(err.response?.data?.error || 'Failed to start consultation');
     } finally {
@@ -121,13 +120,13 @@ export default function AstrologerDetailPage() {
                 {user && <span>� Wallet: ₹{parseFloat(user.wallet_balance || 0).toFixed(0)}</span>}
               </div>
 
+              {/* Chat Consultation used to lead this row. It never reached this
+                  astrologer — there is no inbox in the Pandit Portal, so an AI
+                  answered in his name at his per-minute rate. Audio and video
+                  connect to him for real, so those are what is offered. */}
               <div className="flex flex-wrap gap-3">
-                <button onClick={() => handleConsult('chat')} disabled={starting}
-                  className="btn-gold px-6 py-3 flex items-center gap-2 disabled:opacity-50">
-                  <MessageCircle className="w-4 h-4" /> Chat Consultation
-                </button>
                 <button onClick={() => handleConsult('audio')} disabled={starting}
-                  className="btn-outline-gold px-6 py-3 flex items-center gap-2 disabled:opacity-50">
+                  className="btn-gold px-6 py-3 flex items-center gap-2 disabled:opacity-50">
                   <Phone className="w-4 h-4" /> Audio Call
                 </button>
                 <button onClick={() => handleConsult('video')} disabled={starting}
@@ -139,6 +138,14 @@ export default function AstrologerDetailPage() {
                   <Calendar className="w-4 h-4" /> Schedule
                 </Link>
               </div>
+
+              <p className="mt-4 text-sm text-gray-400">
+                Would rather type than talk?{' '}
+                <Link to="/chat" className="text-gold-400 hover:text-gold-300 underline underline-offset-2">
+                  Ask AstroVyoma AI
+                </Link>{' '}
+                — free, and answered by AI rather than by {astrologer.display_name}.
+              </p>
             </div>
           </div>
         </motion.div>

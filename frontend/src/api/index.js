@@ -50,7 +50,6 @@ export const consultations = {
   end: (id) => api.post(`/consultations/${id}/end`),
   getMessages: (id) => api.get(`/consultations/${id}/messages`),
   sendMessage: (id, data) => api.post(`/consultations/${id}/messages`, data),
-  aiReply: (id, data) => api.post(`/consultations/${id}/ai-reply`, data),
   getMy: () => api.get('/consultations/my')
 };
 

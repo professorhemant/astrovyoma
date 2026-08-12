@@ -127,7 +127,10 @@ router.post('/consultations/start', auth, consultationController.startConsultati
 router.post('/consultations/:id/end', auth, consultationController.endConsultation);
 router.get('/consultations/:id/messages', auth, consultationController.getMessages);
 router.post('/consultations/:id/messages', auth, consultationController.sendMessage);
-router.post('/consultations/:id/ai-reply', auth, consultationAiController.aiReply);
+// /consultations/:id/ai-reply is withdrawn. It took an astrologer's name and
+// prompted a language model to answer as that person, and its replies were
+// stored as if the astrologer had written them. Nothing should be able to reach
+// it, so it is unrouted rather than merely unused by the front end.
 
 // Review routes
 router.post('/reviews', auth, reviewController.submitReview);
