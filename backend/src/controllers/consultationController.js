@@ -18,10 +18,20 @@ async function startConsultation(req, res) {
     // by name, at his per-minute rate, with no notice on the screen. Voice and
     // video genuinely connect to him, so they stay. Bring this back only
     // alongside an inbox he can answer from.
-    if (mode === 'chat') {
+    // Every live mode is withdrawn, for one reason: the astrologer has no way to
+    // take any of them. The Pandit Portal is a login, an online toggle and an
+    // earnings panel — no inbox, no Agora client, no incoming call. Chat went
+    // first because an AI was answering in the astrologer's name; voice and
+    // video followed once a seeker sat on "Connecting…" indefinitely calling an
+    // astrologer whose portal could not know the call existed.
+    //
+    // Going online only puts an astrologer's card in front of people. It does
+    // not give them anywhere to answer. Restore these one at a time, each
+    // alongside the portal screen that can actually receive it.
+    if (mode === 'chat' || mode === 'audio' || mode === 'video') {
       return res.status(410).json({
-        error: 'Chat consultations are not available. Voice and video reach the astrologer directly, or ask AstroVyoma AI free at /chat.',
-        mode_unavailable: 'chat',
+        error: 'Live consultations are paused while we finish the astrologer side. Book an appointment and we will arrange a time, or ask AstroVyoma AI free at /chat.',
+        mode_unavailable: mode,
       });
     }
 

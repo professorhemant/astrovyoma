@@ -1,16 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
-import { MessageCircle, Phone, Star, BadgeCheck } from 'lucide-react';
+import { MessageCircle, Calendar, Star, BadgeCheck } from 'lucide-react';
 
 export default function AstrologerCard({ astrologer }) {
   const navigate = useNavigate();
 
   const isRealPhoto = astrologer.photo_url && !astrologer.photo_url.includes('dicebear');
-
-  function handleConsult(mode) {
-    navigate(`/astrologers/${astrologer.id}?mode=${mode}`);
-  }
 
   return (
     <motion.div
@@ -47,8 +43,10 @@ export default function AstrologerCard({ astrologer }) {
               onError={e => { e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${astrologer.display_name}`; }}
             />
           </div>
-          {/* Online dot */}
-          <span className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-cosmic-800 ${astrologer.is_online ? 'bg-green-400 animate-pulse' : 'bg-gray-500'}`} />
+          {/* The pulsing green dot and the "Live" label below both said "reach
+              me now". Nothing on this card can do that while the astrologer
+              has no screen to answer on, so neither is shown. Both come back
+              with the call feature. */}
         </div>
 
         {/* Name + stats */}
@@ -89,9 +87,7 @@ export default function AstrologerCard({ astrologer }) {
         {/* Price */}
         <div className="text-right flex-shrink-0">
           <div className="text-gold-400 font-semibold text-sm">₹{astrologer.price_per_min}/min</div>
-          <div className={`text-xs mt-0.5 ${astrologer.is_online ? 'text-green-400' : 'text-gray-500'}`}>
-            {astrologer.is_online ? '● Live' : '○ Offline'}
-          </div>
+          <div className="text-xs mt-0.5 text-gray-500">by appointment</div>
         </div>
       </div>
 
@@ -110,26 +106,18 @@ export default function AstrologerCard({ astrologer }) {
       </div>
 
       {/* Action buttons */}
-      {/* Chat used to sit beside Call. It was never a conversation with this
-          person — the Pandit Portal has no inbox, so an AI answered in his name
-          while the seeker paid his per-minute rate. Call reaches him for real,
-          so Call is what this card offers. The AI is one tap away and honest
-          about what it is. Chat returns the day there is an inbox to answer it. */}
+      {/* Call went the way Chat did, and for the same reason: nothing on the
+          astrologer's side could take it. Going online puts this card in front
+          of people; it does not give her a screen that can answer. A seeker
+          calling an "online" astrologer sat on "Connecting…" until they gave up.
+          Booking a time is a promise that can actually be kept. */}
       <div className="flex flex-col gap-2 mt-1" onClick={e => e.stopPropagation()}>
-        {/* Offline means nobody picks up. Offering Call anyway is how a seeker
-            ends up waiting alone in an empty channel. */}
         <button
-          onClick={() => handleConsult('audio')}
-          disabled={!astrologer.is_online}
-          title={astrologer.is_online ? undefined : `${astrologer.display_name} is offline`}
-          className={`w-full flex items-center justify-center gap-1.5 py-2 rounded-full text-xs font-semibold ${
-            astrologer.is_online
-              ? 'btn-gold'
-              : 'bg-cosmic-800 border border-gold-600/15 text-gray-500 cursor-not-allowed'
-          }`}
+          onClick={() => navigate(`/book-appointment/${astrologer.id}`)}
+          className="w-full flex items-center justify-center gap-1.5 py-2 rounded-full btn-gold text-xs font-semibold"
         >
-          <Phone className="w-3.5 h-3.5" />
-          {astrologer.is_online ? 'Call' : 'Offline'}
+          <Calendar className="w-3.5 h-3.5" />
+          Book a time
         </button>
         <Link
           to="/chat"

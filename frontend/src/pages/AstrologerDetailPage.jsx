@@ -2,8 +2,8 @@
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { Star, MessageCircle, Phone, Video, Globe, Clock, Award, Calendar } from 'lucide-react';
-import { astrologers as astrologersApi, consultations as consultationsApi } from '../api';
+import { Star, Globe, Clock, Award, Calendar } from 'lucide-react';
+import { astrologers as astrologersApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 
 export default function AstrologerDetailPage() {
@@ -13,55 +13,10 @@ export default function AstrologerDetailPage() {
   const { user } = useAuth();
   const [astrologer, setAstrologer] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [starting, setStarting] = useState(false);
-  // ?mode= auto-starts a consultation on load. Only the two modes that reach a
-  // real person are honoured — a stale ?mode=chat link must not start anything.
-  const requested = searchParams.get('mode');
-  const defaultMode = requested === 'audio' || requested === 'video' ? requested : null;
-
-  useEffect(() => {
-    astrologersApi.getById(id).then(res => setAstrologer(res.data)).catch(() => toast.error('Astrologer not found')).finally(() => setLoading(false));
-  }, [id]);
-
-  useEffect(() => {
-    if (defaultMode && astrologer && !starting) {
-      handleConsult(defaultMode);
-    }
-  }, [astrologer, defaultMode]);
-
-  async function handleConsult(mode) {
-    if (!user) { toast.error('Please login to start a consultation'); navigate('/login'); return; }
-    // Stop before the call screen rather than after it. The server refuses too
-    // — this is only so the seeker hears it sooner and in plainer words.
-    if (!astrologer.is_online) {
-      toast.error(`${astrologer.display_name} is offline right now. Schedule an appointment instead.`);
-      return;
-    }
-    if (parseFloat(user.wallet_balance) < parseFloat(astrologer.price_per_min)) {
-      toast.error('Insufficient wallet balance. Please recharge.');
-      navigate('/wallet');
-      return;
-    }
-    setStarting(true);
-    try {
-      const res = await consultationsApi.start({ astrologer_id: id, mode });
-      const params = new URLSearchParams({
-        astrologer: astrologer.display_name,
-        astrologerId: id,
-        price: astrologer.price_per_min,
-        specialties: JSON.stringify(astrologer.specialties || [])
-      });
-      params.set('mode', mode);
-      params.set('channel', res.data.agora.channel);
-      params.set('token', res.data.agora.token);
-      params.set('appId', res.data.agora.appId);
-      navigate(`/consult/${res.data.consultation.id}?${params.toString()}`);
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to start consultation');
-    } finally {
-      setStarting(false);
-    }
-  }
+  // handleConsult and the ?mode= auto-start went with the call buttons. Both
+  // existed to open a live consultation, and the server refuses every live mode
+  // now, so a stale ?mode=audio link starts nothing rather than a call that
+  // cannot connect.
 
   if (loading) return (
     <div className="relative min-h-screen bg-cosmic-950">
@@ -88,11 +43,8 @@ export default function AstrologerDetailPage() {
                   className="w-28 h-28 rounded-full border-4 border-gold-600/40"
                   onError={e => { e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${astrologer.display_name}`; }}
                 />
-                <span className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-cosmic-800 ${astrologer.is_online ? 'bg-green-400 animate-pulse' : 'bg-gray-500'}`} />
               </div>
-              <div className={`text-sm font-medium ${astrologer.is_online ? 'text-green-400' : 'text-gray-300'}`}>
-                {astrologer.is_online ? '? Online Now' : '? Currently Offline'}
-              </div>
+              <div className="text-sm font-medium text-gray-400">Available by appointment</div>
             </div>
 
             <div className="flex-1">
@@ -121,29 +73,27 @@ export default function AstrologerDetailPage() {
 
               <div className="flex items-center gap-2 text-sm text-gray-200 mb-6">
                 <span className="text-gold-400 font-semibold text-lg">₹{astrologer.price_per_min}/min</span>
-                <span>�</span>
+                <span>•</span>
                 <span>Est. 10 min: ₹{(parseFloat(astrologer.price_per_min) * 10).toFixed(0)}</span>
-                {user && <span>� Wallet: ₹{parseFloat(user.wallet_balance || 0).toFixed(0)}</span>}
+                {user && <span>• Wallet: ₹{parseFloat(user.wallet_balance || 0).toFixed(0)}</span>}
               </div>
 
-              {/* Chat Consultation used to lead this row. It never reached this
-                  astrologer — there is no inbox in the Pandit Portal, so an AI
-                  answered in his name at his per-minute rate. Audio and video
-                  connect to him for real, so those are what is offered. */}
+              {/* Audio and video followed Chat off this page. All three needed an
+                  astrologer on the other end, and the Pandit Portal has no
+                  screen that can take any of them — a seeker who pressed Call
+                  waited on "Connecting…" until they gave up. Booking a time is
+                  the one thing here that can actually be honoured. */}
               <div className="flex flex-wrap gap-3">
-                <button onClick={() => handleConsult('audio')} disabled={starting}
-                  className="btn-gold px-6 py-3 flex items-center gap-2 disabled:opacity-50">
-                  <Phone className="w-4 h-4" /> Audio Call
-                </button>
-                <button onClick={() => handleConsult('video')} disabled={starting}
-                  className="btn-outline-gold px-6 py-3 flex items-center gap-2 disabled:opacity-50">
-                  <Video className="w-4 h-4" /> Video Call
-                </button>
                 <Link to={`/book-appointment/${id}`}
-                  className="border border-violet-500/50 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 px-6 py-3 rounded-xl flex items-center gap-2 text-sm font-medium transition-colors">
-                  <Calendar className="w-4 h-4" /> Schedule
+                  className="btn-gold px-6 py-3 rounded-xl flex items-center gap-2 text-sm font-medium">
+                  <Calendar className="w-4 h-4" /> Book a time with {astrologer.display_name.split(' ')[0]}
                 </Link>
               </div>
+
+              <p className="mt-3 text-xs text-gray-500 max-w-md">
+                Live calls are paused while we finish the astrologer side. Pick a
+                time and we will arrange it with {astrologer.display_name.split(' ')[0]} directly.
+              </p>
 
               <p className="mt-4 text-sm text-gray-400">
                 Would rather type than talk?{' '}
