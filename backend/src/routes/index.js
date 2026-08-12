@@ -116,6 +116,11 @@ router.post('/pandit/login', panditController.panditLogin);
 router.get('/pandit/me', panditAuth, panditController.getStatus);
 router.patch('/pandit/status', panditAuth, panditController.toggleStatus);
 router.get('/pandit/earnings', panditAuth, panditController.getEarnings);
+// Incoming calls. Polled by the portal while the astrologer is online.
+router.get('/pandit/calls', panditAuth, panditController.getIncomingCalls);
+router.post('/pandit/calls/:id/accept', panditAuth, panditController.acceptCall);
+router.post('/pandit/calls/:id/decline', panditAuth, panditController.declineCall);
+router.post('/pandit/calls/:id/end', panditAuth, panditController.endCall);
 
 // Astrologer routes
 router.get('/astrologers', astrologerController.getAstrologers);
@@ -125,6 +130,7 @@ router.patch('/astrologers/status', auth, astrologerController.updateOnlineStatu
 // Consultation routes
 router.get('/consultations/my', auth, consultationAiController.getMyConsultations);
 router.post('/consultations/start', auth, consultationController.startConsultation);
+router.get('/consultations/:id/status', auth, consultationController.getConsultationStatus);
 router.post('/consultations/:id/connected', auth, consultationController.markConnected);
 router.post('/consultations/:id/end', auth, consultationController.endConsultation);
 router.get('/consultations/:id/messages', auth, consultationController.getMessages);

@@ -12,27 +12,17 @@ async function startConsultation(req, res) {
     const astrologer = await Astrologer.findByPk(astrologer_id);
     if (!astrologer) return res.status(404).json({ error: 'Astrologer not found' });
 
-    // Paid chat is withdrawn, and refusing it here rather than only in the UI is
-    // the point: nothing reached the astrologer. The Pandit Portal has no inbox,
-    // so a seeker's messages went to a language model prompted to answer as him
-    // by name, at his per-minute rate, with no notice on the screen. Voice and
-    // video genuinely connect to him, so they stay. Bring this back only
-    // alongside an inbox he can answer from.
-    // Every live mode is withdrawn, for one reason: the astrologer has no way to
-    // take any of them. The Pandit Portal is a login, an online toggle and an
-    // earnings panel — no inbox, no Agora client, no incoming call. Chat went
-    // first because an AI was answering in the astrologer's name; voice and
-    // video followed once a seeker sat on "Connecting…" indefinitely calling an
-    // astrologer whose portal could not know the call existed.
-    //
-    // Going online only puts an astrologer's card in front of people. It does
-    // not give them anywhere to answer. Restore these one at a time, each
-    // alongside the portal screen that can actually receive it.
-    if (mode === 'chat' || mode === 'audio' || mode === 'video') {
+    // Chat stays withdrawn. It had an AI answering in the astrologer's name,
+    // and the Pandit Portal still has no inbox to replace that with. Voice and
+    // video are back now that the portal can actually receive them.
+    if (mode === 'chat') {
       return res.status(410).json({
-        error: 'Live consultations are paused while we finish the astrologer side. Book an appointment and we will arrange a time, or ask AstroVyoma AI free at /chat.',
-        mode_unavailable: mode,
+        error: 'Chat consultations are not available. Try a voice or video call, or ask AstroVyoma AI free at /chat.',
+        mode_unavailable: 'chat',
       });
+    }
+    if (mode !== 'audio' && mode !== 'video') {
+      return res.status(400).json({ error: 'mode must be audio or video' });
     }
 
     // Refuse a voice/video consultation when Agora is not configured, BEFORE
@@ -89,7 +79,7 @@ async function startConsultation(req, res) {
       astrologer_id,
       mode,
       concern_category: concern_category || 'general',
-      status: 'active',
+      status: 'ringing',
       agora_channel: channelName,
       started_at: new Date(),
       // Recorded on the row so the trial is decided once, at the start, and the
@@ -108,79 +98,84 @@ async function startConsultation(req, res) {
   }
 }
 
+
+// Closes a consultation and settles it. Both ends of the call reach this — the
+// seeker's End button and the astrologer's — so hanging up from either side
+// bills identically instead of via two drifting copies.
+async function finalizeConsultation(consultation, endedBy) {
+  const endTime = new Date();
+
+  // Bill from the moment the astrologer joined, never from started_at.
+  // started_at is stamped when the record is created — before the seeker has
+  // even opened the call screen — so a call that never connected used to bill a
+  // full minute of wall-clock waiting. No connection means no consultation
+  // happened and nothing is owed.
+  const connectedAt = consultation.connected_at ? new Date(consultation.connected_at) : null;
+  const durationMins = connectedAt
+    ? Math.max(1, Math.ceil((endTime - connectedAt) / 60000))
+    : 0;
+
+  const astrologer = await Astrologer.findByPk(consultation.astrologer_id);
+  const costPerMin = astrologer ? parseFloat(astrologer.price_per_min) : 30;
+
+  // A trial discounts its free minutes off the bill; it does not make the whole
+  // session free.
+  const freeMins = consultation.is_free_trial ? (Number(astrologer?.free_minutes) || 0) : 0;
+  const billableMins = Math.max(0, durationMins - freeMins);
+  const totalCost = billableMins * costPerMin;
+
+  let paid = false;
+  if (totalCost > 0) {
+    const debit = await deductPerMinute(consultation.user_id, consultation.astrologer_id, totalCost);
+    paid = debit?.success === true;
+    if (!paid) {
+      console.error(`[billing] consultation ${consultation.id} completed unpaid: ${debit?.reason || 'debit failed'}`);
+    }
+  }
+
+  await consultation.update({
+    status: 'completed',
+    ended_at: endTime,
+    ended_by: endedBy,
+    duration_mins: durationMins,
+    total_cost: totalCost,
+  });
+
+  if (paid) {
+    try {
+      await recordConsultationEarning({
+        consultationId: consultation.id,
+        astrologerId:   consultation.astrologer_id,
+        userId:         consultation.user_id,
+        grossAmount:    totalCost,
+        durationMins:   billableMins,
+      });
+    } catch (err) {
+      // The seeker has already been debited. Failing the request now would be
+      // worse than a missing earnings row, which can be reconciled from the
+      // consultation itself.
+      console.error('[earnings] failed to record consultation', consultation.id, err.message);
+    }
+  }
+
+  return { durationMins, freeMins, billableMins, totalCost, paid };
+}
+
 async function endConsultation(req, res) {
   try {
     const consultation = await Consultation.findByPk(req.params.id);
     if (!consultation) return res.status(404).json({ error: 'Consultation not found' });
     if (consultation.user_id !== req.user.id) return res.status(403).json({ error: 'Unauthorized' });
 
-    const endTime = new Date();
-
-    // Bill from the moment the astrologer joined, never from started_at.
-    // started_at is stamped when the record is created — before the seeker has
-    // even opened the call screen — so a call that never connected used to bill
-    // a full minute of wall-clock waiting. No connection means no consultation
-    // happened and nothing is owed.
-    const connectedAt = consultation.connected_at ? new Date(consultation.connected_at) : null;
-    const durationMins = connectedAt
-      ? Math.max(1, Math.ceil((endTime - connectedAt) / 60000))
-      : 0;
-
-    const astrologer = await Astrologer.findByPk(consultation.astrologer_id);
-    const costPerMin = astrologer ? parseFloat(astrologer.price_per_min) : 30;
-
-    // A trial discounts its free minutes off the bill; it does not make the
-    // whole session free. is_free_trial used to skip the debit outright, so an
-    // astrologer offering "2 Min Free" worked an hour for nothing.
-    const freeMins = consultation.is_free_trial ? (Number(astrologer?.free_minutes) || 0) : 0;
-    const billableMins = Math.max(0, durationMins - freeMins);
-    const totalCost = billableMins * costPerMin;
-
-    // The debit's result used to be discarded, so a seeker whose wallet had run
-    // dry ended the consultation having paid nothing and nobody was any the
-    // wiser. It still completes — cutting a reading off after it has happened
-    // helps no one — but the astrologer is credited only for money that
-    // actually moved.
-    let paid = false;
-    if (totalCost > 0) {
-      const debit = await deductPerMinute(req.user.id, consultation.astrologer_id, totalCost);
-      paid = debit?.success === true;
-      if (!paid) {
-        console.error(`[billing] consultation ${consultation.id} completed unpaid: ${debit?.reason || 'debit failed'}`);
-      }
-    }
-
-    await consultation.update({
-      status: 'completed',
-      ended_at: endTime,
-      duration_mins: durationMins,
-      total_cost: totalCost
-    });
-
-    if (paid) {
-      try {
-        await recordConsultationEarning({
-          consultationId: consultation.id,
-          astrologerId:   consultation.astrologer_id,
-          userId:         req.user.id,
-          grossAmount:    totalCost,
-          durationMins:   billableMins,
-        });
-      } catch (err) {
-        // The seeker has already been debited. Failing their request now would
-        // be worse than a missing earnings row, which can be reconciled from
-        // the consultation itself — so log it loudly and end cleanly.
-        console.error('[earnings] failed to record consultation', consultation.id, err.message);
-      }
-    }
+    const r = await finalizeConsultation(consultation, 'seeker');
 
     res.json({
       consultation,
-      duration_mins: durationMins,
-      free_mins_applied: freeMins,
-      billable_mins: billableMins,
-      total_cost: totalCost,
-      paid,
+      duration_mins: r.durationMins,
+      free_mins_applied: r.freeMins,
+      billable_mins: r.billableMins,
+      total_cost: r.totalCost,
+      paid: r.paid,
     });
   } catch (err) {
     console.error('endConsultation error:', err);
@@ -233,6 +228,20 @@ async function sendMessage(req, res) {
 //
 // Idempotent: the client fires it on every publish event, and only the first
 // one counts, so a camera turning on mid-call cannot restart the clock.
+// The seeker's call screen polls this while it waits, so a call that was
+// declined or rang out says so instead of showing "Connecting…" forever.
+async function getConsultationStatus(req, res) {
+  try {
+    const c = await Consultation.findByPk(req.params.id, {
+      attributes: ['id', 'status', 'connected_at', 'ended_at', 'ended_by', 'duration_mins', 'total_cost'],
+    });
+    if (!c) return res.status(404).json({ error: 'Consultation not found' });
+    res.json(c);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to read status' });
+  }
+}
+
 async function markConnected(req, res) {
   try {
     const consultation = await Consultation.findByPk(req.params.id);
@@ -249,4 +258,4 @@ async function markConnected(req, res) {
   }
 }
 
-module.exports = { startConsultation, endConsultation, markConnected, getMessages, sendMessage };
+module.exports = { startConsultation, endConsultation, markConnected, getConsultationStatus, getMessages, sendMessage, finalizeConsultation };

@@ -263,5 +263,7 @@ export const astrologerApplications = {
 // Marks the point the astrologer actually joined. Billing runs from here, not
 // from when the seeker opened the screen.
 export const markConsultationConnected = (id) => api.post(`/consultations/${id}/connected`);
+// Polled while the seeker waits, so a declined or unanswered call says so.
+export const getConsultationStatus = (id) => api.get(`/consultations/${id}/status`);
 
 export default api;

@@ -8,7 +8,12 @@ module.exports = (sequelize) => {
     astrologer_id: { type: DataTypes.UUID, allowNull: false },
     mode: { type: DataTypes.STRING, allowNull: false },
     concern_category: { type: DataTypes.STRING, allowNull: true },
+    // ringing -> the seeker is waiting for the astrologer to pick up
+    // active   -> accepted, the two are in the call
+    // completed / declined / missed -> over
     status: { type: DataTypes.STRING, defaultValue: 'pending' },
+    // Who hung up: 'seeker', 'astrologer', or null when it ended some other way.
+    ended_by: { type: DataTypes.STRING, allowNull: true },
     agora_channel: { type: DataTypes.STRING, allowNull: true },
     started_at: { type: DataTypes.DATE, allowNull: true },
     // When the *astrologer* actually joined the call — not when the seeker

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, Lock, LogOut, Wifi, WifiOff, IndianRupee, Clock } from 'lucide-react';
+import PanditCallPanel from '../components/PanditCallPanel';
 import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -198,6 +199,12 @@ export default function PanditPortalPage() {
             }`}>
             {toggling ? 'Updating…' : pandit.is_online ? 'Go Offline' : 'Go Live'}
           </button>
+        </div>
+
+        {/* Incoming calls sit directly under the online toggle, because the
+            toggle is the promise and this is what keeps it. */}
+        <div className="mt-5">
+          <PanditCallPanel token={token} isOnline={pandit.is_online} displayName={pandit.display_name} />
         </div>
 
         {/* Earnings. The kit promises a payout every Monday for the week before,

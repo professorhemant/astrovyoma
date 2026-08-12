@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { Send, Mic, MicOff, Video, VideoOff, PhoneOff, Clock, Wallet, Star } from 'lucide-react';
 import ChatMessage from '../components/ChatMessage';
-import { consultations as consultationsApi, reviews as reviewsApi, markConsultationConnected } from '../api';
+import { consultations as consultationsApi, reviews as reviewsApi, markConsultationConnected, getConsultationStatus } from '../api';
 import { useAuth } from '../context/AuthContext';
 
 // ASTROLOGER_REPLIES lived here — eight canned lines served as if the
@@ -55,6 +55,8 @@ export default function ConsultationPage() {
   // or 'connect' (the call itself could not be set up). Null while fine.
   const [failure, setFailure] = useState(null);
   const [ending, setEnding] = useState(false);
+  // 'declined' | 'missed' | 'ended' — decided by the astrologer or the clock.
+  const [outcome, setOutcome] = useState(null);
   const [demoMediaActive, setDemoMediaActive] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
   const [rating, setRating] = useState(0);
@@ -75,6 +77,22 @@ export default function ConsultationPage() {
     timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
     return () => clearInterval(timerRef.current);
   }, []);
+
+  // While waiting to be picked up, watch the consultation itself. The astrologer
+  // declining, or letting it ring out, happens entirely server-side — without
+  // this the seeker would sit on "Connecting…" with no way to learn otherwise.
+  useEffect(() => {
+    if (astrologerJoined || outcome) return;
+    const t = setInterval(async () => {
+      try {
+        const { data } = await getConsultationStatus(id);
+        if (data.status === 'declined') { setOutcome('declined'); clearInterval(t); }
+        else if (data.status === 'missed') { setOutcome('missed'); clearInterval(t); }
+        else if (data.status === 'completed') { setOutcome('ended'); clearInterval(t); }
+      } catch { /* a dropped poll is not worth surfacing */ }
+    }, 3000);
+    return () => clearInterval(t);
+  }, [id, astrologerJoined, outcome]);
 
   // Start media on mount for audio/video modes
   useEffect(() => {
@@ -405,6 +423,25 @@ export default function ConsultationPage() {
             <br />
             ₹{pricePerMin}/min • charging from the moment they joined
           </p>
+        ) : outcome ? (
+          // Decided by the astrologer or the ring timer, not by anything on this
+          // screen — so it has to be said here or the seeker never learns it.
+          <div className="text-center max-w-sm">
+            <p className="text-amber-300 text-sm font-medium">
+              {outcome === 'declined'
+                ? `${astrologerName} cannot take the call right now.`
+                : outcome === 'missed'
+                  ? `${astrologerName} did not pick up.`
+                  : 'This consultation has ended.'}
+            </p>
+            <p className="text-gray-500 text-xs mt-1">
+              You have not been charged. Book a time instead and we will arrange it.
+            </p>
+            <button onClick={handleEndSession} disabled={ending}
+              className="btn-gold px-5 py-2 rounded-full text-xs font-semibold mt-3 disabled:opacity-60">
+              Close
+            </button>
+          </div>
         ) : failure === 'mic' ? (
           // Saying "waiting for them to join" here would be a second wrong
           // diagnosis: they may well be waiting, but the seeker's own device is

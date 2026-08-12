@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
-import { MessageCircle, Calendar, Star, BadgeCheck } from 'lucide-react';
+import { MessageCircle, Calendar, Phone, Star, BadgeCheck } from 'lucide-react';
 
 export default function AstrologerCard({ astrologer }) {
   const navigate = useNavigate();
@@ -43,10 +43,8 @@ export default function AstrologerCard({ astrologer }) {
               onError={e => { e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${astrologer.display_name}`; }}
             />
           </div>
-          {/* The pulsing green dot and the "Live" label below both said "reach
-              me now". Nothing on this card can do that while the astrologer
-              has no screen to answer on, so neither is shown. Both come back
-              with the call feature. */}
+          {/* Back now that the Pandit Portal can actually take a call. */}
+          <span className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-cosmic-800 ${astrologer.is_online ? 'bg-green-400 animate-pulse' : 'bg-gray-500'}`} />
         </div>
 
         {/* Name + stats */}
@@ -87,7 +85,9 @@ export default function AstrologerCard({ astrologer }) {
         {/* Price */}
         <div className="text-right flex-shrink-0">
           <div className="text-gold-400 font-semibold text-sm">₹{astrologer.price_per_min}/min</div>
-          <div className="text-xs mt-0.5 text-gray-500">by appointment</div>
+          <div className={`text-xs mt-0.5 ${astrologer.is_online ? 'text-green-400' : 'text-gray-500'}`}>
+            {astrologer.is_online ? '● Live' : '○ Offline'}
+          </div>
         </div>
       </div>
 
@@ -106,19 +106,32 @@ export default function AstrologerCard({ astrologer }) {
       </div>
 
       {/* Action buttons */}
-      {/* Call went the way Chat did, and for the same reason: nothing on the
-          astrologer's side could take it. Going online puts this card in front
-          of people; it does not give her a screen that can answer. A seeker
-          calling an "online" astrologer sat on "Connecting…" until they gave up.
-          Booking a time is a promise that can actually be kept. */}
+      {/* Call is back: the Pandit Portal now rings, and an astrologer can answer
+          or decline. Offline still disables it — an offline astrologer is not
+          polling for calls, so pressing this would ring an empty room. */}
       <div className="flex flex-col gap-2 mt-1" onClick={e => e.stopPropagation()}>
-        <button
-          onClick={() => navigate(`/book-appointment/${astrologer.id}`)}
-          className="w-full flex items-center justify-center gap-1.5 py-2 rounded-full btn-gold text-xs font-semibold"
-        >
-          <Calendar className="w-3.5 h-3.5" />
-          Book a time
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => navigate(`/astrologers/${astrologer.id}`)}
+            disabled={!astrologer.is_online}
+            title={astrologer.is_online ? undefined : `${astrologer.display_name} is offline`}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full text-xs font-semibold ${
+              astrologer.is_online
+                ? 'btn-gold'
+                : 'bg-cosmic-800 border border-gold-600/15 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            <Phone className="w-3.5 h-3.5" />
+            {astrologer.is_online ? 'Call' : 'Offline'}
+          </button>
+          <button
+            onClick={() => navigate(`/book-appointment/${astrologer.id}`)}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full btn-outline-gold text-xs font-semibold"
+          >
+            <Calendar className="w-3.5 h-3.5" />
+            Book
+          </button>
+        </div>
         <Link
           to="/chat"
           className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 hover:text-gold-400 transition-colors"

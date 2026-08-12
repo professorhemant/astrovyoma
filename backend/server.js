@@ -79,6 +79,9 @@ async function start() {
       isPostgres
         ? `ALTER TABLE consultations ADD COLUMN IF NOT EXISTS connected_at TIMESTAMP WITH TIME ZONE`
         : `ALTER TABLE consultations ADD COLUMN connected_at DATETIME`,
+      isPostgres
+        ? `ALTER TABLE consultations ADD COLUMN IF NOT EXISTS ended_by VARCHAR(20)`
+        : `ALTER TABLE consultations ADD COLUMN ended_by TEXT`,
     ];
     for (const sql of migrations) {
       try { await sequelize.query(sql); } catch (_) { /* column already exists */ }
