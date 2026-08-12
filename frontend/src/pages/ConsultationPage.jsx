@@ -51,6 +51,9 @@ export default function ConsultationPage() {
   const [agoraConnected, setAgoraConnected] = useState(false);
   // Whether the astrologer has actually joined. Drives the meter and the notice.
   const [astrologerJoined, setAstrologerJoined] = useState(false);
+  // What went wrong, if anything: 'mic' (no microphone or permission refused)
+  // or 'connect' (the call itself could not be set up). Null while fine.
+  const [failure, setFailure] = useState(null);
   const [demoMediaActive, setDemoMediaActive] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
   const [rating, setRating] = useState(0);
@@ -98,9 +101,15 @@ export default function ConsultationPage() {
         localVideoRef.current.srcObject = stream;
       }
       setDemoMediaActive(true);
+      setFailure(null);
       toast.success(mode === 'video' ? 'Camera & mic ready' : 'Microphone ready');
     } catch (err) {
-      toast.error('Could not access ' + (mode === 'video' ? 'camera/mic' : 'microphone') + '. Check browser permissions.');
+      setFailure('mic');
+      toast.error(
+        mode === 'video'
+          ? 'AstroVyoma needs your camera and microphone. Allow them in your browser, then try again.'
+          : 'AstroVyoma needs your microphone. Allow it in your browser, then try again.'
+      );
     }
   }
 
@@ -142,8 +151,24 @@ export default function ConsultationPage() {
       toast.success('Connected to live session!');
     } catch (err) {
       console.error('Agora error:', err);
-      toast.error('Live connection failed. Starting demo mode.');
-      startDemoMedia();
+      // A blocked microphone throws here too, and reporting it as a connection
+      // failure sent the seeker off checking their internet. Name it correctly,
+      // and do not say "demo mode" — there is no such thing as a demo on a call
+      // somebody is paying for.
+      const name = String(err?.name || '');
+      const micProblem = /NotAllowedError|NotFoundError|NotReadableError|PermissionDenied/i.test(name);
+      if (micProblem) {
+        setFailure('mic');
+        toast.error(
+          mode === 'video'
+            ? 'AstroVyoma needs your camera and microphone. Allow them in your browser, then try again.'
+            : 'AstroVyoma needs your microphone. Allow it in your browser, then try again.'
+        );
+      } else {
+        setFailure('connect');
+        toast.error('Could not connect the call. You have not been charged.');
+        startDemoMedia();
+      }
     }
   }
 
@@ -297,8 +322,13 @@ export default function ConsultationPage() {
               <PhoneOff className="w-4 h-4" />
             </button>
           </div>
-          {!demoMediaActive && (
-            <p className="text-center text-gray-300 text-xs mt-2">Allow camera & mic access in your browser</p>
+          {failure && (
+            <p className="text-center text-amber-300/90 text-xs mt-2 max-w-md mx-auto">
+              {failure === 'mic'
+                ? 'Your browser is blocking the camera or microphone. Look for the padlock in the address bar, allow them, then reload this page.'
+                : 'The call could not be set up. Try again in a moment.'}
+              {' '}You are not being charged.
+            </p>
           )}
         </div>
       )}
@@ -310,12 +340,22 @@ export default function ConsultationPage() {
             <div className="flex flex-col items-center gap-2">
               <div className="w-16 h-16 rounded-full bg-cosmic-800 border-2 border-gold-600/40 flex items-center justify-center text-3xl shadow-lg shadow-gold-500/10">🔮</div>
               <span className="text-gold-400 text-xs font-medium">{astrologerName}</span>
-              <span className="text-gray-300 text-xs">Waiting to join...</span>
+              <span className={`text-xs ${astrologerJoined ? 'text-green-400' : 'text-gray-300'}`}>
+                {astrologerJoined ? 'Joined' : 'Waiting to join…'}
+              </span>
             </div>
             <div className="flex flex-col items-center gap-2">
-              <AudioWaveform active={demoMediaActive && !micMuted} />
-              <div className={`text-xs font-medium ${demoMediaActive ? 'text-green-400' : 'text-gray-300'}`}>
-                {demoMediaActive ? (micMuted ? 'Muted' : 'Live') : 'Connecting...'}
+              <AudioWaveform active={astrologerJoined && demoMediaActive && !micMuted} />
+              {/* This read "Live" in green as soon as the seeker's own mic
+                  worked, while nobody was on the other end. It now reports the
+                  call, not the microphone. */}
+              <div className={`text-xs font-medium ${
+                failure ? 'text-red-400' : astrologerJoined ? 'text-green-400' : 'text-gray-300'
+              }`}>
+                {failure === 'mic' ? 'No microphone'
+                  : failure === 'connect' ? 'Not connected'
+                  : astrologerJoined ? (micMuted ? 'Muted' : 'Live')
+                  : 'Connecting…'}
               </div>
             </div>
             <div className="flex flex-col items-center gap-2">
@@ -347,6 +387,18 @@ export default function ConsultationPage() {
             You are connected to {astrologerName} by {mode === 'video' ? 'video' : 'voice'}.
             <br />
             ₹{pricePerMin}/min • charging from the moment they joined
+          </p>
+        ) : failure === 'mic' ? (
+          // Saying "waiting for them to join" here would be a second wrong
+          // diagnosis: they may well be waiting, but the seeker's own device is
+          // the thing standing in the way.
+          <p className="text-center text-amber-300/80 text-xs max-w-sm">
+            {mode === 'video' ? 'Camera and microphone are blocked.' : 'Your microphone is blocked.'}
+            <br />
+            <span className="text-gray-500">
+              Nobody can hear you until your browser allows it — click the padlock
+              in the address bar, allow it, then reload. You are not being charged.
+            </span>
           </p>
         ) : (
           <p className="text-center text-amber-300/80 text-xs max-w-sm">
