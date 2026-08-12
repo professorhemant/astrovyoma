@@ -112,7 +112,7 @@ const SETTINGS_GROUPS = [
 
       { key: 'heroMarqueeText', label: 'Banner scrolling line — the words', type: 'text',
         default: 'AstroVyoma: Decoding the cosmos with authentic Vedic calculations and predictive wisdom',
-        help: 'Scrolls out of the sage\'s open right hand on the banner. Leave this empty to switch it off. Not shown on phones — the banner is too short there to read a moving line.' },
+        help: 'Scrolls out of the sage\'s open right hand on the banner. Leave this empty to switch it off. Shown on phones too, at a smaller size to suit the smaller picture.' },
       { key: 'heroMarqueeLeft', label: 'Scrolling line — where it appears, across (%)', type: 'number',
         default: 63, min: 0, max: 100,
         help: 'The point the words come out of. 0 is the far left of the painting, 100 the far right. The sage\'s palm is about 63.' },
@@ -127,7 +127,7 @@ const SETTINGS_GROUPS = [
         help: 'How long the line takes to travel once. Bigger numbers are slower and calmer.' },
       { key: 'heroMarqueeSize', label: 'Scrolling line — text size (px)', type: 'number',
         default: 17, min: 9, max: 40,
-        help: 'Size of the scrolling words.' },
+        help: 'Size of the scrolling words on a full-size screen. Phones scale down from this automatically, so the picture there does not end up with oversized text across it.' },
     ],
   },
   {

@@ -19,8 +19,11 @@ import React from 'react';
  * box are percentages of the painting, and the palm never moves within the
  * painting.
  *
- * Hidden below `md`. On a phone the hero is 320px tall and already carries the
- * headline, the wheel and the clock; a scrolling line there is unreadable.
+ * Shown at every width. On a phone the artwork is cropped hard — the palm lands
+ * around x=286 of a 390px screen and the band is only ~240px wide — so the type
+ * scales down with the viewport rather than keeping its desktop size, which at
+ * 17px would fit about sixteen characters. The far end of the band, where the
+ * clock and wheel sit, is already faded to nothing by the mask.
  */
 
 const BANNER_W = 2200;
@@ -43,7 +46,10 @@ export default function HeroMarquee({
 
   const type = {
     fontFamily: 'Cormorant Garamond, serif',
-    fontSize: `${size}px`,
+    // The admin's size is the ceiling, reached from tablet width up. Narrower
+    // screens scale down with the viewport so the line keeps roughly the same
+    // proportion to the artwork it is crossing.
+    fontSize: `clamp(${Math.max(9, Math.round(size * 0.62))}px, 2.6vw, ${size}px)`,
     letterSpacing: '0.08em',
     color: '#F3D98B',
     textShadow: '0 0 18px rgba(243,217,139,0.55), 0 2px 10px rgba(0,0,0,0.85)',
@@ -52,13 +58,13 @@ export default function HeroMarquee({
   // Two copies, translated -50% — the standard seamless loop. The second is
   // hidden from screen readers so the tagline is announced once, not twice.
   const copy = (hidden) => (
-    <span aria-hidden={hidden || undefined} className="whitespace-nowrap pr-16" style={type}>
+    <span aria-hidden={hidden || undefined} className="whitespace-nowrap pr-10 md:pr-16" style={type}>
       {text}
     </span>
   );
 
   return (
-    <div className="hidden md:block absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 9 }}>
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 9 }}>
       {/* ArtSpace — the same box object-cover gives the banner image. */}
       <div
         className="absolute top-1/2 left-1/2"
