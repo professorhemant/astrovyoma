@@ -1,14 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { Op } = require('sequelize');
 const { Astrologer, Consultation, User } = require('../models');
 const earningsService = require('../services/earningsService');
 const { generateToken } = require('../services/agoraService');
-const { finalizeConsultation } = require('./consultationController');
-
-// How long a call rings before it is treated as missed. Long enough to reach a
-// phone in another room, short enough that a seeker is not left hanging.
-const RING_TIMEOUT_MS = 60 * 1000;
+const { finalizeConsultation, expireIfRungOut, RING_TIMEOUT_MS } = require('./consultationController');
 
 async function panditLogin(req, res) {
   try {
@@ -99,17 +94,13 @@ async function getEarnings(req, res) {
 // on an incoming call is acceptable, a new always-on transport is not.
 async function getIncomingCalls(req, res) {
   try {
-    const cutoff = new Date(Date.now() - RING_TIMEOUT_MS);
-
-    // Anything still ringing past the timeout was never answered. Close it here
-    // rather than leaving it to sit: the seeker's screen reads the same status,
-    // so this is what turns their "Connecting…" into "no answer".
+    // Close anything that rang out before offering the rest. The caller's own
+    // polling does the same, so this is a convenience rather than the only
+    // place it can happen.
     const stale = await Consultation.findAll({
-      where: { astrologer_id: req.pandit.panditId, status: 'ringing', started_at: { [Op.lt]: cutoff } },
+      where: { astrologer_id: req.pandit.panditId, status: 'ringing' },
     });
-    for (const c of stale) {
-      await c.update({ status: 'missed', ended_at: new Date() });
-    }
+    for (const c of stale) await expireIfRungOut(c);
 
     const ringing = await Consultation.findAll({
       where: { astrologer_id: req.pandit.panditId, status: 'ringing' },

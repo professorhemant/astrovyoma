@@ -4,6 +4,25 @@ const { generateToken, isConfigured: agoraConfigured } = require('../services/ag
 const { deductPerMinute } = require('../services/walletService');
 const { recordConsultationEarning } = require('../services/earningsService');
 
+// How long a call rings before nobody is coming. Long enough to reach a phone in
+// another room, short enough that a caller is not left hanging.
+const RING_TIMEOUT_MS = 60 * 1000;
+
+// Closes a call that rang out, and returns whether it did.
+//
+// This has to be reachable from the *caller's* polling as well as the
+// astrologer's. It was originally only applied when the astrologer's portal
+// polled — so an astrologer who never opened the portal at all was the one case
+// where it could not fire, which is precisely the case it exists for. A caller
+// then watched "Waiting to join…" indefinitely.
+async function expireIfRungOut(consultation) {
+  if (consultation.status !== 'ringing') return false;
+  const startedAt = new Date(consultation.started_at).getTime();
+  if (Date.now() - startedAt < RING_TIMEOUT_MS) return false;
+  await consultation.update({ status: 'missed', ended_at: new Date() });
+  return true;
+}
+
 async function startConsultation(req, res) {
   try {
     const { astrologer_id, mode, concern_category } = req.body;
@@ -232,11 +251,21 @@ async function sendMessage(req, res) {
 // declined or rang out says so instead of showing "Connecting…" forever.
 async function getConsultationStatus(req, res) {
   try {
-    const c = await Consultation.findByPk(req.params.id, {
-      attributes: ['id', 'status', 'connected_at', 'ended_at', 'ended_by', 'duration_mins', 'total_cost'],
-    });
+    const c = await Consultation.findByPk(req.params.id);
     if (!c) return res.status(404).json({ error: 'Consultation not found' });
-    res.json(c);
+    if (c.user_id !== req.user.id) return res.status(403).json({ error: 'Unauthorized' });
+
+    await expireIfRungOut(c);
+
+    res.json({
+      id: c.id,
+      status: c.status,
+      connected_at: c.connected_at,
+      ended_at: c.ended_at,
+      ended_by: c.ended_by,
+      duration_mins: c.duration_mins,
+      total_cost: c.total_cost,
+    });
   } catch (err) {
     res.status(500).json({ error: 'Failed to read status' });
   }
@@ -258,4 +287,4 @@ async function markConnected(req, res) {
   }
 }
 
-module.exports = { startConsultation, endConsultation, markConnected, getConsultationStatus, getMessages, sendMessage, finalizeConsultation };
+module.exports = { startConsultation, endConsultation, markConnected, getConsultationStatus, getMessages, sendMessage, finalizeConsultation, expireIfRungOut, RING_TIMEOUT_MS };

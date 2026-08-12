@@ -73,10 +73,16 @@ export default function ConsultationPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // The clock runs from the moment the astrologer joins, not from the moment
+  // this page opened. It used to start on mount, so a caller waiting for someone
+  // who never picked up watched a timer climb and a cost climb with it — the
+  // header read "₹41.50" while the footer said "you are not being charged".
+  // Both were describing the same call. Only one of them was true.
   useEffect(() => {
+    if (!astrologerJoined) { setElapsed(0); return; }
     timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
     return () => clearInterval(timerRef.current);
-  }, []);
+  }, [astrologerJoined]);
 
   // While waiting to be picked up, watch the consultation itself. The astrologer
   // declining, or letting it ring out, happens entirely server-side — without
@@ -250,7 +256,8 @@ export default function ConsultationPage() {
   // generated. On a call screen, the conversation is the call.
 
   const formatTime = s => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
-  const estimatedCost = (elapsed / 60 * pricePerMin).toFixed(2);
+  // Nothing is owed until the two are actually connected, so nothing is shown.
+  const estimatedCost = (astrologerJoined ? (elapsed / 60 * pricePerMin) : 0).toFixed(2);
 
   if (showRating) {
     return (
