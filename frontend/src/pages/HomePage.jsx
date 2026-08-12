@@ -337,14 +337,14 @@ export default function HomePage() {
         {/* First thing under the hero: picking your sign is the shortest step a
             visitor can take, and it costs them nothing. No divider above it —
             the hero edge already reads as the break. */}
-        <section id="horoscope-strip" className="pt-10 pb-8 px-4 md:px-8 lg:px-16 relative z-10">
+        <section id="horoscope-strip" className="pt-10 pb-2 px-4 md:px-8 lg:px-16 relative z-10">
           <div className="max-w-7xl mx-auto">
             <motion.h2 initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
               className="font-serif text-center text-3xl md:text-4xl text-gold-400 mb-8"
               {...secProps('horoscope')}>
               {sec('horoscope', {heading:"Today's Cosmic Guidance"}).heading}
             </motion.h2>
-            <div className="flex flex-wrap justify-center gap-2 mb-8">
+            <div className="flex flex-wrap justify-center gap-2 mb-4">
               {ZODIAC_SIGNS.map(sign => (
                 <button key={sign} onClick={() => handleSignClick(sign)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm transition-all ${
@@ -377,7 +377,7 @@ export default function HomePage() {
         <SectionDivider />
 
         {/* ── Free Features ── */}
-        <section className="pt-6 pb-4 px-4 md:px-8 lg:px-16 relative z-10">
+        <section className="pt-2 pb-4 px-4 md:px-8 lg:px-16 relative z-10">
           <div className="max-w-7xl mx-auto">
             <motion.h2 initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
               className="font-serif text-center text-3xl md:text-4xl text-gold-400 mb-4">
