@@ -333,11 +333,51 @@ export default function HomePage() {
 
         </section>
 
+        {/* ── Daily Horoscope ── */}
+        {/* First thing under the hero: picking your sign is the shortest step a
+            visitor can take, and it costs them nothing. No divider above it —
+            the hero edge already reads as the break. */}
+        <section id="horoscope-strip" className="pt-10 pb-8 px-4 md:px-8 lg:px-16 relative z-10">
+          <div className="max-w-7xl mx-auto">
+            <motion.h2 initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
+              className="font-serif text-center text-3xl md:text-4xl text-gold-400 mb-8"
+              {...secProps('horoscope')}>
+              {sec('horoscope', {heading:"Today's Cosmic Guidance"}).heading}
+            </motion.h2>
+            <div className="flex flex-wrap justify-center gap-2 mb-8">
+              {ZODIAC_SIGNS.map(sign => (
+                <button key={sign} onClick={() => handleSignClick(sign)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm transition-all ${
+                    selectedSign === sign ? 'bg-gold-600 text-cosmic-950 font-semibold shadow-[0_0_20px_rgba(201,168,76,0.4)]' : 'btn-outline-gold'
+                  }`}>
+                  <span>{ZODIAC_SYMBOLS[sign]}</span>
+                  <span>{sign}</span>
+                </button>
+              ))}
+            </div>
+            <AnimatePresence>
+              {selectedSign && horoscopeText && (
+                <motion.div key={selectedSign}
+                  initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}}
+                  className="card-cosmic p-6 max-w-3xl mx-auto">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-3xl">{ZODIAC_SYMBOLS[selectedSign]}</span>
+                    <div>
+                      <h3 className="font-serif text-gold-400 text-xl">{selectedSign}</h3>
+                      <p className="text-gray-400 text-xs">Today's horoscope</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-300 leading-relaxed">{horoscopeText}</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </section>
+
+        <SectionDivider />
+
         {/* ── Free Features ── */}
-        {/* Sits directly under the hero: it is the first thing a new visitor
-            sees, and every card is free to use. No divider above it — the hero
-            already reads as the break. */}
-        <section className="pt-10 pb-4 px-4 md:px-8 lg:px-16 relative z-10">
+        <section className="pt-6 pb-4 px-4 md:px-8 lg:px-16 relative z-10">
           <div className="max-w-7xl mx-auto">
             <motion.h2 initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
               className="font-serif text-center text-3xl md:text-4xl text-gold-400 mb-4">
@@ -526,46 +566,6 @@ export default function HomePage() {
                 </div>
               </motion.div>
             </div>
-          </div>
-        </section>
-
-        <SectionDivider />
-
-        {/* ── Daily Horoscope ── */}
-        <section id="horoscope-strip" className="py-16 px-4 md:px-8 lg:px-16 relative z-10">
-          <div className="max-w-7xl mx-auto">
-            <motion.h2 initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
-              className="font-serif text-center text-3xl md:text-4xl text-gold-400 mb-8"
-              {...secProps('horoscope')}>
-              {sec('horoscope', {heading:"Today's Cosmic Guidance"}).heading}
-            </motion.h2>
-            <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {ZODIAC_SIGNS.map(sign => (
-                <button key={sign} onClick={() => handleSignClick(sign)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm transition-all ${
-                    selectedSign === sign ? 'bg-gold-600 text-cosmic-950 font-semibold shadow-[0_0_20px_rgba(201,168,76,0.4)]' : 'btn-outline-gold'
-                  }`}>
-                  <span>{ZODIAC_SYMBOLS[sign]}</span>
-                  <span>{sign}</span>
-                </button>
-              ))}
-            </div>
-            <AnimatePresence>
-              {selectedSign && horoscopeText && (
-                <motion.div key={selectedSign}
-                  initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}}
-                  className="card-cosmic p-6 max-w-3xl mx-auto">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-3xl">{ZODIAC_SYMBOLS[selectedSign]}</span>
-                    <div>
-                      <h3 className="font-serif text-gold-400 text-xl">{selectedSign}</h3>
-                      <p className="text-gray-400 text-xs">Today's horoscope</p>
-                    </div>
-                  </div>
-                  <p className="text-gray-300 leading-relaxed">{horoscopeText}</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
         </section>
 
