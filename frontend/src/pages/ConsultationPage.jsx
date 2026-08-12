@@ -54,6 +54,7 @@ export default function ConsultationPage() {
   // What went wrong, if anything: 'mic' (no microphone or permission refused)
   // or 'connect' (the call itself could not be set up). Null while fine.
   const [failure, setFailure] = useState(null);
+  const [ending, setEnding] = useState(false);
   const [demoMediaActive, setDemoMediaActive] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
   const [rating, setRating] = useState(0);
@@ -177,9 +178,17 @@ export default function ConsultationPage() {
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach(t => t.stop());
     }
-    localTracksRef.current.forEach(t => { t.stop?.(); t.close?.(); });
+    localTracksRef.current.forEach(t => { try { t.stop?.(); t.close?.(); } catch {} });
     if (agoraClientRef.current) {
-      await agoraClientRef.current.leave().catch(() => {});
+      // leave() can sit forever when the join never completed — which is
+      // precisely the state somebody is in when they give up on a call that
+      // would not connect. handleEndSession awaited this, so a hung leave() made
+      // the End button look dead. Race it and move on regardless: the tracks
+      // above are already stopped, so the microphone is released either way.
+      await Promise.race([
+        agoraClientRef.current.leave().catch(() => {}),
+        new Promise(resolve => setTimeout(resolve, 2000)),
+      ]);
     }
   }
 
@@ -205,10 +214,16 @@ export default function ConsultationPage() {
   }
 
   async function handleEndSession() {
+    if (ending) return;
+    setEnding(true);
     clearInterval(timerRef.current);
-    await cleanupMedia();
+
+    // Close the session on the server first. Tidying up the microphone and the
+    // Agora client matters less than the seeker getting out of a call that is
+    // going nowhere, and it must never be what stands between them and the exit.
     try { await consultationsApi.end(id); } catch {}
     setShowRating(true);
+    cleanupMedia().catch(() => {});
   }
 
   // handleSend is gone with the text panel below. It sent the seeker's question
@@ -317,8 +332,9 @@ export default function ConsultationPage() {
               className={`p-2.5 rounded-full border transition-all ${camOff ? 'bg-red-500/20 border-red-500/50 text-red-400' : 'border-gold-600/30 text-gold-400 hover:bg-gold-400/10'}`}>
               {camOff ? <VideoOff className="w-4 h-4" /> : <Video className="w-4 h-4" />}
             </button>
-            <button onClick={handleEndSession}
-              className="p-2.5 rounded-full bg-red-500/80 border border-red-500 text-white hover:bg-red-500 transition-all">
+            <button onClick={handleEndSession} disabled={ending}
+              title={ending ? 'Ending…' : 'End call'}
+              className="p-2.5 rounded-full bg-red-500/80 border border-red-500 text-white hover:bg-red-500 transition-all disabled:opacity-60">
               <PhoneOff className="w-4 h-4" />
             </button>
           </div>
@@ -369,8 +385,9 @@ export default function ConsultationPage() {
               className={`p-3 rounded-full border-2 transition-all ${micMuted ? 'bg-red-500/20 border-red-500 text-red-400' : 'border-gold-500/50 text-gold-400 hover:bg-gold-400/10'}`}>
               {micMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
             </button>
-            <button onClick={handleEndSession}
-              className="p-3 rounded-full bg-red-500 border-2 border-red-400 text-white hover:bg-red-600 transition-all">
+            <button onClick={handleEndSession} disabled={ending}
+              title={ending ? 'Ending…' : 'End call'}
+              className="p-3 rounded-full bg-red-500 border-2 border-red-400 text-white hover:bg-red-600 transition-all disabled:opacity-60">
               <PhoneOff className="w-5 h-5" />
             </button>
           </div>
