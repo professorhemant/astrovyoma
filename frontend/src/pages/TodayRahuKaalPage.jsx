@@ -2,6 +2,8 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { panchang as panchangApi } from '../api';
+import usePanchangPlace from '../hooks/usePanchangPlace';
+import PanchangPlacePicker from '../components/PanchangPlacePicker';
 
 const VARA_COLOR = { Sunday:'#FF9F43', Monday:'#74B9FF', Tuesday:'#FF6B6B', Wednesday:'#6BCB77', Thursday:'#FFD93D', Friday:'#FD79A8', Saturday:'#6C5CE7' };
 
@@ -23,12 +25,16 @@ export default function TodayRahuKaalPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const { place, setPlace, params, placeKey } = usePanchangPlace();
+
   useEffect(() => {
-    panchangApi.rahuKaal()
+    setLoading(true);
+    panchangApi.rahuKaal(params)
       .then(r => setData(r.data))
       .catch(() => setData(null))
       .finally(() => setLoading(false));
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [placeKey]);
 
   const varaColor = VARA_COLOR[data?.vara] || '#C9A84C';
 
@@ -42,6 +48,10 @@ export default function TodayRahuKaalPage() {
             <h1 className="font-serif text-3xl md:text-5xl text-red-400 mb-3" style={{ textShadow:'0 0 30px rgba(239,68,68,0.4)' }}>Today's Rahu Kaal</h1>
             <p className="text-gray-200 text-sm">The inauspicious period governed by shadow planet Rahu � avoid new beginnings</p>
           </motion.div>
+
+          <div className="mb-8">
+            <PanchangPlacePicker place={place} onChange={setPlace} />
+          </div>
 
           {loading ? (
             <div className="text-center py-20 text-gold-400 font-serif text-xl animate-pulse">✦ Calculating Rahu Kaal...</div>

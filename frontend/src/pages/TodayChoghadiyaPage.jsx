@@ -2,6 +2,8 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { panchang as panchangApi } from '../api';
+import usePanchangPlace from '../hooks/usePanchangPlace';
+import PanchangPlacePicker from '../components/PanchangPlacePicker';
 
 const NATURE_BADGE = {
   'Very Auspicious': 'bg-green-500/20 border-green-500/40 text-green-300',
@@ -43,12 +45,16 @@ export default function TodayChoghadiyaPage() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('day');
 
+  const { place, setPlace, params, placeKey } = usePanchangPlace();
+
   useEffect(() => {
-    panchangApi.choghadiya()
+    setLoading(true);
+    panchangApi.choghadiya(params)
       .then(r => setData(r.data))
       .catch(() => setData(null))
       .finally(() => setLoading(false));
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [placeKey]);
 
   const slots = tab === 'day' ? (data?.daySlots || []) : (data?.nightSlots || []);
   const currentIdx = tab === 'day' ? data?.currentDaySlotIdx : data?.currentNightSlotIdx;
@@ -65,6 +71,10 @@ export default function TodayChoghadiyaPage() {
             <h1 className="font-serif text-3xl md:text-5xl text-gold-400 mb-3" style={{ textShadow:'0 0 30px rgba(201,168,76,0.4)' }}>Today's Choghadiya</h1>
             <p className="text-gray-200 text-sm">8 auspicious & inauspicious time periods � day and night</p>
           </motion.div>
+
+          <div className="mb-8">
+            <PanchangPlacePicker place={place} onChange={setPlace} />
+          </div>
 
           {loading ? (
             <div className="text-center py-20 text-gold-400 font-serif text-xl animate-pulse">✦ Dividing the Day...</div>

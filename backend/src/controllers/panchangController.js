@@ -155,20 +155,78 @@ const { festivalFor } = require('../services/festivalEngine');
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
-const UJJAIN_LAT = 23.1765; // degrees N
-const UJJAIN_LON = 75.7885; // degrees E
-const LOCATION   = 'Ujjain, Madhya Pradesh, India';
+// Ujjain is where the panchang is worked out when the visitor has not said
+// where they are. It is the traditional zero meridian of Indian astronomy, so
+// it is a defensible default rather than an arbitrary one — but it is only a
+// default. Rahu Kaal is the fourth of the eight parts of *your* daylight, and
+// today those eight parts start an hour apart in Kolkata and Mumbai, so a
+// single hardcoded city was wrong for almost everybody reading it.
+const DEFAULT_PLACE = {
+  lat: 23.1765,
+  lon: 75.7885,
+  tzMin: 330,
+  label: 'Ujjain, Madhya Pradesh, India',
+  isDefault: true,
+};
 
-function getSunriseSunsetMin(dateStr) {
+// Where to compute for, from the query string. Anything missing or out of
+// range falls back to the default rather than erroring: a panchang that shows
+// the wrong city is recoverable, one that shows an error is not.
+function placeFrom(req) {
+  const lat = parseFloat(req.query.lat);
+  const lon = parseFloat(req.query.lon);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon) ||
+      Math.abs(lat) > 90 || Math.abs(lon) > 180) return DEFAULT_PLACE;
+
+  // tz arrives as hours east of UTC, the same units /geocode/search returns.
+  const tzHours = parseFloat(req.query.tz);
+  const tzMin = Number.isFinite(tzHours) && Math.abs(tzHours) <= 14
+    ? Math.round(tzHours * 60)
+    : 330;
+
+  const label = String(req.query.place || '').slice(0, 120).trim();
+  return { lat, lon, tzMin, label: label || `${lat.toFixed(4)}°, ${lon.toFixed(4)}°`, isDefault: false };
+}
+
+// How a place is described back to the caller, so the page can name the city
+// its numbers belong to instead of leaving the reader to assume.
+const placeInfo = (place) => ({
+  label: place.label,
+  lat: place.lat,
+  lon: place.lon,
+  tz: place.tzMin / 60,
+  isDefault: !!place.isDefault,
+});
+
+// Minutes east of UTC as an ISO offset, e.g. 330 -> '+05:30'.
+function tzSuffix(tzMin) {
+  const sign = tzMin < 0 ? '-' : '+';
+  const abs  = Math.abs(tzMin);
+  return `${sign}${String(Math.floor(abs / 60)).padStart(2,'0')}:${String(abs % 60).padStart(2,'0')}`;
+}
+
+const wrapDay = (min) => ((min % 1440) + 1440) % 1440;
+
+// The clock time right now where the visitor is, for the "you are in this slot
+// now" highlights. Was +05:30 wherever the reader happened to be.
+const nowMinAt = (place) => {
+  const now = new Date();
+  return wrapDay(now.getUTCHours() * 60 + now.getUTCMinutes() + place.tzMin);
+};
+
+// Local midnight on this date, at this place, as a Julian day.
+const localMidnightJD = (dateStr, place) =>
+  2440587.5 + new Date(`${dateStr}T00:00:00${tzSuffix(place.tzMin)}`).getTime() / 86400000;
+
+function getSunriseSunsetMin(dateStr, place = DEFAULT_PLACE) {
   // Try Swiss Ephemeris rise_trans — uses actual solar position + atmospheric refraction
   if (sweph && typeof sweph.rise_trans === 'function') {
     try {
-      const midnightIST = new Date(dateStr + 'T00:00:00+05:30');
-      const jdStart = 2440587.5 + midnightIST.getTime() / 86400000;
+      const jdStart = localMidnightJD(dateStr, place);
       // [longitude, latitude, elevation_m] — elevation 0 matches traditional horizon
-      const geopos  = [UJJAIN_LON, UJJAIN_LAT, 0];
+      const geopos  = [place.lon, place.lat, 0];
       const atpress = 1013.25; // standard atmosphere (mbar)
-      const attemp  = 22.0;   // typical Ujjain temperature (°C)
+      const attemp  = 22.0;   // typical temperature (°C)
       const SEFLG_SWIEPH = 2;
       const SE_CALC_RISE = 1;
       const SE_CALC_SET  = 2;
@@ -177,31 +235,40 @@ function getSunriseSunsetMin(dateStr) {
       const setRes  = sweph.rise_trans(jdStart, 0, '', SEFLG_SWIEPH, SE_CALC_SET,  geopos, atpress, attemp);
 
       if (riseRes && setRes && !riseRes.error && !setRes.error) {
-        const jdToISTMin = (jd) => {
+        const jdToLocalMin = (jd) => {
           const d = new Date((jd - 2440587.5) * 86400000);
-          return (d.getUTCHours() * 60 + d.getUTCMinutes() + d.getUTCSeconds() / 60 + 330) % 1440;
+          return wrapDay(d.getUTCHours() * 60 + d.getUTCMinutes() + d.getUTCSeconds() / 60 + place.tzMin);
         };
         const riseJD = Array.isArray(riseRes.data) ? riseRes.data[0] : riseRes.data;
         const setJD  = Array.isArray(setRes.data)  ? setRes.data[0]  : setRes.data;
-        return { srMin: Math.round(jdToISTMin(riseJD)), ssMin: Math.round(jdToISTMin(setJD)) };
+        const srMin = Math.round(jdToLocalMin(riseJD));
+        const ssMin = Math.round(jdToLocalMin(setJD));
+        // Inside the Arctic and Antarctic circles the Sun can fail to rise or
+        // set at all, and the eight parts of the day stop meaning anything.
+        // Only accept a day that runs forwards.
+        if (ssMin > srMin) return { srMin, ssMin };
       }
     } catch (_) { /* fall through to Spencer */ }
   }
 
   // Spencer formula fallback (~±3 min accuracy)
-  const d   = new Date(dateStr + 'T12:00:00+05:30');
-  const doy = Math.round((d - new Date(d.getFullYear(), 0, 1)) / 86400000);
+  const d   = new Date(dateStr + 'T12:00:00Z');
+  const doy = Math.round((d - Date.UTC(d.getUTCFullYear(), 0, 1)) / 86400000);
   const B   = (2 * Math.PI / 365) * doy;
   const eqTime = 229.18 * (0.000075 + 0.001868 * Math.cos(B) - 0.032077 * Math.sin(B)
                            - 0.014615 * Math.cos(2*B) - 0.04089  * Math.sin(2*B));
   const decl = 0.006918 - 0.399912 * Math.cos(B) + 0.070257 * Math.sin(B)
              - 0.006758 * Math.cos(2*B) + 0.000907 * Math.sin(2*B)
              - 0.002697 * Math.cos(3*B) + 0.00148  * Math.sin(3*B);
-  const lat  = UJJAIN_LAT * Math.PI / 180;
+  const lat  = place.lat * Math.PI / 180;
   const cosHA = (Math.sin(-0.01454) - Math.sin(lat) * Math.sin(decl))
                / (Math.cos(lat) * Math.cos(decl));
-  const HA = Math.acos(Math.max(-1, Math.min(1, cosHA))) * 180 / Math.PI;
-  const solarNoon = 720 - eqTime - 4 * (UJJAIN_LON - 82.5);
+  // A latitude with no sunrise on this date clamps to a 12-hour day rather
+  // than returning NaN and taking every downstream time with it.
+  const HA = Math.acos(Math.max(-1, Math.min(1, cosHA))) * 180 / Math.PI || 90;
+  // The clock a place keeps runs off its timezone's standard meridian, which
+  // is 15° per hour of offset — 82.5°E for IST.
+  const solarNoon = 720 - eqTime - 4 * (place.lon - place.tzMin / 4);
   return { srMin: Math.round(solarNoon - HA * 4), ssMin: Math.round(solarNoon + HA * 4) };
 }
 
@@ -232,19 +299,37 @@ function calcAtJD(jd) {
   };
 }
 
-function calcCore(dateStr) {
-  const d  = new Date(dateStr + 'T06:00:00+05:30');
-  const jd = 2440587.5 + d.getTime() / 86400000;
+// The five limbs, read at sunrise.
+//
+// A panchang states the tithi, nakshatra, yoga and karana that are running
+// *at sunrise* — that is what "today's nakshatra" means, and it is why a limb
+// can be named for a day it ends early in. This used to read them at a fixed
+// 06:00 IST, which is a fair approximation of sunrise at Ujjain and nowhere
+// else: at Kolkata sunrise is 5:13 and at Mumbai 6:19, so the reference
+// instant was out by up to an hour, and the Moon covers a third of a degree in
+// that time. Now it is the day's actual sunrise at the place being asked
+// about, so the limbs and the timings below are read off the same moment.
+//
+// `d` stays a plain noon-UTC anchor for the date, used only for the weekday
+// and for formatting. Deriving it from local midnight instead would land on
+// the previous day once the server clock is UTC.
+function calcCore(dateStr, place = DEFAULT_PLACE) {
+  const d = new Date(dateStr + 'T12:00:00Z');
+  const { srMin, ssMin } = getSunriseSunsetMin(dateStr, place);
+  const jd = localMidnightJD(dateStr, place) + srMin / 1440;
   const { sunLon, moonLon } = calcAtJD(jd);
   const tithiRaw     = ((moonLon - sunLon + 360) % 360) / 12;
   const tithiIndex   = Math.floor(tithiRaw) % 30;
   const nakshatraIdx = Math.floor(moonLon / (360 / 27)) % 27;
   const yogaIndex    = Math.floor(((sunLon + moonLon) % 360) / (360 / 27)) % 27;
   const karanaIndex  = Math.floor(tithiRaw * 2) % 11;
-  return { d, jd, sunLon, moonLon, tithiRaw, tithiIndex, nakshatraIdx, yogaIndex, karanaIndex };
+  return { d, jd, srMin, ssMin, sunLon, moonLon, tithiRaw, tithiIndex, nakshatraIdx, yogaIndex, karanaIndex };
 }
 
-function calcTimings(sunLon, moonLon, tithiRaw, jd) {
+// `baseMin` is the clock time the positions were read at — sunrise — so that
+// "ends in 6.2 hours" becomes a time on the same clock the rest of the page
+// prints. It was hardcoded to 6 AM alongside the old reference instant.
+function calcTimings(sunLon, moonLon, tithiRaw, jd, baseMin = 360) {
   // Use actual positions 24 h later to get real instantaneous speeds
   const { sunLon: s1, moonLon: m1 } = calcAtJD(jd + 1);
   let mDelta = m1 - moonLon; if (mDelta < 0) mDelta += 360;
@@ -254,7 +339,7 @@ function calcTimings(sunLon, moonLon, tithiRaw, jd) {
   const yogaSpd = Math.max(mDelta + sDelta, 11);
 
   const addHrs = (hrs) => {
-    const totalMin = 6 * 60 + Math.round(Math.max(0, hrs) * 60);
+    const totalMin = Math.round(baseMin) + Math.round(Math.max(0, hrs) * 60);
     return { time: minToTime(totalMin % (24 * 60)), day: totalMin >= 24 * 60 ? 'Tomorrow' : 'Today' };
   };
 
@@ -281,17 +366,23 @@ function tithiFullName(idx) {
   return (idx < 15 ? 'Shukla' : 'Krishna') + TITHIS[idx];
 }
 
-function buildTithiSchedule(startDateStr, count) {
+function buildTithiSchedule(startDateStr, count, place = DEFAULT_PLACE) {
   count = count || 8;
   const STEP_MS  = 20 * 60000; // 20-min steps
-  const refMs    = new Date(startDateStr + 'T06:00:00+05:30').getTime();
+  const refMs    = new Date(`${startDateStr}T06:00:00${tzSuffix(place.tzMin)}`).getTime();
   const scanFrom = refMs - 3 * 86400000;
   const scanTo   = refMs + (count + 2) * 86400000;
 
-  const fmt = (ms) => ({
-    time: new Date(ms).toLocaleTimeString('en-IN', { hour12:true, hour:'numeric', minute:'2-digit', timeZone:'Asia/Kolkata' }),
-    date: new Date(ms).toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short', year:'numeric', timeZone:'Asia/Kolkata' }),
-  });
+  // A tithi changes at one instant everywhere; only the clock it is read off
+  // differs. Shift into the place's offset and format as UTC, which works for
+  // any offset without needing an IANA zone name.
+  const fmt = (ms) => {
+    const local = new Date(ms + place.tzMin * 60000);
+    return {
+      time: local.toLocaleTimeString('en-IN', { hour12:true, hour:'numeric', minute:'2-digit', timeZone:'UTC' }),
+      date: local.toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short', year:'numeric', timeZone:'UTC' }),
+    };
+  };
 
   const bounds = [];
   let prevIdx = null, prevRaw = null, prevMs = null;
@@ -336,8 +427,8 @@ function buildTithiSchedule(startDateStr, count) {
 function getPanchang(req, res) {
   try {
     const dateStr = req.query.date || new Date().toISOString().split('T')[0];
-    const { d, jd, sunLon, moonLon, tithiRaw, tithiIndex, nakshatraIdx, yogaIndex, karanaIndex } = calcCore(dateStr);
-    const { srMin, ssMin } = getSunriseSunsetMin(dateStr);
+    const place = placeFrom(req);
+    const { d, jd, srMin, ssMin, sunLon, moonLon, tithiRaw, tithiIndex, nakshatraIdx, yogaIndex, karanaIndex } = calcCore(dateStr, place);
 
     const tithi      = TITHIS[tithiIndex] || 'Pratipada';
     const tithiPaksha= tithiIndex < 15 ? 'Shukla Paksha (Waxing)' : 'Krishna Paksha (Waning)';
@@ -348,7 +439,7 @@ function getPanchang(req, res) {
     const vara       = VARA[d.getDay()];
     const varaLord   = VARA_LORD[d.getDay()];
 
-    const timings = calcTimings(sunLon, moonLon, tithiRaw, jd);
+    const timings = calcTimings(sunLon, moonLon, tithiRaw, jd, srMin);
     const div = dayDivisions(srMin, ssMin, vara);
     res.json({
       date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
@@ -361,6 +452,7 @@ function getPanchang(req, res) {
       abhijitNote: abhijitCaveat(vara, div.abhijit, div.rahu),
       luckyColor: LUCKY_COLORS[vara], luckyNumber: LUCKY_NUMBERS[vara], goodFor: GOOD_WORK[vara],
       moonDegree: moonLon.toFixed(2), sunDegree: sunLon.toFixed(2),
+      place: placeInfo(place),
       ...timings,
     });
   } catch (err) {
@@ -374,14 +466,15 @@ function getPanchang(req, res) {
 function getTodayTithi(req, res) {
   try {
     const dateStr = req.query.date || new Date().toISOString().split('T')[0];
-    const { d, jd, sunLon, moonLon, tithiRaw, tithiIndex } = calcCore(dateStr);
+    const place = placeFrom(req);
+    const { d, jd, srMin, sunLon, moonLon, tithiRaw, tithiIndex } = calcCore(dateStr, place);
     const tithi    = TITHIS[tithiIndex];
     const paksha   = tithiIndex < 15 ? 'Shukla Paksha' : 'Krishna Paksha';
     const tithiNum = tithiIndex < 15 ? tithiIndex + 1 : tithiIndex - 14;
     const vara     = VARA[d.getDay()];
     const details  = TITHI_DETAILS[tithi] || TITHI_DETAILS['Pratipada'];
-    const { tithiEnds, nextTithi } = calcTimings(sunLon, moonLon, tithiRaw, jd);
-    const tithiChart = buildTithiSchedule(dateStr, 8);
+    const { tithiEnds, nextTithi } = calcTimings(sunLon, moonLon, tithiRaw, jd, srMin);
+    const tithiChart = buildTithiSchedule(dateStr, 8, place);
     res.json({
       date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
       tithi, paksha, tithiNum,
@@ -390,7 +483,8 @@ function getTodayTithi(req, res) {
       meaning: TITHI_MEANING[tithi] || 'A balanced day for steady progress',
       vara, varaLord: VARA_LORD[d.getDay()],
       tithiEnds, nextTithi, tithiChart,
-      location: LOCATION,
+      location: place.label,
+      place: placeInfo(place),
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to calculate Tithi' });
@@ -402,12 +496,13 @@ function getTodayTithi(req, res) {
 function getTodayNakshatra(req, res) {
   try {
     const dateStr = req.query.date || new Date().toISOString().split('T')[0];
-    const { d, jd, sunLon, moonLon, tithiRaw, nakshatraIdx } = calcCore(dateStr);
+    const place = placeFrom(req);
+    const { d, jd, srMin, sunLon, moonLon, tithiRaw, nakshatraIdx } = calcCore(dateStr, place);
     const nakshatra = NAKSHATRAS[nakshatraIdx];
     const pada      = Math.floor((moonLon % (360 / 27)) / (360 / 27 / 4)) + 1;
     const info      = NAKSHATRA_DATA[nakshatra] || {};
     const vara      = VARA[d.getDay()];
-    const { nakshatraEnds, nextNakshatra } = calcTimings(sunLon, moonLon, tithiRaw, jd);
+    const { nakshatraEnds, nextNakshatra } = calcTimings(sunLon, moonLon, tithiRaw, jd, srMin);
     res.json({
       date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
       nakshatra, pada, nakshatraNum: nakshatraIdx + 1,
@@ -415,6 +510,7 @@ function getTodayNakshatra(req, res) {
       ...info,
       vara, varaLord: VARA_LORD[d.getDay()],
       nakshatraEnds, nextNakshatra,
+      place: placeInfo(place),
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to calculate Nakshatra' });
@@ -426,9 +522,9 @@ function getTodayNakshatra(req, res) {
 function getTodayChoghadiya(req, res) {
   try {
     const dateStr = req.query.date || new Date().toISOString().split('T')[0];
-    const { d } = calcCore(dateStr);
+    const place = placeFrom(req);
+    const { d, srMin, ssMin } = calcCore(dateStr, place);
     const vara = VARA[d.getDay()];
-    const { srMin, ssMin } = getSunriseSunsetMin(dateStr);
     const nightEndMin = srMin + 24 * 60; // next day sunrise (approx)
 
     const daySlotLen   = (ssMin - srMin) / 8;
@@ -452,11 +548,7 @@ function getTodayChoghadiya(req, res) {
       ...CHOGHADIYA_INFO[name],
     }));
 
-    // current time in minutes from midnight (IST)
-    const now = new Date();
-    const istOffsetMin = 330; // +5:30
-    const nowMin = ((now.getUTCHours() * 60 + now.getUTCMinutes()) + istOffsetMin) % (24 * 60);
-
+    const nowMin = nowMinAt(place);
     const findCurrent = (slots) => slots.findIndex(s => nowMin >= s.startMin && nowMin < s.endMin);
 
     res.json({
@@ -465,6 +557,7 @@ function getTodayChoghadiya(req, res) {
       daySlots, nightSlots,
       currentDaySlotIdx:   findCurrent(daySlots),
       currentNightSlotIdx: findCurrent(nightSlots),
+      place: placeInfo(place),
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to calculate Choghadiya' });
@@ -476,14 +569,12 @@ function getTodayChoghadiya(req, res) {
 function getTodayRahuKaal(req, res) {
   try {
     const dateStr = req.query.date || new Date().toISOString().split('T')[0];
-    const { d } = calcCore(dateStr);
+    const place = placeFrom(req);
+    const { d, srMin, ssMin } = calcCore(dateStr, place);
     const vara = VARA[d.getDay()];
-    const { srMin, ssMin } = getSunriseSunsetMin(dateStr);
     const div = dayDivisions(srMin, ssMin, vara);
 
-    const now = new Date();
-    const istOffsetMin = 330;
-    const nowMin = ((now.getUTCHours() * 60 + now.getUTCMinutes()) + istOffsetMin) % (24 * 60);
+    const nowMin = nowMinAt(place);
     const isRahuActive = nowMin >= div.rahu.startMin && nowMin < div.rahu.endMin;
 
     res.json({
@@ -497,6 +588,7 @@ function getTodayRahuKaal(req, res) {
       isRahuActive,
       rahuStartMin: div.rahu.startMin,
       rahuEndMin:   div.rahu.endMin,
+      place: placeInfo(place),
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to calculate Rahu Kaal' });
@@ -508,9 +600,9 @@ function getTodayRahuKaal(req, res) {
 function getTodayShubhamuhurat(req, res) {
   try {
     const dateStr = req.query.date || new Date().toISOString().split('T')[0];
-    const { d, tithiIndex, nakshatraIdx } = calcCore(dateStr);
+    const place = placeFrom(req);
+    const { d, srMin, ssMin, tithiIndex, nakshatraIdx } = calcCore(dateStr, place);
     const vara = VARA[d.getDay()];
-    const { srMin, ssMin } = getSunriseSunsetMin(dateStr);
     const div = dayDivisions(srMin, ssMin, vara);
 
     const brahma   = `${minToTime(srMin - 96)} – ${minToTime(srMin - 48)}`;
@@ -560,6 +652,7 @@ function getTodayShubhamuhurat(req, res) {
       abhijitNote: abhijitCaveat(vara, div.abhijit, div.rahu),
       rahuKaal: rahuTime,
       activities: ACTIVITY_MUHURTA,
+      place: placeInfo(place),
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to calculate Shubhamuhurat' });
@@ -573,6 +666,7 @@ function getPanchangCalendar(req, res) {
     const year  = parseInt(req.query.year  || new Date().getFullYear());
     const month = parseInt(req.query.month || new Date().getMonth() + 1); // 1-indexed
     const daysInMonth = new Date(year, month, 0).getDate();
+    const place = placeFrom(req);
     const days = [];
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -580,7 +674,7 @@ function getPanchangCalendar(req, res) {
       const dd = String(day).padStart(2,'0');
       const dateStr = `${year}-${mm}-${dd}`;
       try {
-        const { d, tithiIndex, nakshatraIdx } = calcCore(dateStr);
+        const { d, tithiIndex, nakshatraIdx } = calcCore(dateStr, place);
         const tithi     = TITHIS[tithiIndex];
         const nakshatra = NAKSHATRAS[nakshatraIdx];
         const vara      = VARA[d.getDay()];
@@ -595,17 +689,16 @@ function getPanchangCalendar(req, res) {
       }
     }
     const firstDayOfWeek = new Date(`${year}-${String(month).padStart(2,'0')}-01`).getDay();
-    res.json({ year, month, monthName: new Date(year, month-1, 1).toLocaleString('en-IN',{month:'long'}), firstDayOfWeek, days });
+    res.json({ year, month, monthName: new Date(year, month-1, 1).toLocaleString('en-IN',{month:'long'}), firstDayOfWeek, days, place: placeInfo(place) });
   } catch (err) {
     res.status(500).json({ error: 'Failed to calculate Calendar' });
   }
 }
 
 // Shared helpers for muhurtaController (no duplication)
-function getPanchangData(dateStr) {
-  const core = calcCore(dateStr);
-  const { srMin, ssMin } = getSunriseSunsetMin(dateStr);
-  const { d, tithiIndex, nakshatraIdx, yogaIndex, karanaIndex, sunLon, moonLon } = core;
+function getPanchangData(dateStr, place = DEFAULT_PLACE) {
+  const core = calcCore(dateStr, place);
+  const { d, srMin, ssMin, tithiIndex, nakshatraIdx, yogaIndex, karanaIndex, sunLon, moonLon } = core;
   return {
     dateStr,
     vara:        VARA[d.getDay()],

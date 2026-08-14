@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { panchang as panchangApi } from '../api';
+import usePanchangPlace from '../hooks/usePanchangPlace';
+import PanchangPlacePicker from '../components/PanchangPlacePicker';
 
 const DAYS_OF_WEEK = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const TITHI_COLOR = {
@@ -20,13 +22,16 @@ export default function PanchangCalendarPage() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
 
+  const { place, setPlace, params, placeKey } = usePanchangPlace();
+
   useEffect(() => {
     setLoading(true);
-    panchangApi.calendar({ year, month })
+    panchangApi.calendar({ year, month, ...params })
       .then(r => setCalData(r.data))
       .catch(() => setCalData(null))
       .finally(() => setLoading(false));
-  }, [year, month]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [year, month, placeKey]);
 
   const prevMonth = () => {
     if (month === 1) { setYear(y => y - 1); setMonth(12); }
@@ -76,6 +81,10 @@ export default function PanchangCalendarPage() {
             <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-green-400/40 inline-block"></span> Festival</span>
             <span className="flex items-center gap-1.5">S = Shukla Paksha</span>
             <span className="flex items-center gap-1.5">K = Krishna Paksha</span>
+          </div>
+
+          <div className="mb-8">
+            <PanchangPlacePicker place={place} onChange={setPlace} />
           </div>
 
           {loading ? (

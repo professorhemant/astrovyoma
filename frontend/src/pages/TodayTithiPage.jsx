@@ -2,6 +2,8 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { panchang as panchangApi } from '../api';
+import usePanchangPlace from '../hooks/usePanchangPlace';
+import PanchangPlacePicker from '../components/PanchangPlacePicker';
 
 const PAKSHA_PHASE = {
   'Shukla Paksha': { label: 'Waxing Moon', icon: '🌒', desc: 'Bright fortnight � energy building, growth, new beginnings' },
@@ -20,12 +22,16 @@ export default function TodayTithiPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const { place, setPlace, params, placeKey } = usePanchangPlace();
+
   useEffect(() => {
-    panchangApi.tithi()
+    setLoading(true);
+    panchangApi.tithi(params)
       .then(r => setData(r.data))
       .catch(() => setData(null))
       .finally(() => setLoading(false));
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [placeKey]);
 
   const paksha = data ? (data.paksha || '') : '';
   const phase = PAKSHA_PHASE[paksha] || PAKSHA_PHASE['Shukla Paksha'];
@@ -42,6 +48,10 @@ export default function TodayTithiPage() {
             <h1 className="font-serif text-3xl md:text-5xl text-gold-400 mb-3" style={{ textShadow:'0 0 30px rgba(201,168,76,0.4)' }}>Today's Tithi</h1>
             <p className="text-gray-200 text-sm">The lunar day � determined by the angular distance between Sun & Moon</p>
           </motion.div>
+
+          <div className="mb-8">
+            <PanchangPlacePicker place={place} onChange={setPlace} />
+          </div>
 
           {loading ? (
             <div className="text-center py-20 text-gold-400 font-serif text-xl animate-pulse">✦ Calculating Tithi...</div>

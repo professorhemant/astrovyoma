@@ -2,6 +2,8 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { panchang as panchangApi } from '../api';
+import usePanchangPlace from '../hooks/usePanchangPlace';
+import PanchangPlacePicker from '../components/PanchangPlacePicker';
 
 const ELEMENT_STYLE = {
   Earth:  { bg:'bg-yellow-500/10',  border:'border-yellow-500/30',  text:'text-yellow-300',  icon:'🌍' },
@@ -20,12 +22,16 @@ export default function TodayNakshatraPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const { place, setPlace, params, placeKey } = usePanchangPlace();
+
   useEffect(() => {
-    panchangApi.nakshatra()
+    setLoading(true);
+    panchangApi.nakshatra(params)
       .then(r => setData(r.data))
       .catch(() => setData(null))
       .finally(() => setLoading(false));
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [placeKey]);
 
   const element = data?.element || 'Earth';
   const es = ELEMENT_STYLE[element] || ELEMENT_STYLE['Earth'];
@@ -41,6 +47,10 @@ export default function TodayNakshatraPage() {
             <h1 className="font-serif text-3xl md:text-5xl text-gold-400 mb-3" style={{ textShadow:'0 0 30px rgba(201,168,76,0.4)' }}>Today's Nakshatra</h1>
             <p className="text-gray-200 text-sm">The Moon's lunar mansion � one of the 27 cosmic star clusters</p>
           </motion.div>
+
+          <div className="mb-8">
+            <PanchangPlacePicker place={place} onChange={setPlace} />
+          </div>
 
           {loading ? (
             <div className="text-center py-20 text-gold-400 font-serif text-xl animate-pulse">✦ Locating Moon's Star...</div>
