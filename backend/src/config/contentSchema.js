@@ -61,9 +61,13 @@ const SETTINGS_GROUPS = [
     fields: [
       { key: 'commissionPercent',  label: 'Platform commission (%)', type: 'number', default: 40, min: 0, max: 100,
         help: 'The share AstroVyoma keeps from each paid consultation — not the ' +
-              'astrologer’s share. At 40 the astrologer receives 60, which is what ' +
-              'the astrologer kit and the Join page both advertise. Change this and ' +
-              'the headline figure in Astrologer Kit — Wording must change with it.' },
+              'astrologer’s share. At 40 the astrologer receives 60. Every ' +
+              'percentage printed on the site follows this number by itself: the ' +
+              'headline on the astrologer kit and the two figures on the Join ' +
+              'page are all 100 minus this number, so there is nothing else to ' +
+              'change and they cannot end up disagreeing. Changing it ' +
+              'does not restate anything already earned — each consultation ' +
+              'keeps the rate it was recorded at.' },
       { key: 'newUserFreeMinutes', label: 'Free minutes for new users', type: 'number', default: 5, min: 0, max: 120 },
       { key: 'minWalletRecharge',  label: 'Minimum wallet recharge (₹)', type: 'number', default: 100, min: 1 },
       { key: 'maxWalletRecharge',  label: 'Maximum wallet recharge (₹)', type: 'number', default: 10000, min: 1 },
@@ -205,8 +209,10 @@ const SETTINGS_GROUPS = [
       { key: 'obIntro',   label: 'Opening paragraph', type: 'textarea',
         default: 'What we ask of you, what you get in return, and exactly how joining works — set out in full before you fill in a single form.' },
 
-      { key: 'obEarnShare',   label: 'Headline earnings figure', type: 'text', default: '60%',
-        help: 'Shown large at the top of the earnings section. Must match what the platform actually pays out — the split is set in Business Settings.' },
+      // The big percentage at the top of the earnings section is deliberately
+      // not editable here. It is worked out from the platform commission in
+      // Business Settings, so the figure on the page can never disagree with
+      // the figure the astrologer is actually paid.
       { key: 'obEarnHeading', label: 'Earnings — heading', type: 'text', default: 'What You Earn' },
       { key: 'obEarnIntro',   label: 'Earnings — line underneath', type: 'textarea',
         default: 'Your share of every consultation, before anything else is taken.' },

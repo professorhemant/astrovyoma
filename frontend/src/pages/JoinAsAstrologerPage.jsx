@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { astrologerApplications } from '../api';
+import { astrologerApplications, content as contentApi } from '../api';
 
 const STEPS = ['Personal Info', 'Your Expertise', 'About You'];
 
@@ -17,6 +17,18 @@ export default function JoinAsAstrologerPage() {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // What an astrologer keeps, from the server rather than typed in here twice.
+  // Both figures on this page — the badge and the line under the rate — are
+  // this number, so neither can drift away from the commission that is
+  // actually applied. 60 is what the commission setting defaults to, and is
+  // only used if the request has not answered yet.
+  const [share, setShare] = useState(60);
+  useEffect(() => {
+    contentApi.settings()
+      .then(r => { const s = r.data?.settings?.astrologerSharePercent; if (Number.isFinite(s)) setShare(s); })
+      .catch(() => {});
+  }, []);
 
   function set(key, value) {
     setForm(f => ({ ...f, [key]: value }));
@@ -129,7 +141,7 @@ export default function JoinAsAstrologerPage() {
 
         <div className="flex flex-wrap justify-center gap-4 mt-8">
           {[
-            { icon: '₹', label: '60% Earnings', sub: 'Your share of every consultation' },
+            { icon: '₹', label: `${share}% Earnings`, sub: 'Your share of every consultation' },
             // Was "10,000+ Users — Active seekers on the platform". There were
             // two accounts, one of them the admin, and no consultation had ever
             // been given. An astrologer decides to join on the strength of these
@@ -237,7 +249,7 @@ export default function JoinAsAstrologerPage() {
                   <input type="number" min="10" value={form.price_per_min} onChange={e => set('price_per_min', e.target.value)}
                     className={inputClass('price_per_min')} />
                   {errors.price_per_min && <p className="text-red-400 text-xs mt-1">{errors.price_per_min}</p>}
-                  <p className="text-gray-600 text-xs mt-1">Platform takes 40%; you keep 60%</p>
+                  <p className="text-gray-600 text-xs mt-1">Platform takes {100 - share}%; you keep {share}%</p>
                 </div>
               </div>
             )}

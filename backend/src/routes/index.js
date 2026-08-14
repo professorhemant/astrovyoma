@@ -220,6 +220,10 @@ router.get('/events/year',     eventsCalendarController.getYearEvents);
 // Public reads for the site to render from; everything that writes is admin-only.
 const contentController = require('../controllers/contentController');
 router.get('/content/bundle',           contentController.publicBundle);
+// Settings on their own, for a page that needs a figure but no lists — asking
+// for the bundle with no keys would fetch every list on the site to get them.
+// Must stay above /content/:listKey or that route swallows it.
+router.get('/content/settings',         contentController.publicSettings);
 router.get('/content/:listKey',         contentController.publicList);
 
 router.get('/admin/content/schema',     auth, adminAuth, contentController.getSchema);

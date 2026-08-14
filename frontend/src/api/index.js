@@ -248,8 +248,9 @@ export const admin = {
 
 // Public content feed the site renders from.
 export const content = {
-  bundle: (keys) => api.get('/content/bundle', { params: keys ? { keys: keys.join(',') } : {} }),
-  list:   (key)  => api.get(`/content/${key}`),
+  bundle:   (keys) => api.get('/content/bundle', { params: keys ? { keys: keys.join(',') } : {} }),
+  list:     (key)  => api.get(`/content/${key}`),
+  settings: ()     => api.get('/content/settings'),
 };
 
 export const astrologerApplications = {

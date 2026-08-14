@@ -120,6 +120,15 @@ exports.publicBundle = async (req, res) => {
   }
 };
 
+exports.publicSettings = async (req, res) => {
+  try {
+    res.json({ settings: await settingsService.getPublicSettings() });
+  } catch (err) {
+    console.error('[content] publicSettings', err);
+    res.status(500).json({ error: 'Failed to load settings' });
+  }
+};
+
 // ─── write ───────────────────────────────────────────────────────────────────
 
 exports.create = async (req, res) => {

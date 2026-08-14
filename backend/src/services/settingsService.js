@@ -82,13 +82,33 @@ const PUBLIC_KEYS = SETTINGS_GROUPS
   .filter(g => g.public)
   .flatMap(g => g.fields.map(f => f.key));
 
+// What we tell astrologers they keep, worked out from what we actually keep.
+//
+// This used to be a second number typed by hand into Astrologer Kit — Wording,
+// which meant the site could advertise 60% while the commission said 45. The
+// figure is now derived, so the page cannot contradict the ledger: change the
+// commission and every published percentage moves with it.
+//
+// Business Settings stays private, but the astrologer's share does not — it is
+// printed on the Join page and in the kit already, and an astrologer is
+// entitled to know it before applying.
+function astrologerShare(s) {
+  const commission = Math.min(100, Math.max(0, Number(s.commissionPercent) || 0));
+  return Math.round(100 - commission);
+}
+
 async function getPublicSettings() {
   const s = await getSettings();
   const out = {};
   for (const key of PUBLIC_KEYS) out[key] = s[key];
   // The banner is only news when it is switched on.
   out.announcement = s.announcementActive ? s.announcement : '';
+
+  const share = astrologerShare(s);
+  out.astrologerSharePercent = share;
+  out.platformSharePercent   = 100 - share;
+  out.obEarnShare            = `${share}%`;   // the kit's headline figure
   return out;
 }
 
-module.exports = { getSettings, updateSettings, getPublicSettings };
+module.exports = { getSettings, updateSettings, getPublicSettings, astrologerShare };
