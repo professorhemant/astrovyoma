@@ -63,8 +63,16 @@ export default function HeroMarquee({
     </span>
   );
 
+  // Tablet and up only.
+  //
+  // The band it travels along is a percentage of the artwork, and the artwork is
+  // cropped hardest on a phone: at 390px the band is about 240px wide and lands
+  // across the globe and the lamp, so the tagline arrived mid-word, unreadable,
+  // and read as a rendering fault rather than as writing. The same words are
+  // shown under the headline instead, where a phone has room for them — see
+  // HomePage's hero.
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 9 }}>
+    <div className="absolute inset-0 overflow-hidden pointer-events-none hidden md:block" style={{ zIndex: 9 }}>
       {/* ArtSpace — the same box object-cover gives the banner image. */}
       <div
         className="absolute top-1/2 left-1/2"

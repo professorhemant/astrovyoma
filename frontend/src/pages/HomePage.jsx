@@ -254,10 +254,28 @@ export default function HomePage() {
           {/* The headline is painted into the artwork, sized for a 3168px-wide
               canvas — on a phone it renders about four pixels tall. Carry it as
               real text here, where it can scale and be read. */}
-          <h1 className="absolute inset-x-0 top-16 md:hidden pointer-events-none px-6 pt-2 font-serif text-center leading-snug text-[19px]"
-            style={{ color: '#F3D98B', textShadow: '0 2px 16px rgba(0,0,0,0.9)' }}>
-            Unveil Your Destiny.<br />Map Your Cosmic Journey.
-          </h1>
+          {/* Headline and tagline in one block, stacked in normal flow.
+              Positioning the tagline separately meant guessing where the
+              headline ended, and the guess was wrong the moment the headline
+              wrapped differently — it printed straight over "Map Your Cosmic
+              Journey". One container, two children, no arithmetic. */}
+          <div className="absolute inset-x-0 top-16 md:hidden pointer-events-none px-6 pt-2 text-center">
+            <h1 className="font-serif leading-snug text-[19px]"
+              style={{ color: '#F3D98B', textShadow: '0 2px 16px rgba(0,0,0,0.9)' }}>
+              Unveil Your Destiny.<br />Map Your Cosmic Journey.
+            </h1>
+            {/* The tagline streams out of the rishi's palm from tablet up — see
+                HeroMarquee — but that band is only about 240px wide at 390px and
+                crosses the busiest part of the painting. Same words, same admin
+                field, shown here as a line a phone can actually read. */}
+            {siteSettings?.heroMarqueeText?.trim() && (
+              <p className="mt-1.5 mx-auto max-w-[19rem] leading-snug text-[11px]"
+                style={{ fontFamily: 'Cormorant Garamond, serif', color: '#E8C547',
+                         letterSpacing: '0.05em', textShadow: '0 2px 12px rgba(0,0,0,0.95)' }}>
+                {siteSettings.heroMarqueeText}
+              </p>
+            )}
+          </div>
           {/* bottom fade */}
           <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
             style={{ background: 'linear-gradient(to bottom, transparent, #12093A)' }} />

@@ -71,6 +71,20 @@
     border-radius: 1rem;
   }
 
+  /* A section heading nudged in the Visual Editor stores its offset in pixels,
+     and the editor is used on a desktop. Those pixels then applied at every
+     width: the horoscope heading, saved at -80px to tighten it against a tall
+     hero, was dragged straight onto the hero buttons on a 390px phone, so
+     "Today's Cosmic Guidance" printed across "Talk to AstroVyoma AI".
+     A nudge measured against a 1440px canvas means nothing at 390px, so phones
+     ignore it and use the natural spacing. Overriding an inline style needs
+     !important; there is no other way to reach one from a media query. */
+  @media (max-width: 767px) {
+    [data-edit-flow="section_headings"] {
+      margin-top: 0 !important;
+    }
+  }
+
   /* The primary action inside a card — Continue, Confirm & Book, Search.
 
      This class was being used on fourteen buttons across nine pages and had
