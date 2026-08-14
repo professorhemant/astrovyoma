@@ -11,9 +11,23 @@ function toISTMidnight(dateStr) {
   return new Date(dateStr + 'T00:00:00+05:30');
 }
 
+// What a seeker may book. The booking page shows the same four; this list is
+// the one that decides, because the page can be edited by whoever is holding
+// the browser.
+const ALLOWED_DURATIONS = [15, 30, 60, 90];
+const DEFAULT_DURATION  = 60;
+
+const cleanDuration = (v) => {
+  const n = parseInt(v);
+  return ALLOWED_DURATIONS.includes(n) ? n : DEFAULT_DURATION;
+};
+
 function generateSlots(dateStr, durationMins) {
   const slots = [];
-  const step  = durationMins <= 30 ? 30 : 60;
+  // Offer a short session on its own granularity: a 15-minute reading starting
+  // only on the half hour would leave the other 15 minutes unbookable. Anything
+  // an hour or longer still starts on the hour.
+  const step  = Math.min(durationMins, 60);
   const base  = toISTMidnight(dateStr);
 
   for (let h = SLOT_START_HOUR; h < SLOT_END_HOUR; h += step / 60) {
@@ -34,7 +48,7 @@ exports.getSlots = async (req, res) => {
   try {
     const { astrologerId } = req.params;
     const dateStr    = req.query.date || new Date().toISOString().slice(0, 10);
-    const duration   = parseInt(req.query.duration) || 60;
+    const duration   = cleanDuration(req.query.duration);
 
     const astrologer = await Astrologer.findByPk(astrologerId);
     if (!astrologer) return res.status(404).json({ error: 'Astrologer not found' });
@@ -52,14 +66,25 @@ exports.getSlots = async (req, res) => {
       attributes: ['scheduled_at', 'duration_mins']
     });
 
-    const bookedStarts = new Set(booked.map(a => new Date(a.scheduled_at).toISOString()));
-    const now          = new Date();
+    // Availability is an overlap test, not a matching start time.
+    //
+    // This used to compare start instants, so an hour booked at 10:00 left
+    // 10:30 showing as free to anyone booking half an hour — the astrologer
+    // double-booked and neither seeker was told. Sessions of 15 minutes make
+    // that near-certain rather than merely possible, since four of them fit
+    // inside one booked hour.
+    const bookedRanges = booked.map(a => {
+      const start = new Date(a.scheduled_at).getTime();
+      return [start, start + (a.duration_mins || DEFAULT_DURATION) * 60000];
+    });
+    const now = Date.now();
 
-    const allSlots = generateSlots(dateStr, duration);
-    const slots    = allSlots.map(s => ({
-      ...s,
-      available: !bookedStarts.has(s.start) && new Date(s.start) > now,
-    }));
+    const slots = generateSlots(dateStr, duration).map(s => {
+      const start = new Date(s.start).getTime();
+      const end   = start + duration * 60000;
+      const clash = bookedRanges.some(([bStart, bEnd]) => start < bEnd && end > bStart);
+      return { ...s, available: !clash && start > now };
+    });
 
     res.json({ astrologer_id: astrologerId, date: dateStr, duration, slots, astrologer: { display_name: astrologer.display_name, price_per_min: astrologer.price_per_min } });
   } catch (err) {
@@ -70,19 +95,50 @@ exports.getSlots = async (req, res) => {
 // POST /appointments/book
 exports.bookAppointment = async (req, res) => {
   try {
-    const { astrologer_id, scheduled_at, duration_mins = 60, mode = 'chat', concern_category, concern_notes } = req.body;
+    const { astrologer_id, scheduled_at, mode = 'chat', concern_category, concern_notes } = req.body;
     if (!astrologer_id || !scheduled_at) return res.status(400).json({ error: 'astrologer_id and scheduled_at are required' });
 
+    // A length the booking page never offers is not bookable by hand either.
+    // Unlike the slots list, which defaults quietly, this refuses: the amount
+    // is worked out from the duration, so silently booking an hour against a
+    // request for something else charges for a session nobody asked for.
+    const duration_mins = req.body.duration_mins === undefined
+      ? DEFAULT_DURATION
+      : parseInt(req.body.duration_mins);
+    if (!ALLOWED_DURATIONS.includes(duration_mins)) {
+      return res.status(400).json({
+        error: `A session must be one of ${ALLOWED_DURATIONS.join(', ')} minutes.`,
+      });
+    }
+
     const scheduledDate = new Date(scheduled_at);
+    if (isNaN(scheduledDate)) return res.status(400).json({ error: 'scheduled_at is not a valid date' });
     if (scheduledDate <= new Date()) return res.status(400).json({ error: 'Cannot book a slot in the past' });
 
-    // Check slot is still free
-    const conflict = await Appointment.findOne({
+    // The slot has to be free for the whole session, not merely unclaimed at
+    // the minute it starts. Booking half an hour at 10:30 against an hour
+    // already booked at 10:00 used to pass, because only the start instants
+    // were compared — the astrologer found out by being in two places at once.
+    const sessionStart = scheduledDate;
+    const sessionEnd   = new Date(scheduledDate.getTime() + duration_mins * 60000);
+
+    // Anything starting within a day either side is close enough to overlap;
+    // the exact test is done below, in one place, on both sides.
+    const sameDay = await Appointment.findAll({
       where: {
         astrologer_id,
-        scheduled_at: scheduledDate,
-        status: { [Op.notIn]: ['cancelled'] }
-      }
+        status: { [Op.notIn]: ['cancelled'] },
+        scheduled_at: {
+          [Op.gte]: new Date(sessionStart.getTime() - 24 * 3600000),
+          [Op.lt]:  new Date(sessionEnd.getTime()   + 24 * 3600000),
+        },
+      },
+      attributes: ['scheduled_at', 'duration_mins'],
+    });
+    const conflict = sameDay.some(a => {
+      const bStart = new Date(a.scheduled_at).getTime();
+      const bEnd   = bStart + (a.duration_mins || DEFAULT_DURATION) * 60000;
+      return sessionStart.getTime() < bEnd && sessionEnd.getTime() > bStart;
     });
     if (conflict) return res.status(409).json({ error: 'This slot is no longer available. Please choose another time.' });
 

@@ -5,7 +5,9 @@ import toast from 'react-hot-toast';
 import { appointments as apptApi, astrologers as astrologersApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 
-const DURATIONS  = [{ v:30, l:'30 min' }, { v:60, l:'1 hour' }, { v:90, l:'1.5 hours' }];
+// Kept in step with ALLOWED_DURATIONS in backend/src/controllers/
+// appointmentController.js, which is what actually decides what may be booked.
+const DURATIONS  = [{ v:15, l:'15 min' }, { v:30, l:'30 min' }, { v:60, l:'1 hour' }, { v:90, l:'1.5 hours' }];
 const MODES      = [{ v:'chat', l:'💬 Chat', d:'Text-based session' }, { v:'voice', l:'🎙 Voice', d:'Audio call' }, { v:'video', l:'📹 Video', d:'Video call' }];
 const CONCERNS   = ['Marriage & Relationships','Career & Business','Finance & Wealth','Health','Education','Children','Foreign Travel','Spiritual Guidance','General Reading'];
 const STEP_LABELS= ['Date & Duration','Time Slot','Session Details','Confirm'];
@@ -199,10 +201,11 @@ export default function BookAppointmentPage() {
 
               <div className="card-cosmic p-5">
                 <h3 className="text-gold-400 font-serif mb-4">Session Duration</h3>
-                <div className="flex gap-3">
+                {/* Four across is too tight on a phone, so they wrap to two. */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {DURATIONS.map(d => (
                     <button key={d.v} onClick={() => setDuration(d.v)}
-                      className={`flex-1 py-3 rounded-xl text-sm transition-all border ${duration === d.v ? 'bg-gold-500/20 border-gold-500/60 text-gold-400 font-semibold' : 'border-cosmic-700 text-cosmic-400 hover:border-gold-500/30'}`}>
+                      className={`py-3 rounded-xl text-sm transition-all border ${duration === d.v ? 'bg-gold-500/20 border-gold-500/60 text-gold-400 font-semibold' : 'border-cosmic-700 text-cosmic-400 hover:border-gold-500/30'}`}>
                       <div>{d.l}</div>
                       {astrologer && <div className="text-xs opacity-70 mt-0.5">₹{(parseFloat(astrologer.price_per_min) * d.v).toFixed(0)}</div>}
                     </button>
