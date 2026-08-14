@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { appointments as apptApi } from '../api';
+import { appointments as apptApi, consultations as consultationsApi } from '../api';
+
+// How early a booked session can be opened. Five minutes is enough to be
+// settled before the hour without letting somebody start an hour of paid time
+// at half past the previous one.
+const JOIN_OPENS_MINS_BEFORE = 5;
+
+// A booking says `voice`; the consultation endpoint says `audio`. Joining
+// without this translation was a 400 — so of the three modes the booking page
+// used to offer, chat 410'd, voice 400'd, and only video worked.
+const CONSULTATION_MODE = { voice: 'audio', audio: 'audio', video: 'video' };
 
 const MODE_ICON = { chat:'💬', voice:'🎙', video:'📹' };
 const STATUS_STYLE = {
@@ -15,10 +25,58 @@ const STATUS_STYLE = {
 function AppointmentCard({ appt, onCancel }) {
   const [cancelling, setCancelling] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [joining, setJoining] = useState(false);
+  const navigate = useNavigate();
 
   const ast       = appt.astrologer || {};
   const isUpcoming= new Date(appt.scheduled_at) > new Date() && appt.status !== 'cancelled';
   const statusCls = STATUS_STYLE[appt.status] || STATUS_STYLE.confirmed;
+
+  // The window in which this booking can actually be opened: from a few
+  // minutes before it is due until it would have finished. Until now there was
+  // no way in at all — the appointment sat on this page counting down and then
+  // quietly became history.
+  const startMs  = new Date(appt.scheduled_at).getTime();
+  const endMs    = startMs + (appt.duration_mins || 60) * 60000;
+  const nowMs    = Date.now();
+  const canJoin  = appt.status !== 'cancelled' && appt.status !== 'completed' &&
+                   nowMs >= startMs - JOIN_OPENS_MINS_BEFORE * 60000 && nowMs < endMs;
+
+  // Starting a booked session is the same act as calling from an astrologer's
+  // page, so it goes through the same endpoint and lands on the same screen —
+  // which means it bills per minute and pays the astrologer exactly as any
+  // other consultation does.
+  const handleJoin = async () => {
+    // Bookings made before chat was withdrawn cannot be held as chat. Say so
+    // here rather than sending it to the server for a 410.
+    if (!CONSULTATION_MODE[appt.mode]) {
+      toast.error('Chat sessions are no longer held. Cancel this and book a voice or video session instead.');
+      return;
+    }
+    if (!ast.is_online) {
+      toast.error(`${ast.display_name || 'Your astrologer'} is not online yet. She will appear as soon as she opens her portal.`);
+      return;
+    }
+    setJoining(true);
+    try {
+      const res = await consultationsApi.start({ astrologer_id: ast.id, mode: CONSULTATION_MODE[appt.mode] });
+      const params = new URLSearchParams({
+        astrologer: ast.display_name || 'Astrologer',
+        astrologerId: ast.id,
+        price: ast.price_per_min,
+        specialties: JSON.stringify(ast.specialties || []),
+        mode: CONSULTATION_MODE[appt.mode],
+        channel: res.data.agora.channel,
+        token: res.data.agora.token,
+        appId: res.data.agora.appId,
+      });
+      navigate(`/consult/${res.data.consultation.id}?${params.toString()}`);
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Could not start the session.');
+    } finally {
+      setJoining(false);
+    }
+  };
 
   const scheduledIST = new Date(appt.scheduled_at).toLocaleString('en-IN', {
     weekday:'short', day:'numeric', month:'short', year:'numeric',
@@ -71,16 +129,25 @@ function AppointmentCard({ appt, onCancel }) {
           <div className="flex items-center justify-between">
             <span className="text-xs text-gold-400 font-medium">₹{parseFloat(appt.amount).toFixed(0)}</span>
 
-            {isUpcoming && minsUntil > 60 && (
-              <button onClick={() => setShowConfirm(true)}
-                className="text-xs text-red-400 hover:text-red-300 transition-colors border border-red-500/30 px-3 py-1 rounded-lg hover:bg-red-500/10">
-                Cancel
+            {canJoin ? (
+              <button onClick={handleJoin} disabled={joining}
+                className="btn-cosmic px-5 py-1.5 text-xs disabled:opacity-60">
+                {joining ? 'Opening…' : ast.is_online ? 'Join session →' : 'Waiting for astrologer'}
               </button>
-            )}
-            {isUpcoming && minsUntil <= 60 && minsUntil > 0 && (
-              <span className="text-xs text-amber-400 font-medium">
-                🔔 Starting in {Math.ceil(minsUntil)} min
-              </span>
+            ) : (
+              <>
+                {isUpcoming && minsUntil > 60 && (
+                  <button onClick={() => setShowConfirm(true)}
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors border border-red-500/30 px-3 py-1 rounded-lg hover:bg-red-500/10">
+                    Cancel
+                  </button>
+                )}
+                {isUpcoming && minsUntil <= 60 && minsUntil > JOIN_OPENS_MINS_BEFORE && (
+                  <span className="text-xs text-amber-400 font-medium">
+                    🔔 Starting in {Math.ceil(minsUntil)} min
+                  </span>
+                )}
+              </>
             )}
           </div>
         </div>

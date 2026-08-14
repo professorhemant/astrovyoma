@@ -16,6 +16,10 @@ function toISTMidnight(dateStr) {
 const ALLOWED_DURATIONS = [15, 30, 60, 90];
 const DEFAULT_DURATION  = 60;
 
+// What a session can be booked as. `voice` is the seeker's word for what the
+// consultation endpoint calls `audio`; the booking page maps between them.
+const BOOKABLE_MODES = ['voice', 'video'];
+
 const cleanDuration = (v) => {
   const n = parseInt(v);
   return ALLOWED_DURATIONS.includes(n) ? n : DEFAULT_DURATION;
@@ -110,8 +114,17 @@ exports.getSlots = async (req, res) => {
 // POST /appointments/book
 exports.bookAppointment = async (req, res) => {
   try {
-    const { astrologer_id, scheduled_at, mode = 'chat', concern_category, concern_notes } = req.body;
+    const { astrologer_id, scheduled_at, mode = 'voice', concern_category, concern_notes } = req.body;
     if (!astrologer_id || !scheduled_at) return res.status(400).json({ error: 'astrologer_id and scheduled_at are required' });
+
+    // Only modes that can actually be held. Chat consultations are withdrawn in
+    // consultationController, so a chat appointment was a booking nobody could
+    // ever join — and it was this endpoint's default.
+    if (!BOOKABLE_MODES.includes(mode)) {
+      return res.status(400).json({
+        error: `A session can be booked as ${BOOKABLE_MODES.join(' or ')}.`,
+      });
+    }
 
     // A length the booking page never offers is not bookable by hand either.
     // Unlike the slots list, which defaults quietly, this refuses: the amount
@@ -202,13 +215,24 @@ exports.getMyAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.findAll({
       where: { user_id: req.user.id },
-      include: [{ model: Astrologer, as: 'astrologer', attributes: ['display_name','photo_url','specialties','price_per_min'] }],
+      // `id` and `is_online` so the seeker can actually start the session from
+      // the card when the time comes, and be told when the astrologer is not
+      // there yet rather than being bounced by the server.
+      include: [{ model: Astrologer, as: 'astrologer',
+        attributes: ['id','display_name','photo_url','specialties','price_per_min','is_online'] }],
       order: [['scheduled_at', 'DESC']],
       limit: 50
     });
-    const now = new Date();
-    const upcoming = appointments.filter(a => new Date(a.scheduled_at) > now && a.status !== 'cancelled');
-    const past     = appointments.filter(a => new Date(a.scheduled_at) <= now || a.status === 'cancelled');
+
+    // An appointment stays upcoming until it has *finished*, not until it has
+    // started. Splitting on the start time moved a session into Past the moment
+    // it was due, so a seeker arriving two minutes late found it filed under
+    // history with no way back into it.
+    const now = Date.now();
+    const endOf = (a) => new Date(a.scheduled_at).getTime() + (a.duration_mins || 60) * 60000;
+
+    const upcoming = appointments.filter(a => a.status !== 'cancelled' && endOf(a) > now);
+    const past     = appointments.filter(a => a.status === 'cancelled' || endOf(a) <= now);
     res.json({ upcoming, past });
   } catch (err) {
     res.status(500).json({ error: err.message });

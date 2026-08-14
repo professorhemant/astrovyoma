@@ -1,14 +1,23 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { appointments as apptApi, astrologers as astrologersApi } from '../api';
+import { appointments as apptApi, astrologers as astrologersApi, wallet as walletApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 
 // Kept in step with ALLOWED_DURATIONS in backend/src/controllers/
 // appointmentController.js, which is what actually decides what may be booked.
 const DURATIONS  = [{ v:15, l:'15 min' }, { v:30, l:'30 min' }, { v:60, l:'1 hour' }, { v:90, l:'1.5 hours' }];
-const MODES      = [{ v:'chat', l:'💬 Chat', d:'Text-based session' }, { v:'voice', l:'🎙 Voice', d:'Audio call' }, { v:'video', l:'📹 Video', d:'Video call' }];
+// Chat is gone from here because a chat consultation cannot be held: it is
+// withdrawn in consultationController — it had an AI answering in the
+// astrologer's name and the portal has no inbox to replace that with. Offering
+// it here sold a session that could never be joined, and it was the default,
+// so it was the likeliest booking anyone made.
+//
+// `voice` is what a seeker calls it; `audio` is what the consultation endpoint
+// calls it. The name that travels to the server is set here so the two cannot
+// drift, and joining maps it back.
+const MODES      = [{ v:'voice', l:'🎙 Voice', d:'Audio call' }, { v:'video', l:'📹 Video', d:'Video call' }];
 const CONCERNS   = ['Marriage & Relationships','Career & Business','Finance & Wealth','Health','Education','Children','Foreign Travel','Spiritual Guidance','General Reading'];
 const STEP_LABELS= ['Date & Duration','Time Slot','Session Details','Confirm'];
 
@@ -60,13 +69,16 @@ export default function BookAppointmentPage() {
   // Form state
   const [date,         setDate]         = useState(getDatesAhead(14)[1]); // default tomorrow
   const [duration,     setDuration]     = useState(60);
-  const [mode,         setMode]         = useState('chat');
+  const [mode,         setMode]         = useState('voice');
   const [slots,        setSlots]        = useState([]);
   const [working,      setWorking]      = useState(true);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [concern,      setConcern]      = useState('');
   const [notes,        setNotes]        = useState('');
+  // Null until known, so the review screen shows nothing rather than "₹0" to
+  // somebody whose balance simply has not loaded.
+  const [balance,      setBalance]      = useState(null);
 
   const dates = getDatesAhead(14);
 
@@ -95,6 +107,16 @@ export default function BookAppointmentPage() {
   }, [astrologerId, date, duration]);
 
   useEffect(() => { if (step === 1) loadSlots(); }, [step, loadSlots]);
+
+  // Fetched when the review screen opens rather than on mount, so it is the
+  // balance at the moment of deciding — and a failure here leaves the line off
+  // the screen rather than stopping the booking.
+  useEffect(() => {
+    if (step !== 3 || !user) return;
+    walletApi.getBalance()
+      .then(r => setBalance(parseFloat(r.data.balance)))
+      .catch(() => setBalance(null));
+  }, [step, user]);
 
   const amount = astrologer ? parseFloat(astrologer.price_per_min) * duration : 0;
 
@@ -152,7 +174,13 @@ export default function BookAppointmentPage() {
             ))}
           </div>
 
-          <p className="text-cosmic-500 text-xs mb-6">You'll receive a reminder 15 minutes before your session. Join from My Appointments.</p>
+          {/* Promised a reminder 15 minutes before. There is no reminder system
+              — no email, no SMS, nothing scheduled — so it promised something
+              nobody was going to send. Say what is actually true instead. */}
+          <p className="text-cosmic-500 text-xs mb-6">
+            Open My Appointments a few minutes before {new Date(appt.scheduled_at).toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata' })} and a
+            Join button will be waiting there.
+          </p>
           <div className="flex gap-3">
             <button onClick={() => navigate('/my-appointments')} className="flex-1 btn-cosmic py-2.5 text-sm">My Appointments</button>
             <button onClick={() => navigate('/astrologers')} className="flex-1 py-2.5 text-sm border border-cosmic-700 text-cosmic-300 rounded-xl hover:bg-white/5 transition-colors">Browse More</button>
@@ -360,9 +388,28 @@ export default function BookAppointmentPage() {
                 )}
               </div>
 
-              <p className="text-xs text-cosmic-500 text-center mb-4">
-                ₹{amount.toFixed(0)} will be deducted from your wallet at the time of the session.
+              {/* This said "₹X will be deducted from your wallet at the time of
+                  the session", which nothing did — booking has never taken a
+                  paisa, and there is no code that charges an appointment. What
+                  actually happens is that the session bills by the minute like
+                  any other consultation, so say that, and say it against the
+                  balance they have. */}
+              <p className="text-xs text-cosmic-500 text-center mb-2">
+                Nothing is charged now. The session is billed from your wallet at
+                ₹{astrologer?.price_per_min} a minute while it runs, so a full{' '}
+                {duration} minutes comes to ₹{amount.toFixed(0)}.
               </p>
+              {balance !== null && (
+                <p className={`text-xs text-center mb-4 ${balance < amount ? 'text-amber-300' : 'text-cosmic-500'}`}>
+                  Your wallet holds ₹{balance.toFixed(0)}
+                  {balance < amount && (
+                    <> — enough for about {Math.floor(balance / (parseFloat(astrologer?.price_per_min) || 1))} minutes.{' '}
+                      <Link to="/wallet" className="text-gold-400 hover:text-gold-300 underline underline-offset-2">Top up</Link>
+                      {' '}before the session, or it will end when the balance runs out.
+                    </>
+                  )}
+                </p>
+              )}
 
               <div className="flex gap-3">
                 <button onClick={() => setStep(2)} className="flex-1 py-3 text-sm border border-cosmic-700 text-cosmic-400 rounded-xl hover:bg-white/5 transition-colors">← Back</button>
