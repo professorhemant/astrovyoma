@@ -83,6 +83,20 @@
     [data-edit-flow="section_headings"] {
       margin-top: 0 !important;
     }
+
+    /* Same story, the other hero overlay. The clock is placed a number of
+       *pixels* up from the bottom of the hero, dragged into place against a
+       100svh desktop hero — 81px there is a small nudge off the floor. The
+       phone hero is 320px tall, so those same 81px lifted the clock into the
+       middle of the artwork and straight on top of the spinning zodiac wheel,
+       which sits at the same 15% from the left. It only appeared a second or
+       two in because the position arrives with the site settings, after the
+       first paint.
+       Percentages scale and are left alone; pixels do not, so on a phone the
+       clock returns to where it sat before the control existed. */
+    [data-edit="clock"] {
+      bottom: 8px !important;
+    }
   }
 
   /* The primary action inside a card — Continue, Confirm & Book, Search.
