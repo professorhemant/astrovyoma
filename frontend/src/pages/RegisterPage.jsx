@@ -15,16 +15,21 @@ export default function RegisterPage() {
 
   async function handleRegister(e) {
     e.preventDefault();
+    // Both, not either. The server insists on the same two, so a form that
+    // only asked for one would just be a slower way of being refused.
     if (!form.name) return toast.error('Name is required');
-    if (!form.email && !form.phone) return toast.error('Email or phone is required');
+    if (!form.email.trim()) return toast.error('Email is required');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim())) return toast.error('That email address does not look right');
+    if (!form.phone.trim()) return toast.error('Mobile number is required');
+    if (!/^[6-9]\d{9}$/.test(form.phone.replace(/\D/g, '').slice(-10))) return toast.error('Enter a 10-digit Indian mobile number');
     if (form.password.length < 6) return toast.error('Password must be at least 6 characters');
 
     setLoading(true);
     try {
       const res = await authApi.register({
         name: form.name,
-        email: form.email || undefined,
-        phone: form.phone || undefined,
+        email: form.email.trim(),
+        phone: form.phone.trim(),
         password: form.password,
       });
       login(res.data.user, res.data.token);
@@ -70,13 +75,13 @@ export default function RegisterPage() {
               className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 focus:outline-none focus:border-gold-500 text-sm" />
           </div>
           <div>
-            <label className="text-gray-200 text-sm block mb-1.5">Email</label>
+            <label className="text-gray-200 text-sm block mb-1.5">Email *</label>
             <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="your@email.com"
               className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 focus:outline-none focus:border-gold-500 text-sm" />
           </div>
           <div>
-            <label className="text-gray-200 text-sm block mb-1.5">Phone</label>
-            <input type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="9876543210"
+            <label className="text-gray-200 text-sm block mb-1.5">Mobile Number *</label>
+            <input type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="9876543210" inputMode="numeric"
               className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 focus:outline-none focus:border-gold-500 text-sm" />
           </div>
           <div className="relative">

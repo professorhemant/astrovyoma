@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -8,6 +8,8 @@ import CosmicBackground from './components/CosmicBackground';
 import Navbar from './components/Navbar';
 import FloatingAIButton from './components/FloatingAIButton';
 import AstrologerPortalNotice from './components/AstrologerPortalNotice';
+import CompleteContactPrompt from './components/CompleteContactPrompt';
+import { auth as authApi } from './api';
 
 import HomePage from './pages/HomePage';
 import KundaliPage from './pages/KundaliPage';
@@ -183,7 +185,36 @@ function AppLayout() {
           </Routes>
         </motion.div>
       </AnimatePresence>
+      <ContactGate />
     </>
+  );
+}
+
+// Asks a signed-in seeker for whichever contact detail their account is
+// missing. Registration used to take an email *or* a phone, so most existing
+// accounts have only one and there is no way to reach them about a booking.
+//
+// Dismissed for the rest of the browser session only, so it asks again next
+// time without nagging somebody mid-task.
+function ContactGate() {
+  const { user, updateUser } = useAuth();
+  const [skipped, setSkipped] = useState(false);
+
+  if (!user || skipped) return null;
+  const missing = { email: !user.email, phone: !user.phone };
+  if (!missing.email && !missing.phone) return null;
+
+  return (
+    <CompleteContactPrompt
+      who="seeker"
+      missing={missing}
+      onSkip={() => setSkipped(true)}
+      onSave={async (payload) => {
+        const res = await authApi.completeContact(payload);
+        updateUser({ email: res.data.email, phone: res.data.phone });
+        toast.success('Saved — thank you.');
+      }}
+    />
   );
 }
 

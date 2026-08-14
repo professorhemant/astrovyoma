@@ -224,10 +224,10 @@ async function getAstrologers(req, res) {
 
 async function createAstrologer(req, res) {
   try {
-    const { display_name, bio, phone, pin, price_per_min, experience_years, specialties, languages, free_minutes, photo_url, is_verified } = req.body;
+    const { display_name, bio, phone, email, pin, price_per_min, experience_years, specialties, languages, free_minutes, photo_url, is_verified } = req.body;
     const pin_hash = pin ? await bcrypt.hash(String(pin), 10) : null;
     const a = await Astrologer.create({
-      display_name, bio, phone, pin_hash,
+      display_name, bio, phone, email: email || null, pin_hash,
       price_per_min: price_per_min || 30,
       experience_years: experience_years || 5,
       specialties: specialties || [],

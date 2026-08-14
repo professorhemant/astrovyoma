@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User, Transaction, Astrologer, sequelize } = require('../models');
 const { generateOtp, storeOtp, verifyOtp, secondsUntilResendAllowed, sendPasswordResetEmail } = require('../services/otpService');
+const { validateContact, cleanPhone } = require('../services/contactService');
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -20,15 +21,28 @@ const resetKey = email => `reset:${email.toLowerCase()}`;
 
 async function register(req, res) {
   try {
-    const { name, email, phone, password } = req.body;
-    if (!name || !password || (!email && !phone)) {
-      return res.status(400).json({ error: 'Name, password, and email or phone are required' });
+    const { name, password } = req.body;
+    if (!name || !password) {
+      return res.status(400).json({ error: 'Name and password are required' });
     }
 
-    const existingUser = email
-      ? await User.findOne({ where: { email } })
-      : await User.findOne({ where: { phone } });
-    if (existingUser) return res.status(409).json({ error: 'User already exists with this email or phone' });
+    // Both, now. It used to be "email or phone", so most accounts arrived with
+    // only an address — leaving no way to reach somebody about the reading they
+    // had booked, and nothing to match them to an astrologer account by.
+    const check = validateContact(req.body);
+    if (!check.ok) return res.status(400).json({ error: check.errors.join(' ') });
+    const { email, phone } = check.value;
+
+    // Each identity checked on its own. The old test was
+    // `email ? findOne({email}) : findOne({phone})` — when an email was given
+    // the phone was never looked at, so two accounts could share a number, and
+    // logging in by that number would find whichever row came back first.
+    const [byEmail, byPhone] = await Promise.all([
+      User.findOne({ where: { email } }),
+      User.findOne({ where: { phone } }),
+    ]);
+    if (byEmail) return res.status(409).json({ error: 'An account already exists with this email address.' });
+    if (byPhone) return res.status(409).json({ error: 'An account already exists with this mobile number.' });
 
     const password_hash = await bcrypt.hash(password, 12);
 
@@ -39,8 +53,8 @@ async function register(req, res) {
     const user = await sequelize.transaction(async (t) => {
       const created = await User.create({
         name,
-        email: email || null,
-        phone: phone || null,
+        email,
+        phone,
         password_hash,
         wallet_balance: WELCOME_BONUS,
       }, { transaction: t });
@@ -79,9 +93,12 @@ async function login(req, res) {
       return res.status(400).json({ error: 'Password and email or phone are required' });
     }
 
+    // Signing in by number has to survive how the number was typed. Registration
+    // stores ten digits; somebody signing in a year later may well type +91 in
+    // front of it, and that used to simply not match.
     const user = email
-      ? await User.findOne({ where: { email } })
-      : await User.findOne({ where: { phone } });
+      ? await User.findOne({ where: { email: String(email).trim().toLowerCase() } })
+      : await User.findOne({ where: { phone: cleanPhone(phone) || String(phone || '').trim() } });
 
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
 
@@ -97,6 +114,45 @@ async function login(req, res) {
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ error: 'Login failed' });
+  }
+}
+
+// Fill in a contact detail an older account never gave.
+//
+// Registration now insists on both, but the accounts that already exist were
+// made when it was one or the other, so the site asks for what is missing at
+// sign-in. It only *adds*: an address or number already on the account is not
+// changed here, because that is a different act with different consequences —
+// it is how somebody signs in.
+async function completeContact(req, res) {
+  try {
+    const user = await User.findByPk(req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const patch = {};
+    if (!user.email && req.body.email !== undefined) patch.email = req.body.email;
+    if (!user.phone && req.body.phone !== undefined) patch.phone = req.body.phone;
+    if (!Object.keys(patch).length) {
+      return res.status(400).json({ error: 'Nothing to add — those details are already on your account.' });
+    }
+
+    const check = validateContact(patch, { require: false });
+    if (!check.ok) return res.status(400).json({ error: check.errors.join(' ') });
+
+    if (check.value.email) {
+      const taken = await User.findOne({ where: { email: check.value.email } });
+      if (taken) return res.status(409).json({ error: 'Another account already uses that email address.' });
+    }
+    if (check.value.phone) {
+      const taken = await User.findOne({ where: { phone: check.value.phone } });
+      if (taken) return res.status(409).json({ error: 'Another account already uses that mobile number.' });
+    }
+
+    await user.update(check.value);
+    res.json({ id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role });
+  } catch (err) {
+    console.error('completeContact error:', err);
+    res.status(500).json({ error: 'Could not save your details' });
   }
 }
 
@@ -208,4 +264,4 @@ async function resetPassword(req, res) {
   }
 }
 
-module.exports = { register, login, getMe, forgotPassword, resetPassword };
+module.exports = { register, login, getMe, completeContact, forgotPassword, resetPassword };

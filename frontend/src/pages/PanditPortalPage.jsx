@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, Lock, LogOut, Wifi, WifiOff, IndianRupee, Clock } from 'lucide-react';
 import PanditCallPanel from '../components/PanditCallPanel';
 import PanditSchedule from '../components/PanditSchedule';
+import CompleteContactPrompt from '../components/CompleteContactPrompt';
 import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -18,6 +19,7 @@ export default function PanditPortalPage() {
   const [loading, setLoading] = useState(false);
   const [toggling, setToggling] = useState(false);
   const [earnings, setEarnings] = useState(null);
+  const [contactSkipped, setContactSkipped] = useState(false);
 
   useEffect(() => {
     if (!token) return;
@@ -275,6 +277,21 @@ export default function PanditPortalPage() {
         {/* Her hours, and who has booked them. The online toggle above is for
             someone wanting to talk *now*; this is the diary. */}
         <PanditSchedule token={token} />
+
+        {/* Approval used to drop the email an astrologer applied with, so most
+            accounts have only the number she signs in with. Ask once she is in,
+            rather than blocking the login of somebody trying to take a call. */}
+        {pandit && (!pandit.email || !pandit.phone) && !contactSkipped && (
+          <CompleteContactPrompt
+            who="astrologer"
+            missing={{ email: !pandit.email, phone: !pandit.phone }}
+            onSkip={() => setContactSkipped(true)}
+            onSave={async (payload) => {
+              const r = await axios.patch(`${API}/pandit/contact`, payload, { headers: { Authorization: `Bearer ${token}` } });
+              setPandit(p => ({ ...p, email: r.data.email, phone: r.data.phone }));
+            }}
+          />
+        )}
 
         <AnimatePresence>
           {error && (

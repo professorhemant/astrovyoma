@@ -97,6 +97,7 @@ router.delete('/admin/applications/:id', auth, adminAuth, astrologerApplicationC
 router.post('/auth/register', authController.register);
 router.post('/auth/login', authController.login);
 router.get('/auth/me', auth, authController.getMe);
+router.patch('/auth/me/contact', auth, authController.completeContact);
 router.post('/auth/forgot-password', authController.forgotPassword);
 router.post('/auth/reset-password', authController.resetPassword);
 
@@ -116,6 +117,7 @@ router.post('/pandit/login', panditController.panditLogin);
 router.get('/pandit/me', panditAuth, panditController.getStatus);
 router.patch('/pandit/status', panditAuth, panditController.toggleStatus);
 router.get('/pandit/earnings', panditAuth, panditController.getEarnings);
+router.patch('/pandit/contact',     panditAuth, panditController.setContact);
 router.get('/pandit/availability',  panditAuth, panditController.getAvailability);
 router.put('/pandit/availability',  panditAuth, panditController.setAvailability);
 router.get('/pandit/appointments',  panditAuth, panditController.getAppointments);

@@ -83,6 +83,9 @@ async function start() {
         ? `ALTER TABLE appointments ADD COLUMN IF NOT EXISTS consultation_id UUID`
         : `ALTER TABLE appointments ADD COLUMN consultation_id TEXT`,
       isPostgres
+        ? `ALTER TABLE astrologers ADD COLUMN IF NOT EXISTS email VARCHAR(255)`
+        : `ALTER TABLE astrologers ADD COLUMN email TEXT`,
+      isPostgres
         ? `ALTER TABLE consultations ADD COLUMN IF NOT EXISTS connected_at TIMESTAMP WITH TIME ZONE`
         : `ALTER TABLE consultations ADD COLUMN connected_at DATETIME`,
       isPostgres

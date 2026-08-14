@@ -42,6 +42,10 @@ module.exports = (sequelize) => {
     is_online: { type: DataTypes.BOOLEAN, defaultValue: false },
     is_verified: { type: DataTypes.BOOLEAN, defaultValue: false },
     phone: { type: DataTypes.STRING, allowNull: true },
+    // Applications have always carried an email and approval used to throw it
+    // away, because the astrologer record had nowhere to put it — so the only
+    // way to reach an approved astrologer was the phone she signs in with.
+    email: { type: DataTypes.STRING, allowNull: true },
     free_minutes: { type: DataTypes.INTEGER, defaultValue: 0 },
     pin_hash: { type: DataTypes.STRING, allowNull: true },
     // When this astrologer works — see services/availabilityService.js. Empty

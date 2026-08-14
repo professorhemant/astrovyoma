@@ -494,7 +494,7 @@ function AstrologersTab() {
             <thead>
               <tr className="border-b border-gold-600/20 text-gold-400 text-xs uppercase">
                 <th className="text-left py-2 pr-3">Name</th>
-                <th className="text-left py-2 pr-3">Phone</th>
+                <th className="text-left py-2 pr-3">Contact</th>
                 <th className="text-left py-2 pr-3">₹/min</th>
                 <th className="text-left py-2 pr-3">Rating</th>
                 <th className="text-left py-2 pr-3">Orders</th>
@@ -507,7 +507,13 @@ function AstrologersTab() {
               {astrologers.map(a => (
                 <tr key={a.id} className="border-b border-cosmic-800 hover:bg-cosmic-900/50">
                   <td className="py-2 pr-3 font-medium">{a.display_name}</td>
-                  <td className="py-2 pr-3 text-gray-400">{a.phone || '—'}</td>
+                  {/* An approved astrologer's email used to be dropped at
+                      approval, so the only way to reach her was this number.
+                      Both are kept now — show both. */}
+                  <td className="py-2 pr-3">
+                    <div className="text-gray-400">{a.phone || '—'}</div>
+                    {a.email && <div className="text-gray-500 text-xs">{a.email}</div>}
+                  </td>
                   <td className="py-2 pr-3 text-gold-400">₹{a.price_per_min}</td>
                   <td className="py-2 pr-3">⭐ {a.rating}</td>
                   <td className="py-2 pr-3 text-gray-400">{a.completed_orders}</td>

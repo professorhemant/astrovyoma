@@ -25,7 +25,10 @@ export const auth = {
   register: (data) => api.post('/auth/register', data),
   forgotPassword: (data) => api.post('/auth/forgot-password', data),
   resetPassword: (data) => api.post('/auth/reset-password', data),
-  getMe: () => api.get('/auth/me')
+  getMe: () => api.get('/auth/me'),
+  // Fill in a detail an older account never gave. Only adds — it will not
+  // change an email or number already on the account.
+  completeContact: (data) => api.patch('/auth/me/contact', data)
 };
 
 export const kundali = {

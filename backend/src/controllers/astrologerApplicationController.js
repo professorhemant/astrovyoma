@@ -76,6 +76,10 @@ async function approveApplication(req, res) {
     const astrologer = await Astrologer.create({
       display_name: application.name,
       phone: application.phone,
+      // Carried across rather than left behind on the application, which is
+      // what used to happen — the approval email was sent to an address the
+      // astrologer record then had no memory of.
+      email: application.email || null,
       bio: application.bio || null,
       specialties: specialtiesArr,
       languages: languagesArr,

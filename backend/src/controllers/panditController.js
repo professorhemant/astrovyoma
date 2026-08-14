@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const { Astrologer, Consultation, User, Appointment } = require('../models');
 const availability = require('../services/availabilityService');
+const { validateContact } = require('../services/contactService');
 const earningsService = require('../services/earningsService');
 const { generateToken } = require('../services/agoraService');
 const { finalizeConsultation, expireIfRungOut, RING_TIMEOUT_MS } = require('./consultationController');
@@ -69,8 +70,11 @@ async function toggleStatus(req, res) {
 
 async function getStatus(req, res) {
   try {
+    // email and phone travel with the status so the portal can ask for
+    // whichever is missing. Approval used to drop the address the astrologer
+    // applied with, so most existing accounts have only a number.
     const a = await Astrologer.findByPk(req.pandit.panditId, {
-      attributes: ['id', 'display_name', 'photo_url', 'is_online', 'price_per_min', 'free_minutes']
+      attributes: ['id', 'display_name', 'photo_url', 'is_online', 'price_per_min', 'free_minutes', 'email', 'phone']
     });
     res.json(a);
   } catch (err) {
@@ -199,6 +203,43 @@ async function endCall(req, res) {
   }
 }
 
+// ─── contact details ─────────────────────────────────────────────────────────
+
+// The astrologer filling in what her record is missing.
+//
+// Same rule as the seeker's version: it only adds. Her phone is what she signs
+// in with, so changing it here would be changing her login, and that belongs
+// with the admin rather than in a prompt she is trying to get past.
+async function setContact(req, res) {
+  try {
+    const a = await Astrologer.findByPk(req.pandit.panditId);
+    if (!a) return res.status(404).json({ error: 'Astrologer not found' });
+
+    const patch = {};
+    if (!a.email && req.body.email !== undefined) patch.email = req.body.email;
+    if (!a.phone && req.body.phone !== undefined) patch.phone = req.body.phone;
+    if (!Object.keys(patch).length) {
+      return res.status(400).json({ error: 'Nothing to add — those details are already on your account.' });
+    }
+
+    const check = validateContact(patch, { require: false });
+    if (!check.ok) return res.status(400).json({ error: check.errors.join(' ') });
+
+    if (check.value.phone) {
+      const taken = await Astrologer.findOne({ where: { phone: check.value.phone } });
+      if (taken && taken.id !== a.id) {
+        return res.status(409).json({ error: 'Another astrologer already uses that mobile number.' });
+      }
+    }
+
+    await a.update(check.value);
+    res.json({ id: a.id, display_name: a.display_name, email: a.email, phone: a.phone });
+  } catch (err) {
+    console.error('setContact error:', err);
+    res.status(500).json({ error: 'Could not save your details' });
+  }
+}
+
 // ─── working hours ───────────────────────────────────────────────────────────
 
 // Her own hours, filled in for every weekday so the screen has something to
@@ -273,5 +314,5 @@ async function getAppointments(req, res) {
 module.exports = {
   panditLogin, toggleStatus, getStatus, getEarnings,
   getIncomingCalls, acceptCall, declineCall, endCall,
-  getAvailability, setAvailability, getAppointments,
+  getAvailability, setAvailability, getAppointments, setContact,
 };
