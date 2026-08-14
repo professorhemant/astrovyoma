@@ -184,6 +184,9 @@ function Appointments({ token }) {
             <p className="text-gray-500 text-[10px] mt-0.5">
               {a.duration_mins} min · {a.mode} · {a.seeker}
               {a.concern_category && a.concern_category !== 'general' ? ` · ${a.concern_category}` : ''}
+              {/* A past booking that was actually held reads differently from
+                  one nobody turned up to, and she is the one who knows which. */}
+              {a.status === 'completed' && <span className="text-emerald-400/80"> · given</span>}
             </p>
             {a.concern_notes && (
               <p className="text-gray-400 text-[10px] mt-1 italic line-clamp-2">“{a.concern_notes}”</p>

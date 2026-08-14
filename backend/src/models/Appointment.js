@@ -8,7 +8,11 @@ module.exports = (sequelize) => {
     astrologer_id:       { type: DataTypes.UUID,    allowNull: false },
     scheduled_at:        { type: DataTypes.DATE,    allowNull: false },
     duration_mins:       { type: DataTypes.INTEGER, defaultValue: 60 },
-    mode:                { type: DataTypes.STRING,  defaultValue: 'chat' },
+    mode:                { type: DataTypes.STRING,  defaultValue: 'voice' },
+    // The consultation this booking actually became, stamped when the seeker
+    // presses Join. Null until then, and for every appointment taken before
+    // there was any way to attend one.
+    consultation_id:     { type: DataTypes.UUID,    allowNull: true },
     concern_category:    { type: DataTypes.STRING,  allowNull: true },
     concern_notes:       { type: DataTypes.TEXT,    allowNull: true },
     status:              { type: DataTypes.STRING,  defaultValue: 'confirmed' },

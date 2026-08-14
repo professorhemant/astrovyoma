@@ -231,8 +231,12 @@ exports.getMyAppointments = async (req, res) => {
     const now = Date.now();
     const endOf = (a) => new Date(a.scheduled_at).getTime() + (a.duration_mins || 60) * 60000;
 
-    const upcoming = appointments.filter(a => a.status !== 'cancelled' && endOf(a) > now);
-    const past     = appointments.filter(a => a.status === 'cancelled' || endOf(a) <= now);
+    // A session that has been given is over whatever the clock says — ending a
+    // half-hour booking after ten minutes should not leave it sitting under
+    // Upcoming for the remaining twenty.
+    const done     = (a) => a.status === 'cancelled' || a.status === 'completed';
+    const upcoming = appointments.filter(a => !done(a) && endOf(a) > now);
+    const past     = appointments.filter(a => done(a) || endOf(a) <= now);
     res.json({ upcoming, past });
   } catch (err) {
     res.status(500).json({ error: err.message });

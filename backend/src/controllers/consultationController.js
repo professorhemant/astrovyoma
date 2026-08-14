@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
-const { Consultation, Message, Astrologer, User } = require('../models');
+const { Op } = require('sequelize');
+const { Consultation, Message, Astrologer, User, Appointment } = require('../models');
 const { generateToken, isConfigured: agoraConfigured } = require('../services/agoraService');
 const { deductPerMinute } = require('../services/walletService');
 const { recordConsultationEarning } = require('../services/earningsService');
@@ -25,8 +26,21 @@ async function expireIfRungOut(consultation) {
 
 async function startConsultation(req, res) {
   try {
-    const { astrologer_id, mode, concern_category } = req.body;
+    const { astrologer_id, mode, concern_category, appointment_id } = req.body;
     if (!astrologer_id || !mode) return res.status(400).json({ error: 'astrologer_id and mode are required' });
+
+    // Joining a booking. The appointment has to be this seeker's and with this
+    // astrologer — an id from the body decides nothing on its own.
+    let appointment = null;
+    if (appointment_id) {
+      appointment = await Appointment.findOne({
+        where: { id: appointment_id, user_id: req.user.id, astrologer_id },
+      });
+      if (!appointment) return res.status(404).json({ error: 'Appointment not found' });
+      if (appointment.status === 'cancelled') {
+        return res.status(409).json({ error: 'This appointment was cancelled.' });
+      }
+    }
 
     const astrologer = await Astrologer.findByPk(astrologer_id);
     if (!astrologer) return res.status(404).json({ error: 'Astrologer not found' });
@@ -54,6 +68,28 @@ async function startConsultation(req, res) {
         error: 'Voice and video calls are temporarily unavailable. Please try again shortly.',
         mode_unavailable: mode,
       });
+    }
+
+    // Pressing Join twice must not ring twice or bill twice. If the booking
+    // already opened a call that is still going, hand back that one — with a
+    // fresh Agora token, because the old one went to a page that has gone.
+    //
+    // Checked after Agora but before the offline test on purpose: a call that
+    // is already up should be rejoinable even if she has since toggled herself
+    // offline, since she is in it.
+    if (appointment?.consultation_id) {
+      const live = await Consultation.findOne({
+        where: { id: appointment.consultation_id, status: ['ringing', 'active'] },
+      });
+      if (live) {
+        const { token, appId } = generateToken(live.agora_channel, 0);
+        return res.json({
+          consultation: live,
+          free_minutes: live.is_free_trial ? (Number(astrologer.free_minutes) || 0) : 0,
+          agora: { token, appId, channel: live.agora_channel },
+          rejoined: true,
+        });
+      }
     }
 
     // An offline astrologer cannot pick up. A seeker called one on 2026-08-12,
@@ -105,6 +141,11 @@ async function startConsultation(req, res) {
       // seeker cannot be billed differently from what they were told.
       is_free_trial: trialApplies,
     });
+
+    // Stamp the booking with the call it became, so the appointment can be
+    // closed off when the call ends and both sides stop showing it as pending
+    // for ever.
+    if (appointment) await appointment.update({ consultation_id: consultation.id });
 
     res.status(201).json({
       consultation,
@@ -159,6 +200,24 @@ async function finalizeConsultation(consultation, endedBy) {
     duration_mins: durationMins,
     total_cost: totalCost,
   });
+
+  // If this call was a booking being kept, close the booking with it. Without
+  // this an appointment stayed "Confirmed" for ever — on the seeker's list and
+  // on the astrologer's — however long ago the session had happened. A call
+  // that never connected leaves the booking alone, because nothing was given
+  // and it may yet be.
+  if (durationMins > 0) {
+    try {
+      await Appointment.update(
+        { status: 'completed' },
+        { where: { consultation_id: consultation.id, status: { [Op.ne]: 'cancelled' } } }
+      );
+    } catch (err) {
+      // The call is settled and paid; a booking left saying "Confirmed" is not
+      // worth failing the hang-up over.
+      console.error('[appointments] could not close booking for consultation', consultation.id, err.message);
+    }
+  }
 
   if (paid) {
     try {

@@ -59,7 +59,14 @@ function AppointmentCard({ appt, onCancel }) {
     }
     setJoining(true);
     try {
-      const res = await consultationsApi.start({ astrologer_id: ast.id, mode: CONSULTATION_MODE[appt.mode] });
+      // The appointment id travels with it, so the call is stamped onto the
+      // booking — and pressing Join twice rejoins the same call instead of
+      // ringing her again and billing twice.
+      const res = await consultationsApi.start({
+        astrologer_id: ast.id,
+        mode: CONSULTATION_MODE[appt.mode],
+        appointment_id: appt.id,
+      });
       const params = new URLSearchParams({
         astrologer: ast.display_name || 'Astrologer',
         astrologerId: ast.id,
