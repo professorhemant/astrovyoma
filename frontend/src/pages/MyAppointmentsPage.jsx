@@ -128,7 +128,7 @@ export default function MyAppointmentsPage() {
   const list = tab === 'upcoming' ? upcoming : past;
 
   return (
-    <div className="min-h-screen pt-32 pb-16 px-4">
+    <div className="relative z-10 min-h-screen pt-32 pb-16 px-4">
       <div className="max-w-2xl mx-auto">
 
         <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-8">

@@ -71,6 +71,36 @@
     border-radius: 1rem;
   }
 
+  /* The primary action inside a card — Continue, Confirm & Book, Search.
+
+     This class was being used on fourteen buttons across nine pages and had
+     never been written, so every one of them rendered as bare text: no
+     background, no border, no radius. On the booking page that made Continue
+     and Confirm look like they were not there at all, which is exactly how it
+     was reported.
+
+     A square-ish 12px radius rather than btn-gold's pill, because these sit
+     beside `rounded-xl` Back buttons and pill-next-to-box reads as a mistake. */
+  .btn-cosmic {
+    background: linear-gradient(135deg, #A07832, #E8C547, #A07832);
+    color: #04051A;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-cosmic:hover:not(:disabled) {
+    box-shadow: 0 0 24px rgba(201, 168, 76, 0.45);
+    transform: translateY(-1px);
+  }
+
+  /* Disabled has to still look like a button, or "nothing selected yet" is
+     indistinguishable from "this feature is missing". */
+  .btn-cosmic:disabled {
+    cursor: not-allowed;
+    transform: none;
+  }
+
   .btn-gold {
     background: linear-gradient(135deg, #A07832, #E8C547, #A07832);
     background-size: 200% 200%;

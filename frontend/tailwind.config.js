@@ -3,7 +3,32 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        cosmic: { 950: '#12093A', 900: '#180D50', 800: '#1E1468', 700: '#251C7A' },
+        // 700–950 are the surfaces: page, card, border. 100–600 are the text
+        // ramp that sits on them, lightest first.
+        //
+        // Only the four dark ones existed, while the code used cosmic-100 to
+        // cosmic-600 in 290 places across 15 files. Tailwind generates nothing
+        // for a shade that is not declared, so every one of those was a class
+        // that did not exist and the text simply inherited whatever it was
+        // sitting in. On the booking page that made "← Back" invisible — it was
+        // there, it was clickable, and it painted no differently from the page
+        // behind it, which is why it was reported as a missing button.
+        //
+        // 700 stays where it is and stays deliberately near-invisible: it is
+        // what "Booked" on a taken slot and the ✗ on an unavailable plan are
+        // written in.
+        cosmic: {
+          100: '#EFEDF9',
+          200: '#D9D5EC',
+          300: '#BDB7DC',
+          400: '#9E96C9',
+          500: '#8078B5',
+          600: '#665C9C',
+          700: '#251C7A',
+          800: '#1E1468',
+          900: '#180D50',
+          950: '#12093A',
+        },
         gold: { 300: '#F5D98D', 400: '#E8C547', 500: '#C9A84C', 600: '#A07832', 700: '#7A5A1E' },
         nebula: { purple: '#6B21A8', blue: '#1D4ED8', teal: '#0D9488' }
       },

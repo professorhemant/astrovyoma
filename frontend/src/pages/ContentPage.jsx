@@ -28,7 +28,7 @@ export default function ContentPage() {
   }, [slug]);
 
   if (loading) return (
-    <div className="min-h-screen pt-32 flex items-center justify-center">
+    <div className="relative z-10 min-h-screen pt-32 flex items-center justify-center">
       <div className="text-gold-400 animate-pulse font-serif text-xl">✦ Loading…</div>
     </div>
   );
@@ -38,7 +38,7 @@ export default function ContentPage() {
   if (!page) return <NotFoundPage />;
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-4">
+    <div className="relative z-10 min-h-screen pt-32 pb-20 px-4">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center gap-2 text-xs text-cosmic-500 mb-6">
           <Link to="/" className="hover:text-gold-400 transition-colors">Home</Link>

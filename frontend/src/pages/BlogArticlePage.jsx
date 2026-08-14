@@ -51,13 +51,13 @@ export default function BlogArticlePage() {
   }, [slug]);
 
   if (loading) return (
-    <div className="min-h-screen pt-32 flex items-center justify-center">
+    <div className="relative z-10 min-h-screen pt-32 flex items-center justify-center">
       <div className="text-gold-400 animate-pulse font-serif text-xl">✦ Loading…</div>
     </div>
   );
 
   if (error || !article) return (
-    <div className="min-h-screen pt-32 flex flex-col items-center justify-center gap-4">
+    <div className="relative z-10 min-h-screen pt-32 flex flex-col items-center justify-center gap-4">
       <div className="text-4xl">🔭</div>
       <p className="text-cosmic-400">{error || 'Article not found.'}</p>
       <Link to="/blog" className="btn-cosmic px-5 py-2 text-sm">← Back to Blog</Link>
@@ -70,7 +70,7 @@ export default function BlogArticlePage() {
   const headings = parseBlocks(article.body).filter(b => b.type === 'h2');
 
   return (
-    <div className="min-h-screen pt-32 pb-16 px-4">
+    <div className="relative z-10 min-h-screen pt-32 pb-16 px-4">
       <div className="max-w-4xl mx-auto">
 
         {/* Breadcrumb */}

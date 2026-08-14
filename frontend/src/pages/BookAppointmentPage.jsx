@@ -120,7 +120,7 @@ export default function BookAppointmentPage() {
   };
 
   if (astLoading) return (
-    <div className="min-h-screen pt-32 flex items-center justify-center">
+    <div className="relative z-10 min-h-screen pt-32 flex items-center justify-center">
       <div className="text-gold-400 animate-pulse font-serif text-xl">✦ Loading…</div>
     </div>
   );
@@ -129,7 +129,7 @@ export default function BookAppointmentPage() {
   if (step === 4 && confirmed) {
     const appt = confirmed.appointment;
     return (
-      <div className="min-h-screen pt-32 pb-16 px-4 flex items-center justify-center">
+      <div className="relative z-10 min-h-screen pt-32 pb-16 px-4 flex items-center justify-center">
         <motion.div initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} className="card-cosmic p-8 max-w-md w-full text-center">
           <motion.div initial={{ scale:0 }} animate={{ scale:1 }} transition={{ delay:0.2, type:'spring', stiffness:200 }}
             className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-3xl mx-auto mb-5">
@@ -163,7 +163,7 @@ export default function BookAppointmentPage() {
   }
 
   return (
-    <div className="min-h-screen pt-32 pb-16 px-4">
+    <div className="relative z-10 min-h-screen pt-32 pb-16 px-4">
       <div className="max-w-xl mx-auto">
 
         {/* Astrologer header */}
