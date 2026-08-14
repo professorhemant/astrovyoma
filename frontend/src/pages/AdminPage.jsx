@@ -258,7 +258,15 @@ function UsersTab() {
               {data.users.map(u => (
                 <tr key={u.id} className="border-b border-cosmic-800 hover:bg-cosmic-900/50">
                   <td className="py-2 pr-4 font-medium">{u.name}</td>
-                  <td className="py-2 pr-4 text-gray-400">{u.email || u.phone}</td>
+                  {/* The heading has always said "Email / Phone" but this was
+                      `u.email || u.phone`, so anyone with both — which is
+                      everyone who registered through the form — showed only the
+                      email and their number was invisible to the admin. */}
+                  <td className="py-2 pr-4">
+                    {u.email && <div className="text-gray-400">{u.email}</div>}
+                    {u.phone && <div className="text-gray-500 text-xs">{u.phone}</div>}
+                    {!u.email && !u.phone && <span className="text-gray-600">—</span>}
+                  </td>
                   <td className="py-2 pr-4">
                     <span className={`px-2 py-0.5 rounded text-xs ${u.role === 'admin' ? 'bg-purple-900/50 text-purple-300' : 'bg-cosmic-800 text-gray-400'}`}>{u.role}</span>
                   </td>
