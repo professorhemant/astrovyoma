@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" width="1200" height="500" role="img"><defs>
+      <radialGradient id="bg" cx="50%" cy="42%" r="72%">
+        <stop offset="0" stop-color="#3A2A16"/>
+        <stop offset="0.62" stop-color="#12093A"/>
+        <stop offset="1" stop-color="#0A0630"/>
+      </radialGradient>
+      <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#F5D98D"/>
+        <stop offset="0.5" stop-color="#E8C547"/>
+        <stop offset="1" stop-color="#C9A84C"/>
+      </linearGradient>
+    </defs>
+    <rect width="1200" height="500" fill="url(#bg)"/><circle cx="390.88" cy="347.46" r="1.37" fill="#FFFFFF" opacity="0.58"/><circle cx="764.18" cy="238.77" r="2.15" fill="#FFFFFF" opacity="0.55"/><circle cx="495.99" cy="179.36" r="1.26" fill="#FFFFFF" opacity="0.62"/><circle cx="394.49" cy="128.37" r="0.72" fill="#FFFFFF" opacity="0.19"/><circle cx="517.73" cy="102.1" r="1.84" fill="#FFFFFF" opacity="0.47"/><circle cx="542.82" cy="59.47" r="1" fill="#FFFFFF" opacity="0.44"/><circle cx="837.89" cy="311.52" r="1.65" fill="#FFFFFF" opacity="0.36"/><circle cx="421.57" cy="428.37" r="1.32" fill="#FFFFFF" opacity="0.37"/><circle cx="770.42" cy="436.93" r="1.07" fill="#FFFFFF" opacity="0.6"/><circle cx="645.76" cy="330.82" r="1.08" fill="#FFFFFF" opacity="0.21"/><circle cx="890.16" cy="348.98" r="1.69" fill="#FFFFFF" opacity="0.19"/><circle cx="377.12" cy="176.54" r="1.33" fill="#FFFFFF" opacity="0.38"/><circle cx="970.48" cy="10.35" r="0.88" fill="#FFFFFF" opacity="0.31"/><circle cx="1111.5" cy="436.2" r="1.36" fill="#FFFFFF" opacity="0.39"/><circle cx="366.81" cy="112.11" r="1.86" fill="#FFFFFF" opacity="0.61"/><circle cx="224.34" cy="225.41" r="0.91" fill="#FFFFFF" opacity="0.57"/><circle cx="147.98" cy="301.75" r="2.23" fill="#FFFFFF" opacity="0.57"/><circle cx="1073.46" cy="214.4" r="1.24" fill="#FFFFFF" opacity="0.43"/><circle cx="158.4" cy="246.82" r="1.99" fill="#FFFFFF" opacity="0.51"/><circle cx="1132.3" cy="155.11" r="2.23" fill="#FFFFFF" opacity="0.37"/><circle cx="646.51" cy="230.52" r="0.73" fill="#FFFFFF" opacity="0.19"/><circle cx="356.68" cy="413.21" r="1.03" fill="#FFFFFF" opacity="0.37"/><circle cx="1002.06" cy="41.25" r="1.56" fill="#FFFFFF" opacity="0.4"/><circle cx="388.62" cy="114.2" r="1.68" fill="#FFFFFF" opacity="0.47"/><circle cx="4.01" cy="454.18" r="0.98" fill="#FFFFFF" opacity="0.35"/><circle cx="298.45" cy="83.15" r="1.31" fill="#FFFFFF" opacity="0.27"/><circle cx="421.68" cy="164.99" r="0.75" fill="#FFFFFF" opacity="0.49"/><circle cx="753.2" cy="37.94" r="1.92" fill="#FFFFFF" opacity="0.27"/><circle cx="1178.6" cy="14.6" r="1.32" fill="#FFFFFF" opacity="0.3"/><circle cx="567.27" cy="350.03" r="1.57" fill="#FFFFFF" opacity="0.52"/><circle cx="898.65" cy="123.93" r="1.01" fill="#FFFFFF" opacity="0.22"/><circle cx="599.09" cy="108.67" r="1.91" fill="#FFFFFF" opacity="0.27"/><circle cx="494.81" cy="201.01" r="1.29" fill="#FFFFFF" opacity="0.18"/><circle cx="133.15" cy="80.57" r="1.43" fill="#FFFFFF" opacity="0.36"/><circle cx="138.53" cy="263.27" r="0.97" fill="#FFFFFF" opacity="0.4"/><circle cx="1050.59" cy="349.11" r="1.41" fill="#FFFFFF" opacity="0.59"/><circle cx="102.5" cy="264.9" r="1.66" fill="#FFFFFF" opacity="0.56"/><circle cx="1141.19" cy="423.2" r="1.84" fill="#FFFFFF" opacity="0.57"/><circle cx="378.24" cy="459.88" r="2.26" fill="#FFFFFF" opacity="0.31"/><circle cx="696.69" cy="226.6" r="2.2" fill="#FFFFFF" opacity="0.43"/><circle cx="564.28" cy="9.77" r="1.94" fill="#FFFFFF" opacity="0.4"/><circle cx="170.91" cy="414.85" r="1.2" fill="#FFFFFF" opacity="0.25"/><circle cx="65.15" cy="279.86" r="1.58" fill="#FFFFFF" opacity="0.51"/><circle cx="486.74" cy="198.97" r="0.87" fill="#FFFFFF" opacity="0.46"/><circle cx="441.39" cy="22.65" r="0.98" fill="#FFFFFF" opacity="0.48"/><circle cx="234.16" cy="291.8" r="1.13" fill="#FFFFFF" opacity="0.39"/><defs><radialGradient id="halo">
+      <stop offset="0" stop-color="#C9A84C" stop-opacity="0.55"/>
+      <stop offset="0.55" stop-color="#C9A84C" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#C9A84C" stop-opacity="0"/>
+    </radialGradient></defs>
+    <ellipse cx="600" cy="250" rx="276.75" ry="205" fill="url(#halo)" opacity="0.4"/>
+      <polygon points="434,144 600,68 766,144"
+      fill="none" stroke="url(#gold)" stroke-width="3.5" opacity="0.85"/><rect x="468" y="144" width="88" height="88"
+          fill="#0A0630" fill-opacity="0.45"
+          stroke="#C9A84C" stroke-width="2" stroke-opacity="0.7"/><rect x="556" y="144" width="88" height="88"
+          fill="#0A0630" fill-opacity="0.45"
+          stroke="#C9A84C" stroke-width="2" stroke-opacity="0.7"/><rect x="644" y="144" width="88" height="88"
+          fill="#0A0630" fill-opacity="0.45"
+          stroke="#C9A84C" stroke-width="2" stroke-opacity="0.7"/><rect x="468" y="232" width="88" height="88"
+          fill="#0A0630" fill-opacity="0.45"
+          stroke="#C9A84C" stroke-width="2" stroke-opacity="0.7"/><rect x="556" y="232" width="88" height="88"
+          fill="#E8C547" fill-opacity="0.22"
+          stroke="#F5D98D" stroke-width="3.5" stroke-opacity="0.95"/><rect x="644" y="232" width="88" height="88"
+          fill="#0A0630" fill-opacity="0.45"
+          stroke="#C9A84C" stroke-width="2" stroke-opacity="0.7"/><rect x="468" y="320" width="88" height="88"
+          fill="#0A0630" fill-opacity="0.45"
+          stroke="#C9A84C" stroke-width="2" stroke-opacity="0.7"/><rect x="556" y="320" width="88" height="88"
+          fill="#0A0630" fill-opacity="0.45"
+          stroke="#C9A84C" stroke-width="2" stroke-opacity="0.7"/><rect x="644" y="320" width="88" height="88"
+          fill="#0A0630" fill-opacity="0.45"
+          stroke="#C9A84C" stroke-width="2" stroke-opacity="0.7"/><text x="600" y="276" font-family="Georgia, 'Times New Roman', serif"
+     font-size="44" fill="url(#gold)" opacity="0.85"
+     text-anchor="middle" dominant-baseline="central">✦</text><text x="600" y="32" font-family="Georgia, 'Times New Roman', serif"
+     font-size="36" fill="url(#gold)" opacity="0.7"
+     text-anchor="middle" dominant-baseline="central">N</text><text x="600" y="452" font-family="Georgia, 'Times New Roman', serif"
+     font-size="36" fill="url(#gold)" opacity="0.7"
+     text-anchor="middle" dominant-baseline="central">S</text><text x="806" y="276" font-family="Georgia, 'Times New Roman', serif"
+     font-size="36" fill="url(#gold)" opacity="0.7"
+     text-anchor="middle" dominant-baseline="central">E</text><text x="394" y="276" font-family="Georgia, 'Times New Roman', serif"
+     font-size="36" fill="url(#gold)" opacity="0.7"
+     text-anchor="middle" dominant-baseline="central">W</text></svg>

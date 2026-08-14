@@ -339,6 +339,17 @@ async function seedContent() {
   } catch (err) {
     console.error('[content] product artwork backfill failed:', err.message);
   }
+
+  try {
+    // Same again for the articles, which were seeded before they had banners.
+    // Seeding only fills an empty list, so without this the eight already in
+    // production would never see the drawings.
+    const filled = await backfill('blog_posts', 'slug', ['image'],
+      (v) => typeof v === 'string' && v.startsWith('/blog/'));
+    if (filled) console.log(`[content] updated artwork on ${filled} article(s)`);
+  } catch (err) {
+    console.error('[content] article artwork backfill failed:', err.message);
+  }
 }
 
 module.exports.seedContent = seedContent;

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" width="1200" height="500" role="img">
+    <defs>
+      <radialGradient id="bg" cx="50%" cy="42%" r="72%">
+        <stop offset="0" stop-color="#4A1230"/>
+        <stop offset="0.62" stop-color="#12093A"/>
+        <stop offset="1" stop-color="#0A0630"/>
+      </radialGradient>
+      <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#F5D98D"/>
+        <stop offset="0.5" stop-color="#E8C547"/>
+        <stop offset="1" stop-color="#C9A84C"/>
+      </linearGradient>
+    </defs>
+    <rect width="1200" height="500" fill="url(#bg)"/><circle cx="822.49" cy="399.58" r="1.14" fill="#FFFFFF" opacity="0.47"/><circle cx="1016.03" cy="90.14" r="2.2" fill="#FFFFFF" opacity="0.42"/><circle cx="1079.13" cy="326.56" r="1.93" fill="#FFFFFF" opacity="0.37"/><circle cx="173.12" cy="104.19" r="1.51" fill="#FFFFFF" opacity="0.45"/><circle cx="482.98" cy="31.68" r="1.64" fill="#FFFFFF" opacity="0.45"/><circle cx="590.74" cy="193.03" r="0.92" fill="#FFFFFF" opacity="0.61"/><circle cx="112.2" cy="61.01" r="1.57" fill="#FFFFFF" opacity="0.35"/><circle cx="937.51" cy="457.64" r="1.26" fill="#FFFFFF" opacity="0.22"/><circle cx="443.59" cy="62.59" r="2.06" fill="#FFFFFF" opacity="0.5"/><circle cx="30.87" cy="105.84" r="2.2" fill="#FFFFFF" opacity="0.54"/><circle cx="38.13" cy="339.87" r="0.85" fill="#FFFFFF" opacity="0.34"/><circle cx="167.99" cy="67.77" r="2.15" fill="#FFFFFF" opacity="0.38"/><circle cx="110.39" cy="198.6" r="2.08" fill="#FFFFFF" opacity="0.31"/><circle cx="466.78" cy="315.4" r="1.92" fill="#FFFFFF" opacity="0.31"/><circle cx="652.76" cy="329.17" r="1.43" fill="#FFFFFF" opacity="0.6"/><circle cx="454.58" cy="224.02" r="1.91" fill="#FFFFFF" opacity="0.39"/><circle cx="869.51" cy="42.43" r="1.37" fill="#FFFFFF" opacity="0.51"/><circle cx="209.23" cy="250.87" r="1.74" fill="#FFFFFF" opacity="0.5"/><circle cx="1008.68" cy="251.7" r="1.94" fill="#FFFFFF" opacity="0.36"/><circle cx="589.6" cy="239.08" r="1.49" fill="#FFFFFF" opacity="0.24"/><circle cx="999.26" cy="442.99" r="1.41" fill="#FFFFFF" opacity="0.47"/><circle cx="141.17" cy="398.08" r="0.91" fill="#FFFFFF" opacity="0.52"/><circle cx="1194.09" cy="256.07" r="2.1" fill="#FFFFFF" opacity="0.49"/><circle cx="554.19" cy="160.39" r="1.95" fill="#FFFFFF" opacity="0.23"/><circle cx="192.16" cy="375.7" r="1.54" fill="#FFFFFF" opacity="0.42"/><circle cx="639.07" cy="281.33" r="0.78" fill="#FFFFFF" opacity="0.39"/><circle cx="836.39" cy="356.5" r="1.78" fill="#FFFFFF" opacity="0.52"/><circle cx="157.43" cy="156.82" r="1.35" fill="#FFFFFF" opacity="0.55"/><circle cx="216.11" cy="7.24" r="1.1" fill="#FFFFFF" opacity="0.57"/><circle cx="716.98" cy="141" r="1.66" fill="#FFFFFF" opacity="0.59"/><circle cx="526.79" cy="108.59" r="1.54" fill="#FFFFFF" opacity="0.3"/><circle cx="982.6" cy="102.68" r="0.87" fill="#FFFFFF" opacity="0.55"/><circle cx="1177.73" cy="260.72" r="1.52" fill="#FFFFFF" opacity="0.35"/><circle cx="762.79" cy="365.73" r="1.58" fill="#FFFFFF" opacity="0.49"/><circle cx="183.42" cy="456.06" r="0.96" fill="#FFFFFF" opacity="0.4"/><circle cx="502.51" cy="54.66" r="2.08" fill="#FFFFFF" opacity="0.45"/><circle cx="876.93" cy="226.25" r="1.22" fill="#FFFFFF" opacity="0.51"/><circle cx="344.12" cy="53.21" r="0.92" fill="#FFFFFF" opacity="0.23"/><circle cx="443.74" cy="238.24" r="1.07" fill="#FFFFFF" opacity="0.42"/><circle cx="1106.56" cy="22.27" r="1.38" fill="#FFFFFF" opacity="0.43"/><circle cx="502.8" cy="202.54" r="1.78" fill="#FFFFFF" opacity="0.54"/><circle cx="106.41" cy="474.18" r="0.96" fill="#FFFFFF" opacity="0.55"/><circle cx="612.93" cy="426.44" r="2.09" fill="#FFFFFF" opacity="0.56"/><circle cx="363.83" cy="52.33" r="0.89" fill="#FFFFFF" opacity="0.37"/><circle cx="923.06" cy="172.53" r="2.25" fill="#FFFFFF" opacity="0.3"/><circle cx="488.17" cy="210.55" r="2.11" fill="#FFFFFF" opacity="0.54"/><defs><radialGradient id="halo">
+      <stop offset="0" stop-color="#FF7A6B" stop-opacity="0.55"/>
+      <stop offset="0.55" stop-color="#FF7A6B" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#FF7A6B" stop-opacity="0"/>
+    </radialGradient></defs>
+    <ellipse cx="600" cy="250" rx="270" ry="200" fill="url(#halo)" opacity="0.55"/>
+    <rect x="466" y="116" width="268" height="268"
+      fill="none" stroke="url(#gold)" stroke-width="3" opacity="0.9"/><polygon points="600,116 734,250 600,384 466,250"
+      fill="none" stroke="url(#gold)" stroke-width="2.5" opacity="0.75"/><line x1="466" y1="116" x2="734" y2="384" stroke="#C9A84C" stroke-width="2" opacity="0.5"/><line x1="734" y1="116" x2="466" y2="384" stroke="#C9A84C" stroke-width="2" opacity="0.5"/>
+    <circle cx="600" cy="250" r="66" fill="#D9503F"/>
+   <ellipse cx="580.2" cy="226.9" rx="29.7" ry="21.12"
+     fill="#FF9A86" opacity="0.45"/>
+    <text x="600" y="250" font-family="Georgia, 'Times New Roman', serif"
+     font-size="68" fill="#3A0A18" opacity="0.95"
+     text-anchor="middle" dominant-baseline="central">♂</text>
+    <circle cx="600" cy="150" r="9" fill="#FF8C7A" opacity="0.8"/><circle cx="500" cy="250" r="9" fill="#FF8C7A" opacity="0.8"/><circle cx="600" cy="350" r="9" fill="#FF8C7A" opacity="0.8"/><circle cx="700" cy="250" r="9" fill="#FF8C7A" opacity="0.8"/>
+    <text x="600" y="96" font-family="Georgia, 'Times New Roman', serif"
+     font-size="42" fill="url(#gold)" opacity="0.5"
+     text-anchor="middle" dominant-baseline="central">मंगल</text></svg>

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" width="1200" height="500" role="img"><defs>
+      <radialGradient id="bg" cx="50%" cy="42%" r="72%">
+        <stop offset="0" stop-color="#241A66"/>
+        <stop offset="0.62" stop-color="#12093A"/>
+        <stop offset="1" stop-color="#0A0630"/>
+      </radialGradient>
+      <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#F5D98D"/>
+        <stop offset="0.5" stop-color="#E8C547"/>
+        <stop offset="1" stop-color="#C9A84C"/>
+      </linearGradient>
+    </defs>
+    <rect width="1200" height="500" fill="url(#bg)"/><circle cx="418.21" cy="68.01" r="1.05" fill="#FFFFFF" opacity="0.51"/><circle cx="558.36" cy="366.32" r="0.96" fill="#FFFFFF" opacity="0.41"/><circle cx="437.22" cy="352.32" r="2.22" fill="#FFFFFF" opacity="0.33"/><circle cx="364.75" cy="478.42" r="2.22" fill="#FFFFFF" opacity="0.38"/><circle cx="660.28" cy="122.78" r="1.27" fill="#FFFFFF" opacity="0.43"/><circle cx="602.53" cy="401.86" r="1.18" fill="#FFFFFF" opacity="0.34"/><circle cx="979.58" cy="482.9" r="2.29" fill="#FFFFFF" opacity="0.26"/><circle cx="98.02" cy="31.58" r="1.12" fill="#FFFFFF" opacity="0.58"/><circle cx="152.02" cy="182.77" r="1.71" fill="#FFFFFF" opacity="0.26"/><circle cx="634.05" cy="494.7" r="1.61" fill="#FFFFFF" opacity="0.38"/><circle cx="426.71" cy="91.13" r="1.88" fill="#FFFFFF" opacity="0.43"/><circle cx="330.12" cy="302.85" r="1.33" fill="#FFFFFF" opacity="0.51"/><circle cx="465.78" cy="390.75" r="1.64" fill="#FFFFFF" opacity="0.51"/><circle cx="293.45" cy="69.2" r="1.59" fill="#FFFFFF" opacity="0.23"/><circle cx="529.16" cy="329.07" r="1.76" fill="#FFFFFF" opacity="0.21"/><circle cx="467.63" cy="371.59" r="1.3" fill="#FFFFFF" opacity="0.57"/><circle cx="22.83" cy="425.76" r="2.1" fill="#FFFFFF" opacity="0.47"/><circle cx="77.61" cy="388.86" r="1.27" fill="#FFFFFF" opacity="0.52"/><circle cx="513.24" cy="111.03" r="1.6" fill="#FFFFFF" opacity="0.58"/><circle cx="255.58" cy="415.74" r="1.47" fill="#FFFFFF" opacity="0.33"/><circle cx="186.66" cy="152" r="2.01" fill="#FFFFFF" opacity="0.27"/><circle cx="607.67" cy="248.03" r="1.39" fill="#FFFFFF" opacity="0.58"/><circle cx="338.5" cy="358.62" r="1.6" fill="#FFFFFF" opacity="0.36"/><circle cx="617.86" cy="490.12" r="0.85" fill="#FFFFFF" opacity="0.45"/><circle cx="1135.53" cy="120.31" r="2.14" fill="#FFFFFF" opacity="0.29"/><circle cx="582.37" cy="192.87" r="1.17" fill="#FFFFFF" opacity="0.33"/><circle cx="787.99" cy="352.09" r="2.03" fill="#FFFFFF" opacity="0.36"/><circle cx="843.04" cy="297.21" r="2.21" fill="#FFFFFF" opacity="0.28"/><circle cx="888.12" cy="414.93" r="2.2" fill="#FFFFFF" opacity="0.2"/><circle cx="913.86" cy="1.31" r="2.26" fill="#FFFFFF" opacity="0.61"/><circle cx="435.03" cy="125.43" r="2.27" fill="#FFFFFF" opacity="0.57"/><circle cx="761.38" cy="458.06" r="2.04" fill="#FFFFFF" opacity="0.31"/><circle cx="912.91" cy="272.41" r="1.78" fill="#FFFFFF" opacity="0.42"/><circle cx="848.59" cy="455.68" r="1.35" fill="#FFFFFF" opacity="0.36"/><circle cx="771.15" cy="465.4" r="1.14" fill="#FFFFFF" opacity="0.4"/><circle cx="227.1" cy="454.4" r="0.85" fill="#FFFFFF" opacity="0.35"/><circle cx="139.04" cy="3.39" r="1.37" fill="#FFFFFF" opacity="0.34"/><circle cx="364.62" cy="420.34" r="0.72" fill="#FFFFFF" opacity="0.22"/><circle cx="720.49" cy="481.39" r="1.82" fill="#FFFFFF" opacity="0.6"/><circle cx="570.68" cy="277.23" r="2.15" fill="#FFFFFF" opacity="0.43"/><circle cx="674.73" cy="196.18" r="1.32" fill="#FFFFFF" opacity="0.55"/><circle cx="106.86" cy="192.34" r="1.64" fill="#FFFFFF" opacity="0.34"/><circle cx="815.14" cy="244.8" r="1.43" fill="#FFFFFF" opacity="0.27"/><circle cx="150" cy="73.48" r="1.02" fill="#FFFFFF" opacity="0.55"/><circle cx="1018.4" cy="144.4" r="1" fill="#FFFFFF" opacity="0.25"/><circle cx="169.57" cy="317.93" r="2.27" fill="#FFFFFF" opacity="0.55"/><defs><radialGradient id="halo">
+      <stop offset="0" stop-color="#E8C547" stop-opacity="0.55"/>
+      <stop offset="0.55" stop-color="#E8C547" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#E8C547" stop-opacity="0"/>
+    </radialGradient></defs>
+    <ellipse cx="600" cy="250" rx="290.25" ry="215" fill="url(#halo)" opacity="0.5"/>
+      <circle cx="600" cy="250" r="168" fill="none" stroke="#C9A84C" stroke-width="2" opacity="0.3"/>
+      <line x1="600" y1="176" x2="600" y2="122"
+        stroke="#C9A84C" stroke-width="2" opacity="0.35"/><line x1="652.33" y1="197.67" x2="690.51" y2="159.49"
+        stroke="#C9A84C" stroke-width="2" opacity="0.35"/><line x1="674" y1="250" x2="728" y2="250"
+        stroke="#C9A84C" stroke-width="2" opacity="0.35"/><line x1="652.33" y1="302.33" x2="690.51" y2="340.51"
+        stroke="#C9A84C" stroke-width="2" opacity="0.35"/><line x1="600" y1="324" x2="600" y2="378"
+        stroke="#C9A84C" stroke-width="2" opacity="0.35"/><line x1="547.67" y1="302.33" x2="509.49" y2="340.51"
+        stroke="#C9A84C" stroke-width="2" opacity="0.35"/><line x1="526" y1="250" x2="472" y2="250"
+        stroke="#C9A84C" stroke-width="2" opacity="0.35"/><line x1="547.67" y1="197.67" x2="509.49" y2="159.49"
+        stroke="#C9A84C" stroke-width="2" opacity="0.35"/><circle cx="600" cy="82" r="40" fill="#D8D3EE"/>
+   <ellipse cx="588" cy="68" rx="18" ry="12.8"
+     fill="#FFFFFF" opacity="0.45"/><text x="600" y="82" font-family="Georgia, 'Times New Roman', serif"
+     font-size="40" fill="#12093A" opacity="0.9"
+     text-anchor="middle" dominant-baseline="central">☾</text><circle cx="718.79" cy="131.21" r="40" fill="#D9503F"/>
+   <ellipse cx="706.79" cy="117.21" rx="18" ry="12.8"
+     fill="#FFFFFF" opacity="0.45"/><text x="718.79" y="131.21" font-family="Georgia, 'Times New Roman', serif"
+     font-size="40" fill="#12093A" opacity="0.9"
+     text-anchor="middle" dominant-baseline="central">♂</text><circle cx="768" cy="250" r="40" fill="#7FD3E8"/>
+   <ellipse cx="756" cy="236" rx="18" ry="12.8"
+     fill="#FFFFFF" opacity="0.45"/><text x="768" y="250" font-family="Georgia, 'Times New Roman', serif"
+     font-size="40" fill="#12093A" opacity="0.9"
+     text-anchor="middle" dominant-baseline="central">☿</text><circle cx="718.79" cy="368.79" r="40" fill="#E8C547"/>
+   <ellipse cx="706.79" cy="354.79" rx="18" ry="12.8"
+     fill="#FFFFFF" opacity="0.45"/><text x="718.79" y="368.79" font-family="Georgia, 'Times New Roman', serif"
+     font-size="40" fill="#12093A" opacity="0.9"
+     text-anchor="middle" dominant-baseline="central">♃</text><circle cx="600" cy="418" r="40" fill="#F0A8C4"/>
+   <ellipse cx="588" cy="404" rx="18" ry="12.8"
+     fill="#FFFFFF" opacity="0.45"/><text x="600" y="418" font-family="Georgia, 'Times New Roman', serif"
+     font-size="40" fill="#12093A" opacity="0.9"
+     text-anchor="middle" dominant-baseline="central">♀</text><circle cx="481.21" cy="368.79" r="40" fill="#8E86B8"/>
+   <ellipse cx="469.21" cy="354.79" rx="18" ry="12.8"
+     fill="#FFFFFF" opacity="0.45"/><text x="481.21" y="368.79" font-family="Georgia, 'Times New Roman', serif"
+     font-size="40" fill="#12093A" opacity="0.9"
+     text-anchor="middle" dominant-baseline="central">♄</text><circle cx="432" cy="250" r="40" fill="#9B8CC4"/>
+   <ellipse cx="420" cy="236" rx="18" ry="12.8"
+     fill="#FFFFFF" opacity="0.45"/><text x="432" y="250" font-family="Georgia, 'Times New Roman', serif"
+     font-size="40" fill="#12093A" opacity="0.9"
+     text-anchor="middle" dominant-baseline="central">☊</text><circle cx="481.21" cy="131.21" r="40" fill="#7A6FA0"/>
+   <ellipse cx="469.21" cy="117.21" rx="18" ry="12.8"
+     fill="#FFFFFF" opacity="0.45"/><text x="481.21" y="131.21" font-family="Georgia, 'Times New Roman', serif"
+     font-size="40" fill="#12093A" opacity="0.9"
+     text-anchor="middle" dominant-baseline="central">☋</text>
+      <circle cx="600" cy="250" r="62" fill="#E8C547"/>
+   <ellipse cx="581.4" cy="228.3" rx="27.9" ry="19.84"
+     fill="#F5D98D" opacity="0.45"/><text x="600" y="250" font-family="Georgia, 'Times New Roman', serif"
+     font-size="60" fill="#12093A" opacity="0.95"
+     text-anchor="middle" dominant-baseline="central">☉</text></svg>

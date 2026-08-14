@@ -22,6 +22,9 @@ function parse(row) {
     date: data.date || '',
     readTime: Number(data.readTime) || 5,
     icon: data.icon || '✦',
+    // Empty rather than absent when unset, so the card can fall back to the
+    // emoji instead of rendering a broken image.
+    image: data.image || '',
     excerpt: data.excerpt || '',
     body: data.body || '',
   };
@@ -80,7 +83,8 @@ exports.getArticle = async (req, res) => {
     const related = posts
       .filter(a => a.id !== article.id && (a.category === article.category || a.tags.some(t => article.tags.includes(t))))
       .slice(0, 3)
-      .map(a => ({ id: a.id, slug: a.slug, title: a.title, category: a.category, icon: a.icon, readTime: a.readTime, excerpt: a.excerpt }));
+      .map(a => ({ id: a.id, slug: a.slug, title: a.title, category: a.category,
+                   icon: a.icon, image: a.image, readTime: a.readTime, excerpt: a.excerpt }));
 
     res.json({ article, related });
   } catch (err) {

@@ -19,7 +19,12 @@ const CAT_COLORS = {
 function RelatedCard({ article }) {
   return (
     <Link to={`/blog/${article.slug}`} className="card-cosmic p-4 flex gap-3 group hover:ring-1 hover:ring-gold-500/30 transition-all">
-      <div className="text-2xl shrink-0">{article.icon}</div>
+      {/* A thumbnail of the banner in the sidebar, cropped square so a row of
+          related articles stays a tidy list rather than a stack of wide strips. */}
+      {article.image
+        ? <img src={article.image} alt="" loading="lazy" aria-hidden="true"
+            className="w-14 h-14 rounded-lg object-cover shrink-0 border border-gold-500/20" />
+        : <div className="text-2xl shrink-0">{article.icon}</div>}
       <div>
         <div className="text-xs text-cosmic-500 mb-1">{article.category}</div>
         <div className="text-sm text-cosmic-200 group-hover:text-gold-400 transition-colors font-medium leading-snug line-clamp-2">{article.title}</div>
@@ -83,8 +88,18 @@ export default function BlogArticlePage() {
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="lg:col-span-3">
 
             {/* Hero */}
-            <div className="card-cosmic p-6 sm:p-8 mb-8">
-              <div className="text-5xl mb-4">{article.icon}</div>
+            <div className="card-cosmic mb-8 overflow-hidden">
+            {article.image && (
+              <div className="relative w-full overflow-hidden" style={{ aspectRatio: '12 / 5' }}>
+                <img src={article.image} alt="" aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover" />
+                {/* Faded into the card so the banner reads as the top of the
+                    article rather than a picture pasted above it. */}
+                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-cosmic-900 to-transparent" />
+              </div>
+            )}
+            <div className="p-6 sm:p-8">
+              {!article.image && <div className="text-5xl mb-4">{article.icon}</div>}
               <span className={`inline-block border rounded-full text-xs px-2.5 py-1 mb-4 font-medium ${catCls}`}>
                 {article.category}
               </span>
@@ -97,6 +112,7 @@ export default function BlogArticlePage() {
                 <span>{new Date(article.date).toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' })}</span>
                 <span>⏱ {article.readTime} min read</span>
               </div>
+            </div>
             </div>
 
             {/* Content */}

@@ -653,7 +653,12 @@ const LISTS = {
         help: 'Lowercase words joined by dashes — mercury-retrograde-2025. Changing it breaks links people have already shared.' },
       { key: 'category', label: 'Category', type: 'text',
         help: 'Articles are grouped and filtered by this on the blog page, so keep the spelling consistent.' },
-      { key: 'icon',     label: 'Emoji', type: 'text', default: '✦' },
+      { key: 'icon',     label: 'Emoji', type: 'text', default: '✦',
+        help: 'Shown on the card when the article has no picture.' },
+      { key: 'image',    label: 'Picture', type: 'image',
+        help: 'The banner across the top of the card and of the article itself. ' +
+              'A wide landscape works best — about two and a half times as wide ' +
+              'as it is tall. Without one the card falls back to the emoji.' },
       { key: 'excerpt',  label: 'Summary', type: 'textarea',
         help: 'The couple of lines shown on the blog listing and under the headline.' },
       { key: 'author',   label: 'Written by', type: 'text', default: 'AstroVyoma Editorial' },
@@ -664,6 +669,9 @@ const LISTS = {
     ],
     seed: ARTICLES.map(a => ({
       title: a.title, slug: a.slug, category: a.category, icon: a.icon,
+      // Drawn by tools/blog-art.js, keyed by slug. Re-run it after adding an
+      // article; it exits non-zero naming any article it has no drawing for.
+      image: `/blog/${a.slug}.svg`,
       excerpt: a.excerpt, author: a.author, date: a.date, readTime: a.readTime,
       tags: (a.tags || []).join(', '),
       body: blocksToText(a.content),

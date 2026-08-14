@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" width="1200" height="500" role="img">
+    <defs>
+      <radialGradient id="bg" cx="50%" cy="42%" r="72%">
+        <stop offset="0" stop-color="#2A1A5E"/>
+        <stop offset="0.62" stop-color="#12093A"/>
+        <stop offset="1" stop-color="#0A0630"/>
+      </radialGradient>
+      <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#F5D98D"/>
+        <stop offset="0.5" stop-color="#E8C547"/>
+        <stop offset="1" stop-color="#C9A84C"/>
+      </linearGradient>
+    </defs>
+    <rect width="1200" height="500" fill="url(#bg)"/><circle cx="1150.24" cy="98.17" r="1.44" fill="#FFFFFF" opacity="0.23"/><circle cx="122.46" cy="10.79" r="1.71" fill="#FFFFFF" opacity="0.62"/><circle cx="610.26" cy="119.42" r="2.21" fill="#FFFFFF" opacity="0.42"/><circle cx="1106.5" cy="112.98" r="2.23" fill="#FFFFFF" opacity="0.24"/><circle cx="255.44" cy="464" r="0.89" fill="#FFFFFF" opacity="0.26"/><circle cx="339.1" cy="491.46" r="1.46" fill="#FFFFFF" opacity="0.52"/><circle cx="447.25" cy="116.32" r="1.18" fill="#FFFFFF" opacity="0.28"/><circle cx="549.29" cy="185.98" r="1.39" fill="#FFFFFF" opacity="0.37"/><circle cx="462.8" cy="162.2" r="1.32" fill="#FFFFFF" opacity="0.2"/><circle cx="1033.88" cy="193.55" r="0.98" fill="#FFFFFF" opacity="0.56"/><circle cx="295.77" cy="332.72" r="1.64" fill="#FFFFFF" opacity="0.28"/><circle cx="68.09" cy="385.48" r="1.23" fill="#FFFFFF" opacity="0.34"/><circle cx="754.3" cy="24.07" r="1.02" fill="#FFFFFF" opacity="0.27"/><circle cx="717.31" cy="222.54" r="2.21" fill="#FFFFFF" opacity="0.58"/><circle cx="258.06" cy="185.63" r="1.33" fill="#FFFFFF" opacity="0.37"/><circle cx="457.55" cy="319.41" r="1.54" fill="#FFFFFF" opacity="0.62"/><circle cx="927.54" cy="159.51" r="1.67" fill="#FFFFFF" opacity="0.4"/><circle cx="351.98" cy="186.9" r="2.27" fill="#FFFFFF" opacity="0.41"/><circle cx="58.64" cy="452.85" r="1.94" fill="#FFFFFF" opacity="0.3"/><circle cx="837.97" cy="141.29" r="1.23" fill="#FFFFFF" opacity="0.52"/><circle cx="1085.37" cy="193.5" r="1.81" fill="#FFFFFF" opacity="0.28"/><circle cx="158.25" cy="465.8" r="1.75" fill="#FFFFFF" opacity="0.53"/><circle cx="339.43" cy="135.93" r="2.25" fill="#FFFFFF" opacity="0.51"/><circle cx="836.73" cy="225.37" r="1.21" fill="#FFFFFF" opacity="0.47"/><circle cx="182.95" cy="99.36" r="1.22" fill="#FFFFFF" opacity="0.26"/><circle cx="1035.91" cy="466.87" r="1.57" fill="#FFFFFF" opacity="0.28"/><circle cx="578.42" cy="380.65" r="1.46" fill="#FFFFFF" opacity="0.56"/><circle cx="118.3" cy="237.18" r="2.29" fill="#FFFFFF" opacity="0.43"/><circle cx="574.7" cy="286.05" r="0.75" fill="#FFFFFF" opacity="0.27"/><circle cx="939.06" cy="203.4" r="0.75" fill="#FFFFFF" opacity="0.42"/><circle cx="770.42" cy="345.7" r="1.89" fill="#FFFFFF" opacity="0.34"/><circle cx="384.08" cy="210.62" r="2.17" fill="#FFFFFF" opacity="0.21"/><circle cx="169.06" cy="405.97" r="1.54" fill="#FFFFFF" opacity="0.48"/><circle cx="1032.58" cy="145.54" r="2.14" fill="#FFFFFF" opacity="0.35"/><circle cx="278.63" cy="362.05" r="2.21" fill="#FFFFFF" opacity="0.33"/><circle cx="320.62" cy="304.84" r="1.26" fill="#FFFFFF" opacity="0.25"/><circle cx="937.04" cy="164.84" r="1.08" fill="#FFFFFF" opacity="0.37"/><circle cx="1062.66" cy="312.65" r="2.14" fill="#FFFFFF" opacity="0.4"/><circle cx="888.5" cy="173.56" r="1.58" fill="#FFFFFF" opacity="0.25"/><circle cx="361.83" cy="102.56" r="0.82" fill="#FFFFFF" opacity="0.38"/><circle cx="618.55" cy="366.88" r="0.73" fill="#FFFFFF" opacity="0.37"/><circle cx="224.43" cy="132.27" r="0.82" fill="#FFFFFF" opacity="0.28"/><circle cx="679.91" cy="129.69" r="1.96" fill="#FFFFFF" opacity="0.59"/><circle cx="224" cy="110.69" r="2.16" fill="#FFFFFF" opacity="0.48"/><circle cx="361.97" cy="181.13" r="0.84" fill="#FFFFFF" opacity="0.5"/><circle cx="693.99" cy="372.26" r="0.83" fill="#FFFFFF" opacity="0.54"/><defs><radialGradient id="halo">
+      <stop offset="0" stop-color="#E8C547" stop-opacity="0.55"/>
+      <stop offset="0.55" stop-color="#E8C547" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#E8C547" stop-opacity="0"/>
+    </radialGradient></defs>
+    <ellipse cx="600" cy="250" rx="270" ry="200" fill="url(#halo)" opacity="0.55"/>
+    <circle cx="600" cy="330" r="86" fill="url(#gold)" opacity="0.95"/>
+    <line x1="600" y1="230" x2="600" y2="202"
+        stroke="#E8C547" stroke-width="3" opacity="0.55" stroke-linecap="round"/><line x1="638.27" y1="237.61" x2="655.11" y2="196.96"
+        stroke="#E8C547" stroke-width="3" opacity="0.55" stroke-linecap="round"/><line x1="670.71" y1="259.29" x2="690.51" y2="239.49"
+        stroke="#E8C547" stroke-width="3" opacity="0.55" stroke-linecap="round"/><line x1="692.39" y1="291.73" x2="733.04" y2="274.89"
+        stroke="#E8C547" stroke-width="3" opacity="0.55" stroke-linecap="round"/><line x1="507.61" y1="291.73" x2="466.96" y2="274.89"
+        stroke="#E8C547" stroke-width="3" opacity="0.55" stroke-linecap="round"/><line x1="529.29" y1="259.29" x2="509.49" y2="239.49"
+        stroke="#E8C547" stroke-width="3" opacity="0.55" stroke-linecap="round"/><line x1="561.73" y1="237.61" x2="544.89" y2="196.96"
+        stroke="#E8C547" stroke-width="3" opacity="0.55" stroke-linecap="round"/>
+    <text x="600" y="296" font-family="Georgia, 'Times New Roman', serif"
+     font-size="74" fill="#12093A" opacity="0.85"
+     text-anchor="middle" dominant-baseline="central">↑</text>
+    <!-- The ground goes on last but for the horizon line, so the Sun is cut by
+         the horizon rather than sitting in front of it. -->
+    <rect x="0" y="331" width="1200" height="169" fill="#0A0630" opacity="0.92"/>
+    <line x1="200" y1="331" x2="200" y2="348" stroke="#C9A84C" stroke-width="2" opacity="0.4"/><line x1="300" y1="331" x2="300" y2="360" stroke="#C9A84C" stroke-width="2" opacity="0.4"/><line x1="400" y1="331" x2="400" y2="348" stroke="#C9A84C" stroke-width="2" opacity="0.4"/><line x1="500" y1="331" x2="500" y2="360" stroke="#C9A84C" stroke-width="2" opacity="0.4"/><line x1="600" y1="331" x2="600" y2="348" stroke="#C9A84C" stroke-width="2" opacity="0.4"/><line x1="700" y1="331" x2="700" y2="360" stroke="#C9A84C" stroke-width="2" opacity="0.4"/><line x1="800" y1="331" x2="800" y2="348" stroke="#C9A84C" stroke-width="2" opacity="0.4"/><line x1="900" y1="331" x2="900" y2="360" stroke="#C9A84C" stroke-width="2" opacity="0.4"/><line x1="1000" y1="331" x2="1000" y2="348" stroke="#C9A84C" stroke-width="2" opacity="0.4"/>
+    <line x1="110" y1="331" x2="1090" y2="331" stroke="url(#gold)" stroke-width="3.5" opacity="0.95"/>
+    <text x="600" y="412" font-family="Georgia, 'Times New Roman', serif"
+     font-size="32" fill="url(#gold)" opacity="0.42"
+     text-anchor="middle" dominant-baseline="central">the eastern horizon</text></svg>
