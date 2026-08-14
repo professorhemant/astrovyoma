@@ -18,7 +18,7 @@ const INAUSPICIOUS_THINGS = [
   'Filing important documents',
 ];
 
-const YAMAGANDA_INFO = 'Named after Yama, god of death. Equally inauspicious for starting new endeavors � avoid during Yamaganda for best results.';
+const YAMAGANDA_INFO = 'Named after Yama, god of death. Equally inauspicious for starting new endeavors — avoid during Yamaganda for best results.';
 const GULIKA_INFO = 'Gulika Kaal is the period of Saturn\'s son Gulika (Manda). Consider it moderately inauspicious; avoid important beginnings.';
 
 export default function TodayRahuKaalPage() {
@@ -46,7 +46,7 @@ export default function TodayRahuKaalPage() {
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-10">
             <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">⚠️ Inauspicious Period</p>
             <h1 className="font-serif text-3xl md:text-5xl text-red-400 mb-3" style={{ textShadow:'0 0 30px rgba(239,68,68,0.4)' }}>Today's Rahu Kaal</h1>
-            <p className="text-gray-200 text-sm">The inauspicious period governed by shadow planet Rahu � avoid new beginnings</p>
+            <p className="text-gray-200 text-sm">The inauspicious period governed by shadow planet Rahu — avoid new beginnings</p>
           </motion.div>
 
           <div className="mb-8">
@@ -85,21 +85,21 @@ export default function TodayRahuKaalPage() {
                   <div className="text-3xl mb-2">🐉</div>
                   <p className="text-gray-200 text-xs uppercase tracking-wider mb-1">Rahu Kaal</p>
                   <p className="font-serif text-lg text-red-400 font-semibold">{data.rahuKaal}</p>
-                  <p className="text-gray-200 text-sm mt-2">Most inauspicious � avoid all new starts</p>
+                  <p className="text-gray-200 text-sm mt-2">Most inauspicious — avoid all new starts</p>
                 </motion.div>
                 <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.15 }}
                   className="bg-orange-500/10 border border-orange-500/25 rounded-2xl p-5 text-center">
                   <div className="text-3xl mb-2">⚠️</div>
                   <p className="text-gray-200 text-xs uppercase tracking-wider mb-1">Yamaganda Kaal</p>
                   <p className="font-serif text-lg text-orange-400 font-semibold">{data.yamaganda}</p>
-                  <p className="text-gray-200 text-sm mt-2">Yama's period � avoid new ventures</p>
+                  <p className="text-gray-200 text-sm mt-2">Yama's period — avoid new ventures</p>
                 </motion.div>
                 <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.2 }}
                   className="bg-yellow-500/10 border border-yellow-500/25 rounded-2xl p-5 text-center">
                   <div className="text-3xl mb-2">🪐</div>
                   <p className="text-gray-200 text-xs uppercase tracking-wider mb-1">Gulika Kaal</p>
                   <p className="font-serif text-lg text-yellow-400 font-semibold">{data.gulika}</p>
-                  <p className="text-gray-200 text-sm mt-2">Saturn's shadow � moderately avoid</p>
+                  <p className="text-gray-200 text-sm mt-2">Saturn's shadow — moderately avoid</p>
                 </motion.div>
               </div>
 
@@ -121,7 +121,7 @@ export default function TodayRahuKaalPage() {
                 className="bg-cosmic-800/40 border border-gold-500/40 rounded-2xl p-6 mb-6">
                 <h3 className="text-gold-400 font-serif font-semibold text-lg mb-3">About Rahu Kaal</h3>
                 <p className="text-gray-200 text-sm leading-relaxed mb-3">
-                  Rahu Kaal (???? ???) is a time period of approximately 1.5 hours that occurs every day, governed by
+                  Rahu Kaal (राहु काल) is a time period of approximately 1.5 hours that occurs every day, governed by
                   the shadow planet Rahu. The day (sunrise to sunset) is divided into 8 equal parts, and Rahu
                   rules one part determined by the day of the week.
                 </p>
@@ -139,7 +139,7 @@ export default function TodayRahuKaalPage() {
               <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.35 }}
                 className="bg-green-500/10 border border-green-500/50 rounded-2xl p-5 mb-8 text-center">
                 <h3 className="text-green-400 font-semibold mb-2">✅ Best Time Today</h3>
-                <p className="text-white text-sm">The Abhijit Muhurta (midday) is always auspicious � 11:48 AM to 12:36 PM IST</p>
+                <p className="text-white text-sm">The Abhijit Muhurta (midday) is always auspicious — 11:48 AM to 12:36 PM IST</p>
               </motion.div>
 
               <div className="text-center flex flex-wrap gap-3 justify-center">

@@ -36,7 +36,7 @@ export default function CartPage() {
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="mb-8">
             <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-2">🕉️ Sacred Store</p>
             <h1 className="font-serif text-3xl md:text-4xl text-gold-400">Your Cart</h1>
-            <p className="text-gray-200 text-sm mt-1">{totalItems} item{totalItems !== 1 ? 's' : ''} � energised & ready to dispatch</p>
+            <p className="text-gray-200 text-sm mt-1">{totalItems} item{totalItems !== 1 ? 's' : ''} — energised & ready to dispatch</p>
           </motion.div>
 
           <div className="grid lg:grid-cols-3 gap-6">
@@ -106,7 +106,7 @@ export default function CartPage() {
               <button className="w-full bg-gradient-to-r from-gold-600 to-gold-400 text-cosmic-950 font-bold rounded-xl py-3 hover:opacity-90 transition-opacity mb-3">
                 Proceed to Checkout
               </button>
-              <p className="text-center text-gray-300 text-xs">🔒 Secure checkout � COD available</p>
+              <p className="text-center text-gray-300 text-xs">🔒 Secure checkout — COD available</p>
 
               {/* Trust badges */}
               <div className="mt-4 pt-4 border-t border-gold-500/20 grid grid-cols-2 gap-2">

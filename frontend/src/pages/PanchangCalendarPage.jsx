@@ -58,7 +58,7 @@ export default function PanchangCalendarPage() {
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-8">
             <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">🕉️ Hindu Almanac</p>
             <h1 className="font-serif text-3xl md:text-5xl text-gold-400 mb-3" style={{ textShadow:'0 0 30px rgba(201,168,76,0.4)' }}>Panchang Calendar</h1>
-            <p className="text-gray-200 text-sm">Monthly view � Tithi, Nakshatra & festivals for each day</p>
+            <p className="text-gray-200 text-sm">Monthly view — Tithi, Nakshatra & festivals for each day</p>
           </motion.div>
 
           {/* Month Navigation */}
@@ -67,8 +67,8 @@ export default function PanchangCalendarPage() {
               <ChevronLeft className="w-5 h-5" />
             </button>
             <div className="text-center">
-              <h2 className="font-serif text-2xl text-gold-400">{calData?.monthName || '�'} {year}</h2>
-              <p className="text-gray-300 text-xs mt-0.5">{calData?.days?.length || '�'} days</p>
+              <h2 className="font-serif text-2xl text-gold-400">{calData?.monthName || '—'} {year}</h2>
+              <p className="text-gray-300 text-xs mt-0.5">{calData?.days?.length || '—'} days</p>
             </div>
             <button onClick={nextMonth} className="text-gold-400 hover:text-gold-300 transition-colors p-2 rounded-xl hover:bg-gold-500/10">
               <ChevronRight className="w-5 h-5" />
@@ -170,7 +170,7 @@ export default function PanchangCalendarPage() {
                 <button onClick={() => setSelected(null)} className="text-gray-300 hover:text-gray-300 p-1"><X className="w-5 h-5" /></button>
               </div>
               <div className="space-y-3">
-                <div className="flex justify-between text-sm"><span className="text-gray-200">Tithi</span><span className="text-gold-300 font-medium">{selected.paksha === 'S' ? 'Shukla' : 'Krishna'} {selected.tithiNum} � {selected.tithi}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-gray-200">Tithi</span><span className="text-gold-300 font-medium">{selected.paksha === 'S' ? 'Shukla' : 'Krishna'} {selected.tithiNum} — {selected.tithi}</span></div>
                 <div className="flex justify-between text-sm"><span className="text-gray-200">Nakshatra</span><span className="text-purple-300 font-medium">{selected.nakshatra}</span></div>
                 {selected.festival && <div className="flex justify-between text-sm"><span className="text-gray-200">Festival</span><span className="text-green-400 font-medium">{selected.festival}</span></div>}
                 <div className="flex justify-between text-sm"><span className="text-gray-200">Auspicious</span><span className={selected.isAuspicious ? 'text-green-400' : 'text-red-400'}>{selected.isAuspicious ? 'Yes' : 'Avoid new starts'}</span></div>

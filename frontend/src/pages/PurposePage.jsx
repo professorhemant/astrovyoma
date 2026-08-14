@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import SwastikBorder from '../components/SwastikBorder';
 
 const PLANET_MEANINGS = {
-  Rahu: 'Your North Node (Rahu) shows the soul\'s highest aspirations in this lifetime � the direction of spiritual growth and worldly mastery.',
+  Rahu: 'Your North Node (Rahu) shows the soul\'s highest aspirations in this lifetime — the direction of spiritual growth and worldly mastery.',
   Ketu: 'Your South Node (Ketu) shows accumulated past-life wisdom and innate gifts you bring into this incarnation.',
 };
 

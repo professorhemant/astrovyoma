@@ -6,8 +6,8 @@ import usePanchangPlace from '../hooks/usePanchangPlace';
 import PanchangPlacePicker from '../components/PanchangPlacePicker';
 
 const PAKSHA_PHASE = {
-  'Shukla Paksha': { label: 'Waxing Moon', icon: '🌒', desc: 'Bright fortnight � energy building, growth, new beginnings' },
-  'Krishna Paksha': { label: 'Waning Moon', icon: '🌘', desc: 'Dark fortnight � release, introspection, ancestor worship' },
+  'Shukla Paksha': { label: 'Waxing Moon', icon: '🌒', desc: 'Bright fortnight — energy building, growth, new beginnings' },
+  'Krishna Paksha': { label: 'Waning Moon', icon: '🌘', desc: 'Dark fortnight — release, introspection, ancestor worship' },
 };
 const NATURE_STYLE = {
   Nanda:  { bg: 'bg-blue-500/10', border: 'border-blue-500/30',  text: 'text-blue-300',   label: 'Nanda (Joyful)' },
@@ -44,9 +44,9 @@ export default function TodayTithiPage() {
         <div className="max-w-4xl mx-auto">
 
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-10">
-            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">🕉️ Panchang � First Limb</p>
+            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">🕉️ Panchang — First Limb</p>
             <h1 className="font-serif text-3xl md:text-5xl text-gold-400 mb-3" style={{ textShadow:'0 0 30px rgba(201,168,76,0.4)' }}>Today's Tithi</h1>
-            <p className="text-gray-200 text-sm">The lunar day � determined by the angular distance between Sun & Moon</p>
+            <p className="text-gray-200 text-sm">The lunar day — determined by the angular distance between Sun & Moon</p>
           </motion.div>
 
           <div className="mb-8">

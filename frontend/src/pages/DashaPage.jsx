@@ -8,11 +8,11 @@ const DASHA_INFO = {
   Moon:    { years: 10, color: '#74B9FF', icon: '🌙', keywords: 'Mind, Mother, Emotions, Home, Public', meaning: 'A deeply emotional and intuitive period. Your inner world takes center stage. Relationships with mother and women, home life, public reputation, and emotional healing are the themes of this dasha.' },
   Mars:    { years: 7,  color: '#FF6B6B', icon: '🔴', keywords: 'Energy, Courage, Siblings, Property, Action', meaning: 'A time of intense energy, ambition, and action. Property acquisition, courage in the face of challenges, sibling relationships, and physical vitality are highlighted. Channel this fire constructively.' },
   Rahu:    { years: 18, color: '#A29BFE', icon: '🐉', keywords: 'Obsession, Foreign, Technology, Illusion, Growth', meaning: 'The longest dasha brings radical change, ambition, and sometimes confusion. Foreign connections, technology, unconventional paths, and karmic lessons dominate. A transformative period of massive worldly expansion.' },
-  Jupiter: { years: 16, color: '#FFD93D', icon: '⭐', keywords: 'Wisdom, Guru, Children, Wealth, Dharma', meaning: 'The most auspicious dasha � Jupiter, the divine teacher, brings blessings, wisdom, and abundance. Children, education, wealth, spiritual growth, and dharmic life purpose are all illuminated.' },
+  Jupiter: { years: 16, color: '#FFD93D', icon: '⭐', keywords: 'Wisdom, Guru, Children, Wealth, Dharma', meaning: 'The most auspicious dasha — Jupiter, the divine teacher, brings blessings, wisdom, and abundance. Children, education, wealth, spiritual growth, and dharmic life purpose are all illuminated.' },
   Saturn:  { years: 19, color: '#6C5CE7', icon: '🪐', keywords: 'Discipline, Karma, Service, Delays, Reward', meaning: 'The longest, most challenging dasha teaches patience, discipline, and karmic reckoning. Delays are followed by lasting rewards. Service, hard work, and letting go of ego are the lessons. What you build now lasts.' },
   Mercury: { years: 17, color: '#6BCB77', icon: '💚', keywords: 'Communication, Business, Intelligence, Trade, Siblings', meaning: 'A mentally active period favoring communication, business, writing, teaching, and trade. Your intellect and communication skills are your greatest assets. Nervous system health and relationships with siblings are highlighted.' },
   Ketu:    { years: 7,  color: '#FD79A8', icon: '☄️', keywords: 'Spirituality, Liberation, Past Life, Detachment, Healing', meaning: 'A period of deep spiritual seeking and detachment from material things. Past life karma surfaces for resolution. Unexpected events lead to inner liberation. Healing gifts, psychic sensitivity, and moksha-seeking are heightened.' },
-  Venus:   { years: 20, color: '#E17055', icon: '💕', keywords: 'Love, Luxury, Arts, Marriage, Pleasure', meaning: 'The most pleasurable dasha � Venus brings love, beauty, luxury, and artistic expression. Marriage, romantic relationships, creative arts, wealth, and enjoyment of life\'s pleasures are all blessed. The soul learns through beauty.' },
+  Venus:   { years: 20, color: '#E17055', icon: '💕', keywords: 'Love, Luxury, Arts, Marriage, Pleasure', meaning: 'The most pleasurable dasha — Venus brings love, beauty, luxury, and artistic expression. Marriage, romantic relationships, creative arts, wealth, and enjoyment of life\'s pleasures are all blessed. The soul learns through beauty.' },
 };
 
 const DASHA_ORDER = ['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
@@ -76,7 +76,7 @@ export default function DashaPage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
             <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">✦ Vimshottari Dasha System</p>
             <h1 className="font-serif text-3xl md:text-5xl text-gold-400 mb-3" style={{ textShadow: '0 0 30px rgba(201,168,76,0.4)' }}>Dasha Timeline</h1>
-            <p className="text-gray-200 max-w-xl mx-auto text-sm">Your life's planetary periods � 120 years mapped to the 9 planets of Vedic astrology</p>
+            <p className="text-gray-200 max-w-xl mx-auto text-sm">Your life's planetary periods — 120 years mapped to the 9 planets of Vedic astrology</p>
           </motion.div>
 
           {/* Input form */}
@@ -147,7 +147,7 @@ export default function DashaPage() {
                         <span className="font-semibold text-gray-200 text-sm">{d.planet} Dasha</span>
                         {isCurrent && <span className="ml-auto text-[10px] bg-green-500/20 text-green-400 border border-green-500/30 rounded-full px-2 py-0.5">Active</span>}
                       </div>
-                      <p className="text-gray-300 text-xs">{d.start.getFullYear()} � {d.end.getFullYear()}</p>
+                      <p className="text-gray-300 text-xs">{d.start.getFullYear()} — {d.end.getFullYear()}</p>
                       <p className="text-gray-300 text-xs mt-1">{d.years} years</p>
                     </motion.button>
                   );
@@ -170,7 +170,7 @@ export default function DashaPage() {
                           </div>
                           <div>
                             <h3 className="font-serif text-2xl text-gold-400">{selectedDasha.planet} Mahadasha</h3>
-                            <p className="text-gray-300 text-sm">{selectedDasha.start.getFullYear()} � {selectedDasha.end.getFullYear()} � {selectedDasha.years} years</p>
+                            <p className="text-gray-300 text-sm">{selectedDasha.start.getFullYear()} — {selectedDasha.end.getFullYear()} — {selectedDasha.years} years</p>
                             {isCurrent && <span className="inline-block mt-1 text-xs bg-green-500/20 text-green-400 border border-green-500/30 rounded-full px-3 py-0.5">✦ Your Current Period</span>}
                           </div>
                         </div>

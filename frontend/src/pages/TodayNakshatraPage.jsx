@@ -43,9 +43,9 @@ export default function TodayNakshatraPage() {
         <div className="max-w-4xl mx-auto">
 
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-10">
-            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">🌟 Panchang � Second Limb</p>
+            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">🌟 Panchang — Second Limb</p>
             <h1 className="font-serif text-3xl md:text-5xl text-gold-400 mb-3" style={{ textShadow:'0 0 30px rgba(201,168,76,0.4)' }}>Today's Nakshatra</h1>
-            <p className="text-gray-200 text-sm">The Moon's lunar mansion � one of the 27 cosmic star clusters</p>
+            <p className="text-gray-200 text-sm">The Moon's lunar mansion — one of the 27 cosmic star clusters</p>
           </motion.div>
 
           <div className="mb-8">
@@ -67,10 +67,10 @@ export default function TodayNakshatraPage() {
                 <h2 className="font-serif text-5xl mb-2" style={{ color: rulerColor, textShadow:`0 0 20px ${rulerColor}50` }}>{data.nakshatra}</h2>
                 <div className="flex items-center justify-center gap-3 flex-wrap mt-3">
                   <span className="bg-cosmic-900/80 border border-gold-500/55 text-gold-300 text-sm px-4 py-1.5 rounded-full">Nakshatra #{data.nakshatraNum}</span>
-                  <span className="bg-cosmic-900/80 border border-gold-500/55 text-gold-300 text-sm px-4 py-1.5 rounded-full">Pada {data.pada} � {PADA_RASHI[(data.pada - 1) % 4]}</span>
+                  <span className="bg-cosmic-900/80 border border-gold-500/55 text-gold-300 text-sm px-4 py-1.5 rounded-full">Pada {data.pada} — {PADA_RASHI[(data.pada - 1) % 4]}</span>
                   <span className={`${es.bg} border ${es.border} ${es.text} text-sm px-4 py-1.5 rounded-full`}>{es.icon} {element} Element</span>
                 </div>
-                <p className="text-white mt-4 text-sm">Moon at {data.moonDegree}� sidereal</p>
+                <p className="text-white mt-4 text-sm">Moon at {data.moonDegree}° sidereal</p>
               </motion.div>
 
               {/* Timing Banner */}
@@ -127,7 +127,7 @@ export default function TodayNakshatraPage() {
                 className="bg-cosmic-800/40 border border-gold-500/40 rounded-2xl p-6 mb-8">
                 <h3 className="text-gold-400 font-serif font-semibold text-lg mb-3">About Nakshatras</h3>
                 <p className="text-gray-200 text-sm leading-relaxed">
-                  The 27 Nakshatras are lunar mansions � star clusters that the Moon passes through during its monthly journey.
+                  The 27 Nakshatras are lunar mansions — star clusters that the Moon passes through during its monthly journey.
                   The Nakshatra the Moon occupies at birth determines your birth star (Janma Nakshatra), which guides
                   personality, life path, and the Vimshotari Dasha sequence. Today's Nakshatra influences the collective
                   energy and is used to determine the auspiciousness of activities.
@@ -135,7 +135,7 @@ export default function TodayNakshatraPage() {
                 <div className="mt-3 grid grid-cols-3 gap-3 text-center text-sm">
                   <div><span className="text-gold-400 font-semibold block">27</span><span className="text-gray-300">Total Nakshatras</span></div>
                   <div><span className="text-gold-400 font-semibold block">4</span><span className="text-gray-300">Padas each</span></div>
-                  <div><span className="text-gold-400 font-semibold block">13�20'</span><span className="text-gray-300">Arc per Nakshatra</span></div>
+                  <div><span className="text-gold-400 font-semibold block">13°20'</span><span className="text-gray-300">Arc per Nakshatra</span></div>
                 </div>
               </motion.div>
 

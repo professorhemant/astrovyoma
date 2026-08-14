@@ -1037,7 +1037,7 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                                       <span className="font-semibold">{pd.en}</span>
                                       <span className="text-gray-500 mx-0.5">/</span>
                                       <span style={{fontFamily:'Nirmala UI, Mangal, sans-serif'}}>{pd.hi}</span>
-                                      {isActivePada && <span className="ml-1 text-gold-500">?</span>}
+                                      {isActivePada && <span className="ml-1 text-gold-500">✦</span>}
                                     </td>
                                   );
                                 })}

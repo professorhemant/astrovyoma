@@ -99,7 +99,7 @@ export default function AstroMallProductPage() {
           {/* Main product section */}
           <div className="grid md:grid-cols-2 gap-8 mb-12">
 
-            {/* Left � Product visual */}
+            {/* Left — Product visual */}
             <motion.div initial={{ opacity:0, x:-20 }} animate={{ opacity:1, x:0 }}>
               <div className={`aspect-square rounded-3xl bg-gradient-to-br ${cs.grad} flex items-center justify-center border border-gold-500/25 relative overflow-hidden`}
                 style={{ boxShadow:'0 0 60px rgba(201,168,76,0.08)' }}>
@@ -134,7 +134,7 @@ export default function AstroMallProductPage() {
               </div>
             </motion.div>
 
-            {/* Right � Product info */}
+            {/* Right — Product info */}
             <motion.div initial={{ opacity:0, x:20 }} animate={{ opacity:1, x:0 }} className="flex flex-col gap-4">
 
               {/* Category + Planet badges */}
