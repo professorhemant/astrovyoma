@@ -122,6 +122,16 @@ export default function PanchangPage() {
                   <h3 className="text-green-400 font-semibold mb-2 flex items-center gap-2">✨ Abhijit Muhurta</h3>
                   <p className="text-2xl font-serif text-green-400 font-bold mb-2">{data.abhijit}</p>
                   <p className="text-gray-200 text-sm">The most auspicious time of the day — the midday muhurta. Ideal for starting important work, signing agreements, and beginning journeys.</p>
+                  {/* Abhijit straddles solar midday and Rahu Kaal is one of the
+                      eight parts of the day, so on Fridays and Wednesdays the
+                      two genuinely overlap. Saying so beats leaving the reader
+                      to notice that the auspicious card and the inauspicious
+                      one name the same minutes. */}
+                  {data.abhijitNote && (
+                    <p className="text-amber-300/90 text-xs mt-3 pt-3 border-t border-green-500/25 leading-relaxed">
+                      {data.abhijitNote}
+                    </p>
+                  )}
                 </div>
               </div>
 

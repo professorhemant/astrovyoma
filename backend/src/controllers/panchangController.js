@@ -56,7 +56,9 @@ const YOGA_NAMES = ['Vishkumbha','Preeti','Ayushman','Saubhagya','Shobhana','Ati
 const KARANA_NAMES = ['Bava','Balava','Kaulava','Taitila','Garija','Vanija','Vishti','Shakuni','Chatushpada','Naga','Kimstughna'];
 const VARA = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const VARA_LORD = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
-const RAHU_KAAL = { Sunday:'4:30 PM – 6:00 PM',Monday:'7:30 AM – 9:00 AM',Tuesday:'3:00 PM – 4:30 PM',Wednesday:'12:00 PM – 1:30 PM',Thursday:'1:30 PM – 3:00 PM',Friday:'10:30 AM – 12:00 PM',Saturday:'9:00 AM – 10:30 AM' };
+// The fixed RAHU_KAAL weekday table that used to sit here is gone — see
+// dayDivisions below. It was written for a day running 6 AM to 6 PM, so it was
+// only ever right at the equinoxes.
 const LUCKY_COLORS = { Sunday:'Gold & Orange',Monday:'White & Silver',Tuesday:'Red & Coral',Wednesday:'Green & Lime',Thursday:'Yellow & Cream',Friday:'Pink & White',Saturday:'Blue & Black' };
 const LUCKY_NUMBERS = { Sunday:'1, 4',Monday:'2, 7',Tuesday:'9, 3',Wednesday:'5, 6',Thursday:'3, 5',Friday:'6, 9',Saturday:'8, 7' };
 const GOOD_WORK = { Sunday:'Government work, leadership, gold purchase',Monday:'Travel, agriculture, emotional healing',Tuesday:'Construction, property, overcoming enemies',Wednesday:'Education, business negotiations, contracts',Thursday:'Religious activities, teaching, charity',Friday:'Marriage, romance, arts, creative projects',Saturday:'Land deals, service activities, spiritual practices' };
@@ -93,6 +95,58 @@ const CHOGHADIYA_INFO = {
 const RAHU_PART     = { Sunday:8, Monday:2, Tuesday:7, Wednesday:5, Thursday:6, Friday:4, Saturday:3 };
 const YAMGANDA_PART = { Sunday:6, Monday:4, Tuesday:2, Wednesday:7, Thursday:5, Friday:3, Saturday:1 };
 const GULIKA_PART   = { Sunday:5, Monday:3, Tuesday:1, Wednesday:6, Thursday:4, Friday:2, Saturday:7 };
+
+// The day's eight parts and its fifteen muhurtas, measured from the sunrise and
+// sunset this date actually has.
+//
+// The Panchang page used to answer both from fixed tables instead: a weekday
+// lookup of Rahu Kaal written for a 6 AM to 6 PM day, and Abhijit as the
+// literal string '11:48 AM – 12:36 PM'. Neither moved with the season, so the
+// page contradicted the sunrise printed two cards above it and disagreed with
+// /today-rahu-kaal, which had always computed it properly.
+//
+// Abhijit is the eighth of the day's fifteen muhurtas — the one straddling
+// solar midday — so it is a fifteenth of the daylight long, not a fixed 48
+// minutes. Both are defined here so every page reads the same clock.
+function dayDivisions(srMin, ssMin, vara) {
+  const dayLen  = ssMin - srMin;
+  const slotLen = dayLen / 8;
+  const span = (startMin, endMin) => ({
+    startMin, endMin, text: `${minToTime(startMin)} – ${minToTime(endMin)}`,
+  });
+  const part = (n) => span(srMin + (n - 1) * slotLen, srMin + n * slotLen);
+
+  const midday = (srMin + ssMin) / 2;
+  const half   = dayLen / 30;
+
+  return {
+    dayLen, slotLen, midday,
+    abhijit:   span(midday - half, midday + half),
+    rahu:      part(RAHU_PART[vara]),
+    yamaganda: part(YAMGANDA_PART[vara]),
+    gulika:    part(GULIKA_PART[vara]),
+  };
+}
+
+// Why the two cards can name the same minutes, said on the page rather than
+// left for the reader to spot.
+//
+// This is not a bug in the arithmetic: Friday's Rahu Kaal is the fourth of the
+// eight parts, which ends exactly at solar midday, and Abhijit always straddles
+// midday — so on every Friday of the year the last half of Abhijit's first half
+// falls inside Rahu Kaal. Wednesday's Rahu Kaal is the fifth part, which starts
+// at midday, and overlaps the same way. Abhijit is anyway held not to apply on
+// a Wednesday, which is the older and more important caveat, so it is said
+// first.
+function abhijitCaveat(vara, abhijit, rahu) {
+  if (vara === 'Wednesday') {
+    return 'Abhijit is not observed on a Wednesday — the tradition sets it aside on this weekday, so use another muhurta today.';
+  }
+  const from = Math.max(abhijit.startMin, rahu.startMin);
+  const to   = Math.min(abhijit.endMin,   rahu.endMin);
+  if (to <= from) return null;
+  return `Rahu Kaal runs across the first part of this window. If you want Abhijit clear of it, begin after ${minToTime(to)}.`;
+}
 
 // Festivals come from the ephemeris now. The table that used to sit here was
 // 2025's dates relabelled as 2026 — it put Holi on 14 Mar 2026 and Shivratri on
@@ -295,14 +349,16 @@ function getPanchang(req, res) {
     const varaLord   = VARA_LORD[d.getDay()];
 
     const timings = calcTimings(sunLon, moonLon, tithiRaw, jd);
+    const div = dayDivisions(srMin, ssMin, vara);
     res.json({
       date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
       vara, varaLord, tithi, tithiPaksha,
       tithiMeaning: TITHI_MEANING[tithi] || 'A balanced day for steady progress',
       nakshatra, nakshatraPada, yoga, karana,
       sunrise: minToTime(srMin), sunset: minToTime(ssMin),
-      rahuKaal: RAHU_KAAL[vara],
-      abhijit: '11:48 AM – 12:36 PM',
+      rahuKaal: div.rahu.text,
+      abhijit:  div.abhijit.text,
+      abhijitNote: abhijitCaveat(vara, div.abhijit, div.rahu),
       luckyColor: LUCKY_COLORS[vara], luckyNumber: LUCKY_NUMBERS[vara], goodFor: GOOD_WORK[vara],
       moonDegree: moonLon.toFixed(2), sunDegree: sunLon.toFixed(2),
       ...timings,
@@ -423,34 +479,24 @@ function getTodayRahuKaal(req, res) {
     const { d } = calcCore(dateStr);
     const vara = VARA[d.getDay()];
     const { srMin, ssMin } = getSunriseSunsetMin(dateStr);
-    const slotLen = (ssMin - srMin) / 8;
+    const div = dayDivisions(srMin, ssMin, vara);
 
-    const slot = (part) => {
-      const s = srMin + (part - 1) * slotLen;
-      return `${minToTime(s)} – ${minToTime(s + slotLen)}`;
-    };
-
-    const rahuPart   = RAHU_PART[vara];
-    const yamPart    = YAMGANDA_PART[vara];
-    const gulikaPart = GULIKA_PART[vara];
-
-    const rahuStart   = srMin + (rahuPart - 1) * slotLen;
     const now = new Date();
     const istOffsetMin = 330;
     const nowMin = ((now.getUTCHours() * 60 + now.getUTCMinutes()) + istOffsetMin) % (24 * 60);
-    const isRahuActive = nowMin >= rahuStart && nowMin < rahuStart + slotLen;
+    const isRahuActive = nowMin >= div.rahu.startMin && nowMin < div.rahu.endMin;
 
     res.json({
       date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
       vara, varaLord: VARA_LORD[d.getDay()],
       sunrise: minToTime(srMin), sunset: minToTime(ssMin),
-      rahuKaal:   slot(rahuPart),
-      yamaganda:  slot(yamPart),
-      gulika:     slot(gulikaPart),
-      rahuPart, yamPart, gulikaPart,
+      rahuKaal:   div.rahu.text,
+      yamaganda:  div.yamaganda.text,
+      gulika:     div.gulika.text,
+      rahuPart: RAHU_PART[vara], yamPart: YAMGANDA_PART[vara], gulikaPart: GULIKA_PART[vara],
       isRahuActive,
-      rahuStartMin: rahuStart,
-      rahuEndMin:   rahuStart + slotLen,
+      rahuStartMin: div.rahu.startMin,
+      rahuEndMin:   div.rahu.endMin,
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to calculate Rahu Kaal' });
@@ -465,11 +511,11 @@ function getTodayShubhamuhurat(req, res) {
     const { d, tithiIndex, nakshatraIdx } = calcCore(dateStr);
     const vara = VARA[d.getDay()];
     const { srMin, ssMin } = getSunriseSunsetMin(dateStr);
-    const midday = (srMin + ssMin) / 2;
+    const div = dayDivisions(srMin, ssMin, vara);
 
     const brahma   = `${minToTime(srMin - 96)} – ${minToTime(srMin - 48)}`;
     const pratah   = `${minToTime(srMin - 24)} – ${minToTime(srMin + 24)}`;
-    const abhijit  = `${minToTime(midday - 24)} – ${minToTime(midday + 24)}`;
+    const abhijit  = div.abhijit.text;
     const vijaya   = `${minToTime(ssMin - 96)} – ${minToTime(ssMin - 48)}`;
     const godhuli  = `${minToTime(ssMin - 12)} – ${minToTime(ssMin + 12)}`;
     const nisitha  = `${minToTime(720 + 12)} – ${minToTime(720 + 48)}`; // around midnight
@@ -495,10 +541,7 @@ function getTodayShubhamuhurat(req, res) {
     const isAmritSiddhi = AMRIT_SIDDHI[vara] === todayNakshatra;
 
     // Rahu Kaal to avoid
-    const rahuPart  = RAHU_PART[vara];
-    const slotLen   = (ssMin - srMin) / 8;
-    const rahuStart = srMin + (rahuPart - 1) * slotLen;
-    const rahuTime  = `${minToTime(rahuStart)} – ${minToTime(rahuStart + slotLen)}`;
+    const rahuTime = div.rahu.text;
 
     const ACTIVITY_MUHURTA = {
       Marriage:  vara === 'Monday' || vara === 'Wednesday' || vara === 'Thursday' || vara === 'Friday' ? abhijit : null,
@@ -514,6 +557,7 @@ function getTodayShubhamuhurat(req, res) {
       vara, varaLord: VARA_LORD[d.getDay()],
       brahma, pratah, abhijit, vijaya, godhuli, nisitha,
       isSarvarthaSiddhi, isAmritSiddhi, todayNakshatra,
+      abhijitNote: abhijitCaveat(vara, div.abhijit, div.rahu),
       rahuKaal: rahuTime,
       activities: ACTIVITY_MUHURTA,
     });

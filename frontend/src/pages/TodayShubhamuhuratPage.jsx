@@ -89,6 +89,14 @@ export default function TodayShubhamuhuratPage() {
                           <p className="text-xs text-gray-300 uppercase tracking-wider mb-0.5">{m.title}</p>
                           <p className="font-serif text-lg font-semibold mb-2" style={{ color: m.color }}>{timeVal}</p>
                           <p className="text-gray-200 text-sm leading-relaxed">{m.desc}</p>
+                          {/* On a Friday or Wednesday, Abhijit and Rahu Kaal
+                              really do share minutes. This page names both, so
+                              it has to say which one to follow. */}
+                          {m.key === 'abhijit' && data.abhijitNote && (
+                            <p className="text-amber-300/90 text-xs mt-3 pt-3 border-t border-gold-500/20 leading-relaxed">
+                              {data.abhijitNote}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </motion.div>
