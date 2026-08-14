@@ -62,6 +62,7 @@ export default function BookAppointmentPage() {
   const [duration,     setDuration]     = useState(60);
   const [mode,         setMode]         = useState('chat');
   const [slots,        setSlots]        = useState([]);
+  const [working,      setWorking]      = useState(true);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [concern,      setConcern]      = useState('');
@@ -82,8 +83,12 @@ export default function BookAppointmentPage() {
     try {
       const { data } = await apptApi.getSlots(astrologerId, { date, duration });
       setSlots(data.slots);
+      setWorking(data.working !== false);
     } catch {
       setSlots([]);
+      // A request that failed is not the same as a day off, and must not be
+      // reported as one.
+      setWorking(true);
     } finally {
       setSlotsLoading(false);
     }
@@ -263,8 +268,15 @@ export default function BookAppointmentPage() {
                   </div>
                 )}
 
+                {/* An astrologer with the day off and one whose day is fully
+                    booked both leave an empty grid, and they are not the same
+                    thing to somebody deciding when to come back. */}
                 {!slotsLoading && slots.filter(s => s.available).length === 0 && (
-                  <p className="text-cosmic-500 text-sm text-center py-4">No available slots on this date. Please pick another day.</p>
+                  <p className="text-cosmic-500 text-sm text-center py-4">
+                    {working === false
+                      ? `${astrologer?.display_name || 'This astrologer'} does not take appointments on this day. Please pick another.`
+                      : 'No available slots on this date. Please pick another day.'}
+                  </p>
                 )}
               </div>
 

@@ -1,10 +1,9 @@
 const { Op } = require('sequelize');
 const { Appointment, Astrologer, User } = require('../models');
 
-// Working hours: 8 AM – 9 PM IST, 1-hour slots
-const SLOT_START_HOUR = 8;   // 08:00 IST
-const SLOT_END_HOUR   = 21;  // 21:00 IST (last slot starts 20:00)
-const IST_OFFSET_MS   = 5.5 * 60 * 60 * 1000;
+const availability = require('../services/availabilityService');
+
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
 
 function toISTMidnight(dateStr) {
   // dateStr: 'YYYY-MM-DD'
@@ -22,23 +21,27 @@ const cleanDuration = (v) => {
   return ALLOWED_DURATIONS.includes(n) ? n : DEFAULT_DURATION;
 };
 
-function generateSlots(dateStr, durationMins) {
+// `window` is the astrologer's working hours for this date, or null on a day
+// she does not work — in which case there is nothing to offer.
+function generateSlots(dateStr, durationMins, window) {
+  if (!window) return [];
+  const openMin  = availability.toMinutes(window.from);
+  const closeMin = availability.toMinutes(window.to);
+  if (openMin === null || closeMin === null || closeMin <= openMin) return [];
+
   const slots = [];
   // Offer a short session on its own granularity: a 15-minute reading starting
   // only on the half hour would leave the other 15 minutes unbookable. Anything
   // an hour or longer still starts on the hour.
-  const step  = Math.min(durationMins, 60);
-  const base  = toISTMidnight(dateStr);
+  const step = Math.min(durationMins, 60);
+  const base = toISTMidnight(dateStr);
 
-  for (let h = SLOT_START_HOUR; h < SLOT_END_HOUR; h += step / 60) {
-    const slotStart = new Date(base.getTime() + h * 3600000);
-    const slotEnd   = new Date(slotStart.getTime() + durationMins * 60000);
-    if (slotEnd <= new Date(base.getTime() + SLOT_END_HOUR * 3600000)) {
-      slots.push({
-        start: slotStart.toISOString(),
-        label: slotStart.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata' }),
-      });
-    }
+  for (let m = openMin; m + durationMins <= closeMin; m += step) {
+    const slotStart = new Date(base.getTime() + m * 60000);
+    slots.push({
+      start: slotStart.toISOString(),
+      label: slotStart.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata' }),
+    });
   }
   return slots;
 }
@@ -79,14 +82,26 @@ exports.getSlots = async (req, res) => {
     });
     const now = Date.now();
 
-    const slots = generateSlots(dateStr, duration).map(s => {
+    const window = availability.windowFor(astrologer.availability, dateStr);
+
+    const slots = generateSlots(dateStr, duration, window).map(s => {
       const start = new Date(s.start).getTime();
       const end   = start + duration * 60000;
       const clash = bookedRanges.some(([bStart, bEnd]) => start < bEnd && end > bStart);
       return { ...s, available: !clash && start > now };
     });
 
-    res.json({ astrologer_id: astrologerId, date: dateStr, duration, slots, astrologer: { display_name: astrologer.display_name, price_per_min: astrologer.price_per_min } });
+    res.json({
+      astrologer_id: astrologerId,
+      date: dateStr,
+      duration,
+      slots,
+      // So the page can say "not working this day" rather than showing an empty
+      // box that looks like a page that failed to load.
+      working: !!window,
+      hours: window,
+      astrologer: { display_name: astrologer.display_name, price_per_min: astrologer.price_per_min },
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -144,6 +159,23 @@ exports.bookAppointment = async (req, res) => {
 
     const astrologer = await Astrologer.findByPk(astrologer_id);
     if (!astrologer) return res.status(404).json({ error: 'Astrologer not found' });
+
+    // The session has to fall inside the hours she actually works. The slots
+    // list already only offers times that do, but the list is a suggestion made
+    // to a browser and this is the decision.
+    const dateStr = new Date(sessionStart.getTime() + IST_OFFSET_MS).toISOString().slice(0, 10);
+    const window  = availability.windowFor(astrologer.availability, dateStr);
+    if (!window) {
+      return res.status(409).json({ error: `${astrologer.display_name} is not taking appointments that day.` });
+    }
+    const startMin = Math.round((sessionStart.getTime() + IST_OFFSET_MS) / 60000) % 1440;
+    const openMin  = availability.toMinutes(window.from);
+    const closeMin = availability.toMinutes(window.to);
+    if (startMin < openMin || startMin + duration_mins > closeMin) {
+      return res.status(409).json({
+        error: `${astrologer.display_name} takes appointments between ${window.from} and ${window.to} that day.`,
+      });
+    }
 
     const amount = parseFloat(astrologer.price_per_min) * duration_mins;
 

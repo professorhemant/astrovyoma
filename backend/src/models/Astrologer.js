@@ -44,6 +44,10 @@ module.exports = (sequelize) => {
     phone: { type: DataTypes.STRING, allowNull: true },
     free_minutes: { type: DataTypes.INTEGER, defaultValue: 0 },
     pin_hash: { type: DataTypes.STRING, allowNull: true },
+    // When this astrologer works — see services/availabilityService.js. Empty
+    // means "as it always was", 8 AM to 9 PM every day, so an astrologer who
+    // never opens the hours screen is offered exactly as before.
+    availability: { type: DataTypes.TEXT, allowNull: true, defaultValue: null },
     concern_tags: {
       type: DataTypes.TEXT,
       defaultValue: '[]',

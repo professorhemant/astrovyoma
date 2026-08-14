@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { Astrologer, Consultation, User } = require('../models');
+const { Op } = require('sequelize');
+const { Astrologer, Consultation, User, Appointment } = require('../models');
+const availability = require('../services/availabilityService');
 const earningsService = require('../services/earningsService');
 const { generateToken } = require('../services/agoraService');
 const { finalizeConsultation, expireIfRungOut, RING_TIMEOUT_MS } = require('./consultationController');
@@ -197,4 +199,79 @@ async function endCall(req, res) {
   }
 }
 
-module.exports = { panditLogin, toggleStatus, getStatus, getEarnings, getIncomingCalls, acceptCall, declineCall, endCall };
+// ─── working hours ───────────────────────────────────────────────────────────
+
+// Her own hours, filled in for every weekday so the screen has something to
+// show rather than having to know what an unset day means.
+async function getAvailability(req, res) {
+  try {
+    const astrologer = await Astrologer.findByPk(req.pandit.panditId);
+    if (!astrologer) return res.status(404).json({ error: 'Astrologer not found' });
+    res.json(availability.forEditing(astrologer.availability));
+  } catch (err) {
+    console.error('getAvailability error:', err);
+    res.status(500).json({ error: 'Could not load your hours' });
+  }
+}
+
+async function setAvailability(req, res) {
+  try {
+    const astrologer = await Astrologer.findByPk(req.pandit.panditId);
+    if (!astrologer) return res.status(404).json({ error: 'Astrologer not found' });
+
+    const cleaned = availability.fromEditing(req.body);
+    await astrologer.update({ availability: JSON.stringify(cleaned) });
+
+    // Answered in the editing shape, so the screen re-renders from what was
+    // actually stored rather than from what it hoped had been stored.
+    res.json(availability.forEditing(cleaned));
+  } catch (err) {
+    console.error('setAvailability error:', err);
+    res.status(500).json({ error: 'Could not save your hours' });
+  }
+}
+
+// ─── who has booked her ──────────────────────────────────────────────────────
+
+// Appointments were being taken and the astrologer had no way to see one. This
+// is the list: what is still to come first, because that is what she has to
+// plan around, and a short tail of what has been.
+async function getAppointments(req, res) {
+  try {
+    const rows = await Appointment.findAll({
+      where: { astrologer_id: req.pandit.panditId, status: { [Op.ne]: 'cancelled' } },
+      include: [{ model: User, as: 'user', attributes: ['name', 'phone'] }],
+      order: [['scheduled_at', 'ASC']],
+      limit: 200,
+    });
+
+    const now = Date.now();
+    const shape = (a) => ({
+      id: a.id,
+      scheduled_at: a.scheduled_at,
+      duration_mins: a.duration_mins,
+      mode: a.mode,
+      status: a.status,
+      amount: a.amount,
+      concern_category: a.concern_category,
+      concern_notes: a.concern_notes,
+      // A seeker's name and nothing more. She needs to know who is coming; she
+      // does not need their account.
+      seeker: a.user?.name || 'A seeker',
+    });
+
+    const upcoming = rows.filter(a => new Date(a.scheduled_at).getTime() >= now).map(shape);
+    const past     = rows.filter(a => new Date(a.scheduled_at).getTime() <  now).reverse().slice(0, 10).map(shape);
+
+    res.json({ upcoming, past });
+  } catch (err) {
+    console.error('getAppointments error:', err);
+    res.status(500).json({ error: 'Could not load your appointments' });
+  }
+}
+
+module.exports = {
+  panditLogin, toggleStatus, getStatus, getEarnings,
+  getIncomingCalls, acceptCall, declineCall, endCall,
+  getAvailability, setAvailability, getAppointments,
+};

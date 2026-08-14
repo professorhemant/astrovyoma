@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, Lock, LogOut, Wifi, WifiOff, IndianRupee, Clock } from 'lucide-react';
 import PanditCallPanel from '../components/PanditCallPanel';
+import PanditSchedule from '../components/PanditSchedule';
 import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -270,6 +271,10 @@ export default function PanditPortalPage() {
             </>
           )}
         </div>
+
+        {/* Her hours, and who has booked them. The online toggle above is for
+            someone wanting to talk *now*; this is the diary. */}
+        <PanditSchedule token={token} />
 
         <AnimatePresence>
           {error && (
