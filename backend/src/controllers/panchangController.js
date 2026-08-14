@@ -310,9 +310,14 @@ function calcAtJD(jd) {
 // that time. Now it is the day's actual sunrise at the place being asked
 // about, so the limbs and the timings below are read off the same moment.
 //
-// `d` stays a plain noon-UTC anchor for the date, used only for the weekday
-// and for formatting. Deriving it from local midnight instead would land on
-// the previous day once the server clock is UTC.
+// `d` is a plain noon-UTC anchor for the date, used only for the weekday and
+// for formatting. Deriving it from local midnight instead would land on the
+// previous day once the server clock is UTC.
+//
+// It must be read with the UTC getters — `getUTCDay()`, and `timeZone:'UTC'`
+// when formatting. `getDay()` reads the *server's* clock, and at UTC+12 noon
+// UTC is already midnight tomorrow, so the vara came out a day late and took
+// Rahu Kaal, the Choghadiya table and the lucky colour with it.
 function calcCore(dateStr, place = DEFAULT_PLACE) {
   const d = new Date(dateStr + 'T12:00:00Z');
   const { srMin, ssMin } = getSunriseSunsetMin(dateStr, place);
@@ -436,13 +441,13 @@ function getPanchang(req, res) {
     const nakshatraPada = Math.floor((moonLon % (360 / 27)) / (360 / 27 / 4)) + 1;
     const yoga       = YOGA_NAMES[yogaIndex];
     const karana     = KARANA_NAMES[karanaIndex];
-    const vara       = VARA[d.getDay()];
-    const varaLord   = VARA_LORD[d.getDay()];
+    const vara       = VARA[d.getUTCDay()];
+    const varaLord   = VARA_LORD[d.getUTCDay()];
 
     const timings = calcTimings(sunLon, moonLon, tithiRaw, jd, srMin);
     const div = dayDivisions(srMin, ssMin, vara);
     res.json({
-      date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
+      date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric', timeZone:'UTC' }),
       vara, varaLord, tithi, tithiPaksha,
       tithiMeaning: TITHI_MEANING[tithi] || 'A balanced day for steady progress',
       nakshatra, nakshatraPada, yoga, karana,
@@ -471,17 +476,17 @@ function getTodayTithi(req, res) {
     const tithi    = TITHIS[tithiIndex];
     const paksha   = tithiIndex < 15 ? 'Shukla Paksha' : 'Krishna Paksha';
     const tithiNum = tithiIndex < 15 ? tithiIndex + 1 : tithiIndex - 14;
-    const vara     = VARA[d.getDay()];
+    const vara     = VARA[d.getUTCDay()];
     const details  = TITHI_DETAILS[tithi] || TITHI_DETAILS['Pratipada'];
     const { tithiEnds, nextTithi } = calcTimings(sunLon, moonLon, tithiRaw, jd, srMin);
     const tithiChart = buildTithiSchedule(dateStr, 8, place);
     res.json({
-      date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
+      date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric', timeZone:'UTC' }),
       tithi, paksha, tithiNum,
       tithiPaksha: `${paksha} — ${tithi} (${tithiNum})`,
       ...details,
       meaning: TITHI_MEANING[tithi] || 'A balanced day for steady progress',
-      vara, varaLord: VARA_LORD[d.getDay()],
+      vara, varaLord: VARA_LORD[d.getUTCDay()],
       tithiEnds, nextTithi, tithiChart,
       location: place.label,
       place: placeInfo(place),
@@ -501,14 +506,14 @@ function getTodayNakshatra(req, res) {
     const nakshatra = NAKSHATRAS[nakshatraIdx];
     const pada      = Math.floor((moonLon % (360 / 27)) / (360 / 27 / 4)) + 1;
     const info      = NAKSHATRA_DATA[nakshatra] || {};
-    const vara      = VARA[d.getDay()];
+    const vara      = VARA[d.getUTCDay()];
     const { nakshatraEnds, nextNakshatra } = calcTimings(sunLon, moonLon, tithiRaw, jd, srMin);
     res.json({
-      date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
+      date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric', timeZone:'UTC' }),
       nakshatra, pada, nakshatraNum: nakshatraIdx + 1,
       moonDegree: moonLon.toFixed(2),
       ...info,
-      vara, varaLord: VARA_LORD[d.getDay()],
+      vara, varaLord: VARA_LORD[d.getUTCDay()],
       nakshatraEnds, nextNakshatra,
       place: placeInfo(place),
     });
@@ -524,7 +529,7 @@ function getTodayChoghadiya(req, res) {
     const dateStr = req.query.date || new Date().toISOString().split('T')[0];
     const place = placeFrom(req);
     const { d, srMin, ssMin } = calcCore(dateStr, place);
-    const vara = VARA[d.getDay()];
+    const vara = VARA[d.getUTCDay()];
     const nightEndMin = srMin + 24 * 60; // next day sunrise (approx)
 
     const daySlotLen   = (ssMin - srMin) / 8;
@@ -552,7 +557,7 @@ function getTodayChoghadiya(req, res) {
     const findCurrent = (slots) => slots.findIndex(s => nowMin >= s.startMin && nowMin < s.endMin);
 
     res.json({
-      date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
+      date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric', timeZone:'UTC' }),
       vara, sunrise: minToTime(srMin), sunset: minToTime(ssMin),
       daySlots, nightSlots,
       currentDaySlotIdx:   findCurrent(daySlots),
@@ -571,15 +576,15 @@ function getTodayRahuKaal(req, res) {
     const dateStr = req.query.date || new Date().toISOString().split('T')[0];
     const place = placeFrom(req);
     const { d, srMin, ssMin } = calcCore(dateStr, place);
-    const vara = VARA[d.getDay()];
+    const vara = VARA[d.getUTCDay()];
     const div = dayDivisions(srMin, ssMin, vara);
 
     const nowMin = nowMinAt(place);
     const isRahuActive = nowMin >= div.rahu.startMin && nowMin < div.rahu.endMin;
 
     res.json({
-      date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
-      vara, varaLord: VARA_LORD[d.getDay()],
+      date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric', timeZone:'UTC' }),
+      vara, varaLord: VARA_LORD[d.getUTCDay()],
       sunrise: minToTime(srMin), sunset: minToTime(ssMin),
       rahuKaal:   div.rahu.text,
       yamaganda:  div.yamaganda.text,
@@ -602,7 +607,7 @@ function getTodayShubhamuhurat(req, res) {
     const dateStr = req.query.date || new Date().toISOString().split('T')[0];
     const place = placeFrom(req);
     const { d, srMin, ssMin, tithiIndex, nakshatraIdx } = calcCore(dateStr, place);
-    const vara = VARA[d.getDay()];
+    const vara = VARA[d.getUTCDay()];
     const div = dayDivisions(srMin, ssMin, vara);
 
     const brahma   = `${minToTime(srMin - 96)} – ${minToTime(srMin - 48)}`;
@@ -645,8 +650,8 @@ function getTodayShubhamuhurat(req, res) {
     };
 
     res.json({
-      date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
-      vara, varaLord: VARA_LORD[d.getDay()],
+      date: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric', timeZone:'UTC' }),
+      vara, varaLord: VARA_LORD[d.getUTCDay()],
       brahma, pratah, abhijit, vijaya, godhuli, nisitha,
       isSarvarthaSiddhi, isAmritSiddhi, todayNakshatra,
       abhijitNote: abhijitCaveat(vara, div.abhijit, div.rahu),
@@ -677,7 +682,7 @@ function getPanchangCalendar(req, res) {
         const { d, tithiIndex, nakshatraIdx } = calcCore(dateStr, place);
         const tithi     = TITHIS[tithiIndex];
         const nakshatra = NAKSHATRAS[nakshatraIdx];
-        const vara      = VARA[d.getDay()];
+        const vara      = VARA[d.getUTCDay()];
         const paksha    = tithiIndex < 15 ? 'S' : 'K'; // Shukla/Krishna
         const tithiNum  = tithiIndex < 15 ? tithiIndex + 1 : tithiIndex - 14;
         const festivalName = festivalFor(dateStr);
@@ -688,7 +693,7 @@ function getPanchangCalendar(req, res) {
         days.push({ date:dateStr, day, vara:'', tithi:'', tithiNum:0, paksha:'S', nakshatra:'', festival:null, isAuspicious:false });
       }
     }
-    const firstDayOfWeek = new Date(`${year}-${String(month).padStart(2,'0')}-01`).getDay();
+    const firstDayOfWeek = new Date(`${year}-${String(month).padStart(2,'0')}-01`).getUTCDay();
     res.json({ year, month, monthName: new Date(year, month-1, 1).toLocaleString('en-IN',{month:'long'}), firstDayOfWeek, days, place: placeInfo(place) });
   } catch (err) {
     res.status(500).json({ error: 'Failed to calculate Calendar' });
@@ -701,9 +706,9 @@ function getPanchangData(dateStr, place = DEFAULT_PLACE) {
   const { d, srMin, ssMin, tithiIndex, nakshatraIdx, yogaIndex, karanaIndex, sunLon, moonLon } = core;
   return {
     dateStr,
-    vara:        VARA[d.getDay()],
-    varaLord:    VARA_LORD[d.getDay()],
-    dayIndex:    d.getDay(),
+    vara:        VARA[d.getUTCDay()],
+    varaLord:    VARA_LORD[d.getUTCDay()],
+    dayIndex:    d.getUTCDay(),
     tithi:       TITHIS[tithiIndex],
     tithiIndex,
     tithiDetail: TITHI_DETAILS[TITHIS[tithiIndex]] || {},
@@ -715,11 +720,11 @@ function getPanchangData(dateStr, place = DEFAULT_PLACE) {
     karana:      KARANA_NAMES[karanaIndex],
     srMin, ssMin,
     sunLon, moonLon,
-    choghadiyaDay:   CHOGHADIYA_DAY[VARA[d.getDay()]]   || [],
-    choghadiyaNight: CHOGHADIYA_NIGHT[VARA[d.getDay()]] || [],
-    rahuPart:    RAHU_PART[VARA[d.getDay()]],
-    yamgandaPart:YAMGANDA_PART[VARA[d.getDay()]],
-    gulikaPart:  GULIKA_PART[VARA[d.getDay()]],
+    choghadiyaDay:   CHOGHADIYA_DAY[VARA[d.getUTCDay()]]   || [],
+    choghadiyaNight: CHOGHADIYA_NIGHT[VARA[d.getUTCDay()]] || [],
+    rahuPart:    RAHU_PART[VARA[d.getUTCDay()]],
+    yamgandaPart:YAMGANDA_PART[VARA[d.getUTCDay()]],
+    gulikaPart:  GULIKA_PART[VARA[d.getUTCDay()]],
     choghadiyaInfo: CHOGHADIYA_INFO,
   };
 }

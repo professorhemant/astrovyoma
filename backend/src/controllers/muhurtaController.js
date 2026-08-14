@@ -385,6 +385,12 @@ function getVerdictMessage(score, eventName) {
   };
 }
 
+// Today's date on the clock the seeker keeps, as YYYY-MM-DD. Built by shifting
+// into IST and reading the UTC fields back, which needs no timezone database.
+function todayInIndia() {
+  return new Date(Date.now() + 330 * 60000).toISOString().split('T')[0];
+}
+
 // rank:'chronological' keeps the original "next N qualifying dates" behaviour.
 // rank:'score' scans the whole window, keeps the N strongest, then returns them
 // in date order — used by the "find me dates" mode, where the soonest qualifying
@@ -392,7 +398,18 @@ function getVerdictMessage(score, eventName) {
 function findBestDates(eventType, fromDateStr, count = 3, person = {}, opts = {}) {
   const { windowDays = 60, rank = 'chronological', minScore = 55, includeFromDate = false } = opts;
   const results = [];
-  const from = new Date(fromDateStr + 'T00:00:00');
+  // Anchored at noon UTC, and read back as UTC below.
+  //
+  // This was `new Date(str + 'T00:00:00')`, which has no offset and so parses
+  // as *server-local* time — while `toISOString()` two lines down reads back as
+  // UTC. On a server ahead of UTC the two disagreed by a day: the row said
+  // date 2026-08-14 and displayed "Saturday, 15 August 2026", so a seeker was
+  // shown one day's label against the next day's panchang. Railway runs UTC,
+  // which is the only reason it never showed in production.
+  //
+  // Noon also keeps the day-stepping safe: adding 86,400,000 ms to a midnight
+  // lands on 23:00 or 01:00 across a DST boundary, and floors to the wrong date.
+  const from = new Date(fromDateStr + 'T12:00:00Z');
   const start = includeFromDate ? 0 : 1;
 
   for (let i = start; i <= windowDays; i++) {
@@ -423,7 +440,9 @@ function findBestDates(eventType, fromDateStr, count = 3, person = {}, opts = {}
 
       results.push({
         date: dateStr,
-        display: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
+        // Formatted in the same frame the date was computed in, so `display`
+        // can never name a different day from `date`.
+        display: d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric', timeZone:'UTC' }),
         score: scoring.score,
         verdict: scoring.verdict,
         verdictColor: scoring.verdictColor,
@@ -594,7 +613,10 @@ function bestDates(req, res) {
       return res.status(400).json({ error: 'Invalid partner_rashi', valid: RASHI_LIST });
     }
 
-    const from   = from_date || new Date().toISOString().split('T')[0];
+    // "From today" means today in India, not today in UTC. `toISOString()` on
+    // its own hands back yesterday's date to anyone searching between midnight
+    // and 5:30 AM IST, so the run would start from a day already gone.
+    const from   = from_date || todayInIndia();
     const person = { janma_nakshatra, janma_rashi, partner_nakshatra, partner_rashi };
     const ev     = EVENTS[event_type];
 
