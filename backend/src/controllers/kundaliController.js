@@ -4,6 +4,7 @@ const { calculateKundali } = require('../services/kundaliEngine');
 const { generateSummaryPDF, generateDetailedPDF } = require('../services/pdfService');
 const { getNamkaranLetter } = require('../services/namkaranService');
 const { generateSummaryPDFHindi, generateDetailedPDFHindi } = require('../services/hindiPdfService');
+const { getPhal } = require('../services/phalService');
 
 async function geocodePlace(place) {
   const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(place)}&format=json&limit=1`;
@@ -57,7 +58,7 @@ async function generateKundali(req, res) {
 
     res.json({
       kundali: kundali.toJSON ? kundali.toJSON() : kundali,
-      chart: chartData,
+      chart: { ...chartData, ...(getPhal(chartData, 'hi') ? { phal: getPhal(chartData, 'hi') } : {}) },
       birth_info: { dob, birth_time, birth_place, lat: resolvedLat, lng: resolvedLng, timezone: resolvedTz }
     });
   } catch (err) {
@@ -71,7 +72,10 @@ async function getMyKundali(req, res) {
     const kundali = await Kundali.findOne({ where: { user_id: req.user.id } });
     // Not having generated a chart yet is an ordinary empty state, not an error:
     // answer 200/null so callers can tell it apart from a real failure.
-    res.json(kundali || null);
+    if (!kundali) return res.json(null);
+    const stored = kundali.toJSON();
+    const phal = getPhal(stored, 'hi');
+    res.json(phal ? { ...stored, phal } : stored);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch Kundali' });
   }
@@ -245,9 +249,17 @@ async function generatePublicKundali(req, res) {
     }
 
     const chartData = await calculateKundali(dob, birth_time, resolvedLat, resolvedLng, resolvedTz);
+    // The Hindi readings ride along with every chart rather than being asked
+    // for. They are a few kilobytes of text against a chart that is already far
+    // larger, and sending them unconditionally means switching language is
+    // instant on a chart already on screen — no second round trip, no spinner,
+    // and no way for the two languages to disagree because they were computed
+    // from separate requests. The page renders them only if the reader wants
+    // them; English is untouched either way.
+    const phal = getPhal(chartData, 'hi');
 
     res.json({
-      chart: chartData,
+      chart: phal ? { ...chartData, phal } : chartData,
       birth_info: { name, dob, birth_time, birth_place, lat: resolvedLat, lng: resolvedLng, timezone: resolvedTz }
     });
   } catch (err) {

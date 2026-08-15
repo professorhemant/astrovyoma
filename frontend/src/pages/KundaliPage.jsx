@@ -13,6 +13,7 @@ import { kundali as kundaliApi, reportHistory as historyApi } from '../api';
 import BirthPlacePicker from '../components/BirthPlacePicker';
 import { useAuth } from '../context/AuthContext';
 import { LAGNA_PHAL, NAKSHATRA_PHAL, MAHADASHA_PHAL, KAAL_SARP_TYPES } from '../data/kundaliInterpretations';
+import { useLanguage } from '../context/LanguageContext';
 
 const PLANET_ORDER = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
 
@@ -1085,9 +1086,23 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
   const lagna = data.lagna || '';
   const moonSign = data.moon_sign || '';
   const nakshatra = data.nakshatra || '';
-  const lagnaInfo = LAGNA_PHAL[lagna] || null;
-  const nakInfo = NAKSHATRA_PHAL[nakshatra] || null;
-  const currentMahaInfo = currentDasha ? MAHADASHA_PHAL[currentDasha.planet] : null;
+  // ── the readings, in the reader's language ──────────────────────────────
+  // The Hindi arrives with the chart (chart.phal, assembled by the backend from
+  // the authored Hindi that used to be reachable only inside a PDF). It is laid
+  // over the English rather than replacing it: Hindi exists for the lagna, the
+  // nakshatra's character, the dasha and the doshas, and does not exist for
+  // every domain this page prints. Overlaying means a Hindi reader gets Hindi
+  // wherever it was written and English where it was not, instead of a gap.
+  const { isHindi } = useLanguage();
+  const phal = (isHindi && data.phal) || null;
+  const over = (base, hindi) => (hindi ? { ...(base || {}), ...hindi } : base || null);
+
+  const lagnaInfo = over(LAGNA_PHAL[lagna], phal?.lagna);
+  const nakInfo = over(NAKSHATRA_PHAL[nakshatra], phal?.nakshatra);
+  const currentMahaInfo = over(
+    currentDasha ? MAHADASHA_PHAL[currentDasha.planet] : null,
+    phal?.dasha && { career: phal.dasha.career },
+  );
   const currentAntar = currentDasha?.antardashas?.find(a => new Date(a.start) <= NOW && new Date(a.end) >= NOW);
   const ashtak = computeAshtakavarga(pp, lagna);
 
@@ -1260,21 +1275,30 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
         {lagnaInfo ? (
           <div className="space-y-4">
             <div>
-              <p className="text-gold-400 font-semibold text-sm mb-1">Physical Appearance</p>
+              <p className={`text-gold-400 font-semibold text-sm mb-1 ${lagnaInfo.headings ? 'font-devanagari' : ''}`}>{lagnaInfo.headings?.appearance || 'Physical Appearance'}</p>
               <p className="text-gray-200 text-sm leading-relaxed">{lagnaInfo.appearance}</p>
             </div>
             <div>
-              <p className="text-gold-400 font-semibold text-sm mb-1">Personality & Character</p>
+              <p className={`text-gold-400 font-semibold text-sm mb-1 ${lagnaInfo.headings ? 'font-devanagari' : ''}`}>{lagnaInfo.headings?.personality || 'Personality & Character'}</p>
               <p className="text-gray-200 text-sm leading-relaxed">{lagnaInfo.personality}</p>
             </div>
             <div>
-              <p className="text-gold-400 font-semibold text-sm mb-1">Nature & Tendencies</p>
+              <p className={`text-gold-400 font-semibold text-sm mb-1 ${lagnaInfo.headings ? 'font-devanagari' : ''}`}>{lagnaInfo.headings?.nature || 'Nature & Tendencies'}</p>
               <p className="text-gray-200 text-sm leading-relaxed">{lagnaInfo.nature}</p>
             </div>
             <div>
-              <p className="text-gold-400 font-semibold text-sm mb-1">Health Tendencies</p>
+              <p className={`text-gold-400 font-semibold text-sm mb-1 ${lagnaInfo.headings ? 'font-devanagari' : ''}`}>{lagnaInfo.headings?.health || 'Health Tendencies'}</p>
               <p className="text-gray-200 text-sm leading-relaxed">{lagnaInfo.health}</p>
             </div>
+            {/* Hindi carries eleven further readings per lagna that the English
+                never had. A Hindi reader gets more here, not a translation of
+                less. */}
+            {(lagnaInfo.more || []).map(({ label, text }) => (
+              <div key={label}>
+                <p className="text-gold-400 font-semibold text-sm mb-1 font-devanagari">{label}</p>
+                <p className="text-gray-200 text-sm leading-relaxed font-devanagari">{text}</p>
+              </div>
+            ))}
           </div>
         ) : (
           <p className="text-gray-300 text-sm">Lagna interpretation not available for: {lagna}</p>
@@ -1360,17 +1384,26 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
           )}
           <div>
             <p className="text-gold-400 font-semibold text-sm mb-2">About Sade Sati</p>
-            <p className="text-gray-200 text-sm leading-relaxed">Sade Sati ("seven and a half") refers to the seven-and-a-half year period when Saturn transits through three consecutive signs — the 12th sign from, the exact Moon sign, and the 2nd sign from the birth Moon. Each phase lasts approximately two and a half years as Saturn moves slowly through each sign. This is considered one of the most significant transit periods in Vedic astrology, associated with Saturn's testing of the soul through challenges, responsibilities, and spiritual maturation. The three phases — Uday (rising), Shikhar (peak), and Ast (setting) — each have distinct qualities and lessons.</p>
+            <p className={`text-gray-200 text-sm leading-relaxed ${phal?.sade_sati?.description ? 'font-devanagari' : ''}`}>{phal?.sade_sati?.description || `Sade Sati ("seven and a half") refers to the seven-and-a-half year period when Saturn transits through three consecutive signs — the 12th sign from the exact Moon sign, and the 2nd sign from the birth Moon. Each phase lasts approximately two and a half years as Saturn moves slowly through each sign. This is considered one of the most significant transit periods in Vedic astrology, associated with Saturn's testing of the soul through challenges, responsibilities, and spiritual maturation. The three phases — Uday (rising), Shikhar (peak), and Ast (setting) — each have distinct qualities and lessons.`}</p>
           </div>
           <div className="grid md:grid-cols-3 gap-4">
-            {[
+            {(phal?.sade_sati?.phases
+              ? ['uday', 'shikhar', 'ast'].map(k => ({
+                  phase: phal.sade_sati.phases[k]?.name,
+                  desc: phal.sade_sati.phases[k]?.desc,
+                  hi: true,
+                  match: { uday: 'Uday', shikhar: 'Shikhar', ast: 'Ast' }[k],
+                })).filter(p => p.phase)
+              : [
               { phase: 'Uday (Rising) Phase', desc: 'Saturn transiting the 12th sign from Moon. Increased expenses, tendency toward withdrawal, desires for travel or spiritual retreat. Inner preparation and spiritual investment yield great dividends. Let go of what no longer serves you.' },
               { phase: 'Shikhar (Peak) Phase', desc: 'Saturn transiting the exact Moon sign. Maximum intensity of challenges — health, career, relationships, and mental peace may all be tested. Patience, humility, and devoted spiritual practice are the keys. The greatest growth often comes from this phase.' },
               { phase: 'Ast (Setting) Phase', desc: 'Saturn transiting the 2nd sign from Moon. Challenges begin to ease, though financial prudence remains important. A sense of lightening and renewed possibility returns. The wisdom earned in the previous phases begins to yield its fruit.' },
-            ].map(({ phase, desc }) => (
-              <div key={phase} className={`p-4 rounded-xl border ${sadeSatiPhase.includes(phase.split(' ')[0]) ? 'bg-violet-500/10 border-violet-500/30' : 'bg-cosmic-900/40 border-gold-600/10'}`}>
-                <p className="text-gold-400 font-semibold text-xs mb-2">{phase}</p>
-                <p className="text-gray-200 text-xs leading-relaxed">{desc}</p>
+            ]).map(({ phase, desc, hi, match }) => (
+              // Which card is highlighted is decided on the English phase name
+              // the chart computes, so a Hindi heading still lights the right one.
+              <div key={phase} className={`p-4 rounded-xl border ${sadeSatiPhase.includes(match || phase.split(' ')[0]) ? 'bg-violet-500/10 border-violet-500/30' : 'bg-cosmic-900/40 border-gold-600/10'}`}>
+                <p className={`text-gold-400 font-semibold text-xs mb-2 ${hi ? 'font-devanagari' : ''}`}>{phase}</p>
+                <p className={`text-gray-200 text-xs leading-relaxed ${hi ? 'font-devanagari' : ''}`}>{desc}</p>
               </div>
             ))}
           </div>
@@ -1417,6 +1450,7 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
             {currentMahaInfo ? (
               <div className="space-y-4">
                 {[
+                  ...(phal?.dasha?.reading ? [[phal.dasha.title || 'महादशा फल', phal.dasha.reading]] : []),
                   ['Career & Professional Life', currentMahaInfo.career],
                   ['Health & Well-being', currentMahaInfo.health],
                   ['Relationships & Family', currentMahaInfo.relationships],

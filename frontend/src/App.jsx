@@ -4,6 +4,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { LanguageProvider } from './context/LanguageContext';
 import CosmicBackground from './components/CosmicBackground';
 import Navbar from './components/Navbar';
 import FloatingAIButton from './components/FloatingAIButton';
@@ -221,6 +222,7 @@ function ContactGate() {
 export default function App() {
   return (
     <AuthProvider>
+      <LanguageProvider>
       <CartProvider>
         <AppLayout />
       </CartProvider>
@@ -237,6 +239,7 @@ export default function App() {
           error: { iconTheme: { primary: '#ef4444', secondary: '#0F1540' } }
         }}
       />
+      </LanguageProvider>
     </AuthProvider>
   );
 }

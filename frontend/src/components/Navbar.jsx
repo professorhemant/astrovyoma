@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Wallet, Menu, X, User, ChevronDown, ShoppingCart, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useLanguage } from '../context/LanguageContext';
 import { content as contentApi } from '../api';
 
 // One source of truth for the whole menu — desktop dropdowns and the mobile
@@ -97,6 +98,7 @@ function groupsFromCms(groups, items) {
 export default function Navbar() {
   const { user, logout } = useAuth();
   const { totalItems } = useCart();
+  const { lang, setLang } = useLanguage();
   const [cmsGroups, setCmsGroups] = useState(null);
 
   // The hardcoded NAV_GROUPS above stays as the fallback: a failed request must
@@ -182,6 +184,23 @@ export default function Navbar() {
         </div>
 
         <div className="hidden xl:flex items-center gap-3 flex-shrink-0">
+          {/* Reading language. Two words rather than a globe icon and a
+              dropdown: there are two choices, and each is written in the
+              language it selects, which is the only label that needs no
+              translating. It switches the readings, not the buttons — see
+              context/LanguageContext.jsx for why that line is drawn there. */}
+          <div className="flex items-center rounded-full border border-gold-600/25 overflow-hidden text-[11px]"
+            title="Language of the readings">
+            {[['en', 'EN'], ['hi', 'हिन्दी']].map(([code, label]) => (
+              <button key={code} onClick={() => setLang(code)}
+                aria-pressed={lang === code}
+                className={`px-2.5 py-1 transition-colors ${
+                  lang === code ? 'bg-gold-500/20 text-gold-300' : 'text-gray-400 hover:text-gray-200'}`}>
+                {label}
+              </button>
+            ))}
+          </div>
+
           {/* Cart icon */}
           <Link to="/cart" className="relative text-gray-300 hover:text-gold-400 transition-colors p-1">
             <ShoppingCart className="w-5 h-5" />
@@ -288,6 +307,24 @@ export default function Navbar() {
             className="xl:hidden bg-cosmic-900/95 backdrop-blur-md border-t border-gold-600/20 max-h-[calc(100vh-4rem)] overflow-y-auto"
           >
             <div className="px-4 py-4 flex flex-col gap-1">
+              {/* The reading language, on a phone too. It sat only in the
+                  desktop bar at first, which put it above 1280px — invisible on
+                  every phone and most laptops, and the readers most likely to
+                  want Hindi are the ones on phones. */}
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[11px] text-gray-500">Readings in</span>
+                <div className="flex items-center rounded-full border border-gold-600/25 overflow-hidden text-xs">
+                  {[['en', 'English'], ['hi', 'हिन्दी']].map(([code, label]) => (
+                    <button key={code} onClick={() => setLang(code)}
+                      aria-pressed={lang === code}
+                      className={`px-3 py-1.5 transition-colors ${
+                        lang === code ? 'bg-gold-500/20 text-gold-300' : 'text-gray-400'}`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Both CTAs sit above the fold — they are why most people open this menu */}
               <Link
                 to="/chat"
