@@ -239,8 +239,8 @@ export default function ResourceList({
             onChange={toggleAllShown} label="Select all on this page" /></span>
           <span className="w-4 shrink-0" />
           <span className="w-10 shrink-0" />
-          <span className="flex-1 min-w-0">{def.titleField ? 'Name' : 'Item'}</span>
-          {columns.map(c => <span key={c.key} className="w-28 shrink-0 hidden lg:block truncate">{c.label}</span>)}
+          <span className="flex-1 min-w-[7rem]">{def.titleField ? 'Name' : 'Item'}</span>
+          {columns.map(c => <span key={c.key} className="w-24 shrink-0 hidden xl:block truncate">{c.label}</span>)}
           <span className="w-16 shrink-0">Status</span>
           <span className="w-16 shrink-0 text-right">Actions</span>
         </div>
@@ -310,19 +310,19 @@ export default function ResourceList({
 
                   <Thumb item={item} def={def} />
 
-                  <span className="flex-1 min-w-0">
+                  <span className="flex-1 min-w-[7rem]">
                     <span className={`block text-sm truncate ${item.is_active ? 'text-gray-100' : 'text-gray-500'}`}>
                       {title || <span className="italic text-gray-600">Untitled</span>}
                     </span>
                     {columns.length > 0 && (
-                      <span className="block lg:hidden text-[11px] text-gray-600 truncate">
+                      <span className="block xl:hidden text-[11px] text-gray-600 truncate">
                         {columns.map(c => cellValue(c, item)).filter(v => v !== '—').join(' · ')}
                       </span>
                     )}
                   </span>
 
                   {columns.map(c => (
-                    <span key={c.key} className="w-28 shrink-0 hidden lg:block text-xs text-gray-400 truncate">
+                    <span key={c.key} className="w-24 shrink-0 hidden xl:block text-xs text-gray-400 truncate">
                       {cellValue(c, item)}
                     </span>
                   ))}
