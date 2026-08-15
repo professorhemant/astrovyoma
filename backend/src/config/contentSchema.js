@@ -877,8 +877,9 @@ const LISTS = {
     noun: 'stone',
     titleField: 'name',
     help: 'The nine Navagraha gemstones and the healing crystals behind the Crystal ' +
-          'Guide. Each one has its own page. Add a picture and it replaces the emoji ' +
-          'on the card, exactly as the shop works.',
+          'Guide. Each one has its own page, and a picture added here appears on it, ' +
+          'large. The small round-ups — the cards on the guide and the Related Stones ' +
+          'list — stay with the emoji, which reads better at that size than a photograph.',
     itemLabel: (d) => d.name || 'Crystal',
     fields: [
       { key: 'name',      label: 'Name', type: 'text', required: true },
@@ -894,9 +895,9 @@ const LISTS = {
         help: 'The sentence on the card.' },
 
       { key: 'image', label: 'Picture', type: 'image',
-        help: 'Optional. Without one the card shows the emoji below, as it does now.' },
+        help: 'Optional, and shown only on this stone’s own page, where there is room for it. A square photograph of about 1000×1000 or larger works best; anything smaller looks soft blown up that big.' },
       { key: 'icon',  label: 'Emoji', type: 'text',
-        help: 'Used when there is no picture.' },
+        help: 'Stands in for the stone wherever it appears small — the cards on the guide, and Related Stones. Used on its own page too if there is no picture.' },
       { key: 'color', label: 'Colour', type: 'color', default: '#c9a84c',
         help: 'Tints the swatch behind the emoji and the outline of the card.' },
       { key: 'colorName', label: 'Colour, in words', type: 'text',

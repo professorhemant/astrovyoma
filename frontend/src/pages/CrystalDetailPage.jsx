@@ -71,13 +71,27 @@ export default function CrystalDetailPage() {
             <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
               className="card-cosmic p-6 sm:p-8"
               style={{ borderColor: crystal.color + '50' }}>
-              <div className="flex items-start gap-5">
-                <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-4xl shrink-0 overflow-hidden"
-                  style={{ background: crystal.color + '20', border: `2px solid ${crystal.color}50` }}>
-                  {crystal.image
-                    ? <img src={crystal.image} alt={crystal.name} className="w-full h-full object-cover" />
-                    : crystal.icon}
-                </div>
+              {/* A photograph gets a panel; an emoji gets a swatch.
+                  The two are not interchangeable at one size. An emoji is a
+                  glyph — legible at 48px, and no better for being drawn at 250 —
+                  while a photograph of a stone is detail, and detail shown at
+                  48px is speckle. So the picture, where there is one, is given
+                  the room a picture needs, and the layout changes shape around
+                  it rather than dropping it into a slot built for a symbol. */}
+              <div className={crystal.image
+                ? 'flex flex-col sm:flex-row items-start gap-6'
+                : 'flex items-start gap-5'}>
+                {crystal.image ? (
+                  <div className="w-full sm:w-56 shrink-0 aspect-square rounded-2xl overflow-hidden"
+                    style={{ background: crystal.color + '15', border: `2px solid ${crystal.color}50` }}>
+                    <img src={crystal.image} alt={crystal.name} className="w-full h-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-4xl shrink-0"
+                    style={{ background: crystal.color + '20', border: `2px solid ${crystal.color}50` }}>
+                    {crystal.icon}
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-2">
                     <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ${typeMeta.color}`}>{typeMeta.label}</span>
@@ -197,11 +211,9 @@ export default function CrystalDetailPage() {
                   {related.map(r => (
                     <Link key={r.slug} to={`/crystals/${r.slug}`}
                       className="card-cosmic p-3 flex items-center gap-3 group hover:ring-1 hover:ring-gold-500/30 transition-all">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center text-lg shrink-0 overflow-hidden"
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center text-lg shrink-0"
                         style={{ background: r.color + '20', border:`1px solid ${r.color}40` }}>
-                        {r.image
-                          ? <img src={r.image} alt="" loading="lazy" className="w-full h-full object-cover" />
-                          : r.icon}
+                        {r.icon}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-sm text-cosmic-200 group-hover:text-gold-400 transition-colors font-medium">{r.name}</div>
