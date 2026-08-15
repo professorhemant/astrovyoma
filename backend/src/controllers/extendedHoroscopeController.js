@@ -177,6 +177,27 @@ const YEARLY = {
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
+const {
+  THEME_HINDI, SIGN_HINDI, RULER_HINDI, BODYPART_HINDI,
+  MONTHLY_TEMPLATE_HINDI, WEEKLY_HINDI, YEARLY_HINDI,
+} = require('../data/extendedHoroscopeHindi');
+const { langFrom } = require('../services/langOverlay');
+
+// The English entry decides everything factual — which week it is, which theme
+// is running, what the lucky colour and number are. Hindi only supplies the
+// words, and only where it has them.
+function inHindi(english, hindi) {
+  if (!hindi) return english;
+  return {
+    ...english,
+    ...(english.theme ? { theme: THEME_HINDI[english.theme] || english.theme } : {}),
+    overview: hindi.overview || english.overview,
+    love: hindi.love || english.love,
+    career: hindi.career || english.career,
+    health: hindi.health || english.health,
+  };
+}
+
 const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 
 function getWeekOfYear(date) {
@@ -193,7 +214,9 @@ function getWeekly(req, res) {
   const now  = new Date();
   const week = getWeekOfYear(now);
   const idx  = week % 4;
-  const data = WEEKLY[sign][idx];
+  const data = langFrom(req) === 'hi'
+    ? inHindi(WEEKLY[sign][idx], WEEKLY_HINDI[sign]?.[idx])
+    : WEEKLY[sign][idx];
   const monday = new Date(now);
   monday.setDate(now.getDate() - now.getDay() + 1);
   const sunday = new Date(monday);
@@ -209,7 +232,15 @@ function getMonthly(req, res) {
   const month = now.getMonth(); // 0-based
   const year  = now.getFullYear();
   const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const data  = MONTHLY[sign][month];
+  let data = MONTHLY[sign][month];
+  if (langFrom(req) === 'hi') {
+    const INFO_HI = {
+      Aries:'Mars', Taurus:'Venus', Gemini:'Mercury', Cancer:'Moon', Leo:'Sun', Virgo:'Mercury',
+      Libra:'Venus', Scorpio:'Mars', Sagittarius:'Jupiter', Capricorn:'Saturn', Aquarius:'Saturn', Pisces:'Jupiter',
+    };
+    const hi = MONTHLY_TEMPLATE_HINDI(SIGN_HINDI[sign], RULER_HINDI[INFO_HI[sign]], BODYPART_HINDI[sign])[month];
+    data = inHindi(data, hi);
+  }
   res.json({ sign, month: months[month], monthIndex: month + 1, year, ...data });
 }
 
@@ -218,7 +249,13 @@ function getYearly(req, res) {
   const year = parseInt(req.query.year) || new Date().getFullYear();
   if (!YEARLY[year]) return res.status(400).json({ error: 'Year not available', availableYears: Object.keys(YEARLY) });
   if (!YEARLY[year][sign]) return res.status(400).json({ error: 'Invalid sign', validSigns: SIGNS });
-  res.json({ sign, year, ...YEARLY[year][sign] });
+  const base = YEARLY[year][sign];
+  const hi = langFrom(req) === 'hi' ? YEARLY_HINDI[year]?.[sign] : null;
+  res.json({
+    sign, year,
+    ...base,
+    ...(hi ? { overview: hi.overview, quarters: hi.quarters } : {}),
+  });
 }
 
 function getAllSigns(req, res) {
