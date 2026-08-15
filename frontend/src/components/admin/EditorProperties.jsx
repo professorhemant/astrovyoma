@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { Loader, Save, Trash2, X, Upload, Plus, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Loader, Save, Trash2, Upload, Plus, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { admin as adminApi } from '../../api';
 
 // The properties panel for whatever is selected in the preview.
@@ -15,12 +15,6 @@ import { admin as adminApi } from '../../api';
 // Everything saved from here is live immediately, matching the rest of the
 // editor. The one button called Save is the one below, and it names the thing
 // it saves — there is no second Save in the toolbar to confuse it with.
-
-// "Testimonials" → "testimonial". Buttons and confirmations name the thing they
-// act on, so Save cannot be mistaken for saving the whole page.
-function singular(label = '') {
-  return label.replace(/ies$/, 'y').replace(/s$/, '').toLowerCase();
-}
 
 function Input({ field, value, onChange }) {
   const base = 'w-full bg-cosmic-900 border border-gold-600/20 rounded-lg px-2.5 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-gold-500';
@@ -199,7 +193,9 @@ export default function EditorProperties({ selection, schema, settings, onSettin
   // ── a draggable overlay ──
   if (selection.kind === 'position') {
     const group = (schema?.settingsGroups || []).find(g => g.key === 'layout');
-    const prefix = { mandala: 'mandala', clock: 'clock', heroButtons: 'heroButton' }[selection.key] || '';
+    const prefix = {
+      mandala: 'mandala', clock: 'clock', heroButtons: 'heroButton', marquee: 'heroMarquee',
+    }[selection.key] || '';
     const fields = (group?.fields || []).filter(f => f.key.startsWith(prefix));
     // 1% sideways, 8px vertically — a visible nudge without overshooting.
     const nudge = (dir) => {
@@ -216,6 +212,17 @@ export default function EditorProperties({ selection, schema, settings, onSettin
         if (dir === 'up')    return onSettingsChange({ clockBottom: cur('clockBottom', 8) + 8 });
         return onSettingsChange({ clockBottom: Math.max(-50, cur('clockBottom', 8) - 8) });
       }
+      // The scrolling line is placed as a percentage of the banner both ways,
+      // and unlike the wheel and the clock it cannot be dragged in the preview —
+      // it is moving, so there is nothing still to take hold of. These arrows
+      // are the only way to place it, which is why they nudge it rather than
+      // leaving it to the number boxes below.
+      if (selection.key === 'marquee') {
+        if (dir === 'left')  return onSettingsChange({ heroMarqueeLeft: Math.max(0, cur('heroMarqueeLeft', 63) - 1) });
+        if (dir === 'right') return onSettingsChange({ heroMarqueeLeft: Math.min(100, cur('heroMarqueeLeft', 63) + 1) });
+        if (dir === 'up')    return onSettingsChange({ heroMarqueeTop: Math.max(0, cur('heroMarqueeTop', 59) - 1) });
+        return onSettingsChange({ heroMarqueeTop: Math.min(100, cur('heroMarqueeTop', 59) + 1) });
+      }
       // The hero buttons are centred, so only their height is adjustable.
       if (dir === 'up')   return onSettingsChange({ heroButtonBottom: cur('heroButtonBottom', 56) + 8 });
       if (dir === 'down') return onSettingsChange({ heroButtonBottom: Math.max(0, cur('heroButtonBottom', 56) - 8) });
@@ -225,12 +232,15 @@ export default function EditorProperties({ selection, schema, settings, onSettin
       <Panel title={selection.label} onClose={onClose}>
         <MoveControls
           onMove={nudge}
-          hint={selection.key === 'heroButtons'
-            ? 'Up and down change the height over the banner. These buttons stay centred.'
-            : 'Nudges it 1% sideways or 8px up and down. Dragging in the preview is faster for big moves.'}
+          hint={{
+            heroButtons: 'Up and down change the height over the banner. These buttons stay centred.',
+            marquee: 'Moves it 1% at a time. The words are always moving, so there is nothing still to take hold of in the preview — these arrows and the boxes below are how it is placed.',
+          }[selection.key] || 'Nudges it 1% sideways or 8px up and down. Dragging in the preview is faster for big moves.'}
         />
         <p className="text-[11px] text-gray-500 mb-3">
-          Drag it in the preview, or type exact numbers here and press Enter.
+          {selection.key === 'marquee'
+            ? 'Type exact numbers here and press Enter, or use the arrows above.'
+            : 'Drag it in the preview, or type exact numbers here and press Enter.'}
         </p>
         {fields.map(f => (
           <div key={f.key} className="mb-3">
@@ -263,7 +273,7 @@ export default function EditorProperties({ selection, schema, settings, onSettin
       await adminApi.contentUpdate(selection.listKey, selection.id, draft);
       if (original.current) {
         onRecord?.({ kind: 'item', listKey: selection.listKey, id: selection.id,
-          patch: original.current, label: `this ${singular(def.label)}` });
+          patch: original.current, label: 'that edit' });
       }
       toast.success('Saved — live on the site now');
       onAfterChange?.();
@@ -276,7 +286,7 @@ export default function EditorProperties({ selection, schema, settings, onSettin
   }
 
   async function remove() {
-    if (!window.confirm(`Delete this ${singular(def.label)}?\n\nIt disappears from the site immediately and cannot be undone.`)) return;
+    if (!window.confirm(`Delete this from "${def.label}"?\n\nIt disappears from the site immediately and cannot be undone.`)) return;
     setBusy(true);
     try {
       await adminApi.contentDelete(selection.listKey, selection.id);
@@ -367,8 +377,8 @@ export default function EditorProperties({ selection, schema, settings, onSettin
 
       <div className="flex gap-1.5 pt-2 border-t border-gold-600/10">
         <button onClick={save} disabled={busy} className="btn-gold px-3 py-1.5 text-[11px] flex items-center gap-1 disabled:opacity-40"
-          title={`Save the text and images of this ${singular(def.label)}`}>
-          {busy ? <Loader className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />} Save {singular(def.label)}
+          title={`Save the text and images of this row of ${def.label}`}>
+          {busy ? <Loader className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />} Save
         </button>
         <button onClick={addAnother} disabled={busy}
           className="btn-outline-gold px-3 py-1.5 text-[11px] flex items-center gap-1 disabled:opacity-40">
@@ -383,14 +393,18 @@ export default function EditorProperties({ selection, schema, settings, onSettin
   );
 }
 
+// The panel lives in the column beside the preview, so leaving it means going
+// back to the list of everything on the page rather than closing a window. A
+// back arrow says that; an X said the settings were being dismissed.
 function Panel({ title, onClose, children }) {
   return (
-    <div className="border border-gold-600/40 rounded-xl bg-cosmic-900 overflow-hidden shadow-2xl shadow-black/60">
-      <div className="flex items-center justify-between px-3 py-2 border-b border-gold-600/15 bg-cosmic-900">
-        <span className="text-xs font-medium text-gold-400">{title}</span>
-        <button onClick={onClose} className="text-gray-500 hover:text-gray-300"><X className="w-3.5 h-3.5" /></button>
-      </div>
-      <div className="p-3 max-h-[62vh] overflow-y-auto bg-cosmic-900">{children}</div>
+    <div>
+      <button onClick={onClose}
+        className="flex items-center gap-1.5 mb-3 text-xs text-gray-400 hover:text-gold-300 transition-colors">
+        <ChevronLeft className="w-3.5 h-3.5" /> All sections
+      </button>
+      <p className="text-xs font-medium text-gold-300 mb-3">{title}</p>
+      {children}
     </div>
   );
 }

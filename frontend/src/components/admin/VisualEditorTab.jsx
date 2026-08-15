@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { Loader, Monitor, Laptop, Smartphone, RefreshCw, Undo2, Check } from 'lucide-react';
+import { Loader, Monitor, Laptop, Smartphone, RefreshCw, Undo2, Check, ChevronLeft } from 'lucide-react';
 import { admin as adminApi } from '../../api';
 import EditorProperties from './EditorProperties';
+import PageSections from './editor/PageSections';
 
 // The admin half of the visual editor.
 //
@@ -60,8 +61,8 @@ export default function VisualEditorTab() {
   const queued = useRef({});
   const timer = useRef(null);
 
-  // Fit the preview to whatever room the admin column has, so the whole page is
-  // reachable without scrolling mid-drag.
+  // Fit the preview to whatever room is left beside the panel, so the whole page
+  // is reachable without scrolling mid-drag.
   useEffect(() => {
     const measure = () => {
       const el = boxRef.current;
@@ -229,6 +230,24 @@ export default function VisualEditorTab() {
     }
   }
 
+  // Showing and hiding a piece of the page from the panel beside it. Undoable
+  // like everything else here, and the preview is reloaded so the page you are
+  // looking at is the page as it now is.
+  const toggleRow = useCallback(async (listKey, item) => {
+    setStatus('saving');
+    try {
+      const { data } = await adminApi.contentUpdate(listKey, item.row_id, { is_active: !item.is_active });
+      record({ kind: 'item', listKey, id: item.row_id, patch: { is_active: item.is_active }, label: 'that' });
+      reloadRef.current?.();
+      return data;
+    } catch (err) {
+      toast.error(err?.response?.data?.error || 'Could not change that');
+      return null;
+    } finally {
+      setStatus('idle');
+    }
+  }, [record]);
+
   if (loading) {
     return <div className="flex justify-center py-16"><Loader className="w-6 h-6 text-gold-400 animate-spin" /></div>;
   }
@@ -239,12 +258,13 @@ export default function VisualEditorTab() {
 
   return (
     <div>
-      <h2 className="font-serif text-2xl text-gold-400 mb-1">Visual Editor</h2>
-      <p className="text-gray-500 text-sm mb-4">
-        This is your real homepage. Click anything outlined to edit it, or drag a
-        card to move it along its row. Gold pieces drag anywhere; headings drag
-        up, down and sideways. Everything you change here goes live straight
-        away — use Undo if you change your mind.
+      <h2 className="font-serif text-2xl text-gold-300 mb-1">Visual Editor</h2>
+      <p className="text-gray-500 text-sm mb-4 max-w-3xl leading-relaxed">
+        This is your real homepage. Pick anything from the list on the left, or
+        click it in the page itself — either way the same settings open. Cards
+        drag along their row, gold pieces drag anywhere over the banner, and
+        headings drag up, down and sideways. Everything you change goes live
+        straight away, and Undo takes it back.
       </p>
 
       <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -280,37 +300,62 @@ export default function VisualEditorTab() {
         </div>
       </div>
 
-      {/* The frame is the site itself, so what you drag is what visitors see.
-          Scaled to fit rather than scrolled, so a drag never runs off the edge.
-          Pointer coordinates are mapped into the frame's own space by the
-          browser, so the scale does not disturb the drag maths inside it. */}
-      <div className="relative">
-      <div ref={boxRef} className="rounded-2xl border border-gold-600/20 overflow-hidden bg-cosmic-950 flex justify-center p-2">
-        <div style={{ width: dev.width * scale, height: dev.height * scale }}>
-          <iframe
-            ref={frameRef}
-            src="/?editor=1"
-            title="Homepage preview"
-            style={{
-              width: dev.width, height: dev.height, border: 0, display: 'block',
-              transform: `scale(${scale})`, transformOrigin: 'top left',
-            }}
-          />
-        </div>
-      </div>
+      {/* The panel is a column beside the preview rather than a card floating on
+          top of it. Over the preview it covered the very part of the page you
+          were most likely to be editing, and it only ever appeared once you had
+          already found something to click — which left no answer to "what else
+          can I change here?". Beside it, the list of everything on the page is
+          the resting state, and the settings for one thing take its place. */}
+      <div className="flex gap-4 items-start">
+        <aside className="w-72 shrink-0 rounded-2xl border border-gold-600/15 bg-cosmic-900/40 overflow-hidden">
+          {selection ? (
+            <div className="p-3 overflow-y-auto" style={{ maxHeight: box.h }}>
+              <EditorProperties
+                selection={selection}
+                schema={schema}
+                settings={settings}
+                onSettingsChange={applySettings}
+                onRecord={record}
+                onAfterChange={reloadFrame}
+                onClose={() => setSelection(null)}
+              />
+            </div>
+          ) : (
+            <>
+              <header className="px-3 py-2.5 border-b border-gold-600/10">
+                <p className="text-xs font-medium text-gray-200">Homepage</p>
+                <p className="text-[11px] text-gray-500 mt-0.5">Everything on it, top to bottom</p>
+              </header>
+              <div className="p-3 overflow-y-auto" style={{ maxHeight: box.h - 52 }}>
+                <PageSections
+                  schema={schema}
+                  selection={selection}
+                  onSelect={setSelection}
+                  onToggleRow={toggleRow}
+                  onAdded={reloadFrame}
+                />
+              </div>
+            </>
+          )}
+        </aside>
 
-      {/* Floats over the preview so the page keeps its full width. */}
-      <div className={`absolute top-3 right-3 w-72 z-20 transition-opacity ${selection ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-        <EditorProperties
-          selection={selection}
-          schema={schema}
-          settings={settings}
-          onSettingsChange={applySettings}
-          onRecord={record}
-          onAfterChange={reloadFrame}
-          onClose={() => setSelection(null)}
-        />
-      </div>
+        {/* The frame is the site itself, so what you drag is what visitors see.
+            Scaled to fit rather than scrolled, so a drag never runs off the edge.
+            Pointer coordinates are mapped into the frame's own space by the
+            browser, so the scale does not disturb the drag maths inside it. */}
+        <div ref={boxRef} className="flex-1 min-w-0 rounded-2xl border border-gold-600/20 overflow-hidden bg-cosmic-950 flex justify-center p-2">
+          <div style={{ width: dev.width * scale, height: dev.height * scale }}>
+            <iframe
+              ref={frameRef}
+              src="/?editor=1"
+              title="Homepage preview"
+              style={{
+                width: dev.width, height: dev.height, border: 0, display: 'block',
+                transform: `scale(${scale})`, transformOrigin: 'top left',
+              }}
+            />
+          </div>
+        </div>
       </div>
 
       <p className="text-[11px] text-gray-600 mt-2">

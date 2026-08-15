@@ -350,7 +350,7 @@ export default function HomePage() {
               { label: 'Talk to Astrologer',    to: '/astrologers', style: 'outline' },
               { label: 'Talk to AstroVyoma AI', to: '/chat',        style: 'outline' },
             ]).map((cta, i, all) => (
-              <Link key={cta.id || i} to={cta.to} data-edit-item={cta.row_id && `hero_ctas:${cta.row_id}`}
+              <Link key={cta.row_id || cta.id || i} to={cta.to} data-edit-item={cta.row_id && `hero_ctas:${cta.row_id}`}
                 className={`relative ${cta.style === 'solid' ? 'btn-gold font-semibold' : 'btn-outline-gold font-medium'}
                   ${all.length % 2 === 1 && i === all.length - 1 ? 'col-span-2 sm:col-span-1' : ''}
                   px-3 sm:px-7 py-3 text-xs flex items-center justify-center gap-2 xl:whitespace-nowrap`}>
@@ -415,7 +415,7 @@ export default function HomePage() {
             </motion.h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {features.map((f,i) => (
-                <Link to={f.link} key={f.id || f.title} data-edit-item={f.row_id && `home_features:${f.row_id}`}>
+                <Link to={f.link} key={f.row_id || f.id || f.title || i} data-edit-item={f.row_id && `home_features:${f.row_id}`}>
                   <motion.div
                     initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
                     transition={{delay:i*0.1}}
@@ -454,7 +454,7 @@ export default function HomePage() {
                 {title:'Karma Path',   subtitle:'Your Life Purpose', icon:'☯',  desc:'Understand your dharma — the unique contribution your soul came to make in this lifetime, guided by your Nakshatra', link:'/purpose'},
                 {title:'Personality',  subtitle:'Sun, Moon & Lagna', icon:'💠', desc:'Your Sun, Moon, and Ascendant form a cosmic trinity. Uncover the layers of who you truly are', link:'/kundali'},
               ]).map((card,i) => (
-                <motion.div key={card.id || card.title} data-edit-item={card.row_id && `purpose_cards:${card.row_id}`}
+                <motion.div key={card.row_id || card.id || card.title || i} data-edit-item={card.row_id && `purpose_cards:${card.row_id}`}
                   initial={{opacity:0,y:30}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
                   transition={{delay:i*0.15}}
                   whileHover={{y:-6,boxShadow:'0 0 40px rgba(201,168,76,0.2)'}}
@@ -485,7 +485,7 @@ export default function HomePage() {
             </motion.h2>
             <div className="grid md:grid-cols-3 gap-8">
               {steps.map((step,i) => (
-                <motion.div key={step.id || step.step} data-edit-item={step.row_id && `how_it_works:${step.row_id}`}
+                <motion.div key={step.row_id || step.id || step.step || i} data-edit-item={step.row_id && `how_it_works:${step.row_id}`}
                   initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
                   transition={{delay:i*0.2}} className="text-center">
                   <motion.div whileHover={{scale:1.1,boxShadow:'0 0 30px rgba(201,168,76,0.35)'}}
@@ -569,7 +569,7 @@ export default function HomePage() {
             </motion.h2>
             <div className="grid md:grid-cols-3 gap-6">
               {testimonials.map((t,i) => (
-                <motion.div key={t.id || t.name} data-edit-item={t.row_id && `testimonials:${t.row_id}`}
+                <motion.div key={t.row_id || t.id || t.name || i} data-edit-item={t.row_id && `testimonials:${t.row_id}`}
                   initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
                   transition={{delay:i*0.15}}
                   whileHover={{y:-4,boxShadow:'0 0 30px rgba(201,168,76,0.15)'}}
@@ -632,7 +632,7 @@ export default function HomePage() {
                     { label: 'Join As Astrologer',   to: '/join-as-astrologer' },
                     { label: 'Astrologer Login',     to: '/pandit-portal' },
                   ]).map((l, i) => (
-                    <li key={l.id || i} data-edit-item={l.row_id && `footer_links:${l.row_id}`}><Link to={l.to} className="hover:text-gold-400 transition-colors">{l.label}</Link></li>
+                    <li key={l.row_id || l.id || i} data-edit-item={l.row_id && `footer_links:${l.row_id}`}><Link to={l.to} className="hover:text-gold-400 transition-colors">{l.label}</Link></li>
                   ))}
                 </ul>
               </div>
