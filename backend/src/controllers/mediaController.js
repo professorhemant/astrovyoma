@@ -189,6 +189,14 @@ exports.serve = async (req, res) => {
     // Never let a browser decide these bytes are something more interesting
     // than the type they were stored as.
     res.set('X-Content-Type-Options', 'nosniff');
+    // The site is a different origin from this API, and helmet's default
+    // Cross-Origin-Resource-Policy: same-origin makes the browser refuse to
+    // draw the image — ERR_BLOCKED_BY_RESPONSE.NotSameOrigin, with an empty
+    // frame and alt text where the picture should be. These bytes are a public
+    // picture meant to be embedded anywhere the shop is served from, which is
+    // exactly what this header is for. It is set per-response rather than by
+    // relaxing helmet globally, so nothing else on the API loosens with it.
+    res.set('Cross-Origin-Resource-Policy', 'cross-origin');
     // An SVG opened directly is a document on this origin. It has already been
     // stripped of anything executable on the way in; this is the second lock.
     if (row.mime === 'image/svg+xml') {
