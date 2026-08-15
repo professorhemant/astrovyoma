@@ -4,6 +4,7 @@ import { Link, useParams, Navigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import ZodiacIcon from '../components/ZodiacIcon';
 import { horoscope as horoscopeApi } from '../api';
+import { useLanguage } from '../context/LanguageContext';
 
 const ELEMENT_ICON = { Fire: '🔥', Earth: '🌍', Air: '💨', Water: '💧' };
 
@@ -458,6 +459,8 @@ export default function HoroscopeSignPage() {
   const signKey = sign ? sign.charAt(0).toUpperCase() + sign.slice(1).toLowerCase() : '';
   const signData = SIGNS_DATA[signKey];
 
+
+  const { lang } = useLanguage();
   const [overview, setOverview] = useState('');
   const [luckyColor, setLuckyColor] = useState('Gold');
   const [luckyNumber, setLuckyNumber] = useState(7);
@@ -477,7 +480,7 @@ export default function HoroscopeSignPage() {
         setLuckyNumber(7);
       })
       .finally(() => setLoading(false));
-  }, [signKey]);
+  }, [signKey, lang]);
 
   if (!signData) return <Navigate to="/horoscope" replace />;
 

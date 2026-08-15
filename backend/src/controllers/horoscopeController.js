@@ -110,6 +110,18 @@ const HOROSCOPE_DATA = {
 };
 
 const { getLuckyForSign } = require('./luckyController');
+const { HOROSCOPE_HINDI } = require('../data/horoscopeHindi');
+const { langFrom } = require('../services/langOverlay');
+
+// The same day's reading in the language asked for. Hindi falls back to English
+// rather than going blank if a sign is ever missing a day.
+function textFor(sign, day, lang) {
+  if (lang === 'hi') {
+    const hi = HOROSCOPE_HINDI[sign]?.[day];
+    if (hi) return hi;
+  }
+  return HOROSCOPE_DATA[sign][day].text;
+}
 
 function getDailyHoroscope(req, res) {
   const { sign } = req.params;
@@ -117,13 +129,18 @@ function getDailyHoroscope(req, res) {
     return res.status(400).json({ error: 'Invalid zodiac sign', validSigns: Object.keys(HOROSCOPE_DATA) });
   }
   const dayOfWeek = new Date().getDay();
-  const entry = HOROSCOPE_DATA[sign][dayOfWeek];
-  const overview = entry.text.replace(/\s*Lucky color: [^.]+\.\s*Lucky number: \d+\.?\s*$/i, '').trim();
+  const text = textFor(sign, dayOfWeek, langFrom(req));
+  // The page shows the lucky colour and number from luckyController in their own
+  // panel, so the trailing line is trimmed off the prose in both languages.
+  const overview = text
+    .replace(/\s*Lucky color: [^.]+\.\s*Lucky number: \d+\.?\s*$/i, '')
+    .replace(/\s*शुभ रंग: [^।]+।\s*शुभ अंक: [^।]+।\s*$/, '')
+    .trim();
   const { luckyColor, luckyColorHex, luckyNumber } = getLuckyForSign(sign);
   res.json({
     sign,
     date: new Date().toISOString().split('T')[0],
-    horoscope: entry.text,
+    horoscope: text,
     overview,
     luckyColor,
     luckyColorHex,
@@ -133,9 +150,10 @@ function getDailyHoroscope(req, res) {
 
 function getAllDailyHoroscopes(req, res) {
   const dayOfWeek = new Date().getDay();
+  const lang = langFrom(req);
   const result = {};
-  for (const [sign, data] of Object.entries(HOROSCOPE_DATA)) {
-    result[sign] = data[dayOfWeek].text;
+  for (const sign of Object.keys(HOROSCOPE_DATA)) {
+    result[sign] = textFor(sign, dayOfWeek, lang);
   }
   res.json({ date: new Date().toISOString().split('T')[0], horoscopes: result });
 }

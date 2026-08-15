@@ -25,6 +25,7 @@
 //   are passed through under `more` rather than thrown away to match English.
 
 const H = require('./hindiContent');
+const { NAKSHATRA_DOMAINS_HINDI } = require('../data/nakshatraDomainsHindi');
 
 // The four the English page already lays out, mapped onto their Hindi
 // counterparts, and everything else offered underneath.
@@ -92,10 +93,21 @@ function hindiPhal(chart) {
         .filter(Boolean),
     }),
 
-    // One authored paragraph per nakshatra. The English page also prints
-    // career, education and family for a nakshatra; there is no Hindi for
-    // those, so they are left to fall back rather than be approximated.
-    nakshatra: H.NAKSHATRA_HINDI[nakshatra] ? { nature: H.NAKSHATRA_HINDI[nakshatra] } : undefined,
+    // Character from the Hindi that shipped with the site; career, education and
+    // family from data/nakshatraDomainsHindi.js, which was written to fill the
+    // gap where a Hindi report used to fall back to English mid-page.
+    nakshatra: clean({
+      headings: {
+        nature:    'स्वभाव व चरित्र',
+        career:    'रोज़गार व आजीविका',
+        education: 'शिक्षा',
+        family:    'पारिवारिक जीवन',
+      },
+      nature:    H.NAKSHATRA_HINDI[nakshatra],
+      career:    NAKSHATRA_DOMAINS_HINDI[nakshatra]?.rozgar,
+      education: NAKSHATRA_DOMAINS_HINDI[nakshatra]?.shiksha,
+      family:    NAKSHATRA_DOMAINS_HINDI[nakshatra]?.parivar,
+    }),
 
     // The dasha reading, plus the three domain readings that happen to be
     // keyed by the same planet.

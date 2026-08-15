@@ -1310,12 +1310,14 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
         {nakInfo ? (
           <div className="space-y-4">
             {[
-              ['Nature & Character', nakInfo.nature],
-              ['Career & Income', nakInfo.career],
-              ['Education', nakInfo.education],
-              ['Family Life', nakInfo.family],
+              [nakInfo.headings?.nature    || 'Nature & Character', nakInfo.nature],
+              [nakInfo.headings?.career    || 'Career & Income',    nakInfo.career],
+              [nakInfo.headings?.education || 'Education',          nakInfo.education],
+              [nakInfo.headings?.family    || 'Family Life',        nakInfo.family],
+              // Health has no Hindi of its own; it keeps the English heading
+              // because the paragraph under it is still English.
               ['Health', nakInfo.health],
-            ].map(([label, text]) => (
+            ].filter(([, text]) => text).map(([label, text]) => (
               <div key={label}>
                 <p className="text-gold-400 font-semibold text-sm mb-1">{label}</p>
                 <p className="text-gray-200 text-sm leading-relaxed">{text}</p>

@@ -2,6 +2,10 @@
 
 const { calculateKundali, NAKSHATRA_NAMES } = require('../services/kundaliEngine');
 
+const { KOOT_HINDI, VERDICT_HINDI, TIER_TEXTS_HINDI, DOSHA_HINDI,
+        SEVERITY_HINDI, GANA_NAMES_HINDI, NADI_NAMES_HINDI } = require('../data/gunaMilanHindi');
+const { langFrom } = require('../services/langOverlay');
+
 const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 const SIGN_LORDS = ['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
 
@@ -166,6 +170,40 @@ const TIER_TEXTS = {
 };
 
 // ── Doshas ───────────────────────────────────────────────────────────────────
+
+// The result, said in Hindi. Only the words change: every score, every
+// cancellation and every verdict tier is decided by the calculation above and
+// merely read out here.
+function toHindi(payload) {
+  const gana = (v) => String(v).split(' + ').map(x => GANA_NAMES_HINDI[x] || x).join(' + ');
+  const nadi = (v) => String(v).split(' + ').map(x => NADI_NAMES_HINDI[x] || x).join(' + ');
+  return {
+    ...payload,
+    koots: payload.koots.map(k => ({
+      ...k,
+      name: KOOT_HINDI[k.id]?.name || k.name,
+      desc: KOOT_HINDI[k.id]?.desc || k.desc,
+      detail: k.id === 'gana' ? gana(k.detail) : k.id === 'nadi' ? nadi(k.detail) : k.detail,
+    })),
+    verdict: { ...payload.verdict, label: VERDICT_HINDI[payload.verdict.tier] || payload.verdict.label },
+    verdictText: TIER_TEXTS_HINDI[payload.verdict.tier] || payload.verdictText,
+    doshas: payload.doshas.map(d => {
+      const h = DOSHA_HINDI[d.name];
+      if (!h) return d;
+      return {
+        ...d,
+        name: h.name,
+        severity: SEVERITY_HINDI[d.severity] || d.severity,
+        effect: h.effect || d.effect,
+        remedy: h.remedy || d.remedy,
+        cancellationReason: d.cancellationReason
+          ? (h.cancellation[d.cancellationReason] || d.cancellationReason)
+          : null,
+      };
+    }),
+  };
+}
+
 function getDoshas(koots, n1, n2, m1, m2) {
   const doshas = [];
   const nadiKoot  = koots.find(k => k.id === 'nadi');
@@ -288,7 +326,7 @@ async function calculate(req, res) {
     const verdict = getVerdict(total);
     const doshas  = getDoshas(kootResults, n1, n2, m1, m2);
 
-    res.json({
+    const payload = {
       person1: p1,
       person2: p2,
       koots:   kootResults,
@@ -298,7 +336,8 @@ async function calculate(req, res) {
       verdict,
       verdictText: TIER_TEXTS[verdict.tier],
       doshas,
-    });
+    };
+    res.json(langFrom(req) === 'hi' ? toHindi(payload) : payload);
   } catch (err) {
     console.error('[GunaMilan]', err.message);
     res.status(400).json({ error: err.message || 'Calculation failed' });
