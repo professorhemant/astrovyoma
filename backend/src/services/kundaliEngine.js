@@ -642,6 +642,10 @@ function calcLMTInfo(stdMeridian, birthLng, hour, min, tzOffset) {
   const lmtM = Math.floor(((lmtTotalMin % 1440) + 1440) % 1440 % 60);
   return {
     standard_meridian: stdMeridian,
+    // Returned because the chart summary prints it. Without it the page showed
+    // "UTC+—" on every kundali ever generated, while the number sat right here
+    // as an argument.
+    birth_timezone: tzOffset,
     birth_longitude: parseFloat(birthLng.toFixed(4)),
     longitude_diff: parseFloat(lngDiff.toFixed(4)),
     lmt_correction_min: parseFloat(lmtCorrMin.toFixed(2)),
@@ -927,6 +931,7 @@ async function calculateKundali(dob, birth_time, lat, lng, timezone) {
       dms: degToDMS(ayanamsaValue)
     },
     lmt_info: lmtInfo,
+    lagna_lord: SIGN_LORDS[lagnaSignIdx],
     julian_day: parseFloat(jd.toFixed(6)),
     ...sunTimes(dob, lat, lng, tzOffset),
 
