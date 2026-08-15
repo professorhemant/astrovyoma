@@ -729,4 +729,10 @@ function getPanchangData(dateStr, place = DEFAULT_PLACE) {
   };
 }
 
-module.exports = { getPanchang, getTodayTithi, getTodayNakshatra, getTodayChoghadiya, getTodayRahuKaal, getTodayShubhamuhurat, getPanchangCalendar, getPanchangData };
+// getSunriseSunsetMin and minToTime are exported for the kundali, which needs
+// the same two times for the birth date at the birth place. Sharing the one
+// implementation matters more than tidiness here: a kundali printing a
+// sunrise that disagreed with the panchang for the same day and place would
+// be a bug nobody could explain.
+module.exports = { getPanchang, getTodayTithi, getTodayNakshatra, getTodayChoghadiya, getTodayRahuKaal, getTodayShubhamuhurat, getPanchangCalendar, getPanchangData,
+  getSunriseSunsetMin, minToTime };

@@ -652,6 +652,28 @@ function calcLMTInfo(stdMeridian, birthLng, hour, min, tzOffset) {
 
 // ─── MAIN ENGINE ─────────────────────────────────────────────────────────────
 
+// Sunrise and sunset on the day of birth, at the place of birth.
+//
+// The chart summary has always had a row for each and has always printed an em
+// dash, because nothing ever computed them — the field simply was not in the
+// response. They are read from the panchang's own implementation rather than a
+// second one written here, so a kundali and the panchang for the same day and
+// place cannot disagree about when the sun came up.
+//
+// Anything that goes wrong is swallowed: a missing sunrise is a blank row, and
+// a whole chart is not worth losing over it.
+function sunTimes(dob, lat, lng, tzOffset) {
+  try {
+    const { getSunriseSunsetMin, minToTime } = require('../controllers/panchangController');
+    const place = { lat, lon: lng, tzMin: Math.round(tzOffset * 60) };
+    const { srMin, ssMin } = getSunriseSunsetMin(dob, place);
+    return { sunrise: minToTime(srMin), sunset: minToTime(ssMin) };
+  } catch (err) {
+    console.error('[kundali] sunrise/sunset unavailable:', err.message);
+    return {};
+  }
+}
+
 async function calculateKundali(dob, birth_time, lat, lng, timezone) {
   const [year, month, day] = dob.split('-').map(Number);
   const [hour, min] = (birth_time || '12:00').split(':').map(Number);
@@ -906,6 +928,7 @@ async function calculateKundali(dob, birth_time, lat, lng, timezone) {
     },
     lmt_info: lmtInfo,
     julian_day: parseFloat(jd.toFixed(6)),
+    ...sunTimes(dob, lat, lng, tzOffset),
 
     // Personality
     personality_traits: {
