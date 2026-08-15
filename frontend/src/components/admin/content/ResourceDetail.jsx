@@ -27,7 +27,7 @@ function Card({ title, children }) {
 export default function ResourceDetail({ listKey, def, item, onBack, onSave, onDelete, onDirtyChange }) {
   const isNew = !item;
   const titleField = titleFieldOf(def);
-  const noun = shortLabel(def.label).replace(/s$/, '').toLowerCase();
+  const noun = (def.noun || shortLabel(def.label).replace(/s$/, '')).toLowerCase();
 
   const blank = useCallback(() => {
     const o = { is_active: true };

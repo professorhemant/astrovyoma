@@ -25,9 +25,11 @@ function CrystalCard({ crystal, index }) {
         <div className="p-5 flex flex-col h-full">
           {/* Color swatch + icon */}
           <div className="flex items-start justify-between mb-3">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl overflow-hidden shrink-0"
               style={{ background: crystal.color + '25', border: `1px solid ${crystal.color}50` }}>
-              {crystal.icon}
+              {crystal.image
+                ? <img src={crystal.image} alt="" loading="lazy" className="w-full h-full object-cover" />
+                : crystal.icon}
             </div>
             <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${typeMeta.color}`}>
               {typeMeta.label}

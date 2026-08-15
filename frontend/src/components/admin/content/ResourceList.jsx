@@ -84,7 +84,8 @@ export default function ResourceList({
   const [dragArmed, setDragArmed] = useState(false);
 
   const columns = useMemo(() => columnsFor(listKey, def), [listKey, def]);
-  const noun = shortLabel(def.label).replace(/s$/, '');
+  // A list may name its own singular; otherwise drop a trailing "s" and hope.
+  const noun = def.noun || shortLabel(def.label).replace(/s$/, '');
 
   // A filtered view and a hand-sorted list cannot both be true at once: dropping
   // row 3 onto row 5 of a search result means nothing about where it sits in the

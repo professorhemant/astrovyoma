@@ -18,6 +18,7 @@
 
 const { ARTICLES } = require('../data/blogArticles');
 const { PRODUCTS, CATEGORY_META, PURPOSE_META, PHOTOGRAPHED } = require('../data/mallProducts');
+const { CRYSTALS } = require('../data/crystals');
 
 // Long text is written as plain typing with four rules, not as HTML or JSON.
 // The site parses it back into headings, paragraphs, bullets and callouts.
@@ -871,6 +872,73 @@ const LISTS = {
     })),
   },
 
+  crystals: {
+    label: 'Crystal Guide',
+    noun: 'stone',
+    titleField: 'name',
+    help: 'The nine Navagraha gemstones and the healing crystals behind the Crystal ' +
+          'Guide. Each one has its own page. Add a picture and it replaces the emoji ' +
+          'on the card, exactly as the shop works.',
+    itemLabel: (d) => d.name || 'Crystal',
+    fields: [
+      { key: 'name',      label: 'Name', type: 'text', required: true },
+      { key: 'hindiName', label: 'Hindi name', type: 'text',
+        help: 'Shown under the name, in italics — Manik, Moti, Moonga.' },
+      { key: 'slug',      label: 'Web address', type: 'text', required: true,
+        help: 'Lowercase words joined by dashes. The stone lives at /crystals/<this>, so changing it breaks any link anyone has saved.' },
+      { key: 'type',      label: 'Which group', type: 'select', default: 'navagraha',
+        options: [{ value: 'navagraha', label: 'Navagraha gemstone' },
+                  { value: 'healing',   label: 'Healing crystal' }],
+        help: 'Decides which of the two tabs it appears under.' },
+      { key: 'shortDesc', label: 'One-line description', type: 'textarea',
+        help: 'The sentence on the card.' },
+
+      { key: 'image', label: 'Picture', type: 'image',
+        help: 'Optional. Without one the card shows the emoji below, as it does now.' },
+      { key: 'icon',  label: 'Emoji', type: 'text',
+        help: 'Used when there is no picture.' },
+      { key: 'color', label: 'Colour', type: 'color', default: '#c9a84c',
+        help: 'Tints the swatch behind the emoji and the outline of the card.' },
+      { key: 'colorName', label: 'Colour, in words', type: 'text',
+        help: 'Deep Red, Lustrous White — shown on the stone’s own page.' },
+
+      { key: 'planet',  label: 'Planet', type: 'text',
+        help: 'One planet. It is what the Planet filter offers, so spell it the same way everywhere — Sun, Moon, Mars.' },
+      { key: 'signs',   label: 'Suits which signs', type: 'text',
+        help: 'Separated by commas. Write "All Signs" for a stone anyone may wear.' },
+      { key: 'element', label: 'Element', type: 'text' },
+      { key: 'chakra',  label: 'Chakra', type: 'text' },
+
+      { key: 'benefits',      label: 'Benefits', type: 'textarea', help: 'One per line.' },
+      { key: 'howToWear',     label: 'How to wear or use it', type: 'textarea' },
+      { key: 'dayToActivate', label: 'Day to wear it first', type: 'text' },
+      { key: 'mantra',        label: 'Mantra', type: 'text' },
+      { key: 'cautions',      label: 'Cautions', type: 'textarea',
+        help: 'One per line. These are the warnings shown in red on the stone’s page — worth being careful with.' },
+
+      { key: 'hardness',   label: 'Hardness', type: 'text' },
+      { key: 'priceRange', label: 'Price range', type: 'text',
+        help: 'Free text, e.g. ₹3,000 – ₹80,000 per ratti.' },
+      { key: 'uparatna',   label: 'Substitutes (uparatna)', type: 'text' },
+      { key: 'mallProductId', label: 'Shop product code', type: 'text',
+        help: 'Optional. The code of a product in the shop — filling it in puts an “Available in Mall” link on the stone. Leave empty if you do not sell it.' },
+    ],
+    // Two names for one thing in the original data: the Navagraha stones are
+    // worn and carried howToWear, the healing ones are used and carried
+    // howToUse. That is a distinction for a jeweller, not for whoever is
+    // editing the page, so the admin gets one box and the pages read one field.
+    seed: CRYSTALS.map(c => ({
+      ...c,
+      signs:    (c.signs || []).join(', '),
+      benefits: (c.benefits || []).join('\n'),
+      cautions: (c.cautions || []).join('\n'),
+      howToWear: c.howToWear || c.howToUse || '',
+      uparatna: c.uparatna || '',
+      mallProductId: c.mallProductId || '',
+      image: '',
+    })),
+  },
+
   hero_ctas: {
     label: 'Hero Buttons',
     help: 'The buttons floating over the homepage banner.',
@@ -1076,6 +1144,10 @@ function schemaForClient() {
       label: def.label,
       help: def.help,
       titleField: def.titleField || def.fields.find(f => f.required)?.key || def.fields[0]?.key,
+      // What one row is called. The admin otherwise works it out from the list
+      // name by dropping a trailing "s", which is right for Products and wrong
+      // for "Crystal Guide" — that gave a button reading "Add crystal guide".
+      noun: def.noun,
       fields: def.fields,
     };
   }

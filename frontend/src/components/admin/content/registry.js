@@ -13,13 +13,17 @@
 
 import {
   ShoppingBag, Newspaper, FileText, Home, Info, UserPlus,
-  Menu as MenuIcon, CreditCard, Boxes,
+  Menu as MenuIcon, CreditCard, Boxes, Gem,
 } from 'lucide-react';
 
 export const SECTIONS = [
   {
     key: 'shop', label: 'Shop', icon: ShoppingBag,
     lists: ['mall_products', 'mall_categories', 'mall_purposes'],
+  },
+  {
+    key: 'crystals', label: 'Crystals', icon: Gem,
+    lists: ['crystals'],
   },
   {
     key: 'blog', label: 'Blog', icon: Newspaper,
@@ -121,6 +125,7 @@ const COLUMNS = {
   mall_categories:['key', 'icon'],
   mall_purposes:  ['key', 'icon'],
   blog_posts:     ['category', 'author', 'readTime'],
+  crystals:       ['type', 'planet', 'chakra'],
   pages:          ['slug', 'icon'],
   plans:          ['id', 'price', 'popular'],
   nav_items:      ['group', 'to'],
@@ -198,6 +203,7 @@ export function previewHref(key, item) {
   switch (key) {
     case 'blog_posts':    return item.slug ? `/blog/${item.slug}` : '/blog';
     case 'pages':         return item.slug ? `/${String(item.slug).replace(/^\/+/, '')}` : null;
+    case 'crystals':      return item.slug ? `/crystals/${item.slug}` : '/crystals';
     case 'mall_products': return item.id ? `/mall/product/${item.id}` : '/mall';
     case 'mall_categories':
     case 'mall_purposes': return '/mall';

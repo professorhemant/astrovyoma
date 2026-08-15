@@ -72,9 +72,11 @@ export default function CrystalDetailPage() {
               className="card-cosmic p-6 sm:p-8"
               style={{ borderColor: crystal.color + '50' }}>
               <div className="flex items-start gap-5">
-                <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-4xl shrink-0"
+                <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-4xl shrink-0 overflow-hidden"
                   style={{ background: crystal.color + '20', border: `2px solid ${crystal.color}50` }}>
-                  {crystal.icon}
+                  {crystal.image
+                    ? <img src={crystal.image} alt={crystal.name} className="w-full h-full object-cover" />
+                    : crystal.icon}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -195,9 +197,11 @@ export default function CrystalDetailPage() {
                   {related.map(r => (
                     <Link key={r.slug} to={`/crystals/${r.slug}`}
                       className="card-cosmic p-3 flex items-center gap-3 group hover:ring-1 hover:ring-gold-500/30 transition-all">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center text-lg shrink-0"
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center text-lg shrink-0 overflow-hidden"
                         style={{ background: r.color + '20', border:`1px solid ${r.color}40` }}>
-                        {r.icon}
+                        {r.image
+                          ? <img src={r.image} alt="" loading="lazy" className="w-full h-full object-cover" />
+                          : r.icon}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-sm text-cosmic-200 group-hover:text-gold-400 transition-colors font-medium">{r.name}</div>
