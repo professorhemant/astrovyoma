@@ -33,6 +33,26 @@ exports.uploadMiddleware = (req, res, next) => {
   });
 };
 
+// The address an uploaded image is reachable at, spelled out in full.
+//
+// It used to be returned as the relative `/api/media/<id>`, and that path only
+// resolves for somebody already talking to the backend. The site is served from
+// a different host — the frontend reaches the API through VITE_API_URL, and its
+// own server has no /api route at all — so `<img src="/api/media/…">` asked the
+// frontend for a path it does not have, got index.html back with a 200 (an SPA
+// falls back rather than 404s, which is why nothing looked like an error), and
+// rendered a broken image. Every picture uploaded from the admin would have
+// been broken on the live site.
+//
+// Derived from the request rather than configured, so it stays correct in
+// development, on Railway, and behind any domain put in front of it later.
+// `trust proxy` is set in server.js, so req.protocol is the scheme the browser
+// actually used and not the one inside the container.
+function publicUrl(req, id) {
+  const base = (process.env.MEDIA_BASE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/+$/, '');
+  return `${base}/api/media/${id}`;
+}
+
 exports.create = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No image was received' });
@@ -60,7 +80,7 @@ exports.create = async (req, res) => {
 
     res.status(201).json({
       id: row.id,
-      url: `/api/media/${row.id}`,
+      url: publicUrl(req, row.id),
       filename: row.filename,
       width: row.width,
       height: row.height,
