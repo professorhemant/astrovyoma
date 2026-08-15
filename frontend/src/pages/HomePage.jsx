@@ -9,6 +9,7 @@ import VedicClock from '../components/VedicClock';
 import { horoscope as horoscopeApi, kundali as kundaliApi, content as contentApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 import VisualEditor from '../components/editor/VisualEditor';
+import { useLanguage } from '../context/LanguageContext';
 
 const ZODIAC_SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 const ZODIAC_SYMBOLS = { Aries:'♈',Taurus:'♉',Gemini:'♊',Cancer:'♋',Leo:'♌',Virgo:'♍',Libra:'♎',Scorpio:'♏',Sagittarius:'♐',Capricorn:'♑',Aquarius:'♒',Pisces:'♓' };
@@ -128,6 +129,7 @@ const heroBannerClass = 'w-full block object-cover object-center h-80 sm:h-96 md
 export default function HomePage() {
   const [selectedSign, setSelectedSign]   = useState(null);
   const [horoscopeText, setHoroscopeText] = useState('');
+  const { lang } = useLanguage();
   const [userLagna, setUserLagna] = useState(null);
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -141,7 +143,7 @@ export default function HomePage() {
     contentApi.bundle(['testimonials', 'home_features', 'how_it_works', 'hero_ctas', 'footer_links', 'section_headings', 'purpose_cards'])
       .then(r => { setCms(r.data.lists); setSiteSettings(r.data.settings); })
       .catch(() => {});
-  }, []);
+  }, [lang]);
 
   // Hero button position is admin-adjustable. Fed in as CSS variables because
   // the two layouts need different properties — margin below xl where the row

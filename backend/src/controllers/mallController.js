@@ -7,15 +7,17 @@
 // sold.
 
 const { ContentItem } = require('../models');
+const { applyLang, langFrom } = require('../services/langOverlay');
 
 const commas = (v) => String(v || '').split(',').map(s => s.trim()).filter(Boolean);
 const lines  = (v) => String(v || '').split('\n').map(s => s.trim()).filter(Boolean);
 
 // Lists that the admin types as text come back out as the arrays the shop
 // front-end already expects, so nothing downstream had to learn a new shape.
-function parseProduct(row) {
+function parseProduct(row, lang) {
   let d = {};
   try { d = JSON.parse(row.data); } catch { /* corrupt row — skip its fields */ }
+  d = applyLang(d, lang);
   return {
     ...d,
     id: d.id || row.id,
@@ -38,9 +40,10 @@ function parseProduct(row) {
   };
 }
 
-function parseMeta(row) {
+function parseMeta(row, lang) {
   let d = {};
   try { d = JSON.parse(row.data); } catch { /* corrupt row — skip its fields */ }
+  d = applyLang(d, lang);
   return { key: d.key || '', label: d.label || '', icon: d.icon || '', color: d.color || '', desc: d.desc || '' };
 }
 
@@ -51,13 +54,13 @@ async function rows(listKey) {
   });
 }
 
-async function allProducts() {
-  return (await rows('mall_products')).map(parseProduct).filter(p => p.name);
+async function allProducts(lang) {
+  return (await rows('mall_products')).map(r => parseProduct(r, lang)).filter(p => p.name);
 }
 
 async function getProducts(req, res) {
   try {
-    let list = await allProducts();
+    let list = await allProducts(langFrom(req));
     const { category, purpose, sort, search, featured, bestseller } = req.query;
 
     if (category)   list = list.filter(p => p.category === category);
@@ -88,7 +91,7 @@ async function getProducts(req, res) {
 
 async function getProductById(req, res) {
   try {
-    const list = await allProducts();
+    const list = await allProducts(langFrom(req));
     const product = list.find(p => p.id === req.params.id);
     if (!product) return res.status(404).json({ error: 'Product not found' });
 
@@ -106,13 +109,13 @@ async function getProductById(req, res) {
 async function getCategories(req, res) {
   try {
     const [products, cats, purposes] = await Promise.all([
-      allProducts(), rows('mall_categories'), rows('mall_purposes'),
+      allProducts(langFrom(req)), rows('mall_categories'), rows('mall_purposes'),
     ]);
     res.json({
-      categories: cats.map(parseMeta).filter(c => c.key).map(c => ({
+      categories: cats.map(r => parseMeta(r, langFrom(req))).filter(c => c.key).map(c => ({
         ...c, count: products.filter(p => p.category === c.key).length,
       })),
-      purposes: purposes.map(parseMeta).filter(c => c.key).map(c => ({
+      purposes: purposes.map(r => parseMeta(r, langFrom(req))).filter(c => c.key).map(c => ({
         ...c, count: products.filter(p => p.purposes.includes(c.key)).length,
       })),
     });

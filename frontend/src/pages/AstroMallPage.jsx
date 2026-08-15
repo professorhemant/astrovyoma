@@ -5,6 +5,7 @@ import { ShoppingCart, Search, X } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
 import { mall } from '../api';
+import { useLanguage } from '../context/LanguageContext';
 
 const SORT_OPTIONS = [
   { value:'',           label:'Featured' },
@@ -22,6 +23,7 @@ const CATEGORY_ICONS = {
 export default function AstroMallPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [meta, setMeta] = useState(null);
+  const { lang } = useLanguage();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -35,7 +37,7 @@ export default function AstroMallPage() {
 
   useEffect(() => {
     mall.getCategories().then(r => setMeta(r.data)).catch(() => {});
-  }, []);
+  }, [lang]);
 
   const fetchProducts = useCallback(() => {
     setLoading(true);

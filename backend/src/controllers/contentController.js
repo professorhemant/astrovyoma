@@ -5,6 +5,7 @@
 const { ContentItem } = require('../models');
 const { LISTS, schemaForClient } = require('../config/contentSchema');
 const settingsService = require('../services/settingsService');
+const { applyLang, langFrom } = require('../services/langOverlay');
 
 function listDef(key) {
   return Object.prototype.hasOwnProperty.call(LISTS, key) ? LISTS[key] : null;
@@ -72,14 +73,14 @@ exports.getSchema = (req, res) => {
 
 // ─── read ────────────────────────────────────────────────────────────────────
 
-async function fetchList(key, { activeOnly }) {
+async function fetchList(key, { activeOnly, lang = 'en' }) {
   const where = { list_key: key };
   if (activeOnly) where.is_active = true;
   const rows = await ContentItem.findAll({
     where,
     order: [['sort_order', 'ASC'], ['created_at', 'ASC']],
   });
-  return rows.map(r => parse(r, listDef(key)));
+  return rows.map(r => applyLang(parse(r, listDef(key)), lang));
 }
 
 exports.adminList = async (req, res) => {
@@ -98,7 +99,7 @@ exports.publicList = async (req, res) => {
   try {
     const def = listDef(req.params.listKey);
     if (!def) return res.status(404).json({ error: 'Unknown list' });
-    res.json({ items: await fetchList(req.params.listKey, { activeOnly: true }) });
+    res.json({ items: await fetchList(req.params.listKey, { activeOnly: true, lang: langFrom(req) }) });
   } catch (err) {
     console.error('[content] publicList', err);
     res.status(500).json({ error: 'Failed to load content' });
@@ -112,7 +113,8 @@ exports.publicBundle = async (req, res) => {
     const keys = String(req.query.keys || '').split(',').map(s => s.trim()).filter(Boolean);
     const wanted = keys.length ? keys.filter(k => listDef(k)) : Object.keys(LISTS);
     const out = {};
-    await Promise.all(wanted.map(async k => { out[k] = await fetchList(k, { activeOnly: true }); }));
+    const lang = langFrom(req);
+    await Promise.all(wanted.map(async k => { out[k] = await fetchList(k, { activeOnly: true, lang }); }));
     res.json({ lists: out, settings: await settingsService.getPublicSettings() });
   } catch (err) {
     console.error('[content] publicBundle', err);

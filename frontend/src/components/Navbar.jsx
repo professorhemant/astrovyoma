@@ -107,7 +107,7 @@ export default function Navbar() {
     contentApi.bundle(['nav_groups', 'nav_items'])
       .then(r => setCmsGroups(groupsFromCms(r.data.lists?.nav_groups, r.data.lists?.nav_items)))
       .catch(() => {});
-  }, []);
+  }, [lang]);
 
   const navGroups = cmsGroups || NAV_GROUPS;
   const navigate = useNavigate();

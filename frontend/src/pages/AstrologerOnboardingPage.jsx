@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import SwastikBorder from '../components/SwastikBorder';
 import { content as contentApi } from '../api';
+import { useLanguage } from '../context/LanguageContext';
 
 // The onboarding kit an astrologer reads before applying. Every card, step and
 // question is a list in the admin, and every line of writing is a setting, so
@@ -121,6 +122,7 @@ function SectionHead({ heading, intro }) {
 // ─────────────────────────────────────────────────────────────────────────────
 export default function AstrologerOnboardingPage() {
   const [cms, setCms] = useState(null);
+  const { lang } = useLanguage();
   const [cfg, setCfg] = useState(null);
   const [openFaq, setOpenFaq] = useState(0);
 
@@ -129,7 +131,7 @@ export default function AstrologerOnboardingPage() {
                        'onboarding_kit', 'onboarding_conduct', 'onboarding_faqs'])
       .then(r => { setCms(r.data.lists); setCfg(r.data.settings); })
       .catch(() => {});
-  }, []);
+  }, [lang]);
 
   // An empty list means "not loaded" or "emptied by mistake", and either way the
   // page reads better with what it shipped with than with a gap.

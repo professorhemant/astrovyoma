@@ -15,13 +15,18 @@
 
 const { ContentItem } = require('../models');
 const { CRYSTALS } = require('../data/crystals');
+const { applyLang, langFrom } = require('../services/langOverlay');
 
 const lines = (v) => String(v ?? '').split('\n').map(s => s.trim()).filter(Boolean);
 const commas = (v) => String(v ?? '').split(',').map(s => s.trim()).filter(Boolean);
 
-function fromRow(row) {
+function fromRow(row, lang) {
   let d = {};
   try { d = JSON.parse(row.data); } catch { return null; }
+  // Before the lists are split, not after: the Hindi twin of `benefits` is a
+  // block of typing like its English, and overlaying it onto an already-parsed
+  // array would hand the page a string where it maps over items.
+  d = applyLang(d, lang);
   if (!d.slug || !d.name) return null;
   const how = d.howToWear || d.howToUse || '';
   return {
@@ -41,13 +46,13 @@ function fromRow(row) {
 // Whatever the admin has, or what the site shipped with if the list has been
 // emptied. Hidden rows are left out, which is how a stone is taken off the
 // guide without losing what was written about it.
-async function load() {
+async function load(lang = 'en') {
   try {
     const rows = await ContentItem.findAll({
       where: { list_key: 'crystals', is_active: true },
       order: [['sort_order', 'ASC'], ['created_at', 'ASC']],
     });
-    const parsed = rows.map(fromRow).filter(Boolean);
+    const parsed = rows.map(r => fromRow(r, lang)).filter(Boolean);
     if (parsed.length) return parsed;
   } catch (err) {
     // A guide that renders yesterday's stones beats a guide that 500s.
@@ -58,7 +63,7 @@ async function load() {
 
 exports.listCrystals = async (req, res) => {
   try {
-    const CRYSTALS = await load();
+    const CRYSTALS = await load(langFrom(req));
     const { type, planet, sign, search } = req.query;
     let results = CRYSTALS;
 
@@ -90,7 +95,7 @@ exports.listCrystals = async (req, res) => {
 
 exports.getCrystal = async (req, res) => {
   try {
-    const CRYSTALS = await load();
+    const CRYSTALS = await load(langFrom(req));
     const crystal = CRYSTALS.find(c => c.slug === req.params.slug);
     if (!crystal) return res.status(404).json({ error: 'Crystal not found' });
 

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import SwastikBorder from '../components/SwastikBorder';
 import ZodiacWheel from '../components/ZodiacWheel';
 import { content as contentApi } from '../api';
+import { useLanguage } from '../context/LanguageContext';
 
 // Every word and every card on this page is editable from the admin. The
 // constants below are the fallback: if the content request fails the page still
@@ -126,13 +127,14 @@ const fadeUp = (delay = 0) => ({
 // ─────────────────────────────────────────────────────────────────────────────
 export default function AboutUsPage() {
   const [cms, setCms] = useState(null);
+  const { lang } = useLanguage();
   const [cfg, setCfg] = useState(null);
 
   useEffect(() => {
     contentApi.bundle(['about_stats', 'about_pillars', 'about_expertise', 'about_promises'])
       .then(r => { setCms(r.data.lists); setCfg(r.data.settings); })
       .catch(() => {});
-  }, []);
+  }, [lang]);
 
   // An empty list means "not loaded" or "emptied by mistake", and either way the
   // page reads better with what it shipped with than with a gap.

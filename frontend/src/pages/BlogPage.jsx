@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { blog } from '../api';
+import { useLanguage } from '../context/LanguageContext';
 
 const CAT_COLORS = {
   'Vedic Astrology': 'bg-violet-500/20 text-violet-300 border-violet-500/30',
@@ -67,6 +68,7 @@ export default function BlogPage() {
   const [activeTab,   setActiveTab]   = useState('all');
   const [search,      setSearch]      = useState('');
   const [searchInput, setSearchInput] = useState('');
+  const { lang } = useLanguage();
   const [loading,     setLoading]     = useState(true);
 
   useEffect(() => {
@@ -78,7 +80,7 @@ export default function BlogPage() {
       .then(r => { setArticles(r.data.articles); setCategories(r.data.categories || []); })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [activeTab, search]);
+  }, [activeTab, search, lang]);
 
   const handleSearch = (e) => {
     e.preventDefault();

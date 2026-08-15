@@ -274,6 +274,41 @@ const SETTINGS_GROUPS = [
 // ─── LISTS ───────────────────────────────────────────────────────────────────
 // Repeatables. Add, delete, reorder, show/hide.
 
+
+// ─── Hindi twins ─────────────────────────────────────────────────────────────
+//
+// A field marked `hi: true` gets a second field beside it holding the Hindi for
+// the same thing — `body` gains `body_hi`, `shortDesc` gains `shortDesc_hi`.
+//
+// Editable rather than hardcoded, deliberately. The Hindi that already exists on
+// this site was written into source files, which means every correction to it is
+// a deploy and a developer. Content Hemant writes himself — a product, an
+// article, a stone — should not inherit that. He writes the English in the admin
+// and the Hindi beside it, and changes either whenever he likes.
+//
+// Only fields worth reading get a twin. A slug, a product code, a link, a colour
+// and an emoji are not English and have no Hindi; giving the shop's 24 fields 24
+// more would make the form unusable to save nobody any typing.
+//
+// Empty is the normal state and means "no Hindi for this yet", which the site
+// reads as "show the English". Nothing has to be translated for anything to work.
+function expandHindi(fields) {
+  const out = [];
+  for (const f of fields) {
+    out.push(f);
+    if (!f.hi) continue;
+    out.push({
+      ...f,
+      key: `${f.key}_hi`,
+      label: `${f.label} — हिन्दी`,
+      required: false,          // never block a save for want of a translation
+      hindi: true,              // the admin groups these into their own card
+      help: f.help ? `Hindi version. ${f.help}` : 'Hindi version. Leave empty to show the English.',
+    });
+  }
+  return out;
+}
+
 const LISTS = {
   testimonials: {
     label: 'Homepage — Why AstroVyoma',
@@ -291,9 +326,9 @@ const LISTS = {
           'you into trouble.',
     itemLabel: (d) => d.name || d.heading || 'Card',
     fields: [
-      { key: 'heading',  label: 'Small gold heading', type: 'text',
+      { hi: true, key: 'heading',  label: 'Small gold heading', type: 'text',
         help: 'Used when there is no name, e.g. "Calculated, not guessed".' },
-      { key: 'text',     label: 'The words', type: 'textarea', required: true },
+      { hi: true, key: 'text',     label: 'The words', type: 'textarea', required: true },
       { key: 'name',     label: 'Name', type: 'text',
         help: 'Only for a real, consented testimonial. Empty means this card is a plain statement.' },
       { key: 'location', label: 'City', type: 'text' },
@@ -315,8 +350,8 @@ const LISTS = {
     help: 'Common questions. Shown on the homepage and support pages.',
     itemLabel: (d) => d.question || 'Question',
     fields: [
-      { key: 'question', label: 'Question', type: 'text', required: true },
-      { key: 'answer',   label: 'Answer',   type: 'richtext', required: true },
+      { hi: true, key: 'question', label: 'Question', type: 'text', required: true },
+      { hi: true, key: 'answer',   label: 'Answer',   type: 'richtext', required: true },
     ],
     seed: [
       { question: 'Is the Kundali really free?',
@@ -337,9 +372,9 @@ const LISTS = {
     fields: [
       { key: 'key',      label: 'Section id', type: 'text', required: true,
         help: 'Which section this belongs to. Changing it detaches the heading from its section.' },
-      { key: 'eyebrow',  label: 'Small line above', type: 'text', help: 'Optional. Devanagari or a short kicker.' },
-      { key: 'heading',  label: 'Heading', type: 'text', required: true },
-      { key: 'subheading', label: 'Line underneath', type: 'textarea' },
+      { hi: true, key: 'eyebrow',  label: 'Small line above', type: 'text', help: 'Optional. Devanagari or a short kicker.' },
+      { hi: true, key: 'heading',  label: 'Heading', type: 'text', required: true },
+      { hi: true, key: 'subheading', label: 'Line underneath', type: 'textarea' },
       // A heading sits in the page flow with sections above and below it, so it
       // cannot be pinned to a pixel without breaking on a narrower screen.
       // Spacing and alignment are the honest equivalents of up/down/left/right
@@ -368,8 +403,8 @@ const LISTS = {
     fields: [
       { key: 'icon',     label: 'Emoji',    type: 'text' },
       { key: 'subtitle', label: 'Small label above', type: 'text' },
-      { key: 'title',    label: 'Title',    type: 'text', required: true },
-      { key: 'desc',     label: 'Description', type: 'textarea' },
+      { hi: true, key: 'title',    label: 'Title',    type: 'text', required: true },
+      { hi: true, key: 'desc',     label: 'Description', type: 'textarea' },
       { key: 'link',     label: 'Links to', type: 'text', help: 'A path on this site, e.g. /purpose' },
     ],
     seed: [
@@ -388,8 +423,8 @@ const LISTS = {
     itemLabel: (d) => d.title || 'Feature',
     fields: [
       { key: 'icon',  label: 'Emoji',       type: 'text', help: 'A single emoji, e.g. 🪐' },
-      { key: 'title', label: 'Title',       type: 'text', required: true },
-      { key: 'desc',  label: 'Description', type: 'text' },
+      { hi: true, key: 'title', label: 'Title',       type: 'text', required: true },
+      { hi: true, key: 'desc',  label: 'Description', type: 'text' },
       { key: 'link',  label: 'Links to',    type: 'text', help: 'A path on this site, e.g. /kundali' },
     ],
     seed: [
@@ -408,8 +443,8 @@ const LISTS = {
     itemLabel: (d) => d.title || 'Step',
     fields: [
       { key: 'step',  label: 'Step number', type: 'text', help: 'e.g. 01' },
-      { key: 'title', label: 'Title',       type: 'text', required: true },
-      { key: 'desc',  label: 'Description', type: 'textarea' },
+      { hi: true, key: 'title', label: 'Title',       type: 'text', required: true },
+      { hi: true, key: 'desc',  label: 'Description', type: 'textarea' },
     ],
     seed: [
       { step: '01', title: 'Enter Your Birth Details', desc: 'Name, date, time and place of birth. Auto-detects your location for quick fill.' },
@@ -423,7 +458,7 @@ const LISTS = {
     help: 'The "Platform" column in the footer.',
     itemLabel: (d) => d.label || 'Link',
     fields: [
-      { key: 'label', label: 'Text', type: 'text', required: true },
+      { hi: true, key: 'label', label: 'Text', type: 'text', required: true },
       { key: 'to',    label: 'Links to', type: 'text', required: true, help: 'A path on this site, e.g. /about' },
     ],
     seed: [
@@ -446,15 +481,15 @@ const LISTS = {
     fields: [
       { key: 'id',          label: 'Internal id', type: 'text', required: true,
         help: 'Lowercase, no spaces — free, silver, gold, platinum. Changing this on an existing plan will orphan current subscribers, so leave it alone unless you are adding a new plan.' },
-      { key: 'name',        label: 'Plan name',   type: 'text', required: true },
+      { hi: true, key: 'name',        label: 'Plan name',   type: 'text', required: true },
       { key: 'price',       label: 'Monthly price (₹)', type: 'number', default: 0, min: 0 },
       { key: 'yearlyPrice', label: 'Yearly price (₹)',  type: 'number', default: 0, min: 0 },
       { key: 'icon',        label: 'Emoji',  type: 'text' },
       { key: 'color',       label: 'Colour', type: 'color', default: '#c9a84c' },
       { key: 'popular',     label: 'Mark as "Most Popular"', type: 'boolean', default: false },
-      { key: 'features',    label: 'What is included', type: 'textarea',
+      { hi: true, key: 'features',    label: 'What is included', type: 'textarea',
         help: 'One per line.' },
-      { key: 'notIncluded', label: 'What is not included', type: 'textarea',
+      { hi: true, key: 'notIncluded', label: 'What is not included', type: 'textarea',
         help: 'One per line. Leave empty if everything is included.' },
     ],
     seed: [
@@ -478,7 +513,7 @@ const LISTS = {
     help: 'The dropdown headings in the top menu bar. Reorder these to reorder the menu.',
     itemLabel: (d) => d.label || 'Menu',
     fields: [
-      { key: 'label', label: 'Dropdown name', type: 'text', required: true,
+      { hi: true, key: 'label', label: 'Dropdown name', type: 'text', required: true,
         help: 'Must match the "Belongs to" value on its menu links exactly.' },
     ],
     seed: [
@@ -496,7 +531,7 @@ const LISTS = {
       { key: 'group', label: 'Belongs to', type: 'text', required: true,
         help: 'The dropdown name, e.g. Kundali. Spelling must match.' },
       { key: 'icon',  label: 'Emoji', type: 'text' },
-      { key: 'label', label: 'Link text', type: 'text', required: true },
+      { hi: true, key: 'label', label: 'Link text', type: 'text', required: true },
       { key: 'to',    label: 'Links to', type: 'text', required: true, help: 'A path on this site, e.g. /kundali' },
     ],
     seed: [
@@ -548,12 +583,12 @@ const LISTS = {
     fields: [
       { key: 'slug',  label: 'Page address', type: 'text', required: true,
         help: 'Lowercase, no spaces — terms, privacy, refunds. This becomes the web address, so changing it breaks any link that already points here.' },
-      { key: 'title', label: 'Page title', type: 'text', required: true },
-      { key: 'intro', label: 'Line under the title', type: 'textarea',
+      { hi: true, key: 'title', label: 'Page title', type: 'text', required: true },
+      { hi: true, key: 'intro', label: 'Line under the title', type: 'textarea',
         help: 'Optional. A sentence introducing the page.' },
       { key: 'icon',  label: 'Emoji', type: 'text', default: '📜' },
-      { key: 'body',  label: 'The page itself', type: 'richtext', required: true, help: BODY_HELP },
-      { key: 'updatedNote', label: 'Footnote', type: 'text',
+      { hi: true, key: 'body',  label: 'The page itself', type: 'richtext', required: true, help: BODY_HELP },
+      { hi: true, key: 'updatedNote', label: 'Footnote', type: 'text',
         help: 'Optional. Shown small at the bottom, e.g. "Last updated August 2026".' },
     ],
     seed: [
@@ -649,10 +684,10 @@ const LISTS = {
     help: 'Everything on the Blog page. Hide an article instead of deleting it if you might want it back.',
     itemLabel: (d) => d.title || 'Article',
     fields: [
-      { key: 'title',    label: 'Headline', type: 'text', required: true },
+      { hi: true, key: 'title',    label: 'Headline', type: 'text', required: true },
       { key: 'slug',     label: 'Web address', type: 'text', required: true,
         help: 'Lowercase words joined by dashes — mercury-retrograde-2025. Changing it breaks links people have already shared.' },
-      { key: 'category', label: 'Category', type: 'text',
+      { hi: true, key: 'category', label: 'Category', type: 'text',
         help: 'Articles are grouped and filtered by this on the blog page, so keep the spelling consistent.' },
       { key: 'icon',     label: 'Emoji', type: 'text', default: '✦',
         help: 'Shown on the card when the article has no picture.' },
@@ -660,13 +695,13 @@ const LISTS = {
         help: 'The banner across the top of the card and of the article itself. ' +
               'A wide landscape works best — about two and a half times as wide ' +
               'as it is tall. Without one the card falls back to the emoji.' },
-      { key: 'excerpt',  label: 'Summary', type: 'textarea',
+      { hi: true, key: 'excerpt',  label: 'Summary', type: 'textarea',
         help: 'The couple of lines shown on the blog listing and under the headline.' },
       { key: 'author',   label: 'Written by', type: 'text', default: 'AstroVyoma Editorial' },
       { key: 'date',     label: 'Date', type: 'text', help: 'YYYY-MM-DD, e.g. 2026-08-09.' },
       { key: 'readTime', label: 'Minutes to read', type: 'number', default: 5, min: 1, max: 90 },
       { key: 'tags',     label: 'Tags', type: 'text', help: 'Separated by commas. Used for the related-articles list.' },
-      { key: 'body',     label: 'The article', type: 'richtext', required: true, help: BODY_HELP },
+      { hi: true, key: 'body',     label: 'The article', type: 'richtext', required: true, help: BODY_HELP },
     ],
     seed: ARTICLES.map(a => ({
       title: a.title, slug: a.slug, category: a.category, icon: a.icon,
@@ -691,8 +726,8 @@ const LISTS = {
     itemLabel: (d) => d.label || 'Highlight',
     fields: [
       { key: 'icon',  label: 'Emoji',  type: 'text' },
-      { key: 'value', label: 'Headline', type: 'text', required: true, help: 'The big word, e.g. Detailed' },
-      { key: 'label', label: 'What it refers to', type: 'text', required: true, help: 'The line underneath, e.g. Kundli Analysis' },
+      { hi: true, key: 'value', label: 'Headline', type: 'text', required: true, help: 'The big word, e.g. Detailed' },
+      { hi: true, key: 'label', label: 'What it refers to', type: 'text', required: true, help: 'The line underneath, e.g. Kundli Analysis' },
     ],
     seed: [
       { icon: '🔭', value: 'Detailed',   label: 'Kundli Analysis' },
@@ -713,8 +748,8 @@ const LISTS = {
     itemLabel: (d) => d.title || 'Pillar',
     fields: [
       { key: 'emoji', label: 'Emoji', type: 'text' },
-      { key: 'title', label: 'Title', type: 'text', required: true },
-      { key: 'desc',  label: 'Description', type: 'textarea' },
+      { hi: true, key: 'title', label: 'Title', type: 'text', required: true },
+      { hi: true, key: 'desc',  label: 'Description', type: 'textarea' },
       { key: 'tone',  label: 'Colour', type: 'select', default: 'gold',
         options: [{ value: 'gold', label: 'Gold' }, { value: 'violet', label: 'Violet' },
                   { value: 'emerald', label: 'Green' }, { value: 'blue', label: 'Blue' }] },
@@ -738,7 +773,7 @@ const LISTS = {
     itemLabel: (d) => d.title || 'Discipline',
     fields: [
       { key: 'icon',     label: 'Emoji', type: 'text' },
-      { key: 'title',    label: 'Discipline', type: 'text', required: true },
+      { hi: true, key: 'title',    label: 'Discipline', type: 'text', required: true },
       { key: 'approach', label: 'How we work with it', type: 'textarea' },
       { key: 'result',   label: 'What it gives you', type: 'text' },
       { key: 'tone',     label: 'Colour', type: 'select', default: 'gold',
@@ -765,8 +800,8 @@ const LISTS = {
     itemLabel: (d) => d.title || 'Promise',
     fields: [
       { key: 'emoji', label: 'Emoji', type: 'text' },
-      { key: 'title', label: 'Promise', type: 'text', required: true },
-      { key: 'desc',  label: 'Description', type: 'textarea' },
+      { hi: true, key: 'title', label: 'Promise', type: 'text', required: true },
+      { hi: true, key: 'desc',  label: 'Description', type: 'textarea' },
     ],
     seed: [
       { emoji: '🔐', title: 'Absolute Confidentiality',
@@ -788,10 +823,10 @@ const LISTS = {
     fields: [
       { key: 'key',   label: 'Category id', type: 'text', required: true,
         help: 'Lowercase, no spaces — gemstones, rudraksha. Products refer to this exact word.' },
-      { key: 'label', label: 'Shown as', type: 'text', required: true },
+      { hi: true, key: 'label', label: 'Shown as', type: 'text', required: true },
       { key: 'icon',  label: 'Emoji', type: 'text' },
       { key: 'color', label: 'Colour', type: 'color', default: '#c9a84c' },
-      { key: 'desc',  label: 'One-line description', type: 'text' },
+      { hi: true, key: 'desc',  label: 'One-line description', type: 'text' },
     ],
     seed: Object.entries(CATEGORY_META).map(([key, m]) => ({ key, ...m })),
   },
@@ -805,10 +840,10 @@ const LISTS = {
     fields: [
       { key: 'key',   label: 'Purpose id', type: 'text', required: true,
         help: 'Lowercase, no spaces — money, love. Products refer to this exact word.' },
-      { key: 'label', label: 'Shown as', type: 'text', required: true },
+      { hi: true, key: 'label', label: 'Shown as', type: 'text', required: true },
       { key: 'icon',  label: 'Emoji', type: 'text' },
       { key: 'color', label: 'Colour', type: 'color', default: '#c9a84c' },
-      { key: 'desc',  label: 'One-line description', type: 'text' },
+      { hi: true, key: 'desc',  label: 'One-line description', type: 'text' },
     ],
     seed: Object.entries(PURPOSE_META).map(([key, m]) => ({ key, ...m })),
   },
@@ -820,7 +855,7 @@ const LISTS = {
           'losing it, switch "In stock" off, or hide the row entirely.',
     itemLabel: (d) => d.name || 'Product',
     fields: [
-      { key: 'name',  label: 'Product name', type: 'text', required: true },
+      { hi: true, key: 'name',  label: 'Product name', type: 'text', required: true },
       { key: 'id',    label: 'Product code', type: 'text', required: true,
         help: 'Lowercase words joined by dashes — blue-sapphire-5r. It is the product’s web address and how carts remember it, so changing it on a product people have already bought or bookmarked will break those links.' },
       { key: 'category', label: 'Category', type: 'select',
@@ -841,11 +876,11 @@ const LISTS = {
               'sold, which is a claim about sales that had not happened.' },
       { key: 'isFeatured',    label: 'Show on the shop front page', type: 'boolean', default: false },
 
-      { key: 'shortDesc',   label: 'One-line description', type: 'textarea',
+      { hi: true, key: 'shortDesc',   label: 'One-line description', type: 'textarea',
         help: 'The sentence under the name on the product card.' },
-      { key: 'description', label: 'Full description', type: 'richtext', help: BODY_HELP },
-      { key: 'benefits',    label: 'Benefits', type: 'textarea', help: 'One per line.' },
-      { key: 'howToUse',    label: 'How to use it', type: 'textarea' },
+      { hi: true, key: 'description', label: 'Full description', type: 'richtext', help: BODY_HELP },
+      { hi: true, key: 'benefits',    label: 'Benefits', type: 'textarea', help: 'One per line.' },
+      { hi: true, key: 'howToUse',    label: 'How to use it', type: 'textarea' },
 
       { key: 'planet',   label: 'Planet',  type: 'text' },
       { key: 'zodiac',   label: 'Suits which signs', type: 'text', help: 'Separated by commas, e.g. Capricorn, Aquarius.' },
@@ -853,8 +888,8 @@ const LISTS = {
       { key: 'bestTime', label: 'Best time', type: 'text' },
 
       { key: 'weight',        label: 'Weight / size', type: 'text' },
-      { key: 'material',      label: 'Material', type: 'text' },
-      { key: 'certification', label: 'Certification', type: 'text' },
+      { hi: true, key: 'material',      label: 'Material', type: 'text' },
+      { hi: true, key: 'certification', label: 'Certification', type: 'text' },
 
       { key: 'rating',      label: 'Star rating', type: 'number', default: 5, min: 0, max: 5 },
       { key: 'reviewCount', label: 'Number of reviews', type: 'number', default: 0, min: 0 },
@@ -882,7 +917,7 @@ const LISTS = {
           'list — stay with the emoji, which reads better at that size than a photograph.',
     itemLabel: (d) => d.name || 'Crystal',
     fields: [
-      { key: 'name',      label: 'Name', type: 'text', required: true },
+      { hi: true, key: 'name',      label: 'Name', type: 'text', required: true },
       { key: 'hindiName', label: 'Hindi name', type: 'text',
         help: 'Shown under the name, in italics — Manik, Moti, Moonga.' },
       { key: 'slug',      label: 'Web address', type: 'text', required: true,
@@ -891,7 +926,7 @@ const LISTS = {
         options: [{ value: 'navagraha', label: 'Navagraha gemstone' },
                   { value: 'healing',   label: 'Healing crystal' }],
         help: 'Decides which of the two tabs it appears under.' },
-      { key: 'shortDesc', label: 'One-line description', type: 'textarea',
+      { hi: true, key: 'shortDesc', label: 'One-line description', type: 'textarea',
         help: 'The sentence on the card.' },
 
       { key: 'image', label: 'Picture', type: 'image',
@@ -900,7 +935,7 @@ const LISTS = {
         help: 'Stands in for the stone wherever it appears small — the cards on the guide, and Related Stones. Used on its own page too if there is no picture.' },
       { key: 'color', label: 'Colour', type: 'color', default: '#c9a84c',
         help: 'Tints the swatch behind the emoji and the outline of the card.' },
-      { key: 'colorName', label: 'Colour, in words', type: 'text',
+      { hi: true, key: 'colorName', label: 'Colour, in words', type: 'text',
         help: 'Deep Red, Lustrous White — shown on the stone’s own page.' },
 
       { key: 'planet',  label: 'Planet', type: 'text',
@@ -910,17 +945,17 @@ const LISTS = {
       { key: 'element', label: 'Element', type: 'text' },
       { key: 'chakra',  label: 'Chakra', type: 'text' },
 
-      { key: 'benefits',      label: 'Benefits', type: 'textarea', help: 'One per line.' },
-      { key: 'howToWear',     label: 'How to wear or use it', type: 'textarea' },
+      { hi: true, key: 'benefits',      label: 'Benefits', type: 'textarea', help: 'One per line.' },
+      { hi: true, key: 'howToWear',     label: 'How to wear or use it', type: 'textarea' },
       { key: 'dayToActivate', label: 'Day to wear it first', type: 'text' },
-      { key: 'mantra',        label: 'Mantra', type: 'text' },
-      { key: 'cautions',      label: 'Cautions', type: 'textarea',
+      { hi: true, key: 'mantra',        label: 'Mantra', type: 'text' },
+      { hi: true, key: 'cautions',      label: 'Cautions', type: 'textarea',
         help: 'One per line. These are the warnings shown in red on the stone’s page — worth being careful with.' },
 
       { key: 'hardness',   label: 'Hardness', type: 'text' },
-      { key: 'priceRange', label: 'Price range', type: 'text',
+      { hi: true, key: 'priceRange', label: 'Price range', type: 'text',
         help: 'Free text, e.g. ₹3,000 – ₹80,000 per ratti.' },
-      { key: 'uparatna',   label: 'Substitutes (uparatna)', type: 'text' },
+      { hi: true, key: 'uparatna',   label: 'Substitutes (uparatna)', type: 'text' },
       { key: 'mallProductId', label: 'Shop product code', type: 'text',
         help: 'Optional. The code of a product in the shop — filling it in puts an “Available in Mall” link on the stone. Leave empty if you do not sell it.' },
     ],
@@ -945,7 +980,7 @@ const LISTS = {
     help: 'The buttons floating over the homepage banner.',
     itemLabel: (d) => d.label || 'Button',
     fields: [
-      { key: 'label', label: 'Button text', type: 'text', required: true },
+      { hi: true, key: 'label', label: 'Button text', type: 'text', required: true },
       { key: 'to',    label: 'Links to',    type: 'text', required: true },
       { key: 'style', label: 'Style',       type: 'select', default: 'outline',
         options: [{ value: 'solid', label: 'Solid gold (main action)' },
@@ -971,8 +1006,8 @@ const LISTS = {
     itemLabel: (d) => d.title || 'Requirement',
     fields: [
       { key: 'emoji', label: 'Emoji', type: 'text' },
-      { key: 'title', label: 'Requirement', type: 'text', required: true },
-      { key: 'desc',  label: 'What it means', type: 'textarea' },
+      { hi: true, key: 'title', label: 'Requirement', type: 'text', required: true },
+      { hi: true, key: 'desc',  label: 'What it means', type: 'textarea' },
     ],
     seed: [
       { emoji: '📿', title: 'At least 3 years of practice',
@@ -995,7 +1030,7 @@ const LISTS = {
           'out without holding up the application.',
     itemLabel: (d) => d.title || 'Document',
     fields: [
-      { key: 'title',    label: 'Document', type: 'text', required: true },
+      { hi: true, key: 'title',    label: 'Document', type: 'text', required: true },
       { key: 'why',      label: 'Why it is needed', type: 'text' },
       { key: 'required', label: 'Required', type: 'boolean', default: true },
     ],
@@ -1021,8 +1056,8 @@ const LISTS = {
           'if it stops being true.',
     itemLabel: (d) => d.title || 'Step',
     fields: [
-      { key: 'title',   label: 'Step', type: 'text', required: true },
-      { key: 'desc',    label: 'What happens', type: 'textarea' },
+      { hi: true, key: 'title',   label: 'Step', type: 'text', required: true },
+      { hi: true, key: 'desc',    label: 'What happens', type: 'textarea' },
       { key: 'timing',  label: 'How long it takes', type: 'text', help: 'e.g. Within 3 working days' },
     ],
     seed: [
@@ -1049,8 +1084,8 @@ const LISTS = {
     itemLabel: (d) => d.title || 'Component',
     fields: [
       { key: 'emoji', label: 'Emoji', type: 'text' },
-      { key: 'title', label: 'What it is', type: 'text', required: true },
-      { key: 'desc',  label: 'Description', type: 'textarea' },
+      { hi: true, key: 'title', label: 'What it is', type: 'text', required: true },
+      { hi: true, key: 'desc',  label: 'Description', type: 'textarea' },
       { key: 'tone',  label: 'Colour', type: 'select', default: 'gold',
         options: [{ value: 'gold', label: 'Gold' }, { value: 'violet', label: 'Violet' },
                   { value: 'emerald', label: 'Green' }, { value: 'blue', label: 'Blue' }] },
@@ -1078,8 +1113,8 @@ const LISTS = {
           'is the only thing that gets someone taken off the platform.',
     itemLabel: (d) => d.title || 'Rule',
     fields: [
-      { key: 'title', label: 'Rule', type: 'text', required: true },
-      { key: 'desc',  label: 'What it means in practice', type: 'textarea' },
+      { hi: true, key: 'title', label: 'Rule', type: 'text', required: true },
+      { hi: true, key: 'desc',  label: 'What it means in practice', type: 'textarea' },
     ],
     seed: [
       { title: 'Never trade on fear',
@@ -1103,8 +1138,8 @@ const LISTS = {
     help: 'The questions that come up before someone applies.',
     itemLabel: (d) => d.question || 'Question',
     fields: [
-      { key: 'question', label: 'Question', type: 'text', required: true },
-      { key: 'answer',   label: 'Answer', type: 'textarea' },
+      { hi: true, key: 'question', label: 'Question', type: 'text', required: true },
+      { hi: true, key: 'answer',   label: 'Answer', type: 'textarea' },
     ],
     seed: [
       { question: 'Does it cost anything to join?',
@@ -1137,6 +1172,9 @@ function defaultSettings() {
 
 // itemLabel is a function, which will not survive JSON. Send the field key the
 // UI should use as a row title instead.
+// Every list gains its Hindi fields here rather than in twenty-seven places.
+for (const def of Object.values(LISTS)) def.fields = expandHindi(def.fields);
+
 function schemaForClient() {
   const lists = {};
   for (const [key, def] of Object.entries(LISTS)) {

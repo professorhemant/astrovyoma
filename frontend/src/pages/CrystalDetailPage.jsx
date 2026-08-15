@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { crystals as crystalsApi } from '../api';
+import { useLanguage } from '../context/LanguageContext';
 
 const TYPE_LABELS = {
   navagraha: { label:'Navagraha Gemstone', color:'bg-gold-500/20 text-gold-400 border-gold-500/40' },
@@ -20,6 +21,7 @@ function InfoRow({ label, value }) {
 export default function CrystalDetailPage() {
   const { slug } = useParams();
   const [crystal, setCrystal] = useState(null);
+  const { lang } = useLanguage();
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState('');
@@ -31,7 +33,7 @@ export default function CrystalDetailPage() {
       .then(r => { setCrystal(r.data.crystal); setRelated(r.data.related || []); setActiveTab('benefits'); })
       .catch(() => setError('Crystal not found.'))
       .finally(() => setLoading(false));
-  }, [slug]);
+  }, [lang, slug]);
 
   if (loading) return (
     <div className="relative z-10 min-h-screen pt-32 flex items-center justify-center">

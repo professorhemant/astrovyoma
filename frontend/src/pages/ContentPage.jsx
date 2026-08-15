@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { content } from '../api';
 import RichText from '../components/RichText';
 import NotFoundPage from './NotFoundPage';
+import { useLanguage } from '../context/LanguageContext';
 
 // Any page written from the admin — Terms, Privacy, and whatever gets added
 // next.
@@ -16,6 +17,7 @@ import NotFoundPage from './NotFoundPage';
 export default function ContentPage() {
   const { slug } = useParams();
   const [page, setPage] = useState(null);
+  const { lang } = useLanguage();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export default function ContentPage() {
       .then(r => setPage((r.data.items || []).find(p => p.slug === slug) || null))
       .catch(() => setPage(null))
       .finally(() => setLoading(false));
-  }, [slug]);
+  }, [lang, slug]);
 
   if (loading) return (
     <div className="relative z-10 min-h-screen pt-32 flex items-center justify-center">

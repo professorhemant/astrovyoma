@@ -165,11 +165,15 @@ const ORGANISE = new Set(['tags', 'purposes', 'group', 'section']);
 // and a couple of key names — so a new list is laid out without being listed.
 export function layoutFor(def) {
   const title = titleFieldOf(def);
-  const main = { basics: [], pricing: [], media: [], content: [], details: [] };
+  const main = { basics: [], pricing: [], media: [], content: [], details: [], hindi: [] };
   const side = { options: [], organise: [] };
 
   for (const f of def.fields) {
-    if (f.key === title)                       main.basics.push(f);
+    // The Hindi twins go in a card of their own at the end. Interleaved with
+    // their English originals they doubled the length of every form and put a
+    // box most people will never fill between two they use constantly.
+    if (f.hindi)                               main.hindi.push(f);
+    else if (f.key === title)                  main.basics.push(f);
     else if (f.type === 'image')               main.media.push(f);
     else if (f.type === 'richtext')            main.content.push(f);
     else if (f.type === 'boolean')             side.options.push(f);
@@ -185,6 +189,7 @@ export function layoutFor(def) {
     { key: 'media',   title: 'Media',   fields: main.media },
     { key: 'content', title: 'Content', fields: main.content },
     { key: 'details', title: 'Details', fields: main.details },
+    { key: 'hindi',   title: 'हिन्दी — Hindi version', fields: main.hindi },
   ].filter(c => c.fields.length);
 
   const aside = [

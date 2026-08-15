@@ -6,12 +6,14 @@
 // publish without anyone touching code.
 
 const { ContentItem } = require('../models');
+const { applyLang, langFrom } = require('../services/langOverlay');
 
 // The body is stored as the plain text the admin typed. The site parses it into
 // headings, paragraphs, bullets and callouts; the server has no reason to.
-function parse(row) {
+function parse(row, lang) {
   let data = {};
   try { data = JSON.parse(row.data); } catch { /* corrupt row — skip its fields */ }
+  data = applyLang(data, lang);
   return {
     id: row.id,
     slug: data.slug || '',
@@ -30,12 +32,12 @@ function parse(row) {
   };
 }
 
-async function allPosts() {
+async function allPosts(lang) {
   const rows = await ContentItem.findAll({
     where: { list_key: 'blog_posts', is_active: true },
     order: [['sort_order', 'ASC'], ['created_at', 'ASC']],
   });
-  return rows.map(parse).filter(a => a.slug);
+  return rows.map(r => parse(r, lang)).filter(a => a.slug);
 }
 
 // The listing never needs the article text, only the card.
@@ -47,7 +49,7 @@ function summarise(a) {
 exports.listArticles = async (req, res) => {
   try {
     const { category, search, page = 1, limit = 9 } = req.query;
-    const posts = await allPosts();
+    const posts = await allPosts(langFrom(req));
     let results = posts;
 
     if (category && category !== 'all') {
@@ -76,7 +78,7 @@ exports.listArticles = async (req, res) => {
 
 exports.getArticle = async (req, res) => {
   try {
-    const posts = await allPosts();
+    const posts = await allPosts(langFrom(req));
     const article = posts.find(a => a.slug === req.params.slug);
     if (!article) return res.status(404).json({ error: 'Article not found' });
 

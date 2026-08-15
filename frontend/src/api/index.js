@@ -5,6 +5,14 @@ const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('astrovyoma_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
+  // The reading language travels with every request rather than being threaded
+  // through each call site. The server swaps a row's Hindi onto its plain keys
+  // on the way out (services/langOverlay.js), so pages receive what they always
+  // received and never have to know Hindi exists.
+  try {
+    const lang = localStorage.getItem('astrovyoma_lang');
+    if (lang === 'hi') config.headers['X-Lang'] = 'hi';
+  } catch { /* private browsing — English, as it would have been anyway */ }
   return config;
 });
 
