@@ -333,7 +333,7 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
           <p className="text-gold-500 text-sm uppercase tracking-widest mb-2">Vedic Birth Chart — Jyotisha</p>
           <h1 className="font-serif text-4xl md:text-5xl text-gold-400 mb-2">{userName}'s Kundali</h1>
           <p className="text-gray-200 text-sm">
-            {kundali?.dob || data.dob} — {kundali?.birth_time || data.birth_time || '—'} — {kundali?.birth_place || data.birth_place || '—'}
+            {kundali?.dob || data.dob || birthInfo?.dob} — {kundali?.birth_time || data.birth_time || birthInfo?.birth_time || '—'} — {kundali?.birth_place || data.birth_place || birthInfo?.birth_place || '—'}
           </p>
           <p className="text-gray-300 text-xs mt-1">Swiss Ephemeris — Lahiri Ayanamsha: {data.ayanamsha?.dms || '—'} — True Nodes</p>
         </motion.div>
@@ -1204,9 +1204,9 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
           <table className="w-full text-sm">
             <tbody>
               {[
-                ['Date of Birth', kundali?.dob || data.dob || '—'],
-                ['Time of Birth', kundali?.birth_time || data.birth_time || '—'],
-                ['Birth Place', kundali?.birth_place || data.birth_place || '—'],
+                ['Date of Birth', kundali?.dob || data.dob || birthInfo?.dob || '—'],
+                ['Time of Birth', kundali?.birth_time || data.birth_time || birthInfo?.birth_time || '—'],
+                ['Birth Place', kundali?.birth_place || data.birth_place || birthInfo?.birth_place || '—'],
                 ['Timezone', data.lmt_info ? `UTC+${data.lmt_info.birth_timezone || '—'}` : '—'],
                 ['Lagna (Ascendant)', lagna || '—'],
                 ['Rashi (Moon Sign)', moonSign || '—'],
