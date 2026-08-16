@@ -1065,7 +1065,7 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
         )}
 
         {/* --- COMPREHENSIVE KUNDALI REPORT -------------------------------- */}
-        <ComprehensiveReport data={data} kundali={kundali} dashas={dashas} currentDasha={currentDasha} pp={pp} panchang={panchang} />
+        <ComprehensiveReport data={data} kundali={kundali} dashas={dashas} currentDasha={currentDasha} pp={pp} panchang={panchang} birthInfo={birthInfo} />
 
         {/* CTA */}
         <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.5}} className="text-center mt-10">
@@ -1081,7 +1081,7 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
 
 // --- COMPREHENSIVE REPORT -----------------------------------------------------
 
-function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang }) {
+function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang, birthInfo }) {
   const NOW = new Date();
   const lagna = data.lagna || '';
   const moonSign = data.moon_sign || '';
