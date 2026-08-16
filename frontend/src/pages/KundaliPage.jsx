@@ -1750,13 +1750,11 @@ export default function KundaliPage() {
 
   async function handleGenerate() {
     if (!form.dob) return toast.error('Date of birth is required');
-    if (!user) return toast.error('Please login to generate your Kundali');
     setLoading(true);
     try {
-      const r = await kundaliApi.generate({
-        name:form.name, dob:form.dob, birth_time:form.birth_time||'12:00',
-        birth_place:form.birth_place, lat:form.lat, lng:form.lng, timezone:form.timezone
-      });
+      const payload = { name:form.name, dob:form.dob, birth_time:form.birth_time||'12:00',
+        birth_place:form.birth_place, lat:form.lat, lng:form.lng, timezone:form.timezone };
+      const r = user ? await kundaliApi.generate(payload) : await kundaliApi.generatePublic(payload);
       setResult({ kundali:r.data.kundali, chart:r.data.chart, birthInfo:r.data.birth_info });
       setStep(4);
       toast.success('Your Kundali has been generated! ✦');
@@ -1890,7 +1888,7 @@ export default function KundaliPage() {
               </div>
               {!user && (
                 <div className="bg-gold-600/10 border border-gold-600/30 rounded-xl p-4 text-sm">
-                  <p className="text-gold-400 font-medium mb-1">Login required to save your Kundali</p>
+                  <p className="text-gold-400 font-medium mb-1">Login to save your Kundali to history</p>
                   <div className="flex gap-2 mt-3">
                     <button onClick={()=>navigate('/login')} className="btn-outline-gold flex-1 py-2 text-xs">Login</button>
                     <button onClick={()=>navigate('/register')} className="btn-gold flex-1 py-2 text-xs">Sign Up Free</button>
@@ -1899,7 +1897,7 @@ export default function KundaliPage() {
               )}
               <div className="flex gap-3">
                 <button onClick={()=>setStep(1)} className="btn-outline-gold flex-1 py-3 flex items-center justify-center gap-2"><ChevronLeft className="w-4 h-4"/> Back</button>
-                <button onClick={handleGenerate} disabled={loading||!user}
+                <button onClick={handleGenerate} disabled={loading}
                   className="btn-gold flex-1 py-3 flex items-center justify-center gap-2 disabled:opacity-50">
                   {loading ? <><Loader className="w-4 h-4 animate-spin"/> Calculating...</> : <>Generate Kundali →</>}
                 </button>
