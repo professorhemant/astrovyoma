@@ -333,7 +333,7 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
           <p className="text-gold-500 text-sm uppercase tracking-widest mb-2">Vedic Birth Chart — Jyotisha</p>
           <h1 className="font-serif text-4xl md:text-5xl text-gold-400 mb-2">{userName}'s Kundali</h1>
           <p className="text-gray-200 text-sm">
-            {kundali.dob || data.dob} — {kundali.birth_time || data.birth_time || '—'} — {kundali.birth_place || data.birth_place || '—'}
+            {kundali?.dob || data.dob} — {kundali?.birth_time || data.birth_time || '—'} — {kundali?.birth_place || data.birth_place || '—'}
           </p>
           <p className="text-gray-300 text-xs mt-1">Swiss Ephemeris — Lahiri Ayanamsha: {data.ayanamsha?.dms || '—'} — True Nodes</p>
         </motion.div>
@@ -379,14 +379,14 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                   const d = chart || kundali;
                   await historyApi.save({
                     type: 'kundali',
-                    title: `${userName}'s Kundali — ${d.dob || kundali.dob}`,
+                    title: `${userName}'s Kundali — ${d.dob || kundali?.dob}`,
                     meta: {
-                      dob: d.dob || kundali.dob,
-                      birth_place: d.birth_place || kundali.birth_place,
-                      lagna: d.lagna || kundali.lagna,
-                      moon_sign: d.moon_sign || kundali.moon_sign,
-                      nakshatra: d.nakshatra || kundali.nakshatra,
-                      nakshatra_lord: d.nakshatra_lord || kundali.nakshatra_lord,
+                      dob: d.dob || kundali?.dob,
+                      birth_place: d.birth_place || kundali?.birth_place,
+                      lagna: d.lagna || kundali?.lagna,
+                      moon_sign: d.moon_sign || kundali?.moon_sign,
+                      nakshatra: d.nakshatra || kundali?.nakshatra,
+                      nakshatra_lord: d.nakshatra_lord || kundali?.nakshatra_lord,
                     },
                   });
                   setSaved(true);
@@ -1204,9 +1204,9 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
           <table className="w-full text-sm">
             <tbody>
               {[
-                ['Date of Birth', kundali.dob || data.dob || '—'],
-                ['Time of Birth', kundali.birth_time || data.birth_time || '—'],
-                ['Birth Place', kundali.birth_place || data.birth_place || '—'],
+                ['Date of Birth', kundali?.dob || data.dob || '—'],
+                ['Time of Birth', kundali?.birth_time || data.birth_time || '—'],
+                ['Birth Place', kundali?.birth_place || data.birth_place || '—'],
                 ['Timezone', data.lmt_info ? `UTC+${data.lmt_info.birth_timezone || '—'}` : '—'],
                 ['Lagna (Ascendant)', lagna || '—'],
                 ['Rashi (Moon Sign)', moonSign || '—'],
