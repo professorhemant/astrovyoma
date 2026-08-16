@@ -47,6 +47,7 @@ export const kundali = {
   downloadSummaryPDF: () => api.get('/kundali/pdf/summary', { responseType: 'blob' }),
   downloadDetailedPDF: () => api.get('/kundali/pdf/detailed', { responseType: 'blob' }),
   getNamkaran: () => api.get('/kundali/namkaran'),
+  getNamkaranPublic: (payload) => api.post('/kundali/namkaran-public', payload),
   downloadSummaryPDFHindi: () => api.get('/kundali/pdf/summary/hindi', { responseType: 'blob' }),
   downloadDetailedPDFHindi: () => api.get('/kundali/pdf/detailed/hindi', { responseType: 'blob' })
 };

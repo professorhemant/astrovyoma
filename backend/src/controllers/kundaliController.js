@@ -184,6 +184,19 @@ async function getNamkaran(req, res) {
   }
 }
 
+async function getNamkaranPublic(req, res) {
+  try {
+    const { nakshatra, pada, moon_sign, lagna } = req.body;
+    if (!nakshatra) return res.status(400).json({ error: 'nakshatra is required' });
+    const namkaran = getNamkaranLetter(nakshatra, pada || 1);
+    if (!namkaran) return res.status(400).json({ error: 'Nakshatra not recognized: ' + nakshatra });
+    res.json({ namkaran, moon_sign: moon_sign || null, lagna: lagna || null });
+  } catch (err) {
+    console.error('getNamkaranPublic error:', err);
+    res.status(500).json({ error: 'Failed to fetch Namkaran data' });
+  }
+}
+
 async function downloadSummaryPDFHindi(req, res) {
   try {
     const kundali = await Kundali.findOne({ where: { user_id: req.user.id } });
@@ -268,4 +281,4 @@ async function generatePublicKundali(req, res) {
   }
 }
 
-module.exports = { generateKundali, generatePublicKundali, getMyKundali, getPersonalityReport, downloadSummaryPDF, downloadDetailedPDF, downloadSummaryPDFHindi, downloadDetailedPDFHindi, getNamkaran };
+module.exports = { generateKundali, generatePublicKundali, getMyKundali, getPersonalityReport, downloadSummaryPDF, downloadDetailedPDF, downloadSummaryPDFHindi, downloadDetailedPDFHindi, getNamkaran, getNamkaranPublic };

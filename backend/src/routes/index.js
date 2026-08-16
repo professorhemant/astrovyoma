@@ -109,6 +109,7 @@ router.get('/kundali/personality', auth, kundaliController.getPersonalityReport)
 router.get('/kundali/pdf/summary', auth, kundaliController.downloadSummaryPDF);
 router.get('/kundali/pdf/detailed', auth, kundaliController.downloadDetailedPDF);
 router.get('/kundali/namkaran', auth, kundaliController.getNamkaran);
+router.post('/kundali/namkaran-public', kundaliController.getNamkaranPublic);
 router.get('/kundali/pdf/summary/hindi', auth, kundaliController.downloadSummaryPDFHindi);
 router.get('/kundali/pdf/detailed/hindi', auth, kundaliController.downloadDetailedPDFHindi);
 

@@ -285,7 +285,19 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
   async function fetchNamkaran() {
     setNamkaranLoading(true);
     try {
-      const r = await kundaliApi.getNamkaran();
+      let r;
+      if (user) {
+        r = await kundaliApi.getNamkaran();
+      } else {
+        const d = chart || kundali;
+        const moonPos = d?.planetary_positions?.Moon;
+        r = await kundaliApi.getNamkaranPublic({
+          nakshatra: moonPos?.nakshatra || d?.nakshatra,
+          pada: moonPos?.nakshatra_pada || d?.nakshatra_pada || 1,
+          moon_sign: d?.moon_sign,
+          lagna: d?.lagna,
+        });
+      }
       setNamkaran(r.data);
     } catch { toast.error('Could not load Namkaran data'); }
     finally { setNamkaranLoading(false); }
