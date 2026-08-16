@@ -40,10 +40,10 @@ const PLANETS_LIST = [
 
 const NAKSHATRA_NAMES = [
   'Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra',
-  'Punarvasu','Pushya','Ashlesha','Magha','Purva Phalguni','Uttara Phalguni',
+  'Punarvasu','Pushya','Ashlesha','Magha','PurvaPhalguni','UttaraPhalguni',
   'Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha',
-  'Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishtha',
-  'Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati'
+  'Mula','PurvaAshadha','UttaraAshadha','Shravana','Dhanishtha',
+  'Shatabhisha','PurvaBhadrapada','UttaraBhadrapada','Revati'
 ];
 
 const NAKSHATRA_LORDS = [
@@ -114,8 +114,8 @@ const NAKSHATRA_DATA = {
   Pushya:            { traits:['Nurturing','Disciplined','Spiritual','Protective'], purpose:'To nourish, protect, and create structures that sustain others', swabhav:'The most nurturing of all nakshatras. Born to provide nourishment — emotional, material, and spiritual.' },
   Ashlesha:          { traits:['Mystical','Perceptive','Intense','Strategic'], purpose:'To master hidden knowledge and transform through depth of perception', swabhav:'You see what others cannot. Born to understand hidden truths and work with subtle energies.' },
   Magha:             { traits:['Regal','Proud','Traditional','Ancestral'], purpose:'To honor heritage, lead with authority, and connect past wisdom to future vision', swabhav:'You carry dignity of ancestors. Born to lead and be a bridge between lineage and the future.' },
-  'Purva Phalguni':  { traits:['Creative','Romantic','Pleasure-seeking','Artistic'], purpose:'To create beauty, enjoy life, and inspire others through joy', swabhav:'You carry the blessing of Venus. Born to celebrate life and inspire joy through your magnetic presence.' },
-  'Uttara Phalguni': { traits:['Generous','Service-oriented','Reliable','Cooperative'], purpose:'To serve, unite, and build lasting partnerships grounded in dharma', swabhav:'You carry energy of Aryaman, the divine friend. Born to serve and build genuine partnerships.' },
+  'PurvaPhalguni':  { traits:['Creative','Romantic','Pleasure-seeking','Artistic'], purpose:'To create beauty, enjoy life, and inspire others through joy', swabhav:'You carry the blessing of Venus. Born to celebrate life and inspire joy through your magnetic presence.' },
+  'UttaraPhalguni': { traits:['Generous','Service-oriented','Reliable','Cooperative'], purpose:'To serve, unite, and build lasting partnerships grounded in dharma', swabhav:'You carry energy of Aryaman, the divine friend. Born to serve and build genuine partnerships.' },
   Hasta:             { traits:['Skilled','Clever','Healing','Industrious'], purpose:'To manifest healing, craft, and divine service through skillful hands', swabhav:'Your hands carry healing power. Born to create, craft, and heal through practical, skillful work.' },
   Chitra:            { traits:['Creative','Artistic','Independent','Stylish'], purpose:'To create masterworks and express divine beauty in the material world', swabhav:'You carry the artisan spirit of Vishwakarma. Born to create beautiful, impactful works.' },
   Swati:             { traits:['Independent','Diplomatic','Flexible','Wandering'], purpose:'To seek freedom, spread ideas, and create connections across boundaries', swabhav:'Like a blade of grass in wind, you are resilient and adaptable. Born to build bridges between worlds.' },
@@ -123,13 +123,13 @@ const NAKSHATRA_DATA = {
   Anuradha:          { traits:['Devoted','Friendly','Spiritually-inclined','Disciplined'], purpose:'To build sacred friendships and walk the path of devotion', swabhav:'Mithra guides you toward sacred friendship and loyalty. Born to build deep bonds.' },
   Jyeshtha:          { traits:['Protective','Leadership','Courageous','Eldest'], purpose:'To protect, lead, and bear responsibility with wisdom and courage', swabhav:'Indra, king of gods, rules your nakshatra. Born to be the protector and leader.' },
   Mula:              { traits:['Investigative','Destructive-creative','Philosophical','Seeking'], purpose:'To uproot and transform, destroying the false to reveal the eternal', swabhav:'Nirrti empowers you. Born to dig to the root of all things, revealing deep truths.' },
-  'Purva Ashadha':   { traits:['Invincible','Proud','Philosophical','Expansive'], purpose:'To invigorate, purify, and lead others toward victory', swabhav:'Apah, cosmic waters, flow through you. Born to purify, invigorate, and lead.' },
-  'Uttara Ashadha':  { traits:['Principled','Victorious','Leadership','Ethical'], purpose:'To achieve lasting victory through righteousness and universal principles', swabhav:'Vishvadevas bless you with universal principles. Born to achieve victory through ethics.' },
+  'PurvaAshadha':   { traits:['Invincible','Proud','Philosophical','Expansive'], purpose:'To invigorate, purify, and lead others toward victory', swabhav:'Apah, cosmic waters, flow through you. Born to purify, invigorate, and lead.' },
+  'UttaraAshadha':  { traits:['Principled','Victorious','Leadership','Ethical'], purpose:'To achieve lasting victory through righteousness and universal principles', swabhav:'Vishvadevas bless you with universal principles. Born to achieve victory through ethics.' },
   Shravana:          { traits:['Listening','Learning','Connected','Compassionate'], purpose:'To listen, learn, and connect the teachings of the cosmos with humanity', swabhav:'Vishnu, the sustainer, blesses your path. Born to listen deeply and transmit wisdom.' },
   Dhanishtha:        { traits:['Wealthy','Musical','Generous','Ambitious'], purpose:'To create abundance, inspire through rhythm, and demonstrate cosmic law', swabhav:'Ashta Vasus bless you with rhythm and abundance. Born to manifest wealth and create music.' },
   Shatabhisha:       { traits:['Healing','Independent','Secretive','Scientific'], purpose:'To heal, discover hidden truths, and walk the path of the mystical healer', swabhav:'Varuna guides you. Born to uncover hidden truths and walk the solitary path of the mystic healer.' },
-  'Purva Bhadrapada':{ traits:['Intense','Transformative','Philosophical','Spiritual'], purpose:'To transcend the material and serve the higher cosmic order', swabhav:'Aja Ekapad gives you cosmic fire. Born to transcend ordinary life with fierce devotion.' },
-  'Uttara Bhadrapada':{ traits:['Wise','Compassionate','Deep','Spiritual'], purpose:'To bring depth, compassion, and cosmic wisdom to those in need', swabhav:'Ahir Budhnya grants profound depth. Born to understand life at its deepest level.' },
+  'PurvaBhadrapada':{ traits:['Intense','Transformative','Philosophical','Spiritual'], purpose:'To transcend the material and serve the higher cosmic order', swabhav:'Aja Ekapad gives you cosmic fire. Born to transcend ordinary life with fierce devotion.' },
+  'UttaraBhadrapada':{ traits:['Wise','Compassionate','Deep','Spiritual'], purpose:'To bring depth, compassion, and cosmic wisdom to those in need', swabhav:'Ahir Budhnya grants profound depth. Born to understand life at its deepest level.' },
   Revati:            { traits:['Nourishing','Creative','Spiritual','Completing'], purpose:'To complete cycles, nourish souls, and guide beings toward liberation', swabhav:'Pushan, cosmic shepherd, guides you. Born to nourish and complete all cycles with love.' }
 };
 
