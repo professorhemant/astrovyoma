@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { crystals as crystalsApi } from '../api';
-import { useLanguage } from '../context/LanguageContext';
 
 const PLANETS = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
 const SIGNS   = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
@@ -88,7 +87,7 @@ export default function CrystalGuidePage() {
       .then(r => setList(r.data.crystals))
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [lang, typeFilter, planet, sign, search]);
+  }, [typeFilter, planet, sign, search]);
 
   const clearFilters = () => { setTypeFilter('all'); setPlanet(''); setSign(''); setSearch(''); setSearchInput(''); };
   const hasFilter = typeFilter !== 'all' || planet || sign || search;
