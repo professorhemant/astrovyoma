@@ -122,25 +122,26 @@ function buildConclusion(cards, spread, lang, question) {
     if (cards.length === 1) {
       const c = cards[0]; const kw = (c.keywordsEn || c.keywords)[0];
       body   = `${qRef}the universe offers one clear message through ${c.name}: ${kw}. ${c.meanings?.general || ''}`;
-      bottom = `One card, one answer — let the energy of ${c.name} guide your next step.`;
+      bottom = `One card, one message — ${kw.toLowerCase()} is what the cards are telling you right now.`;
     } else if (advice && key) {
       const { card: aC } = advice; const { card: kC } = key;
-      const aKw = (aC.keywordsEn || aC.keywords)[0];
-      const kKw = (kC.keywordsEn || kC.keywords)[0];
+      const aKw  = (aC.keywordsEn || aC.keywords)[0];
+      const aKw2 = (aC.keywordsEn || aC.keywords)[1];
+      const kKw  = (kC.keywordsEn || kC.keywords)[0];
       body   = `${qRef}your cards point in a clear direction. The advice card, ${aC.name}, calls for ${aKw.toLowerCase()} — ${(aC.meanings?.general || '').replace(/\.+$/, '')}. The ${key.pos.toLowerCase()} card, ${kC.name}, reveals ${kKw.toLowerCase()} as the likely destination of this journey.`;
-      bottom = `Follow the counsel of ${aC.name}. Your path leads toward the energy of ${kC.name}.`;
+      bottom = `What to do: embrace ${aKw.toLowerCase()}${aKw2 ? ` and ${aKw2.toLowerCase()}` : ''}. What awaits you: ${kKw.toLowerCase()}.`;
     } else if (key) {
       const { card: kC, pos } = key; const kKw = (kC.keywordsEn || kC.keywords)[0];
       body   = `${qRef}your ${pos.toLowerCase()} card, ${kC.name}, holds the direct answer. Its message of ${kKw.toLowerCase()} is where this reading lands. ${kC.meanings?.general || ''}`;
-      bottom = `The cards are clear: embrace the energy of ${kC.name} and move forward.`;
+      bottom = `The answer is clear: ${kKw.toLowerCase()} — move forward with that in mind.`;
     } else if (cards.length === 3) {
       const [, pr, f] = cards; const fKw = (f.keywordsEn || f.keywords)[0];
       body   = `${qRef}the reading speaks plainly. Your present moment — shaped by ${pr.name} — is shifting toward ${f.name}. The energy of ${fKw.toLowerCase()} is what lies ahead for you.`;
-      bottom = `${f.name} is your answer. Trust that direction and take the next step.`;
+      bottom = `${fKw} is ahead — trust that and take the next step.`;
     } else {
       const last = cards[cards.length - 1]; const lKw = (last.keywordsEn || last.keywords)[0];
       body   = `${qRef}across all ${cards.length} cards, the reading arrives at ${last.name} — ${lKw.toLowerCase()}. This is the universe's direct reply to where you stand.`;
-      bottom = `Act on the energy of ${last.name}. That is the conclusion your reading points to.`;
+      bottom = `${lKw} is the conclusion — act on it now.`;
     }
     return { body, bottom };
   }
