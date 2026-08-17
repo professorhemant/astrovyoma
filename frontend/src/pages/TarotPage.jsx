@@ -127,7 +127,7 @@ function buildConclusion(cards, spread, lang, question) {
       const { card: aC } = advice; const { card: kC } = key;
       const aKw = (aC.keywordsEn || aC.keywords)[0];
       const kKw = (kC.keywordsEn || kC.keywords)[0];
-      body   = `${qRef}your cards point in a clear direction. The advice card, ${aC.name}, calls for ${aKw.toLowerCase()} — ${aC.meanings?.general || ''}. The ${key.pos.toLowerCase()} card, ${kC.name}, reveals ${kKw.toLowerCase()} as the likely destination of this journey.`;
+      body   = `${qRef}your cards point in a clear direction. The advice card, ${aC.name}, calls for ${aKw.toLowerCase()} — ${(aC.meanings?.general || '').replace(/\.+$/, '')}. The ${key.pos.toLowerCase()} card, ${kC.name}, reveals ${kKw.toLowerCase()} as the likely destination of this journey.`;
       bottom = `Follow the counsel of ${aC.name}. Your path leads toward the energy of ${kC.name}.`;
     } else if (key) {
       const { card: kC, pos } = key; const kKw = (kC.keywordsEn || kC.keywords)[0];
