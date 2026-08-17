@@ -110,9 +110,9 @@ function buildConclusion(cards, spread, lang, question) {
     const idx = positions.findIndex(p => keys.some(k => p.toLowerCase().includes(k)));
     return idx >= 0 ? { card: cards[idx], pos: positions[idx] } : null;
   };
-  const advice  = find('advice');
-  const outcome = find('outcome', 'final outcome');
-  const future  = find('future', 'near future');
+  const advice  = find('advice', 'सलाह');
+  const outcome = find('outcome', 'final outcome', 'परिणाम', 'अंतिम परिणाम');
+  const future  = find('future', 'near future', 'भविष्य', 'निकट भविष्य');
   const key     = outcome || future; // whichever is more "conclusive"
 
   if (lang === 'en') {
