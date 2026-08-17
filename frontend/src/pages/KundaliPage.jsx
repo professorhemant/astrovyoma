@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
+import * as Sentry from '@sentry/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -146,7 +147,7 @@ function signOffset(sign, offset) {
 class TabErrorBoundary extends React.Component {
   constructor(props) { super(props); this.state = { hasError: false }; }
   static getDerivedStateFromError() { return { hasError: true }; }
-  componentDidCatch(err) { console.error('[KundaliTab] render error:', err); }
+  componentDidCatch(err) { console.error('[KundaliTab] render error:', err); Sentry.captureException(err); }
   render() {
     if (this.state.hasError) {
       return (

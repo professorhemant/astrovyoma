@@ -8,6 +8,7 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "@sentry/react": "^10.70.0",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.0.0",
     "agora-rtc-sdk-ng": "^4.20.2",

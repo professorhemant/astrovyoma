@@ -96,7 +96,14 @@ function AppLayout() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [location.pathname]);
+    // GA4 page_view on every route change
+    if (window.gtag && import.meta.env.VITE_GA_MEASUREMENT_ID) {
+      window.gtag('event', 'page_view', {
+        page_path: location.pathname + location.search,
+        page_title: document.title,
+      });
+    }
+  }, [location.pathname, location.search]);
 
   return (
     <>
