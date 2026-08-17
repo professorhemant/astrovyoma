@@ -122,7 +122,7 @@ function SectionDivider() {
 // xl the hero keeps its letterboxed height — narrower than that the floating CTA
 // pill runs into the Vedic clock at 15% and its labels wrap. Phones keep the
 // short box for the reason above.
-const heroBannerClass = 'w-full block object-cover object-center h-80 sm:h-96 md:h-[clamp(300px,77vh,880px)] xl:h-[100svh]';
+const heroBannerClass = 'w-full block object-cover object-[80%_50%] h-80 sm:h-96 md:h-[clamp(300px,77vh,880px)] xl:h-[100svh]';
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
@@ -298,7 +298,7 @@ export default function HomePage() {
               percentage there, clear of the headline and above the clock. */}
           <div
             data-edit="mandala" data-edit-label="Zodiac wheel"
-            className="absolute flex flex-col items-center justify-center pointer-events-none top-[54%] md:top-[var(--mandala-top)]"
+            className="absolute flex flex-col items-center justify-center pointer-events-none top-[38%] md:top-[var(--mandala-top)]"
             style={{ ...mandalaPos, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
             <img
               src="/zodiac-mandala.webp"
