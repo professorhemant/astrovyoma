@@ -40,7 +40,7 @@ function CardBack() {
 }
 
 // ── Card Face ─────────────────────────────────────────────────────────────────
-function CardFace({ card, reversed }) {
+function CardFace({ card, reversed, lang = 'hi' }) {
   return (
     <div className="w-full h-full rounded-xl flex flex-col relative overflow-hidden"
       style={{ background:`linear-gradient(160deg, ${card.gradient[0]} 0%, ${card.gradient[1]} 100%)`,
@@ -74,7 +74,7 @@ function CardFace({ card, reversed }) {
         </div>
         <div className="h-px w-12 mx-auto" style={{ background:`${card.accent}50` }} />
         <div className="flex flex-wrap gap-1 justify-center px-1">
-          {card.keywords.slice(0, 2).map(k => (
+          {(lang === 'en' ? (card.keywordsEn || card.keywords) : card.keywords).slice(0, 2).map(k => (
             <span key={k} className="text-[9px] px-1.5 py-0.5 rounded-full"
               style={{ background:`${card.accent}20`, color:card.accent, border:`1px solid ${card.accent}30` }}>
               {k}
@@ -87,10 +87,10 @@ function CardFace({ card, reversed }) {
       <div className="px-3 pb-3 pt-1 flex-shrink-0 text-center">
         <div className="h-px mb-2" style={{ background:`${card.accent}30` }} />
         <div className="font-serif text-xs font-semibold leading-tight" style={{ color:card.accent }}>
-          {card.nameHi}
+          {lang === 'en' ? card.name : card.nameHi}
         </div>
         <div className="text-[9px] opacity-50 mt-0.5" style={{ color:card.accent }}>
-          {card.name}
+          {lang === 'en' ? card.nameHi : card.name}
         </div>
         {reversed && (
           <div className="text-[9px] mt-1 opacity-70" style={{ color:'#F87171' }}>↕ Reversed</div>
@@ -108,7 +108,7 @@ function CardFace({ card, reversed }) {
 // ── Main flip component ───────────────────────────────────────────────────────
 // Uses scaleX animation (card "squishes" to 0, content swaps, scales back)
 // — avoids backface-visibility / preserve-3d browser bugs entirely
-export default function TarotCardFlip({ card, reversed = false, size = 'md', onFlip, autoFlipped = false }) {
+export default function TarotCardFlip({ card, reversed = false, size = 'md', onFlip, autoFlipped = false, lang = 'hi' }) {
   const [flipped, setFlipped]     = useState(autoFlipped);
   const [showFront, setShowFront] = useState(autoFlipped);
   const [animating, setAnimating] = useState(false);
@@ -145,7 +145,7 @@ export default function TarotCardFlip({ card, reversed = false, size = 'md', onF
         animate={{ scaleX: animating ? 0.04 : 1 }}
         transition={{ duration: 0.2, ease: 'easeIn' }}
         whileHover={!flipped ? { scale: 1.04, y: -6 } : {}}>
-        {showFront ? <CardFace card={card} reversed={reversed} /> : <CardBack />}
+        {showFront ? <CardFace card={card} reversed={reversed} lang={lang} /> : <CardBack />}
       </motion.div>
 
       {/* Tap hint — only before flip */}

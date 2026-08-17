@@ -33,6 +33,35 @@ const EN_MEANINGS = {
   21: 'A magnificent cycle reaches its fulfilling completion. Celebrate your wholeness — you are ready for an even greater journey.',
 };
 
+// Element colors for badges in the result section
+const ELEMENT_COLORS = {
+  Fire:  { bg: 'rgba(251,146,60,0.15)',  text: '#FB923C', icon: '🔥' },
+  Earth: { bg: 'rgba(110,231,183,0.15)', text: '#6EE7B7', icon: '🌿' },
+  Air:   { bg: 'rgba(147,197,253,0.15)', text: '#93C5FD', icon: '💨' },
+  Water: { bg: 'rgba(196,181,253,0.15)', text: '#C4B5FD', icon: '💧' },
+};
+
+// Rule-based synthesis connecting multiple cards — no AI
+function buildSynthesis(cards, lang) {
+  if (cards.length <= 1) return null;
+  const elementCount = {};
+  cards.forEach(c => { elementCount[c.element] = (elementCount[c.element] || 0) + 1; });
+  const dominant = Object.entries(elementCount).sort((a, b) => b[1] - a[1])[0][0];
+  const themes = {
+    en: { Fire: 'action and transformation', Earth: 'stability and grounded growth', Air: 'clarity and new perspectives', Water: 'emotional healing and deep intuition' },
+    hi: { Fire: 'साहस और परिवर्तन', Earth: 'स्थिरता और व्यावहारिक विकास', Air: 'स्पष्टता और नई दिशा', Water: 'भावनात्मक उपचार और अंतर्ज्ञान' },
+  };
+  const theme = themes[lang]?.[dominant] || themes.en[dominant];
+  if (lang === 'en') {
+    if (cards.length === 3)
+      return `Your cards trace a journey from ${cards[0].name} → ${cards[1].name} → ${cards[2].name}. The thread woven through this reading is ${theme}. Trust the direction the universe is already moving you toward.`;
+    return `Five cards — ${cards.map(c => c.name).join(', ')} — converge on the theme of ${theme}. Each speaks to one facet of your situation; together they point toward a single truth: transformation is already underway within you.`;
+  }
+  if (cards.length === 3)
+    return `${cards[0].nameHi} → ${cards[1].nameHi} → ${cards[2].nameHi} — आपकी यात्रा ${theme} की दिशा में बढ़ रही है। ब्रह्मांड आपको आगे बढ़ने का संकेत दे रहा है।`;
+  return `पाँचों कार्ड ${theme} का एक ही संदेश देते हैं। आपकी स्थिति, चुनौती, और परिणाम — सब एक सूत्र में पिरोए हुए हैं। परिवर्तन की शुरुआत हो चुकी है।`;
+}
+
 // ── All UI copy, keyed by language ────────────────────────────────────────────
 const T = {
   en: {
@@ -423,13 +452,34 @@ export default function TarotPage() {
             <motion.div key="draw" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
               className="max-w-2xl mx-auto text-center">
 
+              {/* Spread label */}
               <div className="mb-6">
                 <div className="inline-flex items-center gap-2 text-sm px-4 py-2 rounded-full mb-2"
                   style={{ background:'rgba(120,40,180,0.2)', border:'1px solid rgba(168,85,247,0.3)', color:'#C084FC' }}>
                   {selectedSpread?.label}
                 </div>
-                {question && <p className="text-xs text-gray-400 mt-2">"{question}"</p>}
               </div>
+
+              {/* Intention-setting moment */}
+              <motion.div initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.2 }}
+                className="mb-6 px-6 py-5 rounded-2xl mx-auto max-w-md"
+                style={{ background:'rgba(168,85,247,0.07)', border:'1px solid rgba(168,85,247,0.18)' }}>
+                <div className="text-2xl mb-2">🕯️</div>
+                <h3 className="font-serif text-base mb-2" style={{ color:'#E9D5FF' }}>
+                  {lang === 'en' ? 'Set Your Intention' : 'अपना संकल्प जगाएं'}
+                </h3>
+                <p className="text-xs text-gray-400 leading-relaxed italic">
+                  {lang === 'en'
+                    ? 'Close your eyes, take a slow breath, and hold your question gently in your heart. When you feel centered, draw your cards.'
+                    : 'आँखें बंद करें। गहरी सांस लें। अपना प्रश्न मन में स्थिर करें। जब तैयार हों, कार्ड खींचें।'}
+                </p>
+                {question && (
+                  <div className="mt-3 px-3 py-1.5 rounded-lg text-xs italic"
+                    style={{ background:'rgba(201,168,76,0.08)', border:'1px solid rgba(201,168,76,0.2)', color:'#C9A84C' }}>
+                    "{question}"
+                  </div>
+                )}
+              </motion.div>
 
               <DeckVisual animating={shuffling} />
 
@@ -464,6 +514,7 @@ export default function TarotPage() {
                       size={drawnCards.length === 1 ? 'xl' : drawnCards.length <= 3 ? 'lg' : 'md'}
                       onFlip={handleCardReveal}
                       autoFlipped={phase === 'result'}
+                      lang={lang || 'hi'}
                     />
                   </div>
                 ))}
@@ -504,51 +555,85 @@ export default function TarotPage() {
 
                   {/* One block per card */}
                   <div className="space-y-4 mb-6">
-                    {drawnCards.map((card, i) => (
-                      <motion.div key={i}
-                        initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ delay: i * 0.12 }}
-                        className="rounded-2xl p-5"
-                        style={{ background:`linear-gradient(135deg, ${card.gradient[0]}cc, ${card.gradient[1]}99)`,
-                                 border:`1px solid ${card.accent}35` }}>
+                    {drawnCards.map((card, i) => {
+                      const elMeta = ELEMENT_COLORS[card.element] || ELEMENT_COLORS.Fire;
+                      const kws = (lang === 'en' ? (card.keywordsEn || card.keywords) : card.keywords).slice(0, 3);
+                      return (
+                        <motion.div key={i}
+                          initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ delay: i * 0.12 }}
+                          className="rounded-2xl p-5"
+                          style={{ background:`linear-gradient(135deg, ${card.gradient[0]}cc, ${card.gradient[1]}99)`,
+                                   border:`1px solid ${card.accent}35` }}>
 
-                        {/* Position + card name */}
-                        <div className="flex items-center gap-3 mb-3">
-                          <span className="text-2xl" style={{ filter:`drop-shadow(0 0 8px ${card.accent}80)` }}>
-                            {card.symbol}
-                          </span>
-                          <div>
-                            <div className="text-[10px] tracking-widest uppercase mb-0.5" style={{ color:`${card.accent}99` }}>
-                              {selectedSpread?.positions?.[i] || `Card ${i+1}`}
-                            </div>
-                            <div className="font-serif text-base font-semibold leading-tight" style={{ color:card.accent }}>
-                              {lang === 'en' ? card.name : card.nameHi}
-                              <span className="text-xs font-normal opacity-50 ml-2">
-                                {lang === 'en' ? card.nameHi : card.name}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Meaning */}
-                        <p className="text-sm text-gray-200 leading-relaxed mb-3">
-                          {lang === 'en' ? EN_MEANINGS[card.id] : card.upright}
-                        </p>
-
-                        {/* Keywords + ruler */}
-                        <div className="flex flex-wrap items-center gap-2">
-                          {card.keywords.slice(0, 3).map(k => (
-                            <span key={k} className="text-[10px] px-2 py-0.5 rounded-full"
-                              style={{ background:`${card.accent}18`, color:card.accent, border:`1px solid ${card.accent}30` }}>
-                              {k}
+                          {/* Position + card name */}
+                          <div className="flex items-start gap-3 mb-3">
+                            <span className="text-2xl mt-0.5 flex-shrink-0" style={{ filter:`drop-shadow(0 0 8px ${card.accent}80)` }}>
+                              {card.symbol}
                             </span>
-                          ))}
-                          <span className="text-[10px] text-gray-500 ml-auto flex items-center gap-1">
-                            {card.rulerGlyph} {card.ruler}
-                          </span>
-                        </div>
-                      </motion.div>
-                    ))}
+                            <div className="flex-1 min-w-0">
+                              <div className="text-[10px] tracking-widest uppercase mb-0.5" style={{ color:`${card.accent}99` }}>
+                                {selectedSpread?.positions?.[i] || `Card ${i+1}`}
+                              </div>
+                              <div className="font-serif text-base font-semibold leading-tight" style={{ color:card.accent }}>
+                                {lang === 'en' ? card.name : card.nameHi}
+                                <span className="text-xs font-normal opacity-50 ml-2">
+                                  {lang === 'en' ? card.nameHi : card.name}
+                                </span>
+                              </div>
+                            </div>
+                            {/* Element badge */}
+                            <span className="text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 flex items-center gap-1"
+                              style={{ background: elMeta.bg, color: elMeta.text, border:`1px solid ${elMeta.text}30` }}>
+                              {elMeta.icon} {card.element}
+                            </span>
+                          </div>
+
+                          {/* Meaning */}
+                          <p className="text-sm text-gray-200 leading-relaxed mb-3">
+                            {lang === 'en' ? EN_MEANINGS[card.id] : card.upright}
+                          </p>
+
+                          {/* Keywords + ruler */}
+                          <div className="flex flex-wrap items-center gap-2 mb-2">
+                            {kws.map(k => (
+                              <span key={k} className="text-[10px] px-2 py-0.5 rounded-full"
+                                style={{ background:`${card.accent}18`, color:card.accent, border:`1px solid ${card.accent}30` }}>
+                                {k}
+                              </span>
+                            ))}
+                            <span className="text-[10px] text-gray-500 ml-auto flex items-center gap-1">
+                              {card.rulerGlyph} {card.ruler}
+                            </span>
+                          </div>
+
+                          {/* Vedic astro note */}
+                          <div className="text-[10px] leading-relaxed pt-2 border-t"
+                            style={{ color:`${card.accent}70`, borderColor:`${card.accent}20` }}>
+                            ✦ {lang === 'en' ? card.astroNoteEn : card.astroNote}
+                          </div>
+                        </motion.div>
+                      );
+                    })}
                   </div>
+
+                  {/* Overall synthesis */}
+                  {buildSynthesis(drawnCards, lang) && (
+                    <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay: drawnCards.length * 0.12 + 0.2 }}
+                      className="mb-6 p-5 rounded-2xl"
+                      style={{ background:'rgba(201,168,76,0.07)', border:'1px solid rgba(201,168,76,0.25)' }}>
+                      <div className="flex items-start gap-3">
+                        <span className="text-lg flex-shrink-0" style={{ color:'#C9A84C' }}>✦</span>
+                        <div>
+                          <div className="text-xs font-medium tracking-wider mb-1.5" style={{ color:'#C9A84C' }}>
+                            {lang === 'en' ? 'OVERALL READING' : 'समग्र पठन'}
+                          </div>
+                          <p className="text-sm text-gray-300 leading-relaxed">
+                            {buildSynthesis(drawnCards, lang)}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
 
                   {/* Action buttons */}
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
