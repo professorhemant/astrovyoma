@@ -100,6 +100,78 @@ function buildNarrator(cards, lang, question, dayRuler) {
   return `${qLine}${cards.length} कार्ड मिलकर ${theme} का संदेश देते हैं। आज ${rulerHi[dayRuler] || dayRuler} का प्रभाव इसे और सशक्त बनाता है। ब्रह्मांड ने यह समय जानबूझकर चुना है — आप बिल्कुल सही जगह पर हैं।`;
 }
 
+// ── Plain-language conclusion (what Seema actually wanted) ────────────────────
+function buildConclusion(cards, spread, lang, question) {
+  if (!cards.length) return null;
+  const positions = spread?.positions || [];
+
+  // Locate key position cards by label keyword
+  const find = (...keys) => {
+    const idx = positions.findIndex(p => keys.some(k => p.toLowerCase().includes(k)));
+    return idx >= 0 ? { card: cards[idx], pos: positions[idx] } : null;
+  };
+  const advice  = find('advice');
+  const outcome = find('outcome', 'final outcome');
+  const future  = find('future', 'near future');
+  const key     = outcome || future; // whichever is more "conclusive"
+
+  if (lang === 'en') {
+    const qRef = question ? `Regarding your question — "${question}" — ` : '';
+    let body = '', bottom = '';
+
+    if (cards.length === 1) {
+      const c = cards[0]; const kw = (c.keywordsEn || c.keywords)[0];
+      body   = `${qRef}the universe offers one clear message through ${c.name}: ${kw}. ${c.meanings?.general || ''}`;
+      bottom = `One card, one answer — let the energy of ${c.name} guide your next step.`;
+    } else if (advice && key) {
+      const { card: aC } = advice; const { card: kC } = key;
+      const aKw = (aC.keywordsEn || aC.keywords)[0];
+      const kKw = (kC.keywordsEn || kC.keywords)[0];
+      body   = `${qRef}your cards point in a clear direction. The advice card, ${aC.name}, calls for ${aKw.toLowerCase()} — ${aC.meanings?.general || ''}. The ${key.pos.toLowerCase()} card, ${kC.name}, reveals ${kKw.toLowerCase()} as the likely destination of this journey.`;
+      bottom = `Follow the counsel of ${aC.name}. Your path leads toward the energy of ${kC.name}.`;
+    } else if (key) {
+      const { card: kC, pos } = key; const kKw = (kC.keywordsEn || kC.keywords)[0];
+      body   = `${qRef}your ${pos.toLowerCase()} card, ${kC.name}, holds the direct answer. Its message of ${kKw.toLowerCase()} is where this reading lands. ${kC.meanings?.general || ''}`;
+      bottom = `The cards are clear: embrace the energy of ${kC.name} and move forward.`;
+    } else if (cards.length === 3) {
+      const [, pr, f] = cards; const fKw = (f.keywordsEn || f.keywords)[0];
+      body   = `${qRef}the reading speaks plainly. Your present moment — shaped by ${pr.name} — is shifting toward ${f.name}. The energy of ${fKw.toLowerCase()} is what lies ahead for you.`;
+      bottom = `${f.name} is your answer. Trust that direction and take the next step.`;
+    } else {
+      const last = cards[cards.length - 1]; const lKw = (last.keywordsEn || last.keywords)[0];
+      body   = `${qRef}across all ${cards.length} cards, the reading arrives at ${last.name} — ${lKw.toLowerCase()}. This is the universe's direct reply to where you stand.`;
+      bottom = `Act on the energy of ${last.name}. That is the conclusion your reading points to.`;
+    }
+    return { body, bottom };
+  }
+
+  // Hindi
+  const qRef = question ? `"${question}" के बारे में — ` : '';
+  let body = '', bottom = '';
+  if (cards.length === 1) {
+    const c = cards[0];
+    body   = `${qRef}${c.nameHi} का संदेश स्पष्ट है। ${c.upright}`;
+    bottom = `यही एक कार्ड आपके प्रश्न का उत्तर है। इसकी ऊर्जा को अपनाएं।`;
+  } else if (advice && key) {
+    const { card: aC } = advice; const { card: kC } = key;
+    body   = `${qRef}आपके कार्ड एक स्पष्ट दिशा दिखाते हैं। सलाह कार्ड ${aC.nameHi} कहता है — ${aC.upright?.split('।')[0]}। परिणाम में ${kC.nameHi} आपकी राह बताता है।`;
+    bottom = `${aC.nameHi} की सलाह मानें और ${kC.nameHi} की दिशा में आगे बढ़ें — यही इस पठन का सार है।`;
+  } else if (key) {
+    const { card: kC } = key;
+    body   = `${qRef}${kC.nameHi} इस पठन का अंतिम उत्तर है। ${kC.upright?.split('।')[0]}।`;
+    bottom = `${kC.nameHi} की ऊर्जा में आगे बढ़ें — कार्ड यही कह रहे हैं।`;
+  } else if (cards.length === 3) {
+    const [, , f] = cards;
+    body   = `${qRef}भविष्य कार्ड ${f.nameHi} इस पठन का उत्तर है। ${f.upright?.split('।')[0]}।`;
+    bottom = `${f.nameHi} की दिशा में विश्वास के साथ कदम बढ़ाएं।`;
+  } else {
+    const last = cards[cards.length - 1];
+    body   = `${qRef}${cards.length} कार्डों का निष्कर्ष ${last.nameHi} पर आता है। ${last.upright?.split('।')[0]}।`;
+    bottom = `${last.nameHi} की ऊर्जा को अपना मार्गदर्शक मानें।`;
+  }
+  return { body, bottom };
+}
+
 // ── All UI copy, keyed by language ────────────────────────────────────────────
 const T = {
   en: {
@@ -749,6 +821,44 @@ export default function TarotPage() {
                       </div>
                     </motion.div>
                   )}
+
+                  {/* Conclusion */}
+                  {(() => {
+                    const c = buildConclusion(drawnCards, selectedSpread, lang || 'en', question);
+                    if (!c) return null;
+                    return (
+                      <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }}
+                        transition={{ delay: drawnCards.length * 0.1 + 0.4 }}
+                        className="mb-6 rounded-2xl overflow-hidden"
+                        style={{ border:'1.5px solid rgba(56,189,248,0.35)' }}>
+                        <div className="px-5 py-2 flex items-center gap-2"
+                          style={{ background:'rgba(56,189,248,0.12)' }}>
+                          <span style={{ color:'#38BDF8', fontSize:14 }}>◉</span>
+                          <span className="text-xs font-semibold tracking-widest uppercase"
+                            style={{ color:'#38BDF8' }}>
+                            {lang === 'en' ? 'Conclusion' : 'निष्कर्ष'}
+                          </span>
+                        </div>
+                        <div className="px-5 py-4" style={{ background:'rgba(12,26,60,0.7)' }}>
+                          {question && (
+                            <div className="mb-3 text-xs italic text-gray-400 border-l-2 pl-3"
+                              style={{ borderColor:'rgba(56,189,248,0.4)' }}>
+                              "{question}"
+                            </div>
+                          )}
+                          <p className="text-sm text-gray-200 leading-relaxed mb-3">{c.body}</p>
+                          <div className="pt-3 border-t flex items-start gap-2"
+                            style={{ borderColor:'rgba(56,189,248,0.2)' }}>
+                            <span style={{ color:'#E8C547', flexShrink:0, fontSize:13 }}>✦</span>
+                            <p className="text-sm font-semibold leading-snug" style={{ color:'#E8C547' }}>
+                              {lang === 'en' ? 'Bottom line: ' : 'सार: '}
+                              <span className="font-normal text-gray-200">{c.bottom}</span>
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })()}
 
                   {/* Actions */}
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
