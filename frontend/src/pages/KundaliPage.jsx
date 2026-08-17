@@ -1172,7 +1172,7 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="text-gray-400 text-xs uppercase border-b border-gold-600/10">
-                          {['Planet','Sign','Nakshatra','Star Lord','Sub Lord','Sub-Sub Lord'].map(h => <th key={h} className="text-left pb-2 pr-4">{h}</th>)}
+                          {['Planet','Sign','Star Lord','Sub Lord','Sub-Sub Lord'].map(h => <th key={h} className="text-left pb-2 pr-4">{h}</th>)}
                         </tr>
                       </thead>
                       <tbody>
@@ -1180,10 +1180,9 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                           <tr key={name} className={`border-b border-gold-600/5 ${i%2===0?'bg-cosmic-900/20':''}`}>
                             <td className="py-2 pr-4 text-gray-200">{name}</td>
                             <td className="py-2 pr-4 text-gold-400">{pd.sign || '—'}</td>
-                            <td className="py-2 pr-4 text-gray-300 text-xs">{pd.nakshatra || '—'}</td>
-                            <td className="py-2 pr-4 text-amber-400">{pd.starLord || '—'}</td>
-                            <td className="py-2 pr-4 text-purple-400">{pd.subLord || '—'}</td>
-                            <td className="py-2 pr-4 text-blue-400 text-xs">{pd.subSubLord || '—'}</td>
+                            <td className="py-2 pr-4 text-amber-400">{pd.star_lord || '—'}</td>
+                            <td className="py-2 pr-4 text-purple-400">{pd.sub_lord || '—'}</td>
+                            <td className="py-2 pr-4 text-blue-400 text-xs">{pd.sub_sub_lord || '—'}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -1210,8 +1209,8 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                             </td>
                             <td className="py-2 pr-4 text-gold-400">{cd.sign || '—'}</td>
                             <td className="py-2 pr-4 text-gray-300 tabular-nums">{cd.degree != null ? parseFloat(cd.degree).toFixed(2)+'°' : '—'}</td>
-                            <td className="py-2 pr-4 text-amber-400">{cd.starLord || '—'}</td>
-                            <td className="py-2 pr-4 text-purple-400">{cd.subLord || '—'}</td>
+                            <td className="py-2 pr-4 text-amber-400">{cd.star_lord || '—'}</td>
+                            <td className="py-2 pr-4 text-purple-400">{cd.sub_lord || '—'}</td>
                           </tr>
                         ))}
                       </tbody>
