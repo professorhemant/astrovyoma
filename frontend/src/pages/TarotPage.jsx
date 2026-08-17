@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, RotateCcw } from 'lucide-react';
@@ -7,33 +7,7 @@ import { getRandomCards } from '../data/tarotCards';
 import { kundali as kundaliApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 
-// Pre-written English card meanings (no AI used)
-const EN_MEANINGS = {
-  0:  'A new journey begins. Step forward with faith and openness — infinite possibilities await. The universe supports your leap.',
-  1:  'You have all the tools you need. Channel your focus and willpower — this is a powerful time for action and creation.',
-  2:  'Listen deeply to your intuition. Hidden wisdom and inner knowing are your guides now. Patience reveals all truths.',
-  3:  'Abundance and creativity surround you. Nurture your relationships and projects — growth flourishes naturally.',
-  4:  'Establish structure and take authority over your life. Lead with confidence and create lasting foundations for success.',
-  5:  'Seek wisdom through tradition, mentorship, or spiritual practice. Established paths bring stability and guidance now.',
-  6:  'Harmony and meaningful choices define this moment. Honor your values and follow your heart in love and decisions.',
-  7:  'Victory comes through focused determination. You have the willpower to overcome obstacles — stay in control and move forward.',
-  8:  'Your inner compassion and courage are your greatest powers. Face challenges with gentle persistence and patient grace.',
-  9:  'A period of sacred solitude brings profound clarity. Withdraw to reflect and let your inner light guide the way.',
-  10: 'The cosmic wheel turns in your favor. A significant cycle shifts — stay centered and embrace this turning point.',
-  11: 'Truth and fairness are at play. Your actions have consequences — act with integrity and trust that balance is restored.',
-  12: 'Pause and release control. A new perspective gained through surrender brings unexpected enlightenment.',
-  13: 'A powerful transformation is underway. Release what no longer serves you — this ending clears the path for beautiful new beginnings.',
-  14: 'Balance, patience, and moderation are your keys. A period of healing and gentle integration brings lasting harmony.',
-  15: 'Recognize what binds you. The power to break free from limiting patterns lies wholly within you.',
-  16: 'Sudden change disrupts old foundations. Though unsettling, this revelation clears away the false to reveal essential truth.',
-  17: 'Renewed hope and inspiration light your path. After struggle comes healing, serenity, and reconnection with your purpose.',
-  18: 'Navigate carefully through illusion. Trust your instincts, pay attention to dreams, and all will become clear in time.',
-  19: 'Joy, success, and radiant vitality fill your life. This is your time to shine — celebrate your achievements with confidence.',
-  20: 'A profound awakening calls you to rise. Release past regrets, forgive yourself, and step fully into your true calling.',
-  21: 'A magnificent cycle reaches its fulfilling completion. Celebrate your wholeness — you are ready for an even greater journey.',
-};
-
-// Element colors for badges in the result section
+// ── Element colors ─────────────────────────────────────────────────────────────
 const ELEMENT_COLORS = {
   Fire:  { bg: 'rgba(251,146,60,0.15)',  text: '#FB923C', icon: '🔥' },
   Earth: { bg: 'rgba(110,231,183,0.15)', text: '#6EE7B7', icon: '🌿' },
@@ -41,8 +15,64 @@ const ELEMENT_COLORS = {
   Water: { bg: 'rgba(196,181,253,0.15)', text: '#C4B5FD', icon: '💧' },
 };
 
-// Rule-based synthesis connecting multiple cards — no AI
-function buildSynthesis(cards, lang) {
+// ── Planetary weather ─────────────────────────────────────────────────────────
+const DAY_RULERS = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
+
+function getMoonPhase() {
+  const knownNewMoon = new Date('2000-01-06').getTime();
+  const cycle = 29.53 * 24 * 60 * 60 * 1000;
+  const elapsed = ((Date.now() - knownNewMoon) % cycle + cycle) % cycle;
+  const day = elapsed / (24 * 60 * 60 * 1000);
+  if (day < 1.5)  return { phase: 'New Moon',        glyph: '🌑' };
+  if (day < 7)    return { phase: 'Waxing Crescent',  glyph: '🌒' };
+  if (day < 9)    return { phase: 'First Quarter',    glyph: '🌓' };
+  if (day < 14)   return { phase: 'Waxing Gibbous',   glyph: '🌔' };
+  if (day < 16)   return { phase: 'Full Moon',        glyph: '🌕' };
+  if (day < 21)   return { phase: 'Waning Gibbous',   glyph: '🌖' };
+  if (day < 23)   return { phase: 'Last Quarter',     glyph: '🌗' };
+  return           { phase: 'Waning Crescent',        glyph: '🌘' };
+}
+
+function getTodayWeather() {
+  const dayRuler = DAY_RULERS[new Date().getDay()];
+  const moon = getMoonPhase();
+  return { dayRuler, ...moon };
+}
+
+const PLANET_WEATHER_TEXT = {
+  en: {
+    Sun:     'Today\'s ruler is the Sun ☉ — a day of clarity, confidence, and visibility. Your reading carries solar themes of identity, success, and illumination.',
+    Moon:    'Today\'s ruler is the Moon ☽ — emotions run deep and intuition is heightened. Your reading is especially attuned to feelings and subconscious truths.',
+    Mars:    'Today\'s ruler is Mars ♂ — drive, courage, and decisive action are in the air. Your cards call you toward boldness and overcoming obstacles.',
+    Mercury: 'Today\'s ruler is Mercury ☿ — communication and quick thinking are highlighted. Your reading speaks to choices, messages, and mental clarity.',
+    Jupiter: 'Today\'s ruler is Jupiter ♃ — the great benefic expands whatever it touches. Your reading carries themes of growth, optimism, and fortunate timing.',
+    Venus:   'Today\'s ruler is Venus ♀ — love, beauty, and harmony fill the air. Today\'s cards speak directly to your heart and what you most value.',
+    Saturn:  'Today\'s ruler is Saturn ♄ — discipline and karmic lessons dominate. Your reading asks you to face reality with patience and long-term wisdom.',
+  },
+  hi: {
+    Sun:     'आज सूर्य ☉ का दिन है — आत्मविश्वास और स्पष्टता की ऊर्जा। आज के कार्ड सफलता और आत्म-पहचान के विषयों को उजागर करते हैं।',
+    Moon:    'आज चंद्रमा ☽ का दिन है — भावनाएं और अंतर्ज्ञान शिखर पर हैं। आज का पठन हृदय की गहराई से बात करता है।',
+    Mars:    'आज मंगल ♂ का दिन है — साहस और कार्य की ऊर्जा प्रबल है। आज के कार्ड निर्णायक कदम उठाने का संकेत देते हैं।',
+    Mercury: 'आज बुध ☿ का दिन है — संचार और बुद्धि सक्रिय हैं। आज का पठन विकल्पों और मानसिक स्पष्टता पर केंद्रित है।',
+    Jupiter: 'आज गुरु ♃ का दिन है — विस्तार और शुभता का दिन। आज के कार्ड विकास और भाग्य के संकेत देते हैं।',
+    Venus:   'आज शुक्र ♀ का दिन है — प्रेम और सौंदर्य का दिन। आज का पठन रिश्तों और आनंद पर विशेष ध्यान देता है।',
+    Saturn:  'आज शनि ♄ का दिन है — अनुशासन और कर्म-पाठ का दिन। आज के कार्ड धैर्य और दीर्घकालिक ज्ञान की मांग करते हैं।',
+  },
+};
+
+const MOON_CONTEXT_TEXT = {
+  'New Moon':        { en: 'The New Moon amplifies new beginnings — intentions set today carry exceptional power.', hi: 'अमावस्या — नई शुरुआत का सर्वोत्तम समय। आज के संकल्प विशेष शक्ति रखते हैं।' },
+  'Waxing Crescent': { en: 'The Waxing Crescent supports growth and forward momentum — take action on new plans.', hi: 'शुक्ल पक्ष — विकास और आगे बढ़ने का समय।' },
+  'First Quarter':   { en: 'The First Quarter Moon challenges you to push through resistance with determination.', hi: 'प्रथम चतुर्थांश — बाधाओं को पार करने का समय।' },
+  'Waxing Gibbous':  { en: 'The Waxing Gibbous refines your approach — you are almost at the peak, persist.', hi: 'लगभग पूर्णिमा — अपने प्रयासों को परिष्कृत करें।' },
+  'Full Moon':       { en: 'The Full Moon brings culmination and revelation — hidden things come to light.', hi: 'पूर्णिमा — परिपूर्णता और प्रकटीकरण का समय।' },
+  'Waning Gibbous':  { en: 'The Waning Gibbous invites gratitude and integration of wisdom gained.', hi: 'कृष्ण पक्ष — कृतज्ञता और ज्ञान को आत्मसात करने का समय।' },
+  'Last Quarter':    { en: 'The Last Quarter calls for release — let go of what no longer serves you.', hi: 'अंतिम चतुर्थांश — जो काम न आए उसे छोड़ने का समय।' },
+  'Waning Crescent': { en: 'The Waning Crescent is a time for rest, reflection, and preparing for renewal.', hi: 'अस्त चंद्र — विश्राम और नई शुरुआत की तैयारी का समय।' },
+};
+
+// ── Enhanced narrator synthesis ───────────────────────────────────────────────
+function buildNarrator(cards, lang, question, dayRuler) {
   if (cards.length <= 1) return null;
   const elementCount = {};
   cards.forEach(c => { elementCount[c.element] = (elementCount[c.element] || 0) + 1; });
@@ -52,14 +82,22 @@ function buildSynthesis(cards, lang) {
     hi: { Fire: 'साहस और परिवर्तन', Earth: 'स्थिरता और व्यावहारिक विकास', Air: 'स्पष्टता और नई दिशा', Water: 'भावनात्मक उपचार और अंतर्ज्ञान' },
   };
   const theme = themes[lang]?.[dominant] || themes.en[dominant];
+  const qLine = question
+    ? (lang === 'en' ? `Your question — "${question}" — finds its answer woven through these cards. ` : `आपका प्रश्न — "${question}" — इन कार्डों में उत्तर पाता है। `)
+    : '';
   if (lang === 'en') {
-    if (cards.length === 3)
-      return `Your cards trace a journey from ${cards[0].name} → ${cards[1].name} → ${cards[2].name}. The thread woven through this reading is ${theme}. Trust the direction the universe is already moving you toward.`;
-    return `Five cards — ${cards.map(c => c.name).join(', ')} — converge on the theme of ${theme}. Each speaks to one facet of your situation; together they point toward a single truth: transformation is already underway within you.`;
+    if (cards.length === 3) {
+      const [p, pr, f] = cards;
+      return `${qLine}Your reading traces a journey: from ${p.name} — carrying the energy of ${(p.keywordsEn || p.keywords)[0]} — through the ${pr.element} wisdom of ${pr.name} in this present moment, toward ${f.name} on the horizon. The dominant current running through all three is ${theme}. Ruled by ${dayRuler} today, the cosmic conditions amplify this message: trust the direction you are already moving.`;
+    }
+    return `${qLine}${cards.length} cards — ${cards.map(c => c.name).join(', ')} — converge on the theme of ${theme}. Each position illuminates one facet of your situation; together they speak with one voice. Ruled by ${dayRuler} today, the universe has chosen this moment deliberately. You are exactly where you need to be.`;
   }
-  if (cards.length === 3)
-    return `${cards[0].nameHi} → ${cards[1].nameHi} → ${cards[2].nameHi} — आपकी यात्रा ${theme} की दिशा में बढ़ रही है। ब्रह्मांड आपको आगे बढ़ने का संकेत दे रहा है।`;
-  return `पाँचों कार्ड ${theme} का एक ही संदेश देते हैं। आपकी स्थिति, चुनौती, और परिणाम — सब एक सूत्र में पिरोए हुए हैं। परिवर्तन की शुरुआत हो चुकी है।`;
+  const rulerHi = { Sun:'सूर्य', Moon:'चंद्रमा', Mars:'मंगल', Mercury:'बुध', Jupiter:'गुरु', Venus:'शुक्र', Saturn:'शनि' };
+  if (cards.length === 3) {
+    const [p, pr, f] = cards;
+    return `${qLine}${p.nameHi} से ${pr.nameHi} होते हुए ${f.nameHi} तक — आपकी यात्रा ${theme} की दिशा में है। आज ${rulerHi[dayRuler] || dayRuler} की ऊर्जा इस संदेश को और गहरा करती है। ब्रह्मांड आपको इस मार्ग पर चलने का संकेत दे रहा है।`;
+  }
+  return `${qLine}${cards.length} कार्ड मिलकर ${theme} का संदेश देते हैं। आज ${rulerHi[dayRuler] || dayRuler} का प्रभाव इसे और सशक्त बनाता है। ब्रह्मांड ने यह समय जानबूझकर चुना है — आप बिल्कुल सही जगह पर हैं।`;
 }
 
 // ── All UI copy, keyed by language ────────────────────────────────────────────
@@ -69,8 +107,6 @@ const T = {
     title: 'Tarot Reading',
     subtitle: 'Tarot & Vedic Astrology united — your personal cosmic reading',
     kundaliNote: 'Lagna — personalized with your birth chart',
-    chooseLang: 'Choose your language',
-    langDesc: 'The entire reading experience will be in your chosen language',
     questionLabel: 'Enter your question (optional)',
     questionPlaceholder: 'e.g. What does my future hold?',
     sampleQ: ['What does my future hold?', 'Which direction should my career take?', 'Will my relationship succeed?', 'What should I focus on right now?'],
@@ -80,26 +116,49 @@ const T = {
     shuffling: 'Shuffling...',
     tapHint: 'Tap each card to reveal',
     tapProgress: (done, total) => `${done}/${total} revealed — continue`,
-    loading: 'Preparing your reading...',
     readingTitle: 'Tarot Reading',
     newReading: 'New Reading',
     newReadingBtn: 'Read Again',
     askPandit: 'Ask Pandit Ji',
-    back: 'Home',
-    spreads: [
-      { id: 'single', label: 'Daily Card',     sub: 'One Card',              count: 1, positions: ["Today's Message"],                        desc: 'One powerful message for today' },
-      { id: 'three',  label: 'Past · Present · Future', sub: 'Three Cards',  count: 3, positions: ['Past', 'Present', 'Future'],               desc: 'Full timeline — past, present & future' },
-      { id: 'five',   label: 'Full Spread',    sub: 'Five Cards',            count: 5, positions: ['Situation','Challenge','Subconscious','Advice','Outcome'], desc: 'Deep dive — situation, challenge, advice & outcome' },
+    cosmicWeather: 'Today\'s Cosmic Weather',
+    domainLabels: [
+      { id: 'general',  label: 'General',   icon: '✦' },
+      { id: 'love',     label: 'Love',       icon: '♥' },
+      { id: 'career',   label: 'Career',     icon: '⚡' },
+      { id: 'spiritual',label: 'Spiritual',  icon: '☽' },
+      { id: 'finances', label: 'Finances',   icon: '◆' },
     ],
-    icons: ['✦', '✦✦✦', '✦✦✦✦✦'],
+    overallReading: 'OVERALL READING',
+    spreads: [
+      { id: 'single', label: 'Daily Card',              sub: 'One Card',    count: 1,
+        positions: ["Today's Message"],
+        desc: 'One powerful message for today' },
+      { id: 'three',  label: 'Past · Present · Future', sub: 'Three Cards', count: 3,
+        positions: ['Past', 'Present', 'Future'],
+        desc: 'Full timeline — past, present & future' },
+      { id: 'five',   label: 'Full Spread',             sub: 'Five Cards',  count: 5,
+        positions: ['Situation', 'Challenge', 'Subconscious', 'Advice', 'Outcome'],
+        desc: 'Deep dive — situation, challenge, advice & outcome' },
+      { id: 'celtic', label: 'Celtic Cross',            sub: 'Ten Cards',   count: 10,
+        positions: ['The Present', 'The Challenge', 'Root Cause', 'Recent Past', 'Higher Goal', 'Near Future', 'Your Stance', 'External Influences', 'Hopes & Fears', 'Final Outcome'],
+        desc: 'The most complete tarot spread — situation, challenges, past, future & final outcome' },
+      { id: 'love',   label: 'Love & Relationship',     sub: 'Six Cards',   count: 6,
+        positions: ['Your Energy', 'Their Energy', 'The Bond', 'The Challenge', 'What to Release', 'Outcome'],
+        desc: 'Deep dive into relationship dynamics — what connects you, what challenges you' },
+      { id: 'year',   label: 'Year Ahead',              sub: 'Twelve Cards', count: 12,
+        positions: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        desc: 'One card per month — your cosmic roadmap for the full year ahead' },
+      { id: 'moon',   label: 'Moon Phase Spread',       sub: 'Four Cards',  count: 4,
+        positions: ['New Moon — Plant', 'Waxing — Grow', 'Full Moon — Harvest', 'Waning — Release'],
+        desc: 'Align your intentions with the lunar cycle — one card for each moon phase' },
+    ],
+    icons: ['✦', '✦✦✦', '✦✦✦✦✦', '✦✦✦✦✦✦✦✦✦✦', '✦✦✦✦✦✦', '✦✦✦✦✦✦✦✦✦✦✦✦', '✦✦✦✦'],
   },
   hi: {
     badge: 'तारो रीडर',
     title: 'तारो पठन',
     subtitle: 'ज्योतिष और तारो का संगम — आपके लिए व्यक्तिगत पठन',
     kundaliNote: 'लग्न — आपकी कुण्डली से जुड़ा पठन',
-    chooseLang: 'भाषा चुनें',
-    langDesc: 'पूरा तारो अनुभव आपकी चुनी हुई भाषा में होगा',
     questionLabel: 'अपना प्रश्न लिखें (वैकल्पिक)',
     questionPlaceholder: 'जैसे: मेरे जीवन में आगे क्या होगा?',
     sampleQ: ['मेरे जीवन में आगे क्या होगा?', 'मेरा करियर किस दिशा में जाएगा?', 'क्या मेरा रिश्ता सफल होगा?', 'मुझे इस समय क्या करना चाहिए?'],
@@ -109,18 +168,37 @@ const T = {
     shuffling: 'शफल हो रहा है...',
     tapHint: '✦ कार्डों पर टैप करके उन्हें पलटें',
     tapProgress: (done, total) => `${done}/${total} कार्ड पलटे — जारी रखें`,
-    loading: 'पठन तैयार हो रहा है...',
     readingTitle: 'तारो पठन',
     newReading: 'नया पठन',
     newReadingBtn: 'दोबारा पढ़ें',
     askPandit: 'Pandit Ji से पूछें',
-    back: 'होम',
+    cosmicWeather: 'आज का ग्रह प्रभाव',
+    domainLabels: [],
+    overallReading: 'समग्र पठन',
     spreads: [
-      { id: 'single', label: 'दैनिक कार्ड',   sub: 'एक कार्ड',     count: 1, positions: ['आज का संदेश'],                                     desc: 'आज के दिन के लिए एक दिव्य संदेश' },
-      { id: 'three',  label: 'भूत·वर्तमान·भविष्य', sub: 'तीन कार्ड', count: 3, positions: ['भूतकाल', 'वर्तमान', 'भविष्य'],                   desc: 'भूत, वर्तमान और भविष्य का पूर्ण दृष्टिकोण' },
-      { id: 'five',   label: 'पूर्ण स्प्रेड',  sub: 'पाँच कार्ड',   count: 5, positions: ['स्थिति','चुनौती','अवचेतन','सलाह','परिणाम'],        desc: 'स्थिति, चुनौती, सलाह और परिणाम का विस्तृत पठन' },
+      { id: 'single', label: 'दैनिक कार्ड',           sub: 'एक कार्ड',    count: 1,
+        positions: ['आज का संदेश'],
+        desc: 'आज के दिन के लिए एक दिव्य संदेश' },
+      { id: 'three',  label: 'भूत·वर्तमान·भविष्य',   sub: 'तीन कार्ड',  count: 3,
+        positions: ['भूतकाल', 'वर्तमान', 'भविष्य'],
+        desc: 'भूत, वर्तमान और भविष्य का पूर्ण दृष्टिकोण' },
+      { id: 'five',   label: 'पूर्ण स्प्रेड',         sub: 'पाँच कार्ड', count: 5,
+        positions: ['स्थिति', 'चुनौती', 'अवचेतन', 'सलाह', 'परिणाम'],
+        desc: 'स्थिति, चुनौती, सलाह और परिणाम का विस्तृत पठन' },
+      { id: 'celtic', label: 'सेल्टिक क्रॉस',         sub: 'दस कार्ड',   count: 10,
+        positions: ['वर्तमान', 'चुनौती', 'मूल कारण', 'हाल का अतीत', 'उच्च लक्ष्य', 'निकट भविष्य', 'आपका दृष्टिकोण', 'बाहरी प्रभाव', 'आशाएं और भय', 'अंतिम परिणाम'],
+        desc: 'सबसे संपूर्ण तारो स्प्रेड — स्थिति, चुनौती, अतीत, भविष्य और परिणाम' },
+      { id: 'love',   label: 'प्रेम स्प्रेड',          sub: 'छह कार्ड',   count: 6,
+        positions: ['आपकी ऊर्जा', 'उनकी ऊर्जा', 'बंधन', 'चुनौती', 'क्या छोड़ें', 'परिणाम'],
+        desc: 'रिश्तों की गहराई में — जो जोड़ता है और जो चुनौती देता है' },
+      { id: 'year',   label: 'वार्षिक पठन',            sub: 'बारह कार्ड', count: 12,
+        positions: ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'],
+        desc: 'प्रत्येक माह के लिए एक कार्ड — पूरे वर्ष का ब्रह्मांडीय नक्शा' },
+      { id: 'moon',   label: 'चंद्र स्प्रेड',           sub: 'चार कार्ड',  count: 4,
+        positions: ['अमावस्या — बीज', 'शुक्ल — विकास', 'पूर्णिमा — फल', 'कृष्ण — त्याग'],
+        desc: 'चंद्र चक्र के साथ अपनी ऊर्जा को संरेखित करें' },
     ],
-    icons: ['✦', '✦✦✦', '✦✦✦✦✦'],
+    icons: ['✦', '✦✦✦', '✦✦✦✦✦', '✦✦✦✦✦✦✦✦✦✦', '✦✦✦✦✦✦', '✦✦✦✦✦✦✦✦✦✦✦✦', '✦✦✦✦'],
   },
 };
 
@@ -153,20 +231,21 @@ function TarotBg() {
 export default function TarotPage() {
   const { user } = useAuth();
 
-  // phase: 'lang' → 'select' → 'draw' → 'reading' → 'result'
-  const [phase, setPhase]               = useState('lang');
-  const [lang, setLang]                 = useState(null);            // 'en' | 'hi'
+  const [phase, setPhase]                   = useState('lang');
+  const [lang, setLang]                     = useState(null);
   const [selectedSpread, setSelectedSpread] = useState(null);
-  const [question, setQuestion]         = useState('');
-  const [drawnCards, setDrawnCards]     = useState([]);
-  const [revealedCount, setRevealedCount] = useState(0);
-  const [kundaliContext, setKundaliContext] = useState(null);
-  const [shuffling, setShuffling]       = useState(false);
+  const [question, setQuestion]             = useState('');
+  const [drawnCards, setDrawnCards]         = useState([]);
+  const [revealedCount, setRevealedCount]   = useState(0);
+  const [kundaliContext, setKundaliContext]  = useState(null);
+  const [shuffling, setShuffling]           = useState(false);
+  const [domain, setDomain]                 = useState('general');
 
-  // Refs prevent stale closures in async callbacks
   const drawnCardsRef     = useRef([]);
   const selectedSpreadRef = useRef(null);
   const langRef           = useRef(null);
+
+  const weather = getTodayWeather();
 
   useEffect(() => { langRef.current = lang; }, [lang]);
 
@@ -178,15 +257,9 @@ export default function TarotPage() {
     }
   }, [user]);
 
-  const t = lang ? T[lang] : T.en; // text dictionary
+  const t = lang ? T[lang] : T.en;
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
-
-  const chooseLang = (l) => {
-    setLang(l);
-    langRef.current = l;
-    setPhase('select');
-  };
+  const chooseLang = (l) => { setLang(l); langRef.current = l; setPhase('select'); };
 
   const handleSpreadSelect = (spread) => {
     setSelectedSpread(spread);
@@ -198,7 +271,6 @@ export default function TarotPage() {
     setShuffling(true);
     const spread = selectedSpreadRef.current;
     setTimeout(() => {
-      // Always upright — no reversed cards
       const cards = getRandomCards(spread.count).map(c => ({ ...c, reversed: false }));
       drawnCardsRef.current = cards;
       setDrawnCards(cards);
@@ -212,9 +284,7 @@ export default function TarotPage() {
     setRevealedCount(prev => {
       const next = prev + 1;
       const spread = selectedSpreadRef.current;
-      if (spread && next === spread.count) {
-        setTimeout(() => setPhase('result'), 400);
-      }
+      if (spread && next === spread.count) setTimeout(() => setPhase('result'), 400);
       return next;
     });
   };
@@ -228,15 +298,11 @@ export default function TarotPage() {
     setRevealedCount(0);
     setQuestion('');
     setShuffling(false);
+    setDomain('general');
   };
 
-  const goChangeLang = () => {
-    handleReset();
-    setPhase('lang');
-    setLang(null);
-  };
+  const goChangeLang = () => { handleReset(); setPhase('lang'); setLang(null); };
 
-  // ── Deck visual ────────────────────────────────────────────────────────────
   const DeckVisual = ({ animating }) => (
     <div className="relative h-60 flex items-center justify-center">
       <AnimatePresence mode="wait">
@@ -273,13 +339,15 @@ export default function TarotPage() {
     </div>
   );
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+  // card size by count
+  const cardSize = (n) => n === 1 ? 'xl' : n <= 3 ? 'lg' : n <= 5 ? 'md' : 'sm';
+
   return (
     <div className="min-h-screen relative overflow-x-hidden"
       style={{ background:'linear-gradient(135deg,#0d0728 0%,#1a0533 40%,#0c1a3a 100%)' }}>
       <TarotBg />
 
-      {/* Hero Image */}
+      {/* Hero */}
       <div className="relative w-full h-64 md:h-80 lg:h-96 overflow-hidden mt-16">
         <img src="/tarot-hero.webp" alt="Tarot" className="w-full h-full object-cover object-center" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0d0728]" />
@@ -305,7 +373,6 @@ export default function TarotPage() {
                 ✦ {kundaliContext.lagna} {t.kundaliNote}
               </div>
             )}
-            {/* Language switcher — visible below title when a language is chosen */}
             {lang && phase !== 'lang' && (
               <div className="flex items-center justify-center gap-3 mt-4">
                 <button onClick={goChangeLang}
@@ -325,24 +392,17 @@ export default function TarotPage() {
           </motion.div>
         </div>
 
-        {/* ════════════════════════════════════════════════════════════════
-            PHASE: Language Selection
-        ════════════════════════════════════════════════════════════════ */}
         <AnimatePresence mode="wait">
 
+          {/* ── PHASE: Language ─────────────────────────────────────────── */}
           {phase === 'lang' && (
             <motion.div key="lang" initial={{ opacity:0, y:30 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-20 }}
               className="max-w-2xl mx-auto text-center">
-
               <p className="text-gray-300 text-base mb-2">Choose Language / भाषा चुनें</p>
               <p className="text-gray-500 text-xs mb-8">The entire experience will be in your chosen language · पूरा अनुभव आपकी भाषा में होगा</p>
-
               <div className="grid grid-cols-2 gap-6">
-
-                {/* English */}
                 <motion.button onClick={() => chooseLang('en')}
-                  whileHover={{ y:-8, boxShadow:'0 0 50px rgba(168,85,247,0.35)' }}
-                  whileTap={{ scale:0.97 }}
+                  whileHover={{ y:-8, boxShadow:'0 0 50px rgba(168,85,247,0.35)' }} whileTap={{ scale:0.97 }}
                   className="rounded-2xl p-8 flex flex-col items-center gap-4 transition-all"
                   style={{ background:'linear-gradient(160deg, #1a0533 0%, #0c1a3a 100%)', border:'2px solid rgba(168,85,247,0.3)' }}>
                   <div className="text-5xl">🇬🇧</div>
@@ -355,11 +415,8 @@ export default function TarotPage() {
                     Continue in English →
                   </div>
                 </motion.button>
-
-                {/* Hindi */}
                 <motion.button onClick={() => chooseLang('hi')}
-                  whileHover={{ y:-8, boxShadow:'0 0 50px rgba(201,168,76,0.3)' }}
-                  whileTap={{ scale:0.97 }}
+                  whileHover={{ y:-8, boxShadow:'0 0 50px rgba(201,168,76,0.3)' }} whileTap={{ scale:0.97 }}
                   className="rounded-2xl p-8 flex flex-col items-center gap-4 transition-all"
                   style={{ background:'linear-gradient(160deg, #1a0f00 0%, #1a0533 100%)', border:'2px solid rgba(201,168,76,0.3)' }}>
                   <div className="text-5xl">🇮🇳</div>
@@ -372,10 +429,7 @@ export default function TarotPage() {
                     हिंदी में जारी रखें →
                   </div>
                 </motion.button>
-
               </div>
-
-              {/* Preview note */}
               <div className="mt-8 p-4 rounded-xl text-xs text-gray-500 leading-relaxed"
                 style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)' }}>
                 ✦ Golden Dawn Tarot + Vedic Astrology (Jyotish) · ज्योतिष और Golden Dawn तारो का संगम
@@ -383,15 +437,13 @@ export default function TarotPage() {
             </motion.div>
           )}
 
-          {/* ════════════════════════════════════════════════════════════════
-              PHASE: Spread Selection
-          ════════════════════════════════════════════════════════════════ */}
+          {/* ── PHASE: Spread Selection ─────────────────────────────────── */}
           {phase === 'select' && (
             <motion.div key="select" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
-              className="max-w-3xl mx-auto">
+              className="max-w-5xl mx-auto">
 
-              {/* Question input */}
-              <div className="mb-8">
+              {/* Question */}
+              <div className="mb-8 max-w-2xl mx-auto">
                 <p className="text-center text-xs text-gray-400 mb-3 tracking-wider">{t.questionLabel}</p>
                 <input value={question} onChange={e => setQuestion(e.target.value)}
                   placeholder={t.questionPlaceholder} maxLength={120}
@@ -409,32 +461,40 @@ export default function TarotPage() {
               </div>
 
               <p className="text-center text-xs text-gray-400 mb-5 tracking-wider">{t.chooseSpread}</p>
-              <div className="grid md:grid-cols-3 gap-5">
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {t.spreads.map((spread, i) => (
                   <motion.button key={spread.id}
-                    initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ delay:i*0.1 }}
+                    initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ delay:i*0.07 }}
                     onClick={() => handleSpreadSelect(spread)}
-                    whileHover={{ y:-6, boxShadow:'0 0 40px rgba(168,85,247,0.25)' }}
+                    whileHover={{ y:-5, boxShadow:'0 0 30px rgba(168,85,247,0.22)' }}
                     whileTap={{ scale:0.97 }}
-                    className="p-6 rounded-2xl text-left transition-all"
+                    className="p-5 rounded-2xl text-left transition-all"
                     style={{ background:'rgba(120,40,180,0.12)', border:'1.5px solid rgba(168,85,247,0.2)' }}>
-                    <div className="text-xl mb-3 tracking-widest" style={{ color:'#E8C547' }}>{t.icons[i]}</div>
-                    <div className="font-serif text-lg font-semibold mb-0.5" style={{ color:'#E9D5FF' }}>{spread.label}</div>
-                    <div className="text-xs mb-3" style={{ color:'#A78BFA' }}>{spread.sub}</div>
-                    <p className="text-xs text-gray-400 leading-relaxed">{spread.desc}</p>
-                    <div className="flex flex-wrap gap-1 mt-4">
-                      {spread.positions.map(p => (
-                        <span key={p} className="text-[10px] px-2 py-0.5 rounded-full"
+                    <div className="text-sm mb-2 tracking-widest truncate" style={{ color:'#E8C547' }}>
+                      {(t.icons[i] || '✦').slice(0, 5)}
+                    </div>
+                    <div className="font-serif text-sm font-semibold mb-0.5 leading-tight" style={{ color:'#E9D5FF' }}>{spread.label}</div>
+                    <div className="text-[10px] mb-2" style={{ color:'#A78BFA' }}>{spread.sub}</div>
+                    <p className="text-[10px] text-gray-400 leading-relaxed line-clamp-2">{spread.desc}</p>
+                    <div className="flex flex-wrap gap-1 mt-3">
+                      {spread.positions.slice(0, 4).map(p => (
+                        <span key={p} className="text-[9px] px-1.5 py-0.5 rounded-full"
                           style={{ background:'rgba(168,85,247,0.15)', color:'#C084FC', border:'1px solid rgba(168,85,247,0.2)' }}>
                           {p}
                         </span>
                       ))}
+                      {spread.positions.length > 4 && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full"
+                          style={{ background:'rgba(168,85,247,0.1)', color:'#9b6fc9' }}>
+                          +{spread.positions.length - 4} more
+                        </span>
+                      )}
                     </div>
                   </motion.button>
                 ))}
               </div>
 
-              <div className="mt-8 p-4 rounded-xl flex gap-3"
+              <div className="mt-8 max-w-2xl mx-auto p-4 rounded-xl flex gap-3"
                 style={{ background:'rgba(201,168,76,0.06)', border:'1px solid rgba(201,168,76,0.15)' }}>
                 <span className="text-sm flex-shrink-0 mt-0.5" style={{ color:'#C9A84C' }}>✦</span>
                 <p className="text-xs text-gray-400 leading-relaxed">
@@ -445,14 +505,11 @@ export default function TarotPage() {
             </motion.div>
           )}
 
-          {/* ════════════════════════════════════════════════════════════════
-              PHASE: Draw (shuffle)
-          ════════════════════════════════════════════════════════════════ */}
+          {/* ── PHASE: Draw ─────────────────────────────────────────────── */}
           {phase === 'draw' && (
             <motion.div key="draw" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
               className="max-w-2xl mx-auto text-center">
 
-              {/* Spread label */}
               <div className="mb-6">
                 <div className="inline-flex items-center gap-2 text-sm px-4 py-2 rounded-full mb-2"
                   style={{ background:'rgba(120,40,180,0.2)', border:'1px solid rgba(168,85,247,0.3)', color:'#C084FC' }}>
@@ -479,6 +536,16 @@ export default function TarotPage() {
                     "{question}"
                   </div>
                 )}
+                {/* Today's planetary weather in draw phase */}
+                <div className="mt-3 pt-3 border-t flex items-center gap-2"
+                  style={{ borderColor:'rgba(168,85,247,0.15)' }}>
+                  <span className="text-base">{weather.glyph}</span>
+                  <span className="text-[10px]" style={{ color:'#A78BFA' }}>
+                    {weather.phase} · {lang === 'en' ? weather.dayRuler + ' rules today' : (
+                      { Sun:'आज सूर्य', Moon:'आज चंद्रमा', Mars:'आज मंगल', Mercury:'आज बुध', Jupiter:'आज गुरु', Venus:'आज शुक्र', Saturn:'आज शनि' }[weather.dayRuler] + ' का प्रभाव'
+                    )}
+                  </span>
+                </div>
               </motion.div>
 
               <DeckVisual animating={shuffling} />
@@ -494,24 +561,22 @@ export default function TarotPage() {
             </motion.div>
           )}
 
-          {/* ════════════════════════════════════════════════════════════════
-              PHASE: Reading + Result
-          ════════════════════════════════════════════════════════════════ */}
+          {/* ── PHASE: Reading + Result ─────────────────────────────────── */}
           {(phase === 'reading' || phase === 'result') && drawnCards.length > 0 && (
             <motion.div key="reveal" initial={{ opacity:0 }} animate={{ opacity:1 }}
               className="max-w-5xl mx-auto">
 
               {/* Cards row */}
-              <div className="flex flex-wrap gap-6 justify-center mb-6">
+              <div className="flex flex-wrap gap-4 justify-center mb-6">
                 {drawnCards.map((card, i) => (
-                  <div key={card.id + '-' + i} className="flex flex-col items-center gap-3">
-                    <div className="text-xs tracking-wider font-medium" style={{ color:'#A78BFA' }}>
+                  <div key={card.id + '-' + i} className="flex flex-col items-center gap-2">
+                    <div className="text-[10px] tracking-wider font-medium text-center max-w-[120px] leading-tight" style={{ color:'#A78BFA' }}>
                       {selectedSpread?.positions[i] || `Card ${i+1}`}
                     </div>
                     <TarotCardFlip
                       card={card}
                       reversed={false}
-                      size={drawnCards.length === 1 ? 'xl' : drawnCards.length <= 3 ? 'lg' : 'md'}
+                      size={cardSize(drawnCards.length)}
                       onFlip={handleCardReveal}
                       autoFlipped={phase === 'result'}
                       lang={lang || 'hi'}
@@ -528,7 +593,7 @@ export default function TarotPage() {
                 </motion.p>
               )}
 
-              {/* Card meanings panel */}
+              {/* ── Result panel ────────────────────────────────────────── */}
               {phase === 'result' && (
                 <motion.div initial={{ opacity:0, y:30 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.2 }}
                   className="max-w-3xl mx-auto">
@@ -545,33 +610,71 @@ export default function TarotPage() {
                     </div>
                   </div>
 
-                  {/* Question if entered */}
+                  {/* Question */}
                   {question && (
-                    <div className="mb-5 px-4 py-2 rounded-xl text-xs italic text-gray-400"
+                    <div className="mb-4 px-4 py-2 rounded-xl text-xs italic text-gray-400"
                       style={{ background:'rgba(255,255,255,0.04)', borderLeft:'2px solid rgba(201,168,76,0.4)' }}>
                       "{question}"
                     </div>
                   )}
 
-                  {/* One block per card */}
+                  {/* Today's cosmic weather banner */}
+                  <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.1 }}
+                    className="mb-5 p-4 rounded-xl flex gap-3"
+                    style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)' }}>
+                    <div className="text-xl flex-shrink-0">{weather.glyph}</div>
+                    <div>
+                      <div className="text-[10px] font-medium tracking-widest mb-1" style={{ color:'#C9A84C' }}>
+                        {t.cosmicWeather}
+                      </div>
+                      <p className="text-xs text-gray-400 leading-relaxed">
+                        {PLANET_WEATHER_TEXT[lang || 'en'][weather.dayRuler]}
+                      </p>
+                      <p className="text-[10px] text-gray-600 mt-0.5">
+                        {MOON_CONTEXT_TEXT[weather.phase]?.[lang || 'en']}
+                      </p>
+                    </div>
+                  </motion.div>
+
+                  {/* Domain tabs — English only */}
+                  {lang === 'en' && (
+                    <div className="flex flex-wrap gap-2 mb-5">
+                      {t.domainLabels.map(d => (
+                        <button key={d.id} onClick={() => setDomain(d.id)}
+                          className="text-xs px-3 py-1.5 rounded-full border transition-all"
+                          style={domain === d.id
+                            ? { background:'rgba(201,168,76,0.2)', border:'1px solid rgba(201,168,76,0.5)', color:'#E8C547', fontWeight:600 }
+                            : { background:'transparent', border:'1px solid rgba(255,255,255,0.1)', color:'#6B7280' }}>
+                          {d.icon} {d.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Card blocks */}
                   <div className="space-y-4 mb-6">
                     {drawnCards.map((card, i) => {
                       const elMeta = ELEMENT_COLORS[card.element] || ELEMENT_COLORS.Fire;
                       const kws = (lang === 'en' ? (card.keywordsEn || card.keywords) : card.keywords).slice(0, 3);
+                      const meaning = lang === 'en'
+                        ? (card.meanings?.[domain] || card.meanings?.general || '')
+                        : card.upright;
                       return (
                         <motion.div key={i}
-                          initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ delay: i * 0.12 }}
+                          initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ delay: i * 0.1 }}
                           className="rounded-2xl p-5"
                           style={{ background:`linear-gradient(135deg, ${card.gradient[0]}cc, ${card.gradient[1]}99)`,
                                    border:`1px solid ${card.accent}35` }}>
 
-                          {/* Position + card name */}
+                          {/* Header row */}
                           <div className="flex items-start gap-3 mb-3">
-                            <span className="text-2xl mt-0.5 flex-shrink-0" style={{ filter:`drop-shadow(0 0 8px ${card.accent}80)` }}>
+                            <span className="text-2xl mt-0.5 flex-shrink-0"
+                              style={{ filter:`drop-shadow(0 0 8px ${card.accent}80)` }}>
                               {card.symbol}
                             </span>
                             <div className="flex-1 min-w-0">
-                              <div className="text-[10px] tracking-widest uppercase mb-0.5" style={{ color:`${card.accent}99` }}>
+                              <div className="text-[10px] tracking-widest uppercase mb-0.5"
+                                style={{ color:`${card.accent}99` }}>
                                 {selectedSpread?.positions?.[i] || `Card ${i+1}`}
                               </div>
                               <div className="font-serif text-base font-semibold leading-tight" style={{ color:card.accent }}>
@@ -581,17 +684,28 @@ export default function TarotPage() {
                                 </span>
                               </div>
                             </div>
-                            {/* Element badge */}
                             <span className="text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 flex items-center gap-1"
                               style={{ background: elMeta.bg, color: elMeta.text, border:`1px solid ${elMeta.text}30` }}>
                               {elMeta.icon} {card.element}
                             </span>
                           </div>
 
-                          {/* Meaning */}
-                          <p className="text-sm text-gray-200 leading-relaxed mb-3">
-                            {lang === 'en' ? EN_MEANINGS[card.id] : card.upright}
-                          </p>
+                          {/* Numerology + zodiac sign badges */}
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="text-[10px] px-2 py-0.5 rounded-full"
+                              style={{ background:'rgba(255,255,255,0.05)', color:'#9b6fc9', border:'1px solid rgba(168,85,247,0.2)' }}>
+                              No.{card.id}
+                            </span>
+                            {card.sign && (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full"
+                                style={{ background:'rgba(201,168,76,0.08)', color:'#C9A84C', border:'1px solid rgba(201,168,76,0.2)' }}>
+                                {card.signGlyph} {card.sign}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Meaning paragraph */}
+                          <p className="text-sm text-gray-200 leading-relaxed mb-3">{meaning}</p>
 
                           {/* Keywords + ruler */}
                           <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -616,26 +730,27 @@ export default function TarotPage() {
                     })}
                   </div>
 
-                  {/* Overall synthesis */}
-                  {buildSynthesis(drawnCards, lang) && (
-                    <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay: drawnCards.length * 0.12 + 0.2 }}
+                  {/* Overall narrator synthesis */}
+                  {buildNarrator(drawnCards, lang || 'en', question, weather.dayRuler) && (
+                    <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }}
+                      transition={{ delay: drawnCards.length * 0.1 + 0.2 }}
                       className="mb-6 p-5 rounded-2xl"
                       style={{ background:'rgba(201,168,76,0.07)', border:'1px solid rgba(201,168,76,0.25)' }}>
                       <div className="flex items-start gap-3">
                         <span className="text-lg flex-shrink-0" style={{ color:'#C9A84C' }}>✦</span>
                         <div>
                           <div className="text-xs font-medium tracking-wider mb-1.5" style={{ color:'#C9A84C' }}>
-                            {lang === 'en' ? 'OVERALL READING' : 'समग्र पठन'}
+                            {t.overallReading}
                           </div>
                           <p className="text-sm text-gray-300 leading-relaxed">
-                            {buildSynthesis(drawnCards, lang)}
+                            {buildNarrator(drawnCards, lang || 'en', question, weather.dayRuler)}
                           </p>
                         </div>
                       </div>
                     </motion.div>
                   )}
 
-                  {/* Action buttons */}
+                  {/* Actions */}
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <button onClick={handleReset}
                       className="flex items-center justify-center gap-2 px-8 py-3 rounded-full text-sm font-semibold"
