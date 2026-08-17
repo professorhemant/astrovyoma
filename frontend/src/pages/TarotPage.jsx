@@ -116,34 +116,35 @@ function buildConclusion(cards, spread, lang, question) {
   const key     = outcome || future; // whichever is more "conclusive"
 
   if (lang === 'en') {
-    const qRef = question ? `Regarding your question — "${question}" — ` : '';
-    let body = '', bottom = '';
+    const qRef = question ? `Regarding "${question}" — ` : '';
+    let adviceSection = null, outcomeSection = null, body = '', bottom = '';
 
     if (cards.length === 1) {
       const c = cards[0]; const kw = (c.keywordsEn || c.keywords)[0];
-      body   = `${qRef}the universe offers one clear message through ${c.name}: ${kw}. ${c.meanings?.general || ''}`;
+      body   = c.meanings?.general || '';
       bottom = `One card, one message — ${kw.toLowerCase()} is what the cards are telling you right now.`;
     } else if (advice && key) {
       const { card: aC } = advice; const { card: kC } = key;
       const aKw  = (aC.keywordsEn || aC.keywords)[0];
       const aKw2 = (aC.keywordsEn || aC.keywords)[1];
       const kKw  = (kC.keywordsEn || kC.keywords)[0];
-      body   = `${qRef}your cards point in a clear direction. The advice card, ${aC.name}, calls for ${aKw.toLowerCase()} — ${(aC.meanings?.general || '').replace(/\.+$/, '')}. The ${key.pos.toLowerCase()} card, ${kC.name}, reveals ${kKw.toLowerCase()} as the likely destination of this journey.`;
-      bottom = `What to do: embrace ${aKw.toLowerCase()}${aKw2 ? ` and ${aKw2.toLowerCase()}` : ''}. What awaits you: ${kKw.toLowerCase()}.`;
+      adviceSection  = { label: `Advice — ${aC.name}`, text: aC.meanings?.general || '' };
+      outcomeSection = { label: `Outcome — ${kC.name}`, text: kC.meanings?.general || '' };
+      bottom = `What to do: ${aKw.toLowerCase()}${aKw2 ? ` and ${aKw2.toLowerCase()}` : ''}. What awaits you: ${kKw.toLowerCase()}.`;
     } else if (key) {
-      const { card: kC, pos } = key; const kKw = (kC.keywordsEn || kC.keywords)[0];
-      body   = `${qRef}your ${pos.toLowerCase()} card, ${kC.name}, holds the direct answer. Its message of ${kKw.toLowerCase()} is where this reading lands. ${kC.meanings?.general || ''}`;
+      const { card: kC } = key; const kKw = (kC.keywordsEn || kC.keywords)[0];
+      body   = kC.meanings?.general || '';
       bottom = `The answer is clear: ${kKw.toLowerCase()} — move forward with that in mind.`;
     } else if (cards.length === 3) {
-      const [, pr, f] = cards; const fKw = (f.keywordsEn || f.keywords)[0];
-      body   = `${qRef}the reading speaks plainly. Your present moment — shaped by ${pr.name} — is shifting toward ${f.name}. The energy of ${fKw.toLowerCase()} is what lies ahead for you.`;
+      const [, , f] = cards; const fKw = (f.keywordsEn || f.keywords)[0];
+      body   = f.meanings?.general || '';
       bottom = `${fKw} is ahead — trust that and take the next step.`;
     } else {
       const last = cards[cards.length - 1]; const lKw = (last.keywordsEn || last.keywords)[0];
-      body   = `${qRef}across all ${cards.length} cards, the reading arrives at ${last.name} — ${lKw.toLowerCase()}. This is the universe's direct reply to where you stand.`;
+      body   = last.meanings?.general || '';
       bottom = `${lKw} is the conclusion — act on it now.`;
     }
-    return { body, bottom };
+    return { adviceSection, outcomeSection, body, bottom };
   }
 
   // Hindi
@@ -842,17 +843,34 @@ export default function TarotPage() {
                         </div>
                         <div className="px-5 py-4" style={{ background:'rgba(12,26,60,0.7)' }}>
                           {question && (
-                            <div className="mb-3 text-xs italic text-gray-400 border-l-2 pl-3"
+                            <div className="mb-4 text-xs italic text-gray-400 border-l-2 pl-3"
                               style={{ borderColor:'rgba(56,189,248,0.4)' }}>
                               "{question}"
                             </div>
                           )}
-                          <p className="text-sm text-gray-200 leading-relaxed mb-3">{c.body}</p>
+                          {c.adviceSection && c.outcomeSection ? (
+                            <div className="space-y-4 mb-4">
+                              <div>
+                                <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color:'#38BDF8' }}>
+                                  {c.adviceSection.label}
+                                </p>
+                                <p className="text-sm text-gray-200 leading-relaxed">{c.adviceSection.text}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color:'#38BDF8' }}>
+                                  {c.outcomeSection.label}
+                                </p>
+                                <p className="text-sm text-gray-200 leading-relaxed">{c.outcomeSection.text}</p>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-sm text-gray-200 leading-relaxed mb-4">{c.body}</p>
+                          )}
                           <div className="pt-3 border-t flex items-start gap-2"
                             style={{ borderColor:'rgba(56,189,248,0.2)' }}>
                             <span style={{ color:'#E8C547', flexShrink:0, fontSize:13 }}>✦</span>
                             <p className="text-sm font-semibold leading-snug" style={{ color:'#E8C547' }}>
-                              {lang === 'en' ? 'Bottom line: ' : 'सार: '}
+                              {lang === 'en' ? 'In short: ' : 'सार: '}
                               <span className="font-normal text-gray-200">{c.bottom}</span>
                             </p>
                           </div>
