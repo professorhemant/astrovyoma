@@ -1114,16 +1114,17 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                 <div className="card-cosmic p-5">
                   <h4 className="text-gold-400 font-medium mb-3">Chara Karakas (Functional Significators)</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {Object.entries(jm.charaKarakas).map(([role, planet]) => (
-                      <div key={role} className="flex items-center gap-3 p-3 rounded-xl bg-cosmic-900/40 border border-gold-600/10">
-                        <span className="flex-1 text-gray-400 text-xs">{KARAKA_LABELS[role] || role}</span>
-                        <span className="text-gold-300 font-semibold text-sm">{planet}</span>
+                    {jm.charaKarakas.map((ck, i) => (
+                      <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-cosmic-900/40 border border-gold-600/10">
+                        <span className="flex-1 text-gray-400 text-xs">{ck.karaka_hi} — {ck.karaka}</span>
+                        <span className="text-gold-300 font-semibold text-sm">{ck.planet}</span>
+                        <span className="text-gray-500 text-xs tabular-nums">{parseFloat(ck.degree).toFixed(1)}°</span>
                       </div>
                     ))}
                   </div>
                   {jm.atmakaraka && (
                     <div className="mt-3 p-3 rounded-xl bg-gold-500/5 border border-gold-500/25">
-                      <span className="text-gold-400 text-xs">Karakamsha Lagna (Navamsha sign of Atmakaraka): </span>
+                      <span className="text-gold-400 text-xs">Karakamsha Lagna (Navamsha sign of Atmakaraka {jm.atmakaraka}): </span>
                       <span className="text-gold-300 font-semibold">{jm.karakamsha || '—'}</span>
                     </div>
                   )}
@@ -1136,10 +1137,10 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                   <div className="space-y-2">
                     {jm.charaDashas.map((d, i) => (
                       <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-cosmic-900/40 border border-gold-600/10">
-                        <span className="w-6 h-6 rounded-full bg-cosmic-700 text-gold-400 text-xs font-bold flex items-center justify-center">{i+1}</span>
-                        <span className="w-24 text-gold-400 font-medium text-sm">{d.sign}</span>
-                        <span className="flex-1 text-gray-300 text-xs">{d.start} → {d.end}</span>
-                        <span className="text-gray-400 text-xs">{d.years}y</span>
+                        <span className="w-6 h-6 rounded-full bg-cosmic-700 text-gold-400 text-xs font-bold flex items-center justify-center flex-shrink-0">{i+1}</span>
+                        <span className="w-24 text-gold-400 font-medium text-sm flex-shrink-0">{d.sign}</span>
+                        <span className="flex-1 text-gray-400 text-xs">Lord: {d.lord || '—'}</span>
+                        <span className="text-gray-300 text-xs tabular-nums">{d.years}y</span>
                       </div>
                     ))}
                   </div>
