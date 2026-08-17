@@ -176,6 +176,22 @@ const YEARLY = {
   },
 };
 
+// ── Weekly lucky factors (by sign — no per-theme variation needed) ─────────────
+const SIGN_LUCKY = {
+  Aries:       { color: 'Red',           number: 9, day: 'Tuesday' },
+  Taurus:      { color: 'Green',         number: 6, day: 'Friday' },
+  Gemini:      { color: 'Yellow',        number: 5, day: 'Wednesday' },
+  Cancer:      { color: 'Pearl White',   number: 2, day: 'Monday' },
+  Leo:         { color: 'Gold',          number: 1, day: 'Sunday' },
+  Virgo:       { color: 'Forest Green',  number: 5, day: 'Wednesday' },
+  Libra:       { color: 'Pink',          number: 6, day: 'Friday' },
+  Scorpio:     { color: 'Deep Red',      number: 9, day: 'Tuesday' },
+  Sagittarius: { color: 'Purple',        number: 3, day: 'Thursday' },
+  Capricorn:   { color: 'Dark Green',    number: 8, day: 'Saturday' },
+  Aquarius:    { color: 'Electric Blue', number: 4, day: 'Saturday' },
+  Pisces:      { color: 'Sea Green',     number: 7, day: 'Thursday' },
+};
+
 // ── Helpers ────────────────────────────────────────────────────────────────────
 const {
   THEME_HINDI, SIGN_HINDI, RULER_HINDI, BODYPART_HINDI,
@@ -222,7 +238,7 @@ function getWeekly(req, res) {
   const sunday = new Date(monday);
   sunday.setDate(monday.getDate() + 6);
   const fmt = d => d.toISOString().split('T')[0];
-  res.json({ sign, weekStart: fmt(monday), weekEnd: fmt(sunday), weekNumber: week, ...data });
+  res.json({ sign, weekStart: fmt(monday), weekEnd: fmt(sunday), weekNumber: week, ...data, lucky: data.lucky || SIGN_LUCKY[sign] });
 }
 
 function getMonthly(req, res) {
