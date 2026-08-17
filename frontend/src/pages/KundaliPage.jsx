@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -13,6 +13,7 @@ import { kundali as kundaliApi, reportHistory as historyApi } from '../api';
 import BirthPlacePicker from '../components/BirthPlacePicker';
 import { useAuth } from '../context/AuthContext';
 import { LAGNA_PHAL, NAKSHATRA_PHAL, MAHADASHA_PHAL, KAAL_SARP_TYPES } from '../data/kundaliInterpretations';
+import { PLANET_HOUSE_PHAL } from '../data/planetHousePhal';
 import { useLanguage } from '../context/LanguageContext';
 
 const PLANET_ORDER = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
@@ -100,6 +101,28 @@ function downloadBlob(blob, filename) {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+function downloadSVGasImage(svgEl, filename) {
+  if (!svgEl) return;
+  const svgData = new XMLSerializer().serializeToString(svgEl);
+  const canvas = document.createElement('canvas');
+  const bbox = svgEl.getBoundingClientRect();
+  const scale = 2; // retina
+  canvas.width  = (bbox.width  || 400) * scale;
+  canvas.height = (bbox.height || 400) * scale;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#0a0515';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const img = new Image();
+  const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    URL.revokeObjectURL(url);
+    canvas.toBlob(b => { if (b) downloadBlob(b, filename); }, 'image/png');
+  };
+  img.src = url;
 }
 
 // --- SIGN HELPERS -------------------------------------------------------------
@@ -414,6 +437,28 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
           )}
         </motion.div>
 
+        {/* Kundali Matching Banner */}
+        <motion.div initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:0.12}} className="mb-4">
+          <div className="relative overflow-hidden rounded-2xl px-6 py-4"
+            style={{ background: 'linear-gradient(135deg, #1a0a00 0%, #2e1200 45%, #1a0a10 100%)', border: '1px solid rgba(220,100,30,0.4)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+            <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4">
+              <div className="w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center text-2xl"
+                style={{ background: 'radial-gradient(circle, rgba(220,100,30,0.25) 0%, rgba(80,10,10,0.6) 100%)', border: '2px solid rgba(220,100,30,0.55)' }}>
+                💑
+              </div>
+              <div className="flex-1 text-center sm:text-left">
+                <h3 className="font-serif text-lg font-semibold" style={{color:'#f0a060'}}>कुंडली मिलान — Kundali Matching (Guna Milan)</h3>
+                <p className="text-gray-300 text-sm mt-0.5">Check compatibility with your partner — Ashtakoot Guna Milan with all 8 Koots & 36-point score</p>
+              </div>
+              <Link to="/matching"
+                className="flex-shrink-0 flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold text-sm transition-all hover:scale-105"
+                style={{ background: 'linear-gradient(135deg, #dc641e 0%, #f0a060 100%)', color: '#1a0500' }}>
+                Match Now →
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Talk to AI Banner */}
         <motion.div initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:0.15}} className="mb-8">
           <div className="relative overflow-hidden rounded-2xl px-6 py-5"
@@ -480,7 +525,20 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
 
         {/* Tabs */}
         <div className="flex gap-2 mb-6 flex-wrap">
-          {[['chart','Kundali Charts'],['planets','Planets & Houses'],['dasha','Dasha Timeline'],['navamsha','Navamsha (D-9)'],['upgrahas','Upgrahas'],['strength','Shadbala'],['bhavabala','Bhava Bala'],['namkaran','Namkaran Sanskar']].map(([t,l])=>(
+          {[
+            ['chart','Kundali Charts'],
+            ['planets','Planets & Houses'],
+            ['planet-house','Planet in House'],
+            ['dasha','Dasha Timeline'],
+            ['navamsha','Navamsha (D-9)'],
+            ['upgrahas','Upgrahas'],
+            ['strength','Shadbala'],
+            ['bhavabala','Bhava Bala'],
+            ['varshaphal','Varshaphal'],
+            ['jaimini','Jaimini'],
+            ['kp','KP Astrology'],
+            ['namkaran','Namkaran Sanskar'],
+          ].map(([t,l])=>(
             <TabButton key={t} active={tab===t} onClick={()=>{ setTab(t); if(t==='namkaran' && !namkaran) fetchNamkaran(); }}>{l}</TabButton>
           ))}
         </div>
@@ -493,47 +551,59 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
               {/* Lagna Kundali */}
               <div className="card-cosmic p-5 flex flex-col items-center gap-3">
                 <h3 className="font-serif text-gold-400 text-base self-start">लग्न कुंडली (Lagna D-1)</h3>
-                <NorthIndianChart planetaryPositions={pp} lagna={data.lagna} size={300} title="ॐ" />
+                <div id="chart-lagna">
+                  <NorthIndianChart planetaryPositions={pp} lagna={data.lagna} size={300} title="ॐ" />
+                </div>
                 <p className="text-gray-300 text-xs text-center">राशि चक्र · लग्न: {data.lagna}</p>
+                <button onClick={() => { const el = document.getElementById('chart-lagna'); downloadSVGasImage(el?.querySelector('svg'), 'lagna-kundali.png'); }} className="text-xs px-3 py-1.5 rounded-lg bg-gold-500/10 border border-gold-500/25 text-gold-400 hover:bg-gold-500/20 flex items-center gap-1.5"><Download className="w-3 h-3"/> Download PNG</button>
               </div>
               {/* Chandra Kundali */}
               <div className="card-cosmic p-5 flex flex-col items-center gap-3">
                 <h3 className="font-serif text-gold-400 text-base self-start">चंद्र कुंडली (Moon Chart)</h3>
-                <NorthIndianChart planetaryPositions={pp} lagna={data.moon_sign} size={300} title={"चंद्र\nकुंडली"} />
+                <div id="chart-chandra">
+                  <NorthIndianChart planetaryPositions={pp} lagna={data.moon_sign} size={300} title={"चंद्र\nकुंडली"} />
+                </div>
                 <p className="text-gray-300 text-xs text-center">चंद्र लग्न: {data.moon_sign}</p>
+                <button onClick={() => { const el = document.getElementById('chart-chandra'); downloadSVGasImage(el?.querySelector('svg'), 'chandra-kundali.png'); }} className="text-xs px-3 py-1.5 rounded-lg bg-gold-500/10 border border-gold-500/25 text-gold-400 hover:bg-gold-500/20 flex items-center gap-1.5"><Download className="w-3 h-3"/> Download PNG</button>
               </div>
               {/* Chalit Kundali */}
               <div className="card-cosmic p-5 flex flex-col items-center gap-3">
                 <h3 className="font-serif text-gold-400 text-base self-start">चलित कुंडली (Bhava Chart)</h3>
-                <NorthIndianChart
-                  planetaryPositions={Object.fromEntries(
-                    Object.entries(pp).map(([planet, pos]) => {
-                      const diff = ((pos.degree - data.lagna_degree + 360 + 15) % 360);
-                      const chHouse = Math.floor(diff / 30) + 1;
-                      const chSignIdx = (data.lagna_sign_index + chHouse - 1) % 12;
-                      return [planet, { sign: SIGNS[chSignIdx], sign_index: chSignIdx, retrograde: pos.retrograde }];
-                    })
-                  )}
-                  lagna={data.lagna}
-                  size={300}
-                  title={"चलित\nकुंडली"}
-                />
+                <div id="chart-chalit">
+                  <NorthIndianChart
+                    planetaryPositions={Object.fromEntries(
+                      Object.entries(pp).map(([planet, pos]) => {
+                        const diff = ((pos.degree - data.lagna_degree + 360 + 15) % 360);
+                        const chHouse = Math.floor(diff / 30) + 1;
+                        const chSignIdx = (data.lagna_sign_index + chHouse - 1) % 12;
+                        return [planet, { sign: SIGNS[chSignIdx], sign_index: chSignIdx, retrograde: pos.retrograde }];
+                      })
+                    )}
+                    lagna={data.lagna}
+                    size={300}
+                    title={"चलित\nकुंडली"}
+                  />
+                </div>
                 <p className="text-gray-300 text-xs text-center">समान भाव विभाजन — ±15° भाव सीमा नियम</p>
+                <button onClick={() => { const el = document.getElementById('chart-chalit'); downloadSVGasImage(el?.querySelector('svg'), 'chalit-kundali.png'); }} className="text-xs px-3 py-1.5 rounded-lg bg-gold-500/10 border border-gold-500/25 text-gold-400 hover:bg-gold-500/20 flex items-center gap-1.5"><Download className="w-3 h-3"/> Download PNG</button>
               </div>
               {/* Navamsha Kundali */}
               <div className="card-cosmic p-5 flex flex-col items-center gap-3">
                 <h3 className="font-serif text-gold-400 text-base self-start">नवांश कुंडली (D-9)</h3>
                 {dc.navamsha ? (
                   <>
-                    <NorthIndianChart
-                      planetaryPositions={Object.fromEntries(
-                        Object.entries(dc.navamsha).filter(([k]) => k !== 'Lagna').map(([k, v]) => [k, { sign: v.sign, sign_index: v.sign_index, retrograde: false }])
-                      )}
-                      lagna={dc.navamsha.Lagna?.sign || data.lagna}
-                      size={300}
-                      title={"नवांश\nकुंडली"}
-                    />
+                    <div id="chart-navamsha">
+                      <NorthIndianChart
+                        planetaryPositions={Object.fromEntries(
+                          Object.entries(dc.navamsha).filter(([k]) => k !== 'Lagna').map(([k, v]) => [k, { sign: v.sign, sign_index: v.sign_index, retrograde: false }])
+                        )}
+                        lagna={dc.navamsha.Lagna?.sign || data.lagna}
+                        size={300}
+                        title={"नवांश\nकुंडली"}
+                      />
+                    </div>
                     <p className="text-gray-300 text-xs text-center">D-9 — धर्म, विवाह व आत्मा · नवांश लग्न: {dc.navamsha.Lagna?.sign || '—'}</p>
+                    <button onClick={() => { const el = document.getElementById('chart-navamsha'); downloadSVGasImage(el?.querySelector('svg'), 'navamsha-d9.png'); }} className="text-xs px-3 py-1.5 rounded-lg bg-gold-500/10 border border-gold-500/25 text-gold-400 hover:bg-gold-500/20 flex items-center gap-1.5"><Download className="w-3 h-3"/> Download PNG</button>
                   </>
                 ) : <p className="text-gray-300 text-sm">Data not available</p>}
               </div>
@@ -542,15 +612,18 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                 <h3 className="font-serif text-gold-400 text-base self-start">सप्तांश कुंडली (D-7)</h3>
                 {dc.saptamsha ? (
                   <>
-                    <NorthIndianChart
-                      planetaryPositions={Object.fromEntries(
-                        Object.entries(dc.saptamsha).filter(([k]) => k !== 'Lagna').map(([k, v]) => [k, { sign: v.sign, sign_index: v.sign_index, retrograde: false }])
-                      )}
-                      lagna={dc.saptamsha.Lagna?.sign || data.lagna}
-                      size={300}
-                      title={"सप्तांश\nकुंडली"}
-                    />
+                    <div id="chart-saptamsha">
+                      <NorthIndianChart
+                        planetaryPositions={Object.fromEntries(
+                          Object.entries(dc.saptamsha).filter(([k]) => k !== 'Lagna').map(([k, v]) => [k, { sign: v.sign, sign_index: v.sign_index, retrograde: false }])
+                        )}
+                        lagna={dc.saptamsha.Lagna?.sign || data.lagna}
+                        size={300}
+                        title={"सप्तांश\nकुंडली"}
+                      />
+                    </div>
                     <p className="text-gray-300 text-xs text-center">D-7 — संतान व सृजनशक्ति · सप्तांश लग्न: {dc.saptamsha.Lagna?.sign || '—'}</p>
+                    <button onClick={() => { const el = document.getElementById('chart-saptamsha'); downloadSVGasImage(el?.querySelector('svg'), 'saptamsha-d7.png'); }} className="text-xs px-3 py-1.5 rounded-lg bg-gold-500/10 border border-gold-500/25 text-gold-400 hover:bg-gold-500/20 flex items-center gap-1.5"><Download className="w-3 h-3"/> Download PNG</button>
                   </>
                 ) : <p className="text-gray-300 text-sm">Data not available</p>}
               </div>
@@ -893,6 +966,276 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
           </motion.div>
         )}
 
+        {/* TAB: Planet in House */}
+        {tab === 'planet-house' && (() => {
+          const PLANET_ORDER = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
+          const PLANET_ICON = { Sun:'☀️', Moon:'🌙', Mars:'♂️', Mercury:'☿', Jupiter:'♃', Venus:'♀', Saturn:'♄', Rahu:'☊', Ketu:'☋' };
+          return (
+            <motion.div key="planet-house" initial={{opacity:0}} animate={{opacity:1}} className="space-y-4">
+              <div className="card-cosmic p-5">
+                <h3 className="font-serif text-gold-400 text-xl mb-1">Planet in House — Phal Vivaran</h3>
+                <p className="text-gray-400 text-xs">Parashari interpretation for each planet's house placement in your natal chart.</p>
+              </div>
+              {PLANET_ORDER.map(planet => {
+                const pData = pp[planet];
+                if (!pData) return null;
+                const house = pData.house;
+                const entry = PLANET_HOUSE_PHAL[planet]?.[house];
+                return (
+                  <motion.div key={planet} initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} className="card-cosmic p-5 border border-gold-600/10">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-cosmic-800 border border-gold-600/20 flex items-center justify-center text-2xl flex-shrink-0">
+                        {PLANET_ICON[planet]}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <span className="text-gold-300 font-semibold">{planet}</span>
+                          <span className="text-gray-400 text-xs">in</span>
+                          <span className="text-amber-400 font-medium">House {house}</span>
+                          <span className="text-gray-500 text-xs">({pData.sign})</span>
+                          {pData.retrograde && <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/20">Retrograde</span>}
+                        </div>
+                        {entry ? (
+                          <>
+                            <div className="flex flex-wrap gap-1.5 mb-3">
+                              {entry.keywords.map(k => (
+                                <span key={k} className="text-xs px-2 py-0.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-gold-400">{k}</span>
+                              ))}
+                            </div>
+                            <p className="text-gray-300 text-sm leading-relaxed">{entry.reading}</p>
+                          </>
+                        ) : (
+                          <p className="text-gray-500 text-sm">Interpretation not available for this placement.</p>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          );
+        })()}
+
+        {/* TAB: Varshaphal */}
+        {tab === 'varshaphal' && (() => {
+          const vp = data.varshaphal;
+          if (!vp) return (
+            <motion.div key="varshaphal" initial={{opacity:0}} animate={{opacity:1}} className="card-cosmic p-8 text-center">
+              <p className="text-gray-400">Varshaphal data unavailable (requires Swiss Ephemeris).</p>
+            </motion.div>
+          );
+          return (
+            <motion.div key="varshaphal" initial={{opacity:0}} animate={{opacity:1}} className="space-y-5">
+              <div className="card-cosmic p-5">
+                <h3 className="font-serif text-gold-400 text-xl mb-1">Varshaphal — Annual Solar Return Chart</h3>
+                <p className="text-gray-400 text-xs">The chart cast for the exact moment the Sun returns to its natal degree each year.</p>
+              </div>
+              {/* Meta row */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { label: 'Return Date', value: vp.return_date || '—' },
+                  { label: 'Varsha Lagna', value: vp.varsha_lagna || '—' },
+                  { label: 'Muntha', value: vp.muntha || '—' },
+                  { label: 'Year Lord (Varshesh)', value: vp.varshesh || '—' },
+                ].map(({ label, value }) => (
+                  <div key={label} className="card-cosmic p-4 text-center border border-gold-600/15">
+                    <p className="text-gray-400 text-xs mb-1">{label}</p>
+                    <p className="text-gold-300 font-semibold">{value}</p>
+                  </div>
+                ))}
+              </div>
+              {/* Planets table */}
+              {vp.planets && (
+                <div className="card-cosmic p-5">
+                  <h4 className="text-gold-400 font-medium mb-3">Varshaphal Planetary Positions</h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-gray-400 text-xs uppercase border-b border-gold-600/10">
+                          {['Planet','Sign','Degree','House','Nakshatra'].map(h => <th key={h} className="text-left pb-2 pr-4">{h}</th>)}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(vp.planets).map(([name, pData], i) => (
+                          <tr key={name} className={`border-b border-gold-600/5 ${i%2===0?'bg-cosmic-900/20':''}`}>
+                            <td className="py-2 pr-4 text-gray-200">{name}</td>
+                            <td className="py-2 pr-4 text-gold-400">{pData.sign || '—'}</td>
+                            <td className="py-2 pr-4 text-gray-300 tabular-nums">{pData.sign_degree != null ? parseFloat(pData.sign_degree).toFixed(2)+'°' : '—'}</td>
+                            <td className="py-2 pr-4 text-gray-300">{pData.house || '—'}</td>
+                            <td className="py-2 pr-4 text-gray-300 text-xs">{pData.nakshatra || '—'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+              {/* Mudda Dasha */}
+              {vp.mudda_dasha && vp.mudda_dasha.length > 0 && (
+                <div className="card-cosmic p-5">
+                  <h4 className="text-gold-400 font-medium mb-3">Mudda Dasha (Annual Periods)</h4>
+                  <div className="space-y-2">
+                    {vp.mudda_dasha.map((d, i) => (
+                      <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-cosmic-900/40 border border-gold-600/10">
+                        <span className="w-20 text-gold-400 font-medium text-sm">{d.planet}</span>
+                        <span className="flex-1 text-gray-300 text-xs">{d.start} → {d.end}</span>
+                        <span className="text-gray-400 text-xs">{d.days} days</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          );
+        })()}
+
+        {/* TAB: Jaimini */}
+        {tab === 'jaimini' && (() => {
+          const jm = data.jaimini;
+          if (!jm) return (
+            <motion.div key="jaimini" initial={{opacity:0}} animate={{opacity:1}} className="card-cosmic p-8 text-center">
+              <p className="text-gray-400">Jaimini data unavailable.</p>
+            </motion.div>
+          );
+          const KARAKA_LABELS = {
+            atmakaraka: 'Atmakaraka (Soul)', amatyakaraka: 'Amatyakaraka (Career)',
+            bhratrikaraka: 'Bhratrikaraka (Siblings)', matrikaraka: 'Matrikaraka (Mother)',
+            putrakaraka: 'Putrakaraka (Children)', gnatikaraka: 'Gnatikaraka (Rivals)',
+            darakaraka: 'Darakaraka (Spouse)',
+          };
+          return (
+            <motion.div key="jaimini" initial={{opacity:0}} animate={{opacity:1}} className="space-y-5">
+              <div className="card-cosmic p-5">
+                <h3 className="font-serif text-gold-400 text-xl mb-1">Jaimini Astrology</h3>
+                <p className="text-gray-400 text-xs">Chara Karakas, Karakamsha Lagna, and Chara Dashas — based on Jaimini Sutras.</p>
+              </div>
+              {/* Chara Karakas */}
+              {jm.charaKarakas && (
+                <div className="card-cosmic p-5">
+                  <h4 className="text-gold-400 font-medium mb-3">Chara Karakas (Functional Significators)</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {Object.entries(jm.charaKarakas).map(([role, planet]) => (
+                      <div key={role} className="flex items-center gap-3 p-3 rounded-xl bg-cosmic-900/40 border border-gold-600/10">
+                        <span className="flex-1 text-gray-400 text-xs">{KARAKA_LABELS[role] || role}</span>
+                        <span className="text-gold-300 font-semibold text-sm">{planet}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {jm.atmakaraka && (
+                    <div className="mt-3 p-3 rounded-xl bg-gold-500/5 border border-gold-500/25">
+                      <span className="text-gold-400 text-xs">Karakamsha Lagna (Navamsha sign of Atmakaraka): </span>
+                      <span className="text-gold-300 font-semibold">{jm.karakamsha || '—'}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+              {/* Chara Dashas */}
+              {jm.charaDashas && jm.charaDashas.length > 0 && (
+                <div className="card-cosmic p-5">
+                  <h4 className="text-gold-400 font-medium mb-3">Chara Dasha Sequence</h4>
+                  <div className="space-y-2">
+                    {jm.charaDashas.map((d, i) => (
+                      <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-cosmic-900/40 border border-gold-600/10">
+                        <span className="w-6 h-6 rounded-full bg-cosmic-700 text-gold-400 text-xs font-bold flex items-center justify-center">{i+1}</span>
+                        <span className="w-24 text-gold-400 font-medium text-sm">{d.sign}</span>
+                        <span className="flex-1 text-gray-300 text-xs">{d.start} → {d.end}</span>
+                        <span className="text-gray-400 text-xs">{d.years}y</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          );
+        })()}
+
+        {/* TAB: KP Astrology */}
+        {tab === 'kp' && (() => {
+          const kp = data.kp;
+          if (!kp) return (
+            <motion.div key="kp" initial={{opacity:0}} animate={{opacity:1}} className="card-cosmic p-8 text-center">
+              <p className="text-gray-400">KP Astrology data unavailable.</p>
+            </motion.div>
+          );
+          return (
+            <motion.div key="kp" initial={{opacity:0}} animate={{opacity:1}} className="space-y-5">
+              <div className="card-cosmic p-5">
+                <h3 className="font-serif text-gold-400 text-xl mb-1">KP (Krishnamurti Paddhati) Astrology</h3>
+                <p className="text-gray-400 text-xs">Star lords, sub lords, and sub-sub lords — KP's unique cuspal sub-lord technique.</p>
+              </div>
+              {/* KP Planets table */}
+              {kp.kpPlanets && (
+                <div className="card-cosmic p-5">
+                  <h4 className="text-gold-400 font-medium mb-3">KP Planetary Significators</h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-gray-400 text-xs uppercase border-b border-gold-600/10">
+                          {['Planet','Sign','Nakshatra','Star Lord','Sub Lord','Sub-Sub Lord'].map(h => <th key={h} className="text-left pb-2 pr-4">{h}</th>)}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(kp.kpPlanets).map(([name, pd], i) => (
+                          <tr key={name} className={`border-b border-gold-600/5 ${i%2===0?'bg-cosmic-900/20':''}`}>
+                            <td className="py-2 pr-4 text-gray-200">{name}</td>
+                            <td className="py-2 pr-4 text-gold-400">{pd.sign || '—'}</td>
+                            <td className="py-2 pr-4 text-gray-300 text-xs">{pd.nakshatra || '—'}</td>
+                            <td className="py-2 pr-4 text-amber-400">{pd.starLord || '—'}</td>
+                            <td className="py-2 pr-4 text-purple-400">{pd.subLord || '—'}</td>
+                            <td className="py-2 pr-4 text-blue-400 text-xs">{pd.subSubLord || '—'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+              {/* KP Cusps table */}
+              {kp.kpCusps && (
+                <div className="card-cosmic p-5">
+                  <h4 className="text-gold-400 font-medium mb-3">KP House Cusps</h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-gray-400 text-xs uppercase border-b border-gold-600/10">
+                          {['Cusp','Sign','Degree','Star Lord','Sub Lord'].map(h => <th key={h} className="text-left pb-2 pr-4">{h}</th>)}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(kp.kpCusps).map(([cusp, cd], i) => (
+                          <tr key={cusp} className={`border-b border-gold-600/5 ${i%2===0?'bg-cosmic-900/20':''}`}>
+                            <td className="py-2 pr-4">
+                              <span className="w-7 h-7 inline-flex items-center justify-center rounded-lg bg-cosmic-800 text-gold-400 font-bold text-xs">{cusp}</span>
+                            </td>
+                            <td className="py-2 pr-4 text-gold-400">{cd.sign || '—'}</td>
+                            <td className="py-2 pr-4 text-gray-300 tabular-nums">{cd.degree != null ? parseFloat(cd.degree).toFixed(2)+'°' : '—'}</td>
+                            <td className="py-2 pr-4 text-amber-400">{cd.starLord || '—'}</td>
+                            <td className="py-2 pr-4 text-purple-400">{cd.subLord || '—'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+              {/* KP Event Predictions */}
+              {kp.eventPredictions && Object.keys(kp.eventPredictions).length > 0 && (
+                <div className="card-cosmic p-5">
+                  <h4 className="text-gold-400 font-medium mb-3">KP Event Significators</h4>
+                  <div className="space-y-3">
+                    {Object.entries(kp.eventPredictions).map(([event, data]) => (
+                      <div key={event} className="p-3 rounded-xl bg-cosmic-900/40 border border-gold-600/10">
+                        <p className="text-gold-400 text-sm font-medium capitalize mb-1">{event.replace(/_/g,' ')}</p>
+                        <p className="text-gray-300 text-xs">{Array.isArray(data) ? data.join(', ') : String(data)}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          );
+        })()}
+
         {/* TAB: Namkaran Sanskar */}
         {tab === 'namkaran' && (
           <motion.div key="namkaran" initial={{opacity:0}} animate={{opacity:1}} className="space-y-6">
@@ -1132,8 +1475,8 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
   }
   const hasMangalDosha = mangalFromLagna || mangalFromMoon;
 
-  // --- Sade Sati ---
-  const saturnSign = pp['Saturn']?.sign;
+  // --- Sade Sati --- (uses CURRENT transiting Saturn, not natal)
+  const saturnSign = (data.current_transits?.Saturn?.sign) || pp['Saturn']?.sign;
   const saturnSignIdx = SIGN_INDEX[saturnSign];
   let sadeSatiPhase = 'Not Running';
   if (moonSignIdx !== undefined && saturnSignIdx !== undefined) {
@@ -1185,8 +1528,8 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
   ];
   const saturnTransitInterpretation = saturnTransitRel !== null ? SATURN_TRANSIT_TEXT[saturnTransitRel] : 'Saturn transit calculation requires complete planetary data.';
 
-  // Jupiter transit
-  const jupiterSign = pp['Jupiter']?.sign;
+  // Jupiter transit (uses CURRENT transiting Jupiter, not natal)
+  const jupiterSign = (data.current_transits?.Jupiter?.sign) || pp['Jupiter']?.sign;
   const jupiterSignIdx = SIGN_INDEX[jupiterSign];
   const jupiterTransitRel = (moonSignIdx !== undefined && jupiterSignIdx !== undefined)
     ? (jupiterSignIdx - moonSignIdx + 12) % 12 : null;
@@ -1603,7 +1946,7 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
           <div className="border-t border-gold-600/10 pt-4">
             <p className="text-gold-400 font-semibold text-sm mb-2">☊/☋ Rahu-Ketu Transit Effect</p>
             <p className="text-gray-200 text-sm leading-relaxed">
-              Rahu is currently in <span className="text-gold-400">{pp['Rahu']?.sign || '—'}</span> and Ketu in <span className="text-gold-400">{pp['Ketu']?.sign || '—'}</span>. The Rahu-Ketu axis activates the houses they transit, creating areas of intense focus, ambition, and karmic reckoning. The Rahu-transited house brings worldly desire, ambition, and often confusion or obsession. The Ketu-transited house brings detachment, spiritual insight, and sometimes loss or release. Working consciously with both — pursuing Rahu's domain with Ketu's spiritual detachment — allows you to navigate this axis with wisdom. Rahu-Ketu transits shift approximately every 18 months, so their effects are significant but temporary.
+              Rahu is currently in <span className="text-gold-400">{(data.current_transits?.Rahu?.sign) || pp['Rahu']?.sign || '—'}</span> and Ketu in <span className="text-gold-400">{(data.current_transits?.Ketu?.sign) || pp['Ketu']?.sign || '—'}</span>. The Rahu-Ketu axis activates the houses they transit, creating areas of intense focus, ambition, and karmic reckoning. The Rahu-transited house brings worldly desire, ambition, and often confusion or obsession. The Ketu-transited house brings detachment, spiritual insight, and sometimes loss or release. Working consciously with both — pursuing Rahu's domain with Ketu's spiritual detachment — allows you to navigate this axis with wisdom. Rahu-Ketu transits shift approximately every 18 months, so their effects are significant but temporary.
             </p>
           </div>
         </div>

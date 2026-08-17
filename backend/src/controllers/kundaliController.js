@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { Kundali, User } = require('../models');
-const { calculateKundali } = require('../services/kundaliEngine');
+const { calculateKundali, calcVarshaphal, calcJaimini, calcKP } = require('../services/kundaliEngine');
 const { generateSummaryPDF, generateDetailedPDF } = require('../services/pdfService');
 const { getNamkaranLetter } = require('../services/namkaranService');
 const { generateSummaryPDFHindi, generateDetailedPDFHindi } = require('../services/hindiPdfService');
@@ -39,6 +39,31 @@ async function generateKundali(req, res) {
 
     const chartData = await calculateKundali(dob, birth_time, resolvedLat, resolvedLng, resolvedTz);
 
+    let currentTransits = null;
+    try {
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+      const utcH = now.getUTCHours() + now.getUTCMinutes() / 60;
+      const localH = ((utcH + resolvedTz) % 24 + 24) % 24;
+      const hh = String(Math.floor(localH)).padStart(2, '0');
+      const mm = String(Math.round((localH % 1) * 60)).padStart(2, '0');
+      const transitChart = await calculateKundali(todayStr, `${hh}:${mm}`, resolvedLat, resolvedLng, resolvedTz);
+      currentTransits = transitChart.planetary_positions;
+    } catch (e) {
+      console.warn('[kundali] current transits unavailable:', e.message);
+    }
+
+    const jaimini = calcJaimini(chartData.planetary_positions, chartData.divisional_charts);
+    const kp      = calcKP(chartData.planetary_positions, chartData.house_cusps);
+    let varshaphal = null;
+    try {
+      varshaphal = await calcVarshaphal(
+        chartData.planetary_positions.Sun.degree,
+        chartData.lagna_sign_index,
+        dob, resolvedLat, resolvedLng, resolvedTz
+      );
+    } catch (e) { /* sweph not available */ }
+
     const [kundali] = await Kundali.upsert({
       user_id: req.user.id,
       person_name: name || null,
@@ -56,9 +81,17 @@ async function generateKundali(req, res) {
       { where: { id: req.user.id } }
     );
 
+    const phalAuth = getPhal(chartData, 'hi');
     res.json({
       kundali: kundali.toJSON ? kundali.toJSON() : kundali,
-      chart: { ...chartData, ...(getPhal(chartData, 'hi') ? { phal: getPhal(chartData, 'hi') } : {}) },
+      chart: {
+        ...chartData,
+        jaimini,
+        kp,
+        varshaphal,
+        current_transits: currentTransits,
+        ...(phalAuth ? { phal: phalAuth } : {}),
+      },
       birth_info: { dob, birth_time, birth_place, lat: resolvedLat, lng: resolvedLng, timezone: resolvedTz }
     });
   } catch (err) {
@@ -262,17 +295,51 @@ async function generatePublicKundali(req, res) {
     }
 
     const chartData = await calculateKundali(dob, birth_time, resolvedLat, resolvedLng, resolvedTz);
-    // The Hindi readings ride along with every chart rather than being asked
-    // for. They are a few kilobytes of text against a chart that is already far
-    // larger, and sending them unconditionally means switching language is
-    // instant on a chart already on screen — no second round trip, no spinner,
-    // and no way for the two languages to disagree because they were computed
-    // from separate requests. The page renders them only if the reader wants
-    // them; English is untouched either way.
+
+    // Current sky — today's planetary positions for Gochar (transit) display.
+    // We compute them at the live UTC moment so the transit section always
+    // reflects where planets actually are right now, not where they were at birth.
+    let currentTransits = null;
+    try {
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+      const utcH = now.getUTCHours() + now.getUTCMinutes() / 60;
+      const localH = ((utcH + resolvedTz) % 24 + 24) % 24;
+      const hh = String(Math.floor(localH)).padStart(2, '0');
+      const mm = String(Math.round((localH % 1) * 60)).padStart(2, '0');
+      const transitChart = await calculateKundali(todayStr, `${hh}:${mm}`, resolvedLat, resolvedLng, resolvedTz);
+      currentTransits = transitChart.planetary_positions;
+    } catch (e) {
+      console.warn('[kundali] current transits unavailable:', e.message);
+    }
+
+    // Jaimini & KP (sync — always succeed if chart data is complete)
+    const jaimini = calcJaimini(chartData.planetary_positions, chartData.divisional_charts);
+    const kp      = calcKP(chartData.planetary_positions, chartData.house_cusps);
+
+    // Varshaphal (async, requires sweph — gracefully absent in fallback mode)
+    let varshaphal = null;
+    try {
+      varshaphal = await calcVarshaphal(
+        chartData.planetary_positions.Sun.degree,
+        chartData.lagna_sign_index,
+        dob, resolvedLat, resolvedLng, resolvedTz
+      );
+    } catch (e) {
+      console.warn('[kundali] varshaphal unavailable:', e.message);
+    }
+
     const phal = getPhal(chartData, 'hi');
 
     res.json({
-      chart: phal ? { ...chartData, phal } : chartData,
+      chart: {
+        ...chartData,
+        jaimini,
+        kp,
+        varshaphal,
+        current_transits: currentTransits,
+        ...(phal ? { phal } : {}),
+      },
       birth_info: { name, dob, birth_time, birth_place, lat: resolvedLat, lng: resolvedLng, timezone: resolvedTz }
     });
   } catch (err) {
