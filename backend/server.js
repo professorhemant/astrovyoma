@@ -41,6 +41,29 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
+// Strict limiter for credential endpoints — 5 attempts per 15 min per IP.
+// The global limiter above allows 200/15min which is enough for brute-force.
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { error: 'Too many attempts. Please wait 15 minutes and try again.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+// Registration is slightly more lenient (10/hr) — a real user might retry.
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  message: { error: 'Too many registration attempts. Please try again in an hour.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/auth/login',           authLimiter);
+app.use('/api/auth/forgot-password', authLimiter);
+app.use('/api/auth/reset-password',  authLimiter);
+app.use('/api/pandit/login',         authLimiter);
+app.use('/api/auth/register',        registerLimiter);
+
 app.use('/api', routes); // admin dashboard v2 — appointments + revenue + analytics
 
 app.get('/health', (req, res) => res.json({ status: 'ok', service: 'AstroVyoma API' }));
