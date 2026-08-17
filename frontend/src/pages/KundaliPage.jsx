@@ -141,6 +141,29 @@ function signOffset(sign, offset) {
   return SIGNS[(idx + offset + 12) % 12];
 }
 
+// --- ERROR BOUNDARY -----------------------------------------------------------
+
+class TabErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { hasError: false }; }
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(err) { console.error('[KundaliTab] render error:', err); }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="card-cosmic p-10 text-center border border-red-500/20">
+          <p className="text-red-400 font-semibold mb-2">Unable to render this section</p>
+          <p className="text-gray-400 text-sm mb-4">An unexpected error occurred. The data may be in an unexpected format.</p>
+          <button onClick={() => this.setState({ hasError: false })}
+            className="px-5 py-2 bg-gold-500 text-cosmic-950 font-semibold rounded-xl hover:bg-gold-400 transition-all text-sm">
+            Try Again
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 // --- ACCORDION ----------------------------------------------------------------
 
 function AccordionSection({ title, icon, children, defaultOpen = false }) {
@@ -287,7 +310,7 @@ function DashaTimeline({ dashas }) {
 function TabButton({ active, onClick, children }) {
   return (
     <button onClick={onClick}
-      className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${active?'bg-gold-500 text-cosmic-950':'text-gray-200 hover:text-gold-400 hover:bg-cosmic-800/60'}`}>
+      className={`flex-shrink-0 px-4 py-2 text-sm font-medium rounded-lg transition-all whitespace-nowrap ${active?'bg-gold-500 text-cosmic-950':'text-gray-200 hover:text-gold-400 hover:bg-cosmic-800/60'}`}>
       {children}
     </button>
   );
@@ -524,7 +547,7 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
         </motion.div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 flex-wrap">
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2" style={{WebkitOverflowScrolling:'touch'}}>
           {[
             ['chart','Kundali Charts'],
             ['planets','Planets & Houses'],
@@ -542,6 +565,9 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
             <TabButton key={t} active={tab===t} onClick={()=>{ setTab(t); if(t==='namkaran' && !namkaran) fetchNamkaran(); }}>{l}</TabButton>
           ))}
         </div>
+
+        {/* TAB CONTENT — wrapped in error boundary so a bad data shape never blanks the page */}
+        <TabErrorBoundary key={tab}>
 
         {/* TAB: Birth Chart */}
         {tab === 'chart' && (
@@ -1035,8 +1061,8 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
                 {[
                   { label: 'Return Date', value: vp.return_date || '—' },
                   { label: 'Varsha Lagna', value: vp.varsha_lagna || '—' },
-                  { label: 'Muntha', value: vp.muntha || '—' },
-                  { label: 'Year Lord (Varshesh)', value: vp.varshesh || '—' },
+                  { label: 'Muntha', value: vp.muntha?.sign || '—' },
+                  { label: 'Year Lord (Varshesh)', value: vp.varsha_lord || '—' },
                 ].map(({ label, value }) => (
                   <div key={label} className="card-cosmic p-4 text-center border border-gold-600/15">
                     <p className="text-gray-400 text-xs mb-1">{label}</p>
@@ -1418,6 +1444,8 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
             )}
           </motion.div>
         )}
+
+        </TabErrorBoundary>
 
         {/* --- COMPREHENSIVE KUNDALI REPORT -------------------------------- */}
         <ComprehensiveReport data={data} kundali={kundali} dashas={dashas} currentDasha={currentDasha} pp={pp} panchang={panchang} birthInfo={birthInfo} />
