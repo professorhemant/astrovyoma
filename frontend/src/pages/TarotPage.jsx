@@ -148,30 +148,30 @@ function buildConclusion(cards, spread, lang, question) {
   }
 
   // Hindi
-  const qRef = question ? `"${question}" के बारे में — ` : '';
-  let body = '', bottom = '';
+  let adviceSection = null, outcomeSection = null, body = '', bottom = '';
   if (cards.length === 1) {
     const c = cards[0];
-    body   = `${qRef}${c.nameHi} का संदेश स्पष्ट है। ${c.upright}`;
+    body   = c.upright || '';
     bottom = `यही एक कार्ड आपके प्रश्न का उत्तर है। इसकी ऊर्जा को अपनाएं।`;
   } else if (advice && key) {
     const { card: aC } = advice; const { card: kC } = key;
-    body   = `${qRef}आपके कार्ड एक स्पष्ट दिशा दिखाते हैं। सलाह कार्ड ${aC.nameHi} कहता है — ${aC.upright?.split('।')[0]}। परिणाम में ${kC.nameHi} आपकी राह बताता है।`;
-    bottom = `${aC.nameHi} की सलाह मानें और ${kC.nameHi} की दिशा में आगे बढ़ें — यही इस पठन का सार है।`;
+    adviceSection  = { label: `सलाह — ${aC.nameHi}`, text: aC.upright || '' };
+    outcomeSection = { label: `परिणाम — ${kC.nameHi}`, text: kC.upright || '' };
+    bottom = `क्या करें: ${aC.nameHi} की राह अपनाएं। क्या मिलेगा: ${kC.nameHi} की ऊर्जा।`;
   } else if (key) {
     const { card: kC } = key;
-    body   = `${qRef}${kC.nameHi} इस पठन का अंतिम उत्तर है। ${kC.upright?.split('।')[0]}।`;
+    body   = kC.upright || '';
     bottom = `${kC.nameHi} की ऊर्जा में आगे बढ़ें — कार्ड यही कह रहे हैं।`;
   } else if (cards.length === 3) {
     const [, , f] = cards;
-    body   = `${qRef}भविष्य कार्ड ${f.nameHi} इस पठन का उत्तर है। ${f.upright?.split('।')[0]}।`;
+    body   = f.upright || '';
     bottom = `${f.nameHi} की दिशा में विश्वास के साथ कदम बढ़ाएं।`;
   } else {
     const last = cards[cards.length - 1];
-    body   = `${qRef}${cards.length} कार्डों का निष्कर्ष ${last.nameHi} पर आता है। ${last.upright?.split('।')[0]}।`;
+    body   = last.upright || '';
     bottom = `${last.nameHi} की ऊर्जा को अपना मार्गदर्शक मानें।`;
   }
-  return { body, bottom };
+  return { adviceSection, outcomeSection, body, bottom };
 }
 
 // ── All UI copy, keyed by language ────────────────────────────────────────────
