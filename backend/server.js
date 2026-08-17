@@ -121,6 +121,12 @@ async function start() {
 
     await sequelize.sync();
     console.log('Models synchronized');
+
+    // One-time data fix: clockBottom was saved as 81 (typo) instead of 8.
+    try {
+      await sequelize.query(`UPDATE site_settings SET value = '8' WHERE key = 'clockBottom' AND value = '81'`);
+    } catch (_) {}
+
     await seedAstrologers();
     await seedRealAstrologers();
     // Fills the editable lists with the copy the site already ships, so moving a
