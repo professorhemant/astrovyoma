@@ -68,11 +68,34 @@ async function getUsers(req, res) {
 async function updateUser(req, res) {
   try {
     const { id } = req.params;
-    const { role, wallet_adjustment, adjustment_note } = req.body;
+    const { role, wallet_adjustment, adjustment_note, subscription_plan, subscription_months } = req.body;
     const user = await User.findByPk(id);
     if (!user) return res.status(404).json({ error: 'User not found' });
     const updates = {};
     if (role) updates.role = role;
+
+    // Granting a plan by hand.
+    //
+    // Until now the only thing in the codebase that could write a subscription
+    // was the Razorpay verification handler, so a comped plan, a reviewer
+    // account, or a payment that succeeded on Razorpay's side and failed on
+    // ours all had no lever at all. Restricted to the real plan ids so a typo
+    // cannot mint a tier that nothing else recognises.
+    if (subscription_plan !== undefined) {
+      const plan = String(subscription_plan);
+      if (!['free', 'silver', 'gold', 'platinum'].includes(plan)) {
+        return res.status(400).json({ error: 'Unknown plan. Use free, silver, gold or platinum.' });
+      }
+      updates.subscription_plan = plan;
+      if (plan === 'free') {
+        updates.subscription_expires_at = null;
+      } else {
+        const months = Number(subscription_months) > 0 ? Number(subscription_months) : 1;
+        const expires = new Date();
+        expires.setMonth(expires.getMonth() + months);
+        updates.subscription_expires_at = expires;
+      }
+    }
     if (wallet_adjustment && wallet_adjustment !== 0) {
       const newBalance = parseFloat(user.wallet_balance) + parseFloat(wallet_adjustment);
       if (newBalance < 0) return res.status(400).json({ error: 'Cannot reduce balance below zero' });
