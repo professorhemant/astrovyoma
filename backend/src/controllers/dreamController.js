@@ -4,6 +4,7 @@ const { chatCompletion } = require('../services/groqClient');
 const { readDreamTiming } = require('../services/swapnaShastra');
 const { matchSymbols, SOURCE_LABEL, VERDICT_LABEL } = require('../data/swapnaSymbols');
 const { hasActiveSubscription } = require('../middleware/requireSubscription');
+const { remedyReference } = require('../data/vedicRemedies');
 const { Kundali } = require('../models');
 
 // Reading a dream, in three layers that fail independently.
@@ -78,6 +79,7 @@ Rules you must not break:
 - Never predict death, serious illness, or a date of misfortune. If the dream is frightening, say what it reflects and what would help, and stop there.
 - Never diagnose. If the dreamer describes repeated distressing dreams, add one warm sentence suggesting they talk to somebody they trust or a professional — never clinical, never alarming.
 - Where a classical reading contradicts the popular one, say so plainly. That contradiction is interesting and the reader deserves it.
+- Every remedy must come from the reference block below. Do not invent a day, a donation item, or a mantra, and never pair an offering with a planet's day other than its own — that is the one detail a reader will actually go and act on.
 
 Reply with ONLY valid JSON:
 {
@@ -88,7 +90,9 @@ Reply with ONLY valid JSON:
   "guidance": "2 concrete things the dreamer can do",
   "remedies": ["remedy 1", "remedy 2", "remedy 3"],
   "affirmation": "one short line the dreamer can hold on to"
-}`,
+}
+
+${remedyReference('en')}`,
 
   hi: `आप AstroVyoma के स्वप्न-विश्लेषक हैं, वैदिक स्वप्न शास्त्र में प्रशिक्षित और युंग के प्रतीक-शास्त्र से परिचित।
 
@@ -99,6 +103,7 @@ Reply with ONLY valid JSON:
 - मृत्यु, गंभीर बीमारी, या किसी अनिष्ट की तारीख़ की भविष्यवाणी कभी न करें। सपना डरावना हो तो बताएँ कि वह क्या दर्शाता है और क्या करने से राहत मिलेगी — उससे आगे नहीं।
 - रोग-निदान न करें। यदि बार-बार डरावने सपनों की बात हो, तो एक आत्मीय वाक्य जोड़ें कि किसी अपने से या किसी जानकार से बात कर लें — डराए बिना, चिकित्सकीय भाषा के बिना।
 - जहाँ शास्त्र का अर्थ लोक-मान्यता से उलट हो, वहाँ साफ़-साफ़ कहें। यही बात सबसे दिलचस्प है।
+- हर उपाय नीचे दिए संदर्भ से ही लें। दिन, दान की वस्तु या मंत्र स्वयं न गढ़ें, और किसी वस्तु को उसके ग्रह के दिन के अलावा किसी और दिन से न जोड़ें — पाठक असल में यही करने जाता है।
 
 भाषा सरल, बोलचाल की हिंदी हो — भारी संस्कृतनिष्ठ शब्दावली बिल्कुल नहीं।
 
@@ -111,7 +116,9 @@ Reply with ONLY valid JSON:
   "guidance": "2 ठोस बातें जो स्वप्नदर्शी कर सकता है",
   "remedies": ["उपाय 1", "उपाय 2", "उपाय 3"],
   "affirmation": "एक छोटी पंक्ति जिसे स्वप्नदर्शी थामे रख सके"
-}`,
+}
+
+${remedyReference('hi')}`,
 };
 
 exports.interpret = async (req, res) => {

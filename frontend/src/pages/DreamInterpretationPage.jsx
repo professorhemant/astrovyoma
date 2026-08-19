@@ -137,6 +137,16 @@ const VERDICT_STYLE = {
   mixed:        'text-amber-400 bg-amber-500/10 border-amber-500/20',
 };
 
+// The schema asks for guidance as one string and the model sometimes sends an
+// array of two. React renders an array of strings with nothing between them, so
+// the two sentences arrive run together — this takes either shape and gives
+// back lines to paragraph out.
+function asLines(v) {
+  if (Array.isArray(v)) return v.map(x => String(x).trim()).filter(Boolean);
+  const s = String(v ?? '').trim();
+  return s ? [s] : [];
+}
+
 function todayISO() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -416,10 +426,12 @@ export default function DreamInterpretationPage() {
                 )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {it.guidance && (
+                  {asLines(it.guidance).length > 0 && (
                     <div className="card-cosmic p-4">
                       <h3 className="text-xs text-gold-500 font-semibold uppercase tracking-wider mb-2">{t.guidanceHeading}</h3>
-                      <p className="text-sm text-cosmic-300 leading-relaxed">{it.guidance}</p>
+                      {asLines(it.guidance).map((g, i) => (
+                        <p key={i} className="text-sm text-cosmic-300 leading-relaxed mb-1.5 last:mb-0">{g}</p>
+                      ))}
                     </div>
                   )}
                   {it.remedies?.length > 0 && (
