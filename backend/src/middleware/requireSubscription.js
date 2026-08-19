@@ -19,6 +19,17 @@ const TIER = { free: 0, silver: 1, gold: 2, platinum: 3 };
 
 function hasActiveSubscription(user, minPlan = 'silver') {
   if (!user) return false;
+
+  // An admin is never asked to subscribe.
+  //
+  // Whoever runs the site has to be able to open every paid screen to check it
+  // works, answer somebody who says it does not, and see what was sold. Making
+  // them buy their own Platinum plan to read a dream report would be absurd,
+  // and the alternative — comping the owner a plan that then quietly lapses —
+  // breaks the day it expires. Sitting here rather than in each feature means
+  // the next gated thing inherits it instead of forgetting it.
+  if (user.role === 'admin') return true;
+
   const plan = user.subscription_plan;
   if (!plan || plan === 'free') return false;
   const expires = user.subscription_expires_at;
