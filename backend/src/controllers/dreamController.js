@@ -1,5 +1,5 @@
 'use strict';
-const { getGroq } = require('../services/groqClient');
+const { chatCompletion } = require('../services/groqClient');
 
 
 const ZODIAC_DASHA = {
@@ -43,13 +43,16 @@ exports.interpret = async (req, res) => {
 
     const userMessage = `${context ? context + '\n\n' : ''}Dream description:\n${dream_text.trim()}`;
 
-    const response = await getGroq().chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
+    const response = await chatCompletion({
+      json: true,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userMessage }
       ],
-      max_tokens: 1200,
+      // The reply is ten fields deep and the model's reasoning shares this
+      // budget, so it is set well clear of what the answer alone needs. A
+      // truncated reply here is unparseable JSON, not a short reading.
+      max_tokens: 2000,
       temperature: 0.75
     });
 

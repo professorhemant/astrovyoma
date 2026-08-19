@@ -1,4 +1,4 @@
-const { getGroq } = require('../services/groqClient');
+const { chatCompletion } = require('../services/groqClient');
 
 const CARD_INFO = {
   0:  { name: 'The Fool',           nameHi: 'मूर्ख',            ruler: 'Uranus',              meaning: 'new beginnings, freedom, innocence' },
@@ -94,8 +94,7 @@ ${cardLines}
 - एक प्रेरणादायक आशीर्वाद के साथ समाप्त करें`;
     }
 
-    const completion = await getGroq().chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
+    const completion = await chatCompletion({
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user',   content: userPrompt },

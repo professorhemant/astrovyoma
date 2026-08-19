@@ -1,4 +1,4 @@
-const { getGroq } = require('./groqClient');
+const { chatCompletion } = require('./groqClient');
 const { buildFocusedContext } = require('./questionRouter');
 
 
@@ -30,8 +30,7 @@ GUIDELINES:
     { role: 'user', content: userMessage }
   ];
 
-  const response = await getGroq().chat.completions.create({
-    model: 'llama-3.3-70b-versatile',
+  const response = await chatCompletion({
     messages,
     max_tokens: 1024,
     temperature: 0.8
@@ -63,8 +62,7 @@ ${buildKundaliContext(kundaliData, userMessage)}
     { role: 'user', content: userMessage }
   ];
 
-  const response = await getGroq().chat.completions.create({
-    model: 'llama-3.3-70b-versatile',
+  const response = await chatCompletion({
     messages,
     max_tokens: 1024,
     temperature: 0.85

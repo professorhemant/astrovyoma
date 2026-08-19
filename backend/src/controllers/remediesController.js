@@ -1,4 +1,4 @@
-const { getGroq } = require('../services/groqClient');
+const { chatCompletion } = require('../services/groqClient');
 const { Kundali } = require('../models');
 
 
@@ -130,10 +130,10 @@ Respond ONLY with valid JSON in this exact structure (no extra text before or af
   "affirmation": "A short powerful Vedic affirmation or Sanskrit shloka with meaning"
 }`;
 
-    const result = await getGroq().chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
+    const result = await chatCompletion({
+      json: true,
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: 1200,
+      max_tokens: 2000,
       temperature: 0.7
     });
     const rawText = result.choices[0].message.content.trim();

@@ -1,4 +1,4 @@
-const { getGroq } = require('../services/groqClient');
+const { chatCompletion } = require('../services/groqClient');
 const { Consultation, Astrologer, Kundali, Message } = require('../models');
 
 
@@ -72,8 +72,7 @@ ${kundaliContext ? '\n' + kundaliContext : ''}`;
 
     const history = prior.slice(-20);
 
-    const result = await getGroq().chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
+    const result = await chatCompletion({
       messages: [
         { role: 'system', content: systemPrompt },
         ...history,
