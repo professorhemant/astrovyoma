@@ -17,6 +17,20 @@
   to   { opacity: 1; }
 }
 
+/* The blink on the dream banner.
+   It never goes fully dark and never goes faster than once every second and a
+   half. A hard on/off flash is the thing that triggers photosensitive seizures,
+   and text that actually vanishes cannot be read by somebody who reads slowly —
+   so this dips the glow rather than cutting it. */
+@keyframes dreamBlink {
+  0%, 100% { opacity: 1;    text-shadow: 0 0 22px rgba(201,168,76,0.85), 0 0 44px rgba(201,168,76,0.35); }
+  50%      { opacity: 0.55; text-shadow: 0 0 6px  rgba(201,168,76,0.25); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dream-blink { animation: none !important; opacity: 1 !important; }
+}
+
 @layer base {
   body {
     background-color: #12093A;
