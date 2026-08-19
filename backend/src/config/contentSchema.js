@@ -503,7 +503,7 @@ const LISTS = {
         features: ['Everything in Silver', 'Kundali PDF (English + Hindi)', 'Detailed birth chart PDF', '30-min consultation credit/month', 'Unlimited AI chatbot', 'Mangal Dosha + Sade Sati deep reports', 'Tarot reading (unlimited)', 'Numerology full report', 'Domain Reports with detailed remedies', 'Priority email support'].join('\n'),
         notIncluded: ['Unlimited consultations'].join('\n') },
       { id: 'platinum', name: 'Platinum', price: 599, yearlyPrice: 5999, color: '#a78bfa', icon: '💎', popular: false,
-        features: ['Everything in Gold', 'Unlimited consultation minutes/month', 'Yearly + 5-year forecast PDF', 'KP Astrology report', 'Personalized remedy kit suggestions', 'Dedicated astrologer assignment', 'WhatsApp support', 'Early access to new features', 'Family plan — 2 kundali profiles'].join('\n'),
+        features: ['Everything in Gold', 'Dream interpretation — full Svapna Shastra reading', 'Unlimited consultation minutes/month', 'Yearly + 5-year forecast PDF', 'KP Astrology report', 'Personalized remedy kit suggestions', 'Dedicated astrologer assignment', 'WhatsApp support', 'Early access to new features', 'Family plan — 2 kundali profiles'].join('\n'),
         notIncluded: '' },
     ],
   },

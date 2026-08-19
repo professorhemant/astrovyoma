@@ -43,6 +43,7 @@ const PLANS = {
     color: '#a78bfa', icon: '💎',
     features: [
       'Everything in Gold',
+      'Dream interpretation — full Svapna Shastra reading',
       'Unlimited consultation minutes/month',
       'Yearly + 5-year forecast PDF',
       'KP Astrology report',

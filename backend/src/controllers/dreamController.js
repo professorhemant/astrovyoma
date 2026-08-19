@@ -165,7 +165,10 @@ exports.interpret = async (req, res) => {
       theme: s.theme,
     }));
 
-    const subscribed = hasActiveSubscription(req.user);
+    // Platinum, because that is the plan the Plans page lists it under. A gate
+    // looser than the copy would hand the reading to Silver subscribers who
+    // were never told they had it — and make the pricing page a lie.
+    const subscribed = hasActiveSubscription(req.user, 'platinum');
 
     // Signed out, or signed in without a plan: the checkable half, and an
     // honest statement of what is behind the plan. No model call is made at
