@@ -13,6 +13,7 @@ import CompleteContactPrompt from './components/CompleteContactPrompt';
 import { auth as authApi } from './api';
 
 import HomePage from './pages/HomePage';
+import DreamInterpretationPage from './pages/DreamInterpretationPage';
 import KundaliPage from './pages/KundaliPage';
 import PurposePage from './pages/PurposePage';
 import AstrologersPage from './pages/AstrologersPage';
@@ -160,6 +161,7 @@ function AppLayout() {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/namkaran" element={<NamkaranPage />} />
             <Route path="/tarot" element={<TarotPage />} />
+            <Route path="/dreams" element={<DreamInterpretationPage />} />
             <Route path="/numerology" element={<NumerologyPage />} />
             <Route path="/sade-sati" element={<SadeSatiPage />} />
             <Route path="/mangal-dosha" element={<MangalDoshaPage />} />

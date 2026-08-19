@@ -54,6 +54,7 @@ const NAV_GROUPS = [
     items: [
       { to: '/numerology', icon: '🔢', label: 'Numerology' },
       { to: '/tarot',      icon: '🔮', label: 'Tarot Reader' },
+      { to: '/dreams',     icon: '🌙', label: 'Dream Interpretation' },
       { to: '/vastu',      icon: '🏠', label: 'Vastu Shastra' },
       { to: '/namkaran',   icon: '🍼', label: 'Namkaran Tool' },
       { to: '/festivals',  icon: '🗓️', label: 'Festival Calendar' },

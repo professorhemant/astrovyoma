@@ -10,7 +10,10 @@ async function authMiddleware(req, res, next) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findByPk(decoded.id, {
-      attributes: ['id', 'name', 'email', 'phone', 'role', 'wallet_balance', 'onboarding_complete']
+      attributes: ['id', 'name', 'email', 'phone', 'role', 'wallet_balance', 'onboarding_complete',
+        // Carried on every request so a gated feature can read the tier without
+        // a second query. Dreams is the first to need it.
+        'subscription_plan', 'subscription_expires_at']
     });
     if (!user) return res.status(401).json({ error: 'User not found' });
     req.user = user;
@@ -27,7 +30,10 @@ async function optionalAuth(req, res, next) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findByPk(decoded.id, {
-      attributes: ['id', 'name', 'email', 'phone', 'role', 'wallet_balance', 'onboarding_complete']
+      attributes: ['id', 'name', 'email', 'phone', 'role', 'wallet_balance', 'onboarding_complete',
+        // Carried on every request so a gated feature can read the tier without
+        // a second query. Dreams is the first to need it.
+        'subscription_plan', 'subscription_expires_at']
     });
     if (user) req.user = user;
   } catch {}
