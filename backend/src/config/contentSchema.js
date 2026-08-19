@@ -560,6 +560,7 @@ const LISTS = {
 
       { group: 'Tools',     icon: '🔢', label: 'Numerology',         to: '/numerology' },
       { group: 'Tools',     icon: '🔮', label: 'Tarot Reader',       to: '/tarot' },
+      { group: 'Tools',     icon: '🌙', label: 'Dream Interpretation', to: '/dreams' },
       { group: 'Tools',     icon: '🏠', label: 'Vastu Shastra',      to: '/vastu' },
       { group: 'Tools',     icon: '🍼', label: 'Namkaran Tool',      to: '/namkaran' },
       { group: 'Tools',     icon: '🗓️', label: 'Festival Calendar',  to: '/festivals' },
