@@ -196,8 +196,26 @@ exports.interpret = async (req, res) => {
       ? (lang === 'hi' ? 'यह दिन का सपना है; शास्त्र इसे फलदायी नहीं मानते।' : 'A daytime dream; the texts do not hold these as fruitful.')
       : `${timing.label[lang]} — ${timing.fruition[lang]}${timing.nullified ? (lang === 'hi' ? ' (किन्तु यह निष्फल हो गया)' : ' (but this one is nullified)') : ''}`;
 
+    // One labelled line per fact.
+    //
+    // These used to run together on a single line, and the two dashas were
+    // joined by a bare slash — "Mahadasha Moon / Venus". The model read the
+    // second name as part of the first label and told a Hindi reader they were
+    // running a Venus mahadasha when Venus was the antardasha and the Moon's
+    // was the major period. It only went wrong sometimes, which is what an
+    // ambiguous prompt buys you. The label now belongs to exactly one value.
     const chartLine = chart
-      ? `${lang === 'hi' ? 'कुंडली' : 'Chart'}: ${lang === 'hi' ? 'चंद्र राशि' : 'Moon sign'} ${chart.moon_sign || '—'}, ${lang === 'hi' ? 'लग्न' : 'Lagna'} ${chart.lagna || '—'}, ${lang === 'hi' ? 'नक्षत्र' : 'Nakshatra'} ${chart.nakshatra || '—'}, ${lang === 'hi' ? 'महादशा' : 'Mahadasha'} ${chart.mahadasha || '—'}${chart.antardasha ? ` / ${chart.antardasha}` : ''}`
+      ? [
+          lang === 'hi' ? 'कुंडली:' : 'Chart:',
+          `- ${lang === 'hi' ? 'चंद्र राशि' : 'Moon sign'}: ${chart.moon_sign || '—'}`,
+          `- ${lang === 'hi' ? 'लग्न' : 'Lagna'}: ${chart.lagna || '—'}`,
+          `- ${lang === 'hi' ? 'नक्षत्र' : 'Nakshatra'}: ${chart.nakshatra || '—'}${chart.nakshatra_lord ? ` (${lang === 'hi' ? 'स्वामी' : 'lord'} ${chart.nakshatra_lord})` : ''}`,
+          `- ${lang === 'hi' ? 'महादशा (बड़ी दशा)' : 'Mahadasha (major period)'}: ${chart.mahadasha || '—'}${chart.mahadasha_ends ? ` — ${lang === 'hi' ? 'समाप्ति' : 'ends'} ${chart.mahadasha_ends}` : ''}`,
+          `- ${lang === 'hi' ? 'अंतर्दशा (उप-दशा)' : 'Antardasha (sub-period)'}: ${chart.antardasha || '—'}`,
+          lang === 'hi'
+            ? 'इन्हें आपस में न बदलें — महादशा और अंतर्दशा अलग-अलग हैं।'
+            : 'Do not swap these two — the mahadasha and the antardasha are different periods.',
+        ].join('\n')
       : (lang === 'hi' ? '(कुंडली उपलब्ध नहीं — chart_note खाली छोड़ें।)' : '(No chart on file — leave chart_note empty.)');
 
     const userMessage = [
