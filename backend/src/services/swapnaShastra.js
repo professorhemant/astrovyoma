@@ -44,13 +44,76 @@ const FRUITION = [
 ];
 
 const YAMA_LABEL = {
-  first:  { en: 'First watch of the night',  hi: 'रात का पहला पहर' },
-  second: { en: 'Second watch of the night', hi: 'रात का दूसरा पहर' },
-  third:  { en: 'Third watch of the night',  hi: 'रात का तीसरा पहर' },
-  fourth: { en: 'Fourth watch of the night', hi: 'रात का चौथा पहर' },
-  dawn:   { en: 'Dawn',                      hi: 'उषाकाल (भोर)' },
-  day:    { en: 'Daytime',                   hi: 'दिन का समय' },
+  first:   { en: 'First watch of the night',  hi: 'रात का पहला पहर' },
+  second:  { en: 'Second watch of the night', hi: 'रात का दूसरा पहर' },
+  third:   { en: 'Third watch of the night',  hi: 'रात का तीसरा पहर' },
+  fourth:  { en: 'Fourth watch of the night', hi: 'रात का चौथा पहर' },
+  dawn:    { en: 'Dawn',                      hi: 'उषाकाल (भोर)' },
+  day:     { en: 'Daytime',                   hi: 'दिन का समय' },
+  unknown: { en: 'Time not known',            hi: 'समय ज्ञात नहीं' },
 };
+
+// The watch a dreamer picked, turned into a moment of that particular night.
+//
+// The page used to ask for a clock time and pre-fill it with 04:00. Nobody
+// remembers dreaming at ten past four, so the default stood, and every dream on
+// the site came back "fourth watch, a fortnight" with the same date on it — a
+// figure that never moves, which reads as broken even while it is right.
+//
+// A watch is what people actually remember, and it is what the rule is written
+// in. The clock time is derived rather than asked for: the middle of the chosen
+// quarter of that night's own darkness, so a long December night and a short
+// June one put the same answer in different places.
+//
+// The date the dreamer gives is the morning they woke. The night therefore runs
+// from the previous evening's sunset to that morning's sunrise, which is why an
+// early-night dream comes back dated the day before.
+function resolveWatch(dreamDate, watch, place) {
+  if (watch === 'day') return { dateStr: dreamDate, timeStr: '13:00' };
+
+  const prev = shiftDate(dreamDate, -1);
+  const { ssMin: sunsetMin } = getSunriseSunsetMin(prev, place);
+  const { srMin: sunriseMin } = getSunriseSunsetMin(dreamDate, place);
+  const nightLength = (sunriseMin + MIN_PER_DAY) - sunsetMin;
+
+  // Dawn is the last muhurta before sunrise, so aim at the middle of it.
+  // The four watches take the midpoint of their own quarter, which for the
+  // fourth lands clear of the dawn window on any ordinary night.
+  const QUARTER = { first: 0, second: 1, third: 2, fourth: 3 };
+  const minutesFromSunset = watch === 'dawn'
+    ? nightLength - (MUHURTA_MIN / 2)
+    : nightLength * ((QUARTER[watch] ?? 3) + 0.5) / 4;
+
+  const absolute = sunsetMin + minutesFromSunset;
+  const pastMidnight = absolute >= MIN_PER_DAY;
+  const clock = absolute % MIN_PER_DAY;
+
+  return {
+    dateStr: pastMidnight ? dreamDate : prev,
+    timeStr: `${String(Math.floor(clock / 60)).padStart(2, '0')}:${String(Math.round(clock % 60)).padStart(2, '0')}`,
+  };
+}
+
+// A dreamer who cannot place the dream gets no window rather than a guessed
+// one. The whole value of the timing is that it is derived from a real rule;
+// inventing an input to keep the panel full would throw that away.
+function unknownTiming(dreamDate) {
+  return {
+    yama: 'unknown',
+    yamaNumber: null,
+    label: YAMA_LABEL.unknown,
+    isDaytime: false,
+    isBrahmaMuhurta: false,
+    nullified: false,
+    nullifiedBy: null,
+    unknown: true,
+    fruition: null,
+    dueDate: null,
+    nightOf: dreamDate,
+    sunrise: null,
+    sunset: null,
+  };
+}
 
 const MIN_PER_DAY = 1440;
 
@@ -174,4 +237,4 @@ function minToClock(min) {
   return `${h12}:${mm} ${ampm}`;
 }
 
-module.exports = { readDreamTiming, FRUITION, YAMA_LABEL, ymd };
+module.exports = { readDreamTiming, resolveWatch, unknownTiming, FRUITION, YAMA_LABEL, ymd };

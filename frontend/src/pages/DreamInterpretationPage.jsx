@@ -25,10 +25,10 @@ const T = {
     dreamLabel: 'What did you see?',
     dreamPlaceholder: 'Everything you remember — people, places, animals, colours, how it felt…',
     tryExample: 'Or try one of these:',
-    whenLabel: 'When did you dream it?',
-    dateLabel: 'Date',
-    timeLabel: 'Time',
-    timeHelp: 'The watch of the night decides when the dream is due. Guess if you have to — near enough is enough.',
+    whenLabel: 'When in the night did you dream it?',
+    dateLabel: 'Which morning did you wake?',
+    timeHelp: 'The watch of the night is what fixes the date below. Pick the one that feels closest.',
+    unknownNote: 'Without knowing the watch, the texts give no date — the reading below still stands.',
     moodLabel: 'How did you feel on waking?',
     moodNone: 'Not sure',
     sleptAgain: 'I fell asleep again afterwards',
@@ -70,10 +70,10 @@ const T = {
     dreamLabel: 'आपने क्या देखा?',
     dreamPlaceholder: 'जो कुछ याद है — लोग, जगहें, जानवर, रंग, कैसा महसूस हुआ…',
     tryExample: 'या इनमें से कोई आज़माएँ:',
-    whenLabel: 'सपना कब आया?',
-    dateLabel: 'तारीख़',
-    timeLabel: 'समय',
-    timeHelp: 'रात का पहर ही तय करता है कि सपना कब फलेगा। ठीक याद न हो तो अंदाज़ा चलेगा।',
+    whenLabel: 'रात के किस पहर में सपना आया?',
+    dateLabel: 'किस सुबह आपकी नींद खुली?',
+    timeHelp: 'रात का पहर ही नीचे की तारीख़ तय करता है। जो सबसे क़रीब लगे, वही चुनें।',
+    unknownNote: 'पहर पता न हो तो शास्त्र कोई तारीख़ नहीं देते — बाक़ी व्याख्या फिर भी लागू है।',
     moodLabel: 'जागने पर कैसा लगा?',
     moodNone: 'कह नहीं सकते',
     sleptAgain: 'उसके बाद मैं फिर सो गया',
@@ -126,6 +126,27 @@ const EXAMPLES = {
   ],
 };
 
+const WATCHES = {
+  en: [
+    ['first',   'Soon after sleeping'],
+    ['second',  'Middle of the night'],
+    ['third',   'Late night'],
+    ['fourth',  'Early hours'],
+    ['dawn',    'Just before waking'],
+    ['day',     'During the day'],
+    ['unknown', "I don't remember"],
+  ],
+  hi: [
+    ['first',   'सोने के थोड़ी देर बाद'],
+    ['second',  'आधी रात'],
+    ['third',   'रात का पिछला पहर'],
+    ['fourth',  'तड़के'],
+    ['dawn',    'जागने से ठीक पहले'],
+    ['day',     'दिन में'],
+    ['unknown', 'याद नहीं'],
+  ],
+};
+
 const MOODS = {
   en: [['peaceful','Peaceful'],['anxious','Anxious'],['confused','Confused'],['scared','Scared'],['joyful','Joyful'],['strange','Strange']],
   hi: [['peaceful','शांत'],['anxious','बेचैन'],['confused','उलझन में'],['scared','डरा हुआ'],['joyful','ख़ुश'],['strange','अजीब']],
@@ -161,6 +182,17 @@ function formatDue(iso, lang) {
 // ── The watch of the night, which is the whole point ────────────────────────
 function TimingPanel({ timing, t, lang }) {
   if (!timing) return null;
+
+  // "I don't remember" gets no date rather than an invented one. The panel says
+  // so plainly instead of rendering an empty window that looks like a failure.
+  if (timing.unknown) {
+    return (
+      <div className="card-cosmic p-5 border-l-4 border-cosmic-600">
+        <h3 className="text-xs text-gold-500 font-semibold uppercase tracking-wider mb-2">{t.timingHeading}</h3>
+        <p className="text-sm text-cosmic-300">{t.unknownNote}</p>
+      </div>
+    );
+  }
 
   if (timing.isDaytime) {
     return (
@@ -199,9 +231,11 @@ function TimingPanel({ timing, t, lang }) {
         </p>
       )}
 
-      <p className="text-[11px] text-cosmic-600 mt-3">
-        {t.sunset} {timing.sunset} · {t.sunrise} {timing.sunrise}
-      </p>
+      {timing.sunset && timing.sunrise && (
+        <p className="text-[11px] text-cosmic-600 mt-3">
+          {t.sunset} {timing.sunset} · {t.sunrise} {timing.sunrise}
+        </p>
+      )}
     </div>
   );
 }
@@ -257,7 +291,7 @@ export default function DreamInterpretationPage() {
   const t = T[lang];
 
   const [form, setForm] = useState({
-    dream_text: '', dream_date: todayISO(), dream_time: '04:00',
+    dream_text: '', dream_date: todayISO(), watch: 'fourth',
     mood: '', fell_asleep_again: false, is_recurring: false,
   });
   const [loading, setLoading] = useState(false);
@@ -334,19 +368,25 @@ export default function DreamInterpretationPage() {
 
             <div>
               <label className="text-xs text-cosmic-400 mb-1 block">{t.whenLabel}</label>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <span className="text-[11px] text-cosmic-600 mb-1 block">{t.dateLabel}</span>
-                  <input type="date" className="input-cosmic w-full" value={form.dream_date}
-                    onChange={e => setForm(f => ({ ...f, dream_date: e.target.value }))} />
-                </div>
-                <div>
-                  <span className="text-[11px] text-cosmic-600 mb-1 block">{t.timeLabel}</span>
-                  <input type="time" className="input-cosmic w-full" value={form.dream_time}
-                    onChange={e => setForm(f => ({ ...f, dream_time: e.target.value }))} />
-                </div>
+              <div className="flex flex-wrap gap-2">
+                {WATCHES[lang].map(([val, label]) => (
+                  <button key={val} type="button"
+                    onClick={() => setForm(f => ({ ...f, watch: val }))}
+                    className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
+                      form.watch === val
+                        ? 'border-gold-600/50 text-gold-400 bg-gold-500/10'
+                        : 'border-cosmic-700 text-cosmic-500 hover:border-gold-600/30'
+                    }`}>
+                    {label}
+                  </button>
+                ))}
               </div>
               <p className="text-[11px] text-cosmic-600 mt-1.5">{t.timeHelp}</p>
+              <div className="mt-3">
+                <span className="text-[11px] text-cosmic-600 mb-1 block">{t.dateLabel}</span>
+                <input type="date" className="input-cosmic w-full sm:w-56" value={form.dream_date}
+                  onChange={e => setForm(f => ({ ...f, dream_date: e.target.value }))} />
+              </div>
             </div>
 
             <div>

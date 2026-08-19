@@ -1,7 +1,7 @@
 'use strict';
 
 const { chatCompletion } = require('../services/groqClient');
-const { readDreamTiming } = require('../services/swapnaShastra');
+const { readDreamTiming, resolveWatch, unknownTiming } = require('../services/swapnaShastra');
 const { matchSymbols, SOURCE_LABEL, VERDICT_LABEL } = require('../data/swapnaSymbols');
 const { hasActiveSubscription } = require('../middleware/requireSubscription');
 const { remedyReference } = require('../data/vedicRemedies');
@@ -125,7 +125,7 @@ exports.interpret = async (req, res) => {
   try {
     const lang = langFrom(req);
     const {
-      dream_text, dream_date, dream_time, mood,
+      dream_text, dream_date, dream_time, watch, mood,
       fell_asleep_again, later_dream_same_night, is_recurring,
     } = req.body || {};
 
@@ -143,12 +143,22 @@ exports.interpret = async (req, res) => {
     // ── Layer 1: the watch of the night ───────────────────────────────────
     const today = new Date();
     const fallbackDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    const timing = readDreamTiming(
-      dream_date || fallbackDate,
-      dream_time || '04:00',
-      place,
-      { fellAsleepAgain: !!fell_asleep_again, laterDreamSameNight: !!later_dream_same_night },
-    );
+    // The page asks which watch of the night it was, not for a clock time —
+    // see resolveWatch for why. An explicit dream_time is still honoured so an
+    // older client, or anyone calling the API directly, keeps working.
+    const onDate = dream_date || fallbackDate;
+    const opts = { fellAsleepAgain: !!fell_asleep_again, laterDreamSameNight: !!later_dream_same_night };
+    const WATCHES = ['first', 'second', 'third', 'fourth', 'dawn', 'day'];
+
+    let timing;
+    if (watch === 'unknown') {
+      timing = unknownTiming(onDate);
+    } else if (WATCHES.includes(watch)) {
+      const at = resolveWatch(onDate, watch, place);
+      timing = readDreamTiming(at.dateStr, at.timeStr, place, opts);
+    } else {
+      timing = readDreamTiming(onDate, dream_time || '04:00', place, opts);
+    }
 
     // ── Layer 2: the symbols, looked up ───────────────────────────────────
     const matched = matchSymbols(text);
@@ -195,7 +205,9 @@ exports.interpret = async (req, res) => {
       : (lang === 'hi' ? '(कोई ज्ञात प्रतीक नहीं मिला — सामान्य समझ से पढ़ें, कोई फल न गढ़ें।)'
                        : '(No known symbol matched — read it generally, and do not invent a verdict.)');
 
-    const timingLine = timing.isDaytime
+    const timingLine = timing.unknown
+      ? (lang === 'hi' ? 'सपने का पहर ज्ञात नहीं — कोई समय-सीमा न बताएँ।' : 'The watch of the night is not known — do not state any timing.')
+      : timing.isDaytime
       ? (lang === 'hi' ? 'यह दिन का सपना है; शास्त्र इसे फलदायी नहीं मानते।' : 'A daytime dream; the texts do not hold these as fruitful.')
       : `${timing.label[lang]} — ${timing.fruition[lang]}${timing.nullified ? (lang === 'hi' ? ' (किन्तु यह निष्फल हो गया)' : ' (but this one is nullified)') : ''}`;
 
