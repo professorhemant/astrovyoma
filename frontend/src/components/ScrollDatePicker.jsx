@@ -66,10 +66,10 @@ function Drum({ items, value, onChange, fmt }) {
     <div className="relative flex-1 overflow-hidden" style={{ height: ITEM_H * 3 }}>
       {/* top fade */}
       <div className="absolute inset-x-0 top-0 z-10 pointer-events-none"
-        style={{ height: ITEM_H, background: 'linear-gradient(to bottom,#0a081e 40%,transparent)' }} />
+        style={{ height: ITEM_H, background: 'linear-gradient(to bottom,rgba(10,8,30,0.92) 0%,rgba(10,8,30,0.3) 60%,transparent 100%)' }} />
       {/* bottom fade */}
       <div className="absolute inset-x-0 bottom-0 z-10 pointer-events-none"
-        style={{ height: ITEM_H, background: 'linear-gradient(to top,#0a081e 40%,transparent)' }} />
+        style={{ height: ITEM_H, background: 'linear-gradient(to top,rgba(10,8,30,0.92) 0%,rgba(10,8,30,0.3) 60%,transparent 100%)' }} />
       {/* selection band */}
       <div className="absolute inset-x-3 z-10 pointer-events-none"
         style={{ top: ITEM_H, height: ITEM_H,
