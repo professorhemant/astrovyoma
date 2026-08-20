@@ -506,7 +506,17 @@ function AstrologersTab() {
             <tbody>
               {astrologers.map(a => (
                 <tr key={a.id} className="border-b border-cosmic-800 hover:bg-cosmic-900/50">
-                  <td className="py-2 pr-3 font-medium">{a.display_name}</td>
+                  <td className="py-2 pr-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full overflow-hidden border border-gold-600/30 shrink-0 bg-cosmic-800 flex items-center justify-center">
+                        {a.photo_url
+                          ? <img src={a.photo_url} alt={a.display_name} className="w-full h-full object-cover" />
+                          : <svg viewBox="0 0 80 80" className="w-5 h-5 text-gray-600" fill="currentColor"><circle cx="40" cy="28" r="16"/><path d="M8 72c0-17.673 14.327-32 32-32s32 14.327 32 32"/></svg>
+                        }
+                      </div>
+                      <span className="font-medium">{a.display_name}</span>
+                    </div>
+                  </td>
                   {/* An approved astrologer's email used to be dropped at
                       approval, so the only way to reach her was this number.
                       Both are kept now — show both. */}
