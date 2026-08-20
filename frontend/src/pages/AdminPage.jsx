@@ -1262,12 +1262,21 @@ function ApplicationsTab({ onPendingChange }) {
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4 py-8 overflow-y-auto">
           <div className="bg-cosmic-950 border border-gold-600/20 rounded-2xl p-6 max-w-2xl w-full my-auto">
             <div className="flex items-start justify-between mb-5">
-              <div>
-                <h3 className="font-serif text-xl text-gold-400">{detailsApp.name}</h3>
-                <span className={`px-2 py-0.5 rounded text-xs capitalize ${
-                  detailsApp.status === 'pending' ? 'bg-yellow-900/50 text-yellow-300'
-                  : detailsApp.status === 'approved' ? 'bg-green-900/50 text-green-300'
-                  : 'bg-red-900/50 text-red-300'}`}>{detailsApp.status}</span>
+              <div className="flex items-center gap-4">
+                {/* Profile photo */}
+                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gold-600/30 shrink-0 bg-cosmic-800 flex items-center justify-center">
+                  {detailsApp.photo_url
+                    ? <img src={detailsApp.photo_url} alt={detailsApp.name} className="w-full h-full object-cover" />
+                    : <svg viewBox="0 0 80 80" className="w-10 h-10 text-gray-600" fill="currentColor"><circle cx="40" cy="28" r="16" /><path d="M8 72c0-17.673 14.327-32 32-32s32 14.327 32 32" /></svg>
+                  }
+                </div>
+                <div>
+                  <h3 className="font-serif text-xl text-gold-400">{detailsApp.name}</h3>
+                  <span className={`px-2 py-0.5 rounded text-xs capitalize ${
+                    detailsApp.status === 'pending' ? 'bg-yellow-900/50 text-yellow-300'
+                    : detailsApp.status === 'approved' ? 'bg-green-900/50 text-green-300'
+                    : 'bg-red-900/50 text-red-300'}`}>{detailsApp.status}</span>
+                </div>
               </div>
               <button onClick={() => setDetailsApp(null)} className="text-gray-500 hover:text-gray-300"><X className="w-5 h-5" /></button>
             </div>
