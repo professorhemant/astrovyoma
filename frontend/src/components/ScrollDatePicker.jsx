@@ -93,8 +93,8 @@ function Drum({ items, value, onChange, fmt }) {
           <div
             key={item}
             style={{ height: ITEM_H, scrollSnapAlign: 'center' }}
-            className={`flex items-center justify-center select-none cursor-pointer transition-all duration-150 text-gold-400 ${
-              item === value ? 'font-bold text-[16px] opacity-100' : 'font-normal text-[14px] opacity-40'
+            className={`flex items-center justify-center select-none cursor-pointer transition-all duration-150 ${
+              item === value ? 'text-gold-400 font-bold text-[16px]' : 'text-white/60 font-normal text-[14px]'
             }`}
             onClick={() => {
               const idx = items.indexOf(item);
