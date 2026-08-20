@@ -73,6 +73,7 @@ import AboutUsPage              from './pages/AboutUsPage';
 import ContentPage              from './pages/ContentPage';
 import JoinAsAstrologerPage    from './pages/JoinAsAstrologerPage';
 import AstrologerOnboardingPage from './pages/AstrologerOnboardingPage';
+import KPAstrologyPage          from './pages/KPAstrologyPage';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -183,6 +184,7 @@ function AppLayout() {
             <Route path="/muhurta"               element={<MuhurtaPage />} />
             <Route path="/vastu-pooja"           element={<VastuPoojaPage />} />
             <Route path="/yoga-finder"           element={<YogaFinderPage />} />
+            <Route path="/kp-astrology"          element={<KPAstrologyPage />} />
             <Route path="/about"                 element={<AboutUsPage />} />
             <Route path="/join-as-astrologer"   element={<JoinAsAstrologerPage />} />
             <Route path="/astrologer-kit"        element={<AstrologerOnboardingPage />} />
