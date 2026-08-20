@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ScrollDatePicker from '../components/ScrollDatePicker';
 import toast from 'react-hot-toast';
 import { ChevronDown, MapPin, Clock } from 'lucide-react';
 import { kpAstrology, geocode, reportHistory } from '../api';
@@ -629,8 +630,7 @@ export default function KPAstrologyPage() {
               </div>
               <div>
                 <label className="text-xs text-cosmic-400 mb-1 block">Date of Birth *</label>
-                <input type="date" className="input-cosmic w-full" required
-                  value={form.dob} onChange={e => setForm(f=>({...f,dob:e.target.value}))} />
+                <ScrollDatePicker value={form.dob} onChange={v => setForm(f => ({ ...f, dob: v }))} />
               </div>
               <div>
                 <label className="text-xs text-cosmic-400 mb-1 block">Time of Birth *</label>

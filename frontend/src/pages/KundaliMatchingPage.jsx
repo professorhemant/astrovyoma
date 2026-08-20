@@ -1,5 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ScrollDatePicker from '../components/ScrollDatePicker';
 import { Loader, ChevronDown, ChevronUp, Bookmark } from 'lucide-react';
 import { gunaMilan as gunaMilanApi, reportHistory as historyApi } from '../api';
 import { Link } from 'react-router-dom';
@@ -45,9 +46,7 @@ function PersonForm({ title, emoji, mode, value, onChange }) {
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="text-gray-400 text-xs uppercase tracking-wider mb-1.5 block">Date of Birth</label>
-                <input type="date" value={value.dob || ''} onChange={e => onChange({ ...value, dob: e.target.value })}
-                  max={new Date().toISOString().split('T')[0]}
-                  className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-3 py-2.5 text-gray-200 text-sm focus:outline-none focus:border-gold-500/50" />
+                <ScrollDatePicker value={value.dob || ''} onChange={v => onChange({ ...value, dob: v })} max={new Date().toISOString().split('T')[0]} />
               </div>
               <div>
                 <label className="text-gray-400 text-xs uppercase tracking-wider mb-1.5 block">Time of Birth</label>

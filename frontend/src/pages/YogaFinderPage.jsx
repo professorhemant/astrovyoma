@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ScrollDatePicker from '../components/ScrollDatePicker';
 import toast from 'react-hot-toast';
 import { Loader, ChevronDown, ChevronUp, Bookmark, Languages } from 'lucide-react';
 import { yoga as yogaApi, reportHistory as historyApi } from '../api';
@@ -260,8 +261,7 @@ export default function YogaFinderPage() {
                 <label className="text-gray-400 text-xs uppercase tracking-wider block mb-1.5">
                   {lang === 'hi' ? 'जन्म तिथि *' : 'Date of Birth *'}
                 </label>
-                <input type="date" value={form.dob} onChange={e => set('dob', e.target.value)} required
-                  className="w-full bg-cosmic-900/60 border border-gold-600/20 rounded-xl px-4 py-2.5 text-gray-200 text-sm focus:outline-none focus:border-gold-500/50" />
+                <ScrollDatePicker value={form.dob} onChange={v => set('dob', v)} />
               </div>
               <div>
                 <label className="text-gray-400 text-xs uppercase tracking-wider block mb-1.5">

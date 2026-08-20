@@ -1,5 +1,6 @@
 ﻿import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ScrollDatePicker from '../components/ScrollDatePicker';
 import { Clock, Calendar, Loader, Shield, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { mangalDosha as mangalDoshaApi } from '../api';
@@ -161,8 +162,7 @@ export default function MangalDoshaPage() {
                 <label className="block text-gray-300 text-sm mb-1.5 flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 text-gold-500" /> Date of Birth <span className="text-red-400">*</span>
                 </label>
-                <input type="date" value={form.dob} onChange={e => setForm(f => ({ ...f, dob: e.target.value }))}
-                  className="w-full bg-cosmic-900/80 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 focus:outline-none focus:border-gold-500/50 transition-all" required />
+                <ScrollDatePicker value={form.dob} onChange={v => setForm(f => ({ ...f, dob: v }))} />
               </div>
               <div>
                 <label className="block text-gray-300 text-sm mb-1.5 flex items-center gap-1.5">

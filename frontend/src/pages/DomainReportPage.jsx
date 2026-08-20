@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ScrollDatePicker from '../components/ScrollDatePicker';
 import toast from 'react-hot-toast';
 import { Bookmark } from 'lucide-react';
 import { domainReport, reportHistory as historyApi } from '../api';
@@ -182,8 +183,7 @@ export default function DomainReportPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs text-cosmic-400 mb-1">Date of Birth</label>
-                <input type="date" className="input-cosmic w-full"
-                  value={form.dob} onChange={e => setForm(f => ({ ...f, dob: e.target.value }))} required />
+                <ScrollDatePicker value={form.dob} onChange={v => setForm(f => ({ ...f, dob: v }))} />
               </div>
               <div>
                 <label className="block text-xs text-cosmic-400 mb-1">Time of Birth</label>

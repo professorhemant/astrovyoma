@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import * as Sentry from '@sentry/react';
+import ScrollDatePicker from '../components/ScrollDatePicker';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -2213,11 +2214,7 @@ export default function KundaliPage() {
               </div>
               <div>
                 <label className="text-gray-200 text-sm block mb-1.5">Date of Birth *</label>
-                <div className="flex items-center bg-cosmic-900 border border-gold-600/20 rounded-xl focus-within:border-gold-500 transition-colors">
-                  <span className="pl-4 pr-3 text-gray-300"><Calendar className="w-5 h-5" /></span>
-                  <input type="date" value={form.dob} onChange={e=>setForm(f=>({...f,dob:e.target.value}))} max={new Date().toISOString().split('T')[0]}
-                    className="flex-1 bg-transparent py-3 pr-4 text-gray-200 focus:outline-none text-sm [color-scheme:dark]" />
-                </div>
+                <ScrollDatePicker value={form.dob} onChange={v => setForm(f => ({ ...f, dob: v }))} max={new Date().toISOString().split('T')[0]} />
               </div>
               <div>
                 <label className="text-gray-200 text-sm block mb-1.5">

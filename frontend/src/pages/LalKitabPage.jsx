@@ -1,5 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ScrollDatePicker from '../components/ScrollDatePicker';
 import { Loader, ChevronDown, ChevronUp, AlertTriangle, CheckCircle, Bookmark } from 'lucide-react';
 import { lalKitab as lalKitabApi, reportHistory as historyApi } from '../api';
 import { Link } from 'react-router-dom';
@@ -179,9 +180,7 @@ export default function LalKitabPage() {
           <div className="grid md:grid-cols-3 gap-4">
             <div>
               <label className="block text-gray-400 text-xs uppercase tracking-wider mb-2">Date of Birth</label>
-              <input type="date" value={form.dob} onChange={e => setForm(f => ({ ...f, dob: e.target.value }))}
-                max={new Date().toISOString().split('T')[0]}
-                className="w-full bg-cosmic-800 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 focus:outline-none focus:border-gold-500/50 text-sm" />
+              <ScrollDatePicker value={form.dob} onChange={v => setForm(f => ({ ...f, dob: v }))} max={new Date().toISOString().split('T')[0]} />
             </div>
             <div>
               <label className="block text-gray-400 text-xs uppercase tracking-wider mb-2">Time of Birth</label>

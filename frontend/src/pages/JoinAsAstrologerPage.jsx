@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import ScrollDatePicker from '../components/ScrollDatePicker';
 import toast from 'react-hot-toast';
 import { astrologerApplications, content as contentApi } from '../api';
 
@@ -299,9 +300,7 @@ export default function JoinAsAstrologerPage() {
 
                 <div>
                   <label className="text-gray-300 text-xs block mb-1.5">Date of Birth (जन्म तिथि) *</label>
-                  <input type="date" value={form.dob} onChange={e => set('dob', e.target.value)}
-                    max={new Date(Date.now() - 18 * 365.25 * 86400000).toISOString().split('T')[0]}
-                    className={inp('dob')} />
+                  <ScrollDatePicker value={form.dob} onChange={v => set('dob', v)} max={new Date(Date.now() - 18 * 365.25 * 86400000).toISOString().split('T')[0]} />
                   {errors.dob && <p className="text-red-400 text-xs mt-1">{errors.dob}</p>}
                 </div>
 
