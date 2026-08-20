@@ -74,7 +74,6 @@ import ContentPage              from './pages/ContentPage';
 import JoinAsAstrologerPage    from './pages/JoinAsAstrologerPage';
 import AstrologerOnboardingPage from './pages/AstrologerOnboardingPage';
 import KPAstrologyPage          from './pages/KPAstrologyPage';
-import GochraPage               from './pages/GochraPage';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
