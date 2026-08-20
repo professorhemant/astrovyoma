@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useCallback, useState } from 'react';
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const ITEM_H = 44;
+const PAD = 2; // rows above/below selection
 
 function buildYears(minYear, maxYear) {
   const arr = [];
@@ -33,69 +34,78 @@ function toYMD(y, m, d) {
 function Drum({ items, value, onChange, fmt }) {
   const ref = useRef(null);
   const debounce = useRef(null);
-  const snapping = useRef(false);
   const lastEmitted = useRef(value);
 
   const scrollTo = useCallback((idx, smooth = false) => {
     ref.current?.scrollTo({ top: idx * ITEM_H, behavior: smooth ? 'smooth' : 'instant' });
   }, []);
 
-  // Jump to value when it changes (externally or on mount)
   useEffect(() => {
     const idx = items.indexOf(value);
     if (idx >= 0) scrollTo(idx, false);
   }, [value, items, scrollTo]);
 
   const handleScroll = useCallback(() => {
-    if (snapping.current) return;
     clearTimeout(debounce.current);
     debounce.current = setTimeout(() => {
       if (!ref.current) return;
       const idx = Math.max(0, Math.min(items.length - 1, Math.round(ref.current.scrollTop / ITEM_H)));
-      snapping.current = true;
-      scrollTo(idx, true);
-      setTimeout(() => { snapping.current = false; }, 300);
       if (items[idx] !== lastEmitted.current) {
         lastEmitted.current = items[idx];
         onChange(items[idx]);
       }
     }, 80);
-  }, [items, onChange, scrollTo]);
+  }, [items, onChange]);
+
+  const totalH = ITEM_H * (PAD * 2 + 1);
 
   return (
-    <div className="relative flex-1 overflow-hidden" style={{ height: ITEM_H * 3 }}>
-      {/* top fade */}
+    <div className="relative flex-1 overflow-hidden" style={{ height: totalH }}>
+      {/* top fade — only clips outermost rows */}
       <div className="absolute inset-x-0 top-0 z-10 pointer-events-none"
-        style={{ height: ITEM_H, background: 'linear-gradient(to bottom,rgba(10,8,30,0.92) 0%,rgba(10,8,30,0.3) 60%,transparent 100%)' }} />
+        style={{ height: ITEM_H * PAD,
+          background: 'linear-gradient(to bottom,rgba(10,8,30,0.88) 0%,rgba(10,8,30,0.2) 70%,transparent 100%)' }} />
       {/* bottom fade */}
       <div className="absolute inset-x-0 bottom-0 z-10 pointer-events-none"
-        style={{ height: ITEM_H, background: 'linear-gradient(to top,rgba(10,8,30,0.92) 0%,rgba(10,8,30,0.3) 60%,transparent 100%)' }} />
+        style={{ height: ITEM_H * PAD,
+          background: 'linear-gradient(to top,rgba(10,8,30,0.88) 0%,rgba(10,8,30,0.2) 70%,transparent 100%)' }} />
       {/* selection band */}
       <div className="absolute inset-x-3 z-10 pointer-events-none"
-        style={{ top: ITEM_H, height: ITEM_H,
-          borderTop: '1px solid rgba(201,168,76,0.45)',
-          borderBottom: '1px solid rgba(201,168,76,0.45)',
-          background: 'rgba(201,168,76,0.04)' }} />
+        style={{ top: ITEM_H * PAD, height: ITEM_H,
+          borderTop: '1px solid rgba(201,168,76,0.5)',
+          borderBottom: '1px solid rgba(201,168,76,0.5)',
+          background: 'rgba(201,168,76,0.06)' }} />
 
-      <div ref={ref} onScroll={handleScroll}
-        className="h-full overflow-y-scroll"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-        <div style={{ height: ITEM_H }} />
+      <div
+        ref={ref}
+        onScroll={handleScroll}
+        style={{
+          height: '100%',
+          overflowY: 'scroll',
+          scrollSnapType: 'y mandatory',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          WebkitOverflowScrolling: 'touch',
+        }}
+      >
+        <div style={{ height: ITEM_H * PAD }} />
         {items.map((item) => (
-          <div key={item}
-            style={{ height: ITEM_H }}
-            className={`flex items-center justify-center select-none transition-all duration-150 cursor-pointer ${
-              item === value ? 'text-gold-400 font-bold text-[15px]' : 'text-gold-600/50 text-[13px]'
+          <div
+            key={item}
+            style={{ height: ITEM_H, scrollSnapAlign: 'center' }}
+            className={`flex items-center justify-center select-none cursor-pointer transition-all duration-150 text-gold-400 ${
+              item === value ? 'font-bold text-[16px] opacity-100' : 'font-normal text-[14px] opacity-40'
             }`}
             onClick={() => {
               const idx = items.indexOf(item);
               scrollTo(idx, true);
               if (item !== lastEmitted.current) { lastEmitted.current = item; onChange(item); }
-            }}>
+            }}
+          >
             {fmt ? fmt(item) : item}
           </div>
         ))}
-        <div style={{ height: ITEM_H }} />
+        <div style={{ height: ITEM_H * PAD }} />
       </div>
     </div>
   );
@@ -116,7 +126,6 @@ export default function ScrollDatePicker({ value, onChange, min, max, className 
   const years = buildYears(minYear, maxYear);
   const days  = buildDays(month, year);
 
-  // Sync from controlled value prop
   const prevVal = useRef(value);
   useEffect(() => {
     if (value && value !== prevVal.current) {
@@ -126,13 +135,11 @@ export default function ScrollDatePicker({ value, onChange, min, max, className 
     prevVal.current = value;
   }, [value]);
 
-  // Clamp day when month/year changes
   useEffect(() => {
     const max = daysInMonth(month, year);
     if (day > max) setDay(max);
   }, [month, year]);
 
-  // Emit whenever internal state changes
   const emitting = useRef(false);
   useEffect(() => {
     if (emitting.current) return;
@@ -143,11 +150,12 @@ export default function ScrollDatePicker({ value, onChange, min, max, className 
     setTimeout(() => { emitting.current = false; }, 0);
   }, [year, month, day]);
 
+  const totalH = ITEM_H * (PAD * 2 + 1);
   const divider = <div className="w-px self-stretch bg-gold-600/20" />;
 
   return (
     <div className={`bg-cosmic-900 border border-gold-600/20 rounded-xl overflow-hidden ${className}`}>
-      <div className="flex" style={{ height: ITEM_H * 3 }}>
+      <div className="flex" style={{ height: totalH }}>
         <Drum items={Array.from({length:12},(_,i)=>i+1)} value={month}
           onChange={setMonth} fmt={m => MONTHS[m-1]} />
         {divider}
