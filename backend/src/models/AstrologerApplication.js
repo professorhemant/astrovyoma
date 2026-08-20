@@ -12,7 +12,7 @@ module.exports = (sequelize) => {
     languages: { type: DataTypes.TEXT, allowNull: true },
     experience_years: { type: DataTypes.INTEGER, allowNull: false },
     price_per_min: { type: DataTypes.DECIMAL(8, 2), defaultValue: 30 },
-    photo_url: { type: DataTypes.STRING, allowNull: true },
+    photo_url: { type: DataTypes.TEXT, allowNull: true },
     certifications: { type: DataTypes.TEXT, allowNull: true },
     why_join: { type: DataTypes.TEXT, allowNull: true },
     dob: { type: DataTypes.DATEONLY, allowNull: true },

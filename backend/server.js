@@ -152,7 +152,14 @@ async function start() {
       isPostgres
         ? `ALTER TABLE astrologer_applications ADD COLUMN IF NOT EXISTS linkedin_url TEXT`
         : `ALTER TABLE astrologer_applications ADD COLUMN linkedin_url TEXT`,
-    ];
+      // Widen photo_url columns from VARCHAR(255) to TEXT to support base64 uploads
+      isPostgres
+        ? `ALTER TABLE astrologer_applications ALTER COLUMN photo_url TYPE TEXT`
+        : null,
+      isPostgres
+        ? `ALTER TABLE astrologers ALTER COLUMN photo_url TYPE TEXT`
+        : null,
+    ].filter(Boolean);
     for (const sql of migrations) {
       try { await sequelize.query(sql); } catch (_) { /* column already exists */ }
     }
