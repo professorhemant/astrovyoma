@@ -379,6 +379,16 @@ function AstrologersTab() {
   const [form, setForm] = useState(null);
   const [saving, setSaving] = useState(false);
   const [pinModal, setPinModal] = useState(null);
+  const adminPhotoRef = React.useRef(null);
+
+  function handleAdminPhotoChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { toast.error('Photo must be under 2 MB'); return; }
+    const reader = new FileReader();
+    reader.onload = ev => setForm(f => ({ ...f, photo_url: ev.target.result }));
+    reader.readAsDataURL(file);
+  }
 
   const load = () => {
     setLoading(true);
@@ -567,7 +577,6 @@ function AstrologersTab() {
                 ['price_per_min', 'Price per Minute (₹)', 'number'],
                 ['experience_years', 'Experience (years)', 'number'],
                 ['free_minutes', 'Free Minutes for New Users', 'number'],
-                ['photo_url', 'Photo URL', 'url'],
                 ['specialties', 'Specialties (comma-separated)', 'text'],
                 ['languages', 'Languages (comma-separated)', 'text'],
               ].map(([key, label, type]) => (
@@ -577,6 +586,28 @@ function AstrologersTab() {
                     className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-3 py-2 text-gray-200 text-sm focus:outline-none focus:border-gold-500" />
                 </div>
               ))}
+              {/* Photo upload */}
+              <div>
+                <label className="text-gray-300 text-xs block mb-2">Profile Photo</label>
+                <div className="flex items-center gap-4">
+                  <button type="button" onClick={() => adminPhotoRef.current?.click()}
+                    className="relative w-16 h-16 rounded-full border-2 border-dashed border-gold-600/40 hover:border-gold-500 transition-colors overflow-hidden bg-cosmic-900 flex items-center justify-center group shrink-0">
+                    {form.photo_url
+                      ? <img src={form.photo_url} alt="Preview" className="w-full h-full object-cover" />
+                      : <svg viewBox="0 0 80 80" className="w-9 h-9 text-gray-600" fill="currentColor"><circle cx="40" cy="28" r="16"/><path d="M8 72c0-17.673 14.327-32 32-32s32 14.327 32 32"/></svg>
+                    }
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+                    </div>
+                  </button>
+                  <input ref={adminPhotoRef} type="file" accept="image/*" className="hidden" onChange={handleAdminPhotoChange} />
+                  <div className="text-xs text-gray-500 space-y-1">
+                    <p>Click circle to upload · JPG, PNG, WEBP · Max 2 MB</p>
+                    {form.photo_url && <button type="button" onClick={() => setForm(f => ({ ...f, photo_url: '' }))} className="text-red-400 hover:underline">Remove photo</button>}
+                  </div>
+                </div>
+              </div>
+
               <label className="flex items-center gap-2 text-gray-300 text-sm cursor-pointer">
                 <input type="checkbox" checked={form.is_verified} onChange={e => setForm(f => ({ ...f, is_verified: e.target.checked }))} className="accent-gold-400" />
                 Verified (shows badge in listings)
