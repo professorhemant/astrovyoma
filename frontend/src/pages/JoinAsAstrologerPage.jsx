@@ -3,11 +3,31 @@ import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { astrologerApplications, content as contentApi } from '../api';
 
-const STEPS = ['Personal Info', 'Your Expertise', 'About You'];
+const STEPS = ['Personal Info', 'Skills & Languages', 'Education', 'Profile & Pricing', 'About You'];
+
+const SKILLS = [
+  'Vedic Astrology', 'KP System', 'Lal Kitab', 'Nadi Astrology', 'Tarot',
+  'Numerology', 'Palmistry', 'Vastu Shastra', 'Prashana', 'Horary',
+  'Gemology', 'Face Reading', 'Western Astrology', 'Life Coach',
+  'Muhurta', 'Kundali Reading', 'Remedial Astrology', 'Loshu Grid',
+];
+
+const LANGUAGES = [
+  'Hindi', 'English', 'Sanskrit', 'Tamil', 'Telugu', 'Marathi',
+  'Gujarati', 'Bengali', 'Punjabi', 'Malayalam', 'Kannada', 'Odia',
+  'Assamese', 'Marwari', 'Urdu', 'Sindhi', 'Bhojpuri', 'Nepali',
+  'Maithili', 'Konkani', 'Rajasthani',
+];
+
+const HOURS = ['1–2 hrs', '2–4 hrs', '4–6 hrs', '6–8 hrs', '8+ hrs'];
 
 const EMPTY = {
-  name: '', email: '', phone: '', photo_url: '', languages: '',
-  experience_years: '', specialties: '', certifications: '', price_per_min: 30,
+  name: '', dob: '', gender: '', email: '', phone: '', location: '',
+  skills: [], languages: [],
+  astrology_learned_from: '', highest_qualification: '', degree: '', college: '',
+  other_platform: null, fulltime_job: null, daily_hours: '',
+  photo_url: '', youtube_channel: '', linkedin_url: '',
+  experience_years: '', price_per_min: 30,
   bio: '', why_join: '',
 };
 
@@ -17,13 +37,8 @@ export default function JoinAsAstrologerPage() {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  // What an astrologer keeps, from the server rather than typed in here twice.
-  // Both figures on this page — the badge and the line under the rate — are
-  // this number, so neither can drift away from the commission that is
-  // actually applied. 60 is what the commission setting defaults to, and is
-  // only used if the request has not answered yet.
   const [share, setShare] = useState(60);
+
   useEffect(() => {
     contentApi.settings()
       .then(r => { const s = r.data?.settings?.astrologerSharePercent; if (Number.isFinite(s)) setShare(s); })
@@ -35,20 +50,42 @@ export default function JoinAsAstrologerPage() {
     setErrors(e => ({ ...e, [key]: undefined }));
   }
 
+  function toggleTag(key, val) {
+    setForm(f => {
+      const arr = f[key];
+      return { ...f, [key]: arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val] };
+    });
+    setErrors(e => ({ ...e, [key]: undefined }));
+  }
+
   function validateStep(s) {
     const errs = {};
     if (s === 0) {
       if (!form.name.trim()) errs.name = 'Full name is required';
+      if (!form.dob) errs.dob = 'Date of birth is required';
+      if (!form.gender) errs.gender = 'Please select gender';
       if (!form.email.trim()) errs.email = 'Email is required';
       else if (!/\S+@\S+\.\S+/.test(form.email)) errs.email = 'Enter a valid email';
       if (!form.phone.trim()) errs.phone = 'Phone is required';
+      if (!form.location.trim()) errs.location = 'City, State, Country is required';
     }
     if (s === 1) {
+      if (form.skills.length === 0) errs.skills = 'Select at least one skill';
+      if (form.languages.length === 0) errs.languages = 'Select at least one language';
+    }
+    if (s === 2) {
+      if (!form.astrology_learned_from.trim()) errs.astrology_learned_from = 'This field is required';
+      if (!form.highest_qualification.trim()) errs.highest_qualification = 'This field is required';
+      if (!form.daily_hours) errs.daily_hours = 'Please select daily hours';
+      if (form.other_platform === null) errs.other_platform = 'Please select an option';
+      if (form.fulltime_job === null) errs.fulltime_job = 'Please select an option';
+    }
+    if (s === 3) {
       if (!form.experience_years) errs.experience_years = 'Years of experience is required';
       else if (parseInt(form.experience_years) < 1) errs.experience_years = 'Must be at least 1 year';
       if (!form.price_per_min || parseFloat(form.price_per_min) < 10) errs.price_per_min = 'Minimum ₹10 per minute';
     }
-    if (s === 2) {
+    if (s === 4) {
       if (!form.bio.trim()) errs.bio = 'Bio is required';
     }
     return errs;
@@ -58,31 +95,44 @@ export default function JoinAsAstrologerPage() {
     const errs = validateStep(step);
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setStep(s => s + 1);
+    window.scrollTo(0, 0);
   }
 
   function handleBack() {
     setStep(s => s - 1);
+    window.scrollTo(0, 0);
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const errs = validateStep(2);
+    const errs = validateStep(4);
     if (Object.keys(errs).length) { setErrors(errs); return; }
-
     setLoading(true);
     try {
       await astrologerApplications.submit({
         name: form.name.trim(),
         email: form.email.trim(),
         phone: form.phone.trim(),
+        dob: form.dob || undefined,
+        gender: form.gender || undefined,
+        location: form.location.trim() || undefined,
+        skills: form.skills.join(', ') || undefined,
+        languages: form.languages.join(', ') || undefined,
+        astrology_learned_from: form.astrology_learned_from.trim() || undefined,
+        highest_qualification: form.highest_qualification.trim() || undefined,
+        degree: form.degree.trim() || undefined,
+        college: form.college.trim() || undefined,
+        other_platform: form.other_platform,
+        fulltime_job: form.fulltime_job,
+        daily_hours: form.daily_hours || undefined,
         photo_url: form.photo_url.trim() || undefined,
-        languages: form.languages.trim() || undefined,
+        youtube_channel: form.youtube_channel.trim() || undefined,
+        linkedin_url: form.linkedin_url.trim() || undefined,
         experience_years: parseInt(form.experience_years),
-        specialties: form.specialties.trim() || undefined,
-        certifications: form.certifications.trim() || undefined,
         price_per_min: parseFloat(form.price_per_min) || 30,
         bio: form.bio.trim(),
         why_join: form.why_join.trim() || undefined,
+        specialties: form.skills.join(', ') || undefined,
       });
       setSubmitted(true);
     } catch (err) {
@@ -93,11 +143,62 @@ export default function JoinAsAstrologerPage() {
     }
   }
 
-  const inputClass = (key) =>
+  const inp = (key) =>
     `w-full bg-cosmic-900 border ${errors[key] ? 'border-red-500/60' : 'border-gold-600/20'} rounded-xl px-4 py-3 text-gray-200 text-sm focus:outline-none focus:border-gold-500 transition-colors placeholder-gray-600`;
 
-  const textareaClass = (key) =>
+  const ta = (key) =>
     `w-full bg-cosmic-900 border ${errors[key] ? 'border-red-500/60' : 'border-gold-600/20'} rounded-xl px-4 py-3 text-gray-200 text-sm focus:outline-none focus:border-gold-500 transition-colors placeholder-gray-600 resize-none`;
+
+  function TagGrid({ label, items, selected, onToggle, error, hint }) {
+    return (
+      <div>
+        <label className="text-gray-300 text-xs block mb-2">{label}</label>
+        {hint && <p className="text-gray-500 text-xs mb-2">{hint}</p>}
+        <div className="flex flex-wrap gap-2">
+          {items.map(item => (
+            <button
+              key={item}
+              type="button"
+              onClick={() => onToggle(item)}
+              className={`px-3 py-1.5 rounded-full text-xs border transition-all ${
+                selected.includes(item)
+                  ? 'bg-gold-500 border-gold-500 text-cosmic-950 font-semibold'
+                  : 'bg-cosmic-900 border-gold-600/20 text-gray-400 hover:border-gold-500/50'
+              }`}
+            >
+              {selected.includes(item) ? '✓ ' : '+ '}{item}
+            </button>
+          ))}
+        </div>
+        {error && <p className="text-red-400 text-xs mt-2">{error}</p>}
+      </div>
+    );
+  }
+
+  function YesNo({ label, value, onChange, error }) {
+    return (
+      <div>
+        <label className="text-gray-300 text-xs block mb-2">{label}</label>
+        <div className="flex gap-3">
+          {[true, false].map(opt => (
+            <button
+              key={String(opt)}
+              type="button"
+              onClick={() => onChange(opt)}
+              className={`flex-1 py-2.5 rounded-xl text-sm border transition-all ${
+                value === opt
+                  ? 'bg-gold-500 border-gold-500 text-cosmic-950 font-semibold'
+                  : 'bg-cosmic-900 border-gold-600/20 text-gray-400 hover:border-gold-500/40'
+              }`}
+            >
+              {opt ? 'Yes' : 'No'}
+            </button>
+          ))}
+        </div>
+        {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
+      </div>
+    );
+  }
 
   if (submitted) {
     return (
@@ -106,21 +207,14 @@ export default function JoinAsAstrologerPage() {
           <div className="text-4xl mb-4">✦</div>
           <h2 className="font-serif text-2xl text-green-400 mb-3">Application Submitted!</h2>
           <p className="text-gray-300 text-sm leading-relaxed mb-4">
-            Thank you <span className="text-gold-400 font-medium">{form.name}</span>! We have received your application.
-            Our team will review it and contact you at <span className="text-gold-400">{form.email}</span> within 3-5 business days.
+            Thank you <span className="text-gold-400 font-medium">{form.name}</span>! Our team will review your application
+            and contact you at <span className="text-gold-400">{form.email}</span> within 3–5 business days.
           </p>
-          {/* Say now what arrives on approval, so the email is expected rather
-              than mistaken for spam — and so nobody hunts for a way in on the
-              ordinary login page, which only ever makes them a customer. */}
           <div className="text-left bg-cosmic-900/60 border border-gold-600/15 rounded-xl p-4 mb-6">
-            <p className="text-gold-400 text-xs font-semibold mb-2">If you are approved</p>
+            <p className="text-gold-400 text-xs font-semibold mb-2">If approved</p>
             <p className="text-gray-400 text-xs leading-relaxed">
-              You will get an email with a link to your <strong className="text-gray-300">Pandit Portal</strong>,
-              plus a 4-digit PIN. You sign in there with your mobile number and that PIN,
-              and switch yourself online — that is what puts you in front of seekers.
-              <br /><br />
-              It is a separate sign-in from the ordinary site login, which only ever
-              makes you a customer.
+              You will receive an email with a link to your <strong className="text-gray-300">Pandit Portal</strong> and
+              a 4-digit PIN. Sign in with your mobile number and PIN to go online and start receiving seekers.
             </p>
           </div>
           <Link to="/astrologers" className="btn-gold px-6 py-2.5 text-sm inline-block">Browse Astrologers</Link>
@@ -132,20 +226,13 @@ export default function JoinAsAstrologerPage() {
   return (
     <div className="min-h-screen bg-cosmic-950 pt-20 pb-16">
       {/* Hero */}
-      <div className="text-center py-12 px-4">
+      <div className="text-center py-10 px-4">
         <div className="text-gold-400 text-3xl mb-3">✦</div>
         <h1 className="font-serif text-4xl md:text-5xl text-gold-400 mb-3">Join AstroVyoma as an Astrologer</h1>
-        {/* "…with thousands of seekers" was the same untrue claim as the badge
-            below it, just in prose. */}
         <p className="text-gray-400 text-lg">Join the founding panel and set your own terms</p>
-
-        <div className="flex flex-wrap justify-center gap-4 mt-8">
+        <div className="flex flex-wrap justify-center gap-4 mt-6">
           {[
             { icon: '₹', label: `${share}% Earnings`, sub: 'Your share of every consultation' },
-            // Was "10,000+ Users — Active seekers on the platform". There were
-            // two accounts, one of them the admin, and no consultation had ever
-            // been given. An astrologer decides to join on the strength of these
-            // three boxes, so every one of them has to be something we can show.
             { icon: '🆓', label: 'No Joining Fee', sub: 'No registration or subscription charge' },
             { icon: '⏰', label: 'Flexible Hours', sub: 'Work on your own schedule' },
           ].map(b => (
@@ -156,34 +243,28 @@ export default function JoinAsAstrologerPage() {
             </div>
           ))}
         </div>
-
-        {/* Nobody should have to apply to find out the terms — the kit sets out
-            the split, the code of conduct and what joining involves in full. */}
-        <p className="text-gray-500 text-sm mt-8">
+        <p className="text-gray-500 text-sm mt-6">
           Want the full picture first?{' '}
-          <Link to="/astrologer-kit" className="text-gold-400 hover:underline">
-            Read the astrologer’s kit
-          </Link>{' '}
-          — earnings, papers, the code of conduct and every step of joining.
+          <Link to="/astrologer-kit" className="text-gold-400 hover:underline">Read the astrologer's kit</Link>
         </p>
       </div>
 
       {/* Form */}
-      <div className="max-w-xl mx-auto px-4">
+      <div className="max-w-2xl mx-auto px-4">
         {/* Step indicator */}
-        <div className="flex items-center mb-8">
+        <div className="flex items-center mb-8 overflow-x-auto pb-1">
           {STEPS.map((label, i) => (
             <React.Fragment key={i}>
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center flex-shrink-0">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
                   i < step ? 'bg-green-500 text-white' : i === step ? 'bg-gold-500 text-cosmic-950' : 'bg-cosmic-800 text-gray-500'
                 }`}>
                   {i < step ? '✓' : i + 1}
                 </div>
-                <span className={`text-xs mt-1 whitespace-nowrap ${i === step ? 'text-gold-400' : 'text-gray-500'}`}>{label}</span>
+                <span className={`text-xs mt-1 whitespace-nowrap ${i === step ? 'text-gold-400' : 'text-gray-600'}`}>{label}</span>
               </div>
               {i < STEPS.length - 1 && (
-                <div className={`flex-1 h-0.5 mx-2 mb-4 transition-colors ${i < step ? 'bg-green-500/50' : 'bg-cosmic-800'}`} />
+                <div className={`flex-1 h-0.5 mx-2 mb-4 transition-colors min-w-[12px] ${i < step ? 'bg-green-500/50' : 'bg-cosmic-800'}`} />
               )}
             </React.Fragment>
           ))}
@@ -192,95 +273,222 @@ export default function JoinAsAstrologerPage() {
         <div className="card-cosmic p-6 md:p-8">
           <h2 className="font-serif text-xl text-gold-400 mb-6">Step {step + 1}: {STEPS[step]}</h2>
 
-          <form onSubmit={step === 2 ? handleSubmit : e => { e.preventDefault(); handleNext(); }}>
+          <form onSubmit={step === 4 ? handleSubmit : e => { e.preventDefault(); handleNext(); }}>
+
+            {/* ── Step 0: Personal Info ── */}
             {step === 0 && (
               <div className="space-y-4">
                 <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Full Name *</label>
+                  <label className="text-gray-300 text-xs block mb-1.5">Full Name (नाम) *</label>
                   <input type="text" value={form.name} onChange={e => set('name', e.target.value)}
-                    placeholder="Your full name" className={inputClass('name')} />
+                    placeholder="Your full name" className={inp('name')} />
                   {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
                 </div>
+
                 <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Email *</label>
+                  <label className="text-gray-300 text-xs block mb-1.5">Date of Birth (जन्म तिथि) *</label>
+                  <input type="date" value={form.dob} onChange={e => set('dob', e.target.value)}
+                    max={new Date(Date.now() - 18 * 365.25 * 86400000).toISOString().split('T')[0]}
+                    className={inp('dob')} />
+                  {errors.dob && <p className="text-red-400 text-xs mt-1">{errors.dob}</p>}
+                </div>
+
+                <div>
+                  <label className="text-gray-300 text-xs block mb-2">Gender (लिंग) *</label>
+                  <div className="flex gap-3">
+                    {['Male', 'Female', 'Other'].map(g => (
+                      <button key={g} type="button" onClick={() => set('gender', g)}
+                        className={`flex-1 py-2.5 rounded-xl text-sm border transition-all ${
+                          form.gender === g
+                            ? 'bg-gold-500 border-gold-500 text-cosmic-950 font-semibold'
+                            : 'bg-cosmic-900 border-gold-600/20 text-gray-400 hover:border-gold-500/40'
+                        }`}>
+                        {g}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.gender && <p className="text-red-400 text-xs mt-1">{errors.gender}</p>}
+                </div>
+
+                <div>
+                  <label className="text-gray-300 text-xs block mb-1.5">Email Address *</label>
                   <input type="email" value={form.email} onChange={e => set('email', e.target.value)}
-                    placeholder="you@example.com" className={inputClass('email')} />
+                    placeholder="you@example.com" className={inp('email')} />
                   {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
                 </div>
+
                 <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Phone *</label>
+                  <label className="text-gray-300 text-xs block mb-1.5">Phone Number *</label>
                   <input type="tel" value={form.phone} onChange={e => set('phone', e.target.value)}
-                    placeholder="+91 98765 43210" className={inputClass('phone')} />
+                    placeholder="+91 98765 43210" className={inp('phone')} />
                   {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone}</p>}
                 </div>
+
                 <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Photo URL <span className="text-gray-600">(optional)</span></label>
-                  <input type="url" value={form.photo_url} onChange={e => set('photo_url', e.target.value)}
-                    placeholder="https://..." className={inputClass('photo_url')} />
-                </div>
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Languages</label>
-                  <input type="text" value={form.languages} onChange={e => set('languages', e.target.value)}
-                    placeholder="Hindi, English, Marathi" className={inputClass('languages')} />
+                  <label className="text-gray-300 text-xs block mb-1.5">Current City, State, Country *</label>
+                  <input type="text" value={form.location} onChange={e => set('location', e.target.value)}
+                    placeholder="e.g. Jaipur, Rajasthan, India" className={inp('location')} />
+                  {errors.location && <p className="text-red-400 text-xs mt-1">{errors.location}</p>}
                 </div>
               </div>
             )}
 
+            {/* ── Step 1: Skills & Languages ── */}
             {step === 1 && (
+              <div className="space-y-6">
+                <TagGrid
+                  label="Skills (स्किल) *"
+                  hint="Select all that apply — these appear on your public profile"
+                  items={SKILLS}
+                  selected={form.skills}
+                  onToggle={v => toggleTag('skills', v)}
+                  error={errors.skills}
+                />
+                <TagGrid
+                  label="Languages (भाषाएँ) *"
+                  hint="Languages you can consult in"
+                  items={LANGUAGES}
+                  selected={form.languages}
+                  onToggle={v => toggleTag('languages', v)}
+                  error={errors.languages}
+                />
+              </div>
+            )}
+
+            {/* ── Step 2: Education & Availability ── */}
+            {step === 2 && (
               <div className="space-y-4">
                 <div>
+                  <label className="text-gray-300 text-xs block mb-1.5">From where did you learn Astrology? *</label>
+                  <input type="text" value={form.astrology_learned_from}
+                    onChange={e => set('astrology_learned_from', e.target.value)}
+                    placeholder="e.g. Sanskrit Mahavidyalaya, Gurukul, Self-taught" className={inp('astrology_learned_from')} />
+                  {errors.astrology_learned_from && <p className="text-red-400 text-xs mt-1">{errors.astrology_learned_from}</p>}
+                </div>
+
+                <div>
+                  <label className="text-gray-300 text-xs block mb-1.5">Highest Qualification *</label>
+                  <input type="text" value={form.highest_qualification}
+                    onChange={e => set('highest_qualification', e.target.value)}
+                    placeholder="e.g. Jyotish Acharya, M.A. Sanskrit, B.A." className={inp('highest_qualification')} />
+                  {errors.highest_qualification && <p className="text-red-400 text-xs mt-1">{errors.highest_qualification}</p>}
+                </div>
+
+                <div>
+                  <label className="text-gray-300 text-xs block mb-1.5">Degree / Diploma <span className="text-gray-600">(optional)</span></label>
+                  <input type="text" value={form.degree} onChange={e => set('degree', e.target.value)}
+                    placeholder="e.g. Jyotish Visharad, B.Sc." className={inp('degree')} />
+                </div>
+
+                <div>
+                  <label className="text-gray-300 text-xs block mb-1.5">College / School / University <span className="text-gray-600">(optional)</span></label>
+                  <input type="text" value={form.college} onChange={e => set('college', e.target.value)}
+                    placeholder="e.g. BHU Varanasi, ICAS" className={inp('college')} />
+                </div>
+
+                <div>
+                  <label className="text-gray-300 text-xs block mb-1.5">How many hours can you contribute daily? *</label>
+                  <select value={form.daily_hours} onChange={e => set('daily_hours', e.target.value)}
+                    className={inp('daily_hours')}>
+                    <option value="">Select hours</option>
+                    {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
+                  </select>
+                  {errors.daily_hours && <p className="text-red-400 text-xs mt-1">{errors.daily_hours}</p>}
+                </div>
+
+                <YesNo
+                  label="Are you working on any other online platform? *"
+                  value={form.other_platform}
+                  onChange={v => set('other_platform', v)}
+                  error={errors.other_platform}
+                />
+
+                <YesNo
+                  label="Are you currently working a full-time job? *"
+                  value={form.fulltime_job}
+                  onChange={v => set('fulltime_job', v)}
+                  error={errors.fulltime_job}
+                />
+              </div>
+            )}
+
+            {/* ── Step 3: Profile & Pricing ── */}
+            {step === 3 && (
+              <div className="space-y-4">
+                <div>
+                  <label className="text-gray-300 text-xs block mb-1.5">Profile Photo URL <span className="text-gray-600">(optional)</span></label>
+                  <input type="url" value={form.photo_url} onChange={e => set('photo_url', e.target.value)}
+                    placeholder="https://..." className={inp('photo_url')} />
+                  <p className="text-gray-600 text-xs mt-1">Make sure your face is clearly visible. Wear your best clothes for a great first impression!</p>
+                </div>
+
+                <div>
+                  <label className="text-gray-300 text-xs block mb-1.5">YouTube Channel <span className="text-gray-600">(optional)</span></label>
+                  <input type="url" value={form.youtube_channel} onChange={e => set('youtube_channel', e.target.value)}
+                    placeholder="https://youtube.com/@yourchannel" className={inp('youtube_channel')} />
+                </div>
+
+                <div>
+                  <label className="text-gray-300 text-xs block mb-1.5">LinkedIn Profile <span className="text-gray-600">(optional)</span></label>
+                  <input type="url" value={form.linkedin_url} onChange={e => set('linkedin_url', e.target.value)}
+                    placeholder="https://linkedin.com/in/yourprofile" className={inp('linkedin_url')} />
+                </div>
+
+                <div className="border-t border-gold-600/10 pt-4">
                   <label className="text-gray-300 text-xs block mb-1.5">Years of Experience *</label>
-                  <input type="number" min="1" value={form.experience_years} onChange={e => set('experience_years', e.target.value)}
-                    placeholder="e.g. 8" className={inputClass('experience_years')} />
+                  <input type="number" min="1" value={form.experience_years}
+                    onChange={e => set('experience_years', e.target.value)}
+                    placeholder="e.g. 8" className={inp('experience_years')} />
                   {errors.experience_years && <p className="text-red-400 text-xs mt-1">{errors.experience_years}</p>}
                 </div>
+
                 <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Specialties</label>
-                  <input type="text" value={form.specialties} onChange={e => set('specialties', e.target.value)}
-                    placeholder="Vedic Astrology, Tarot, Numerology, KP Astrology" className={inputClass('specialties')} />
-                </div>
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Certifications / Qualifications</label>
-                  <textarea value={form.certifications} onChange={e => set('certifications', e.target.value)}
-                    rows={3} placeholder="e.g. Jyotish Acharya from ICAS, 2018..." className={textareaClass('certifications')} />
-                </div>
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Preferred Price per Minute ₹ *</label>
-                  <input type="number" min="10" value={form.price_per_min} onChange={e => set('price_per_min', e.target.value)}
-                    className={inputClass('price_per_min')} />
+                  <label className="text-gray-300 text-xs block mb-1.5">Preferred Price per Minute (₹) *</label>
+                  <input type="number" min="10" value={form.price_per_min}
+                    onChange={e => set('price_per_min', e.target.value)}
+                    className={inp('price_per_min')} />
                   {errors.price_per_min && <p className="text-red-400 text-xs mt-1">{errors.price_per_min}</p>}
                   <p className="text-gray-600 text-xs mt-1">Platform takes {100 - share}%; you keep {share}%</p>
                 </div>
               </div>
             )}
 
-            {step === 2 && (
+            {/* ── Step 4: About You ── */}
+            {step === 4 && (
               <div className="space-y-4">
                 <div>
                   <label className="text-gray-300 text-xs block mb-1.5">Your Bio *</label>
-                  <textarea value={form.bio} onChange={e => set('bio', e.target.value)}
-                    rows={4} placeholder="Tell users about yourself, your approach, and your style..."
-                    className={textareaClass('bio')} />
+                  <textarea value={form.bio} onChange={e => set('bio', e.target.value)} rows={4}
+                    placeholder="Tell seekers about yourself, your approach, your tradition, and what makes your readings unique..."
+                    className={ta('bio')} />
                   {errors.bio && <p className="text-red-400 text-xs mt-1">{errors.bio}</p>}
                 </div>
+
                 <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Why Join AstroVyoma?</label>
-                  <textarea value={form.why_join} onChange={e => set('why_join', e.target.value)}
-                    rows={3} placeholder="What motivates you to join our platform?"
-                    className={textareaClass('why_join')} />
+                  <label className="text-gray-300 text-xs block mb-1.5">Why should we choose you? <span className="text-gray-600">(optional)</span></label>
+                  <textarea value={form.why_join} onChange={e => set('why_join', e.target.value)} rows={4}
+                    placeholder="What makes you the right fit for AstroVyoma? What do seekers gain from your consultations?"
+                    className={ta('why_join')} maxLength={1000} />
+                  <p className="text-gray-600 text-xs mt-1 text-right">{form.why_join.length}/1000</p>
+                </div>
+
+                <div className="bg-cosmic-900/40 border border-gold-600/10 rounded-xl p-4 text-xs text-gray-500 leading-relaxed">
+                  <p className="text-gold-400 font-semibold mb-1">Submitting your application</p>
+                  By submitting, you confirm that all information is accurate. Our team reviews every application
+                  and will contact you within 3–5 business days. Approved astrologers get a Pandit Portal login
+                  via email with a 4-digit PIN.
                 </div>
               </div>
             )}
 
             <div className="flex gap-3 mt-8">
               {step > 0 && (
-                <button type="button" onClick={handleBack}
-                  className="btn-outline-gold flex-1 py-3 text-sm">
+                <button type="button" onClick={handleBack} className="btn-outline-gold flex-1 py-3 text-sm">
                   Back
                 </button>
               )}
-              {step < 2 ? (
-                <button type="submit" className="btn-gold flex-1 py-3 text-sm">Next</button>
+              {step < 4 ? (
+                <button type="submit" className="btn-gold flex-1 py-3 text-sm">Next →</button>
               ) : (
                 <button type="submit" disabled={loading}
                   className="btn-gold flex-1 py-3 text-sm flex items-center justify-center gap-2">

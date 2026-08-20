@@ -5,7 +5,14 @@ const { AstrologerApplication, Astrologer } = require('../models');
 
 async function submitApplication(req, res) {
   try {
-    const { name, email, phone, bio, specialties, languages, experience_years, price_per_min, photo_url, certifications, why_join } = req.body;
+    const {
+      name, email, phone, bio, specialties, languages, experience_years, price_per_min,
+      photo_url, certifications, why_join,
+      dob, gender, location, skills, astrology_learned_from,
+      highest_qualification, degree, college,
+      other_platform, fulltime_job, daily_hours,
+      youtube_channel, linkedin_url,
+    } = req.body;
 
     if (!name || !email || !phone || !experience_years) {
       return res.status(400).json({ error: 'name, email, phone, and experience_years are required' });
@@ -25,6 +32,19 @@ async function submitApplication(req, res) {
       experience_years: parseInt(experience_years),
       price_per_min: price_per_min || 30,
       photo_url: photo_url || null,
+      dob: dob || null,
+      gender: gender || null,
+      location: location || null,
+      skills: skills || null,
+      astrology_learned_from: astrology_learned_from || null,
+      highest_qualification: highest_qualification || null,
+      degree: degree || null,
+      college: college || null,
+      other_platform: other_platform !== undefined ? other_platform : null,
+      fulltime_job: fulltime_job !== undefined ? fulltime_job : null,
+      daily_hours: daily_hours || null,
+      youtube_channel: youtube_channel || null,
+      linkedin_url: linkedin_url || null,
       status: 'pending',
     });
 

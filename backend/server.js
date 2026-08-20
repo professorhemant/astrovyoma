@@ -114,6 +114,45 @@ async function start() {
       isPostgres
         ? `ALTER TABLE consultations ADD COLUMN IF NOT EXISTS ended_by VARCHAR(20)`
         : `ALTER TABLE consultations ADD COLUMN ended_by TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologer_applications ADD COLUMN IF NOT EXISTS dob DATE`
+        : `ALTER TABLE astrologer_applications ADD COLUMN dob TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologer_applications ADD COLUMN IF NOT EXISTS gender VARCHAR(10)`
+        : `ALTER TABLE astrologer_applications ADD COLUMN gender TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologer_applications ADD COLUMN IF NOT EXISTS location VARCHAR(255)`
+        : `ALTER TABLE astrologer_applications ADD COLUMN location TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologer_applications ADD COLUMN IF NOT EXISTS skills TEXT`
+        : `ALTER TABLE astrologer_applications ADD COLUMN skills TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologer_applications ADD COLUMN IF NOT EXISTS astrology_learned_from TEXT`
+        : `ALTER TABLE astrologer_applications ADD COLUMN astrology_learned_from TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologer_applications ADD COLUMN IF NOT EXISTS highest_qualification TEXT`
+        : `ALTER TABLE astrologer_applications ADD COLUMN highest_qualification TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologer_applications ADD COLUMN IF NOT EXISTS degree TEXT`
+        : `ALTER TABLE astrologer_applications ADD COLUMN degree TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologer_applications ADD COLUMN IF NOT EXISTS college TEXT`
+        : `ALTER TABLE astrologer_applications ADD COLUMN college TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologer_applications ADD COLUMN IF NOT EXISTS other_platform BOOLEAN`
+        : `ALTER TABLE astrologer_applications ADD COLUMN other_platform INTEGER`,
+      isPostgres
+        ? `ALTER TABLE astrologer_applications ADD COLUMN IF NOT EXISTS fulltime_job BOOLEAN`
+        : `ALTER TABLE astrologer_applications ADD COLUMN fulltime_job INTEGER`,
+      isPostgres
+        ? `ALTER TABLE astrologer_applications ADD COLUMN IF NOT EXISTS daily_hours VARCHAR(20)`
+        : `ALTER TABLE astrologer_applications ADD COLUMN daily_hours TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologer_applications ADD COLUMN IF NOT EXISTS youtube_channel TEXT`
+        : `ALTER TABLE astrologer_applications ADD COLUMN youtube_channel TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologer_applications ADD COLUMN IF NOT EXISTS linkedin_url TEXT`
+        : `ALTER TABLE astrologer_applications ADD COLUMN linkedin_url TEXT`,
     ];
     for (const sql of migrations) {
       try { await sequelize.query(sql); } catch (_) { /* column already exists */ }
