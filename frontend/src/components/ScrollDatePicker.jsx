@@ -85,7 +85,7 @@ function Drum({ items, value, onChange, fmt }) {
           <div key={item}
             style={{ height: ITEM_H }}
             className={`flex items-center justify-center select-none transition-all duration-150 cursor-pointer ${
-              item === value ? 'text-gold-400 font-bold text-[15px]' : 'text-gray-500 text-[13px]'
+              item === value ? 'text-gold-400 font-bold text-[15px]' : 'text-gold-600/50 text-[13px]'
             }`}
             onClick={() => {
               const idx = items.indexOf(item);
