@@ -41,11 +41,10 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-// Strict limiter for credential endpoints — 5 attempts per 15 min per IP.
-// The global limiter above allows 200/15min which is enough for brute-force.
+// Credential endpoints — 20 attempts per 15 min per IP.
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 20,
   message: { error: 'Too many attempts. Please wait 15 minutes and try again.' },
   standardHeaders: true,
   legacyHeaders: false,
