@@ -4,6 +4,12 @@ const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov
 const ITEM_H = 44;
 const PAD = 2; // rows above/below selection
 
+function range(lo, hi) {
+  const arr = [];
+  for (let i = lo; i <= hi; i++) arr.push(i);
+  return arr;
+}
+
 function buildYears(minYear, maxYear) {
   const arr = [];
   for (let y = maxYear; y >= minYear; y--) arr.push(y);
@@ -12,11 +18,6 @@ function buildYears(minYear, maxYear) {
 
 function daysInMonth(month, year) {
   return new Date(year, month, 0).getDate();
-}
-
-function buildDays(month, year) {
-  const n = daysInMonth(month, year);
-  return Array.from({ length: n }, (_, i) => i + 1);
 }
 
 function parseYMD(str) {
@@ -30,8 +31,12 @@ function toYMD(y, m, d) {
   return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 }
 
+function clamp(v, lo, hi) {
+  return Math.min(hi, Math.max(lo, v));
+}
+
 // ── Drum column ────────────────────────────────────────────────────────────────
-function Drum({ items, value, onChange, fmt }) {
+function Drum({ items, value, onChange, fmt, active = true }) {
   const ref = useRef(null);
   const debounce = useRef(null);
   const lastEmitted = useRef(value);
@@ -41,6 +46,9 @@ function Drum({ items, value, onChange, fmt }) {
   }, []);
 
   useEffect(() => {
+    // Track the value we were given, so a clamp from a neighbouring drum
+    // isn't mistaken for a stale emit next time this one is scrolled.
+    lastEmitted.current = value;
     const idx = items.indexOf(value);
     if (idx >= 0) scrollTo(idx, false);
   }, [value, items, scrollTo]);
@@ -94,12 +102,15 @@ function Drum({ items, value, onChange, fmt }) {
             key={item}
             style={{ height: ITEM_H, scrollSnapAlign: 'center' }}
             className={`flex items-center justify-center select-none cursor-pointer transition-all duration-150 ${
-              item === value ? 'text-gold-400 font-bold text-[16px]' : 'text-white/60 font-normal text-[14px]'
+              item === value && active ? 'text-gold-400 font-bold text-[16px]' : 'text-white/60 font-normal text-[14px]'
             }`}
             onClick={() => {
               const idx = items.indexOf(item);
               scrollTo(idx, true);
-              if (item !== lastEmitted.current) { lastEmitted.current = item; onChange(item); }
+              // Always emit: tapping the row already under the band is still
+              // the user choosing it, which is what lifts the untouched state.
+              lastEmitted.current = item;
+              onChange(item);
             }}
           >
             {fmt ? fmt(item) : item}
@@ -114,41 +125,68 @@ function Drum({ items, value, onChange, fmt }) {
 // ── Public component ───────────────────────────────────────────────────────────
 export default function ScrollDatePicker({ value, onChange, min, max, className = '' }) {
   const today = new Date();
-  const maxYear = max ? parseInt(max.split('-')[0]) : today.getFullYear();
-  const minYear = min ? parseInt(min.split('-')[0]) : 1920;
+  // Every field using this picker is a date of birth, so the future is never
+  // valid. A caller's `max` narrows that further (e.g. the 18-year age gate).
+  const todayYMD = { y: today.getFullYear(), m: today.getMonth() + 1, d: today.getDate() };
+  const maxD = parseYMD(max) || todayYMD;
+  const minD = parseYMD(min) || { y: 1920, m: 1, d: 1 };
 
-  const defaultDate = parseYMD(value) || { y: 1990, m: 1, d: 1 };
+  const parsed = parseYMD(value);
+  const defaultDate = parsed || { y: 1990, m: 1, d: 1 };
 
   const [year,  setYear]  = useState(defaultDate.y);
   const [month, setMonth] = useState(defaultDate.m);
   const [day,   setDay]   = useState(defaultDate.d);
+  // A date nobody picked is not an answer. Until the user actually chooses,
+  // emit nothing and highlight nothing, so the caller's own "date of birth is
+  // required" check can still fire.
+  const [touched, setTouched] = useState(!!parsed);
 
-  const years = buildYears(minYear, maxYear);
-  const days  = buildDays(month, year);
+  const years = buildYears(minD.y, maxD.y);
+
+  // Bound month and day too, not just the year — otherwise `max` of 2026-08-20
+  // still lets Dec 31 2026 through.
+  const monthLo = year === minD.y ? minD.m : 1;
+  const monthHi = year === maxD.y ? maxD.m : 12;
+  const months  = range(monthLo, monthHi);
+
+  const dayLo = (year === minD.y && month === minD.m) ? minD.d : 1;
+  const dayHi = (year === maxD.y && month === maxD.m)
+    ? Math.min(maxD.d, daysInMonth(month, year))
+    : daysInMonth(month, year);
+  const days = range(dayLo, dayHi);
 
   const prevVal = useRef(value);
   useEffect(() => {
     if (value && value !== prevVal.current) {
       const p = parseYMD(value);
-      if (p) { setYear(p.y); setMonth(p.m); setDay(p.d); }
+      if (p) { setYear(p.y); setMonth(p.m); setDay(p.d); setTouched(true); }
     }
     prevVal.current = value;
   }, [value]);
 
+  // Pull the selection back in range when a neighbouring drum moves under it.
   useEffect(() => {
-    const max = daysInMonth(month, year);
-    if (day > max) setDay(max);
-  }, [month, year]);
+    const m = clamp(month, monthLo, monthHi);
+    if (m !== month) { setMonth(m); return; }
+    const d = clamp(day, dayLo, dayHi);
+    if (d !== day) setDay(d);
+  }, [year, month, day, monthLo, monthHi, dayLo, dayHi]);
 
   const emitting = useRef(false);
   useEffect(() => {
+    if (!touched) return;
     if (emitting.current) return;
     emitting.current = true;
-    const safeDay = Math.min(day, daysInMonth(month, year));
-    const str = toYMD(year, month, safeDay);
-    onChange(str);
+    const safeDay = clamp(day, dayLo, dayHi);
+    const safeMonth = clamp(month, monthLo, monthHi);
+    onChange(toYMD(year, safeMonth, safeDay));
     setTimeout(() => { emitting.current = false; }, 0);
-  }, [year, month, day]);
+  }, [year, month, day, touched]);
+
+  const chooseMonth = useCallback(v => { setTouched(true); setMonth(v); }, []);
+  const chooseDay   = useCallback(v => { setTouched(true); setDay(v); },   []);
+  const chooseYear  = useCallback(v => { setTouched(true); setYear(v); },  []);
 
   const totalH = ITEM_H * (PAD * 2 + 1);
   const divider = <div className="w-px self-stretch bg-gold-600/20" />;
@@ -156,12 +194,13 @@ export default function ScrollDatePicker({ value, onChange, min, max, className 
   return (
     <div className={`bg-cosmic-900 border border-gold-600/20 rounded-xl overflow-hidden ${className}`}>
       <div className="flex" style={{ height: totalH }}>
-        <Drum items={Array.from({length:12},(_,i)=>i+1)} value={month}
-          onChange={setMonth} fmt={m => MONTHS[m-1]} />
+        <Drum items={months} value={clamp(month, monthLo, monthHi)}
+          onChange={chooseMonth} fmt={m => MONTHS[m-1]} active={touched} />
         {divider}
-        <Drum items={days} value={Math.min(day, days.length)} onChange={setDay} />
+        <Drum items={days} value={clamp(day, dayLo, dayHi)}
+          onChange={chooseDay} active={touched} />
         {divider}
-        <Drum items={years} value={year} onChange={setYear} />
+        <Drum items={years} value={year} onChange={chooseYear} active={touched} />
       </div>
     </div>
   );
