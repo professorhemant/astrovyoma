@@ -1076,6 +1076,7 @@ function ApplicationsTab({ onPendingChange }) {
   const [rejectingId, setRejectingId] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
   const [deletingId, setDeletingId] = useState(null);
+  const [detailsApp, setDetailsApp] = useState(null);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -1184,11 +1185,15 @@ function ApplicationsTab({ onPendingChange }) {
                   <td className="py-2 pr-3 text-gray-400 text-xs">{a.phone}</td>
                   <td className="py-2 pr-3">{a.experience_years}y</td>
                   <td className="py-2 pr-3 text-gold-400">₹{a.price_per_min}</td>
-                  <td className="py-2 pr-3 text-gray-400 max-w-[140px] truncate text-xs">{a.specialties || '—'}</td>
+                  <td className="py-2 pr-3 text-gray-400 max-w-[140px] truncate text-xs">{a.specialties || a.skills || '—'}</td>
                   <td className="py-2 pr-3 text-gray-500 text-xs">{new Date(a.created_at).toLocaleDateString('en-IN')}</td>
                   <td className="py-2 pr-3"><span className={statusBadge(a.status)}>{a.status}</span></td>
                   <td className="py-2">
                     <div className="flex items-center gap-2 flex-wrap">
+                    <button onClick={() => setDetailsApp(a)}
+                      className="px-2 py-1 rounded text-xs bg-cosmic-800 text-gray-300 hover:bg-cosmic-700 transition-colors">
+                      View
+                    </button>
                     {a.status === 'pending' && (
                       <div className="flex items-center gap-2">
                         <button onClick={() => handleApprove(a.id)}
@@ -1249,6 +1254,113 @@ function ApplicationsTab({ onPendingChange }) {
             </tbody>
           </table>
           <Pagination page={page} total={data.total} limit={10} onPage={setPage} />
+        </div>
+      )}
+
+      {/* Full application details modal */}
+      {detailsApp && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4 py-8 overflow-y-auto">
+          <div className="bg-cosmic-950 border border-gold-600/20 rounded-2xl p-6 max-w-2xl w-full my-auto">
+            <div className="flex items-start justify-between mb-5">
+              <div>
+                <h3 className="font-serif text-xl text-gold-400">{detailsApp.name}</h3>
+                <span className={`px-2 py-0.5 rounded text-xs capitalize ${
+                  detailsApp.status === 'pending' ? 'bg-yellow-900/50 text-yellow-300'
+                  : detailsApp.status === 'approved' ? 'bg-green-900/50 text-green-300'
+                  : 'bg-red-900/50 text-red-300'}`}>{detailsApp.status}</span>
+              </div>
+              <button onClick={() => setDetailsApp(null)} className="text-gray-500 hover:text-gray-300"><X className="w-5 h-5" /></button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              {[
+                { label: 'Email', val: detailsApp.email },
+                { label: 'Phone', val: detailsApp.phone },
+                { label: 'Date of Birth', val: detailsApp.dob || '—' },
+                { label: 'Gender', val: detailsApp.gender || '—' },
+                { label: 'Location', val: detailsApp.location || '—' },
+                { label: 'Experience', val: detailsApp.experience_years ? `${detailsApp.experience_years} years` : '—' },
+                { label: 'Price / min', val: detailsApp.price_per_min ? `₹${detailsApp.price_per_min}` : '—' },
+                { label: 'Daily Hours', val: detailsApp.daily_hours || '—' },
+                { label: 'Other Platform', val: detailsApp.other_platform === true ? 'Yes' : detailsApp.other_platform === false ? 'No' : '—' },
+                { label: 'Full-time Job', val: detailsApp.fulltime_job === true ? 'Yes' : detailsApp.fulltime_job === false ? 'No' : '—' },
+                { label: 'Learned Astrology From', val: detailsApp.astrology_learned_from || '—' },
+                { label: 'Highest Qualification', val: detailsApp.highest_qualification || '—' },
+                { label: 'Degree / Diploma', val: detailsApp.degree || '—' },
+                { label: 'College / University', val: detailsApp.college || '—' },
+                { label: 'YouTube Channel', val: detailsApp.youtube_channel || '—' },
+                { label: 'LinkedIn', val: detailsApp.linkedin_url || '—' },
+                { label: 'Applied On', val: new Date(detailsApp.created_at).toLocaleDateString('en-IN') },
+              ].map(({ label, val }) => (
+                <div key={label} className="bg-cosmic-900/50 rounded-xl px-4 py-3">
+                  <p className="text-gold-400/70 text-xs mb-0.5">{label}</p>
+                  <p className="text-gray-200 text-sm break-all">{val}</p>
+                </div>
+              ))}
+            </div>
+
+            {(detailsApp.skills || detailsApp.specialties) && (
+              <div className="mt-4 bg-cosmic-900/50 rounded-xl px-4 py-3">
+                <p className="text-gold-400/70 text-xs mb-2">Skills</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {(detailsApp.skills || detailsApp.specialties || '').split(',').map(s => s.trim()).filter(Boolean).map(s => (
+                    <span key={s} className="px-2 py-0.5 rounded-full text-xs bg-gold-500/10 text-gold-300 border border-gold-600/20">{s}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {detailsApp.languages && (
+              <div className="mt-3 bg-cosmic-900/50 rounded-xl px-4 py-3">
+                <p className="text-gold-400/70 text-xs mb-2">Languages</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {detailsApp.languages.split(',').map(s => s.trim()).filter(Boolean).map(s => (
+                    <span key={s} className="px-2 py-0.5 rounded-full text-xs bg-cosmic-800 text-gray-300 border border-gold-600/10">{s}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {detailsApp.bio && (
+              <div className="mt-3 bg-cosmic-900/50 rounded-xl px-4 py-3">
+                <p className="text-gold-400/70 text-xs mb-1">Bio</p>
+                <p className="text-gray-300 text-sm leading-relaxed">{detailsApp.bio}</p>
+              </div>
+            )}
+
+            {detailsApp.why_join && (
+              <div className="mt-3 bg-cosmic-900/50 rounded-xl px-4 py-3">
+                <p className="text-gold-400/70 text-xs mb-1">Why Hire</p>
+                <p className="text-gray-300 text-sm leading-relaxed">{detailsApp.why_join}</p>
+              </div>
+            )}
+
+            {detailsApp.certifications && (
+              <div className="mt-3 bg-cosmic-900/50 rounded-xl px-4 py-3">
+                <p className="text-gold-400/70 text-xs mb-1">Certifications</p>
+                <p className="text-gray-300 text-sm">{detailsApp.certifications}</p>
+              </div>
+            )}
+
+            <div className="flex gap-3 mt-5">
+              {detailsApp.status === 'pending' && (
+                <>
+                  <button onClick={() => { handleApprove(detailsApp.id); setDetailsApp(null); }}
+                    className="flex-1 py-2 rounded-xl text-sm bg-green-900/50 text-green-300 hover:bg-green-900/80 transition-colors">
+                    Approve
+                  </button>
+                  <button onClick={() => { setDetailsApp(null); setRejectingId(detailsApp.id); }}
+                    className="flex-1 py-2 rounded-xl text-sm bg-red-900/50 text-red-300 hover:bg-red-900/80 transition-colors">
+                    Reject
+                  </button>
+                </>
+              )}
+              <button onClick={() => setDetailsApp(null)}
+                className="flex-1 py-2 rounded-xl text-sm border border-gold-600/20 text-gray-400 hover:text-gray-200 transition-colors">
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
