@@ -6,6 +6,7 @@ import ZodiacWheel from '../components/ZodiacWheel';
 import HeroMarquee from '../components/HeroMarquee';
 import TarotSection from '../components/TarotSection';
 import VedicClock from '../components/VedicClock';
+import HeroPanchangWidget from '../components/HeroPanchangWidget';
 import { horoscope as horoscopeApi, kundali as kundaliApi, content as contentApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 import VisualEditor from '../components/editor/VisualEditor';
@@ -328,6 +329,11 @@ export default function HomePage() {
             <div className="scale-[0.38] md:scale-100 origin-bottom">
               <VedicClock />
             </div>
+          </div>
+
+          {/* Panchang today widget — desktop only, left column below mandala */}
+          <div className="hidden md:block absolute top-[280px] left-4 z-20 w-64">
+            <HeroPanchangWidget overlay={true} />
           </div>
           </div>
 
