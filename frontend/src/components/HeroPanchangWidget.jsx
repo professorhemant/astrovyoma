@@ -43,7 +43,7 @@ export default function HeroPanchangWidget({ overlay = false }) {
   // Gradient border via mask technique — avoids a real border-image which
   // can't have border-radius in CSS.
   const gradientBorderStyle = {
-    background: 'linear-gradient(135deg, #F5C242 0%, #E5533A 55%, #B93A2C 100%)',
+    background: 'linear-gradient(135deg, #C9A84C 0%, #E8C547 45%, #A07832 100%)',
     padding: '1.5px',
     WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
     WebkitMaskComposite: 'xor',

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, ChevronRight, Sparkles } from 'lucide-react';
+import { Star, ChevronRight, Sparkles, Compass, ShieldCheck, BrainCircuit } from 'lucide-react';
 import ZodiacWheel from '../components/ZodiacWheel';
 import HeroMarquee from '../components/HeroMarquee';
 import TarotSection from '../components/TarotSection';
@@ -592,9 +592,13 @@ export default function HomePage() {
                 <p className="text-gray-300 leading-relaxed">AstroVyoma bridges 5,000 years of Vedic wisdom with the modern seeker's journey. Your birth chart is a cosmic map of your soul's unique potential.</p>
                 <p className="text-gray-400 leading-relaxed text-sm">Our platform unites India's most respected Jyotishis with cutting-edge AI to provide guidance that is authentically ancient and practically modern.</p>
                 <div className="grid grid-cols-3 gap-4">
-                  {[{icon:'🔮',label:'Vedic Precision'},{icon:'👁',label:'Verified Experts'},{icon:'🤖',label:'AI Enhanced'}].map(item => (
+                  {[
+                    {Icon: Compass,      label:'Vedic Precision'},
+                    {Icon: ShieldCheck,  label:'Verified Experts'},
+                    {Icon: BrainCircuit, label:'AI Enhanced'},
+                  ].map(item => (
                     <div key={item.label} className="card-cosmic p-4 text-center">
-                      <div className="text-2xl mb-1">{item.icon}</div>
+                      <item.Icon className="w-6 h-6 mx-auto mb-1" style={{ color: '#E8C547', filter: 'drop-shadow(0 0 6px rgba(201,168,76,0.5))' }} />
                       <div className="text-gold-400 text-xs font-medium">{item.label}</div>
                     </div>
                   ))}
