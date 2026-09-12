@@ -171,7 +171,7 @@ export default function RemediesPage() {
                 <p className="text-gold-500/60 text-xs uppercase tracking-widest mb-2">Personalized Vedic Upaya</p>
                 <h2 className="font-serif text-2xl text-gold-400 mb-3">{result?.category}</h2>
                 {!result?.hasKundali && (
-                  <p className="text-amber-400/70 text-xs mb-2">⚠️ General remedies — <Link to="/kundali" className="underline hover:text-amber-300">generate your Kundali</Link> for chart-specific guidance</p>
+                  <p className="text-amber-400/70 text-xs mb-2">⚠ General remedies — <Link to="/kundali" className="underline hover:text-amber-300">generate your Kundali</Link> for chart-specific guidance</p>
                 )}
                 {r.afflicted_planets?.length > 0 && (
                   <div className="flex items-center justify-center gap-2 flex-wrap mt-2">
@@ -184,7 +184,7 @@ export default function RemediesPage() {
               </div>
 
               {/* Root cause */}
-              <Section title="Astrological Root Cause" icon="🔭" defaultOpen={true}>
+              <Section title="Astrological Root Cause" icon="◈" defaultOpen={true}>
                 <p className="text-gray-300 text-sm leading-relaxed">{r.root_cause}</p>
               </Section>
 

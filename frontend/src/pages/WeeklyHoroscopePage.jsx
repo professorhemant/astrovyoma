@@ -199,8 +199,8 @@ export default function WeeklyHoroscopePage() {
               {period === 'monthly' && (
                 <>
                   <div className="grid md:grid-cols-2 gap-4">
-                    <Section icon="💕" title="Love & Relationships">{data.love}</Section>
-                    <Section icon="💼" title="Career & Finance">{data.career}</Section>
+                    <Section icon="♥" title="Love & Relationships">{data.love}</Section>
+                    <Section icon="◆" title="Career & Finance">{data.career}</Section>
                     <Section icon="✧" title="Health & Wellness">{data.health}</Section>
                     <div className="card-cosmic rounded-xl p-5 border border-gold-600/15">
                       <p className="text-gold-400 font-semibold text-sm mb-3">Monthly Lucky Factors</p>

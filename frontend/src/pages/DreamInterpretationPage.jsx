@@ -267,7 +267,7 @@ function LockedPanel({ data, t }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
       className="card-cosmic p-6 border border-gold-600/25 text-center">
-      <div className="text-3xl mb-3">🔒</div>
+      <div className="text-3xl mb-3">⊛</div>
       <h3 className="font-serif text-lg text-gold-300 mb-2">{t.lockedTitle}</h3>
       <p className="text-sm text-cosmic-400 max-w-md mx-auto mb-5">
         {needsAuth ? t.lockedBodyAuth : t.lockedBodyPlan}

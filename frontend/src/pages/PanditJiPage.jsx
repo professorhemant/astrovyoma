@@ -465,7 +465,7 @@ export default function PanditJiPage() {
               {isSpeaking && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                   className="mt-2 text-xs" style={{ color: '#E8C547' }}>
-                  🔊 बोल रहे हैं...
+                  ◈ बोल रहे हैं...
                 </motion.div>
               )}
               {isThinking && !isSpeaking && (

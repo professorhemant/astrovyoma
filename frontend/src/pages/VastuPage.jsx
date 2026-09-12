@@ -82,7 +82,7 @@ const DIRECTIONS = [
 // ── Room data ─────────────────────────────────────────────────────────────────
 const ROOMS = [
   {
-    name: 'Main Entrance', icon: '🚪',
+    name: 'Main Entrance', icon: '✦',
     bestDirection: 'East or North',
     color: '#f97316',
     dos: [
@@ -102,7 +102,7 @@ const ROOMS = [
     ],
   },
   {
-    name: 'Living Room', icon: '🛋️',
+    name: 'Living Room', icon: '◆',
     bestDirection: 'East or North',
     color: '#22c55e',
     dos: [
@@ -121,7 +121,7 @@ const ROOMS = [
     ],
   },
   {
-    name: 'Kitchen', icon: '🍳',
+    name: 'Kitchen', icon: '△',
     bestDirection: 'Southeast (Ideal) or Northwest',
     color: '#ef4444',
     dos: [
@@ -141,7 +141,7 @@ const ROOMS = [
     ],
   },
   {
-    name: 'Master Bedroom', icon: '🛏️',
+    name: 'Master Bedroom', icon: '☽',
     bestDirection: 'Southwest',
     color: '#8b5cf6',
     dos: [
@@ -162,7 +162,7 @@ const ROOMS = [
     ],
   },
   {
-    name: 'Children\'s Room', icon: '🧒',
+    name: 'Children\'s Room', icon: '◆',
     bestDirection: 'West or Northwest',
     color: '#06b6d4',
     dos: [
@@ -220,7 +220,7 @@ const ROOMS = [
     ],
   },
   {
-    name: 'Bathroom / Toilet', icon: '🚿',
+    name: 'Bathroom / Toilet', icon: '▽',
     bestDirection: 'Northwest or West',
     color: '#64748b',
     dos: [

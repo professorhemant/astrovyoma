@@ -259,7 +259,7 @@ export default function AboutUsPage() {
                 <div className="absolute inset-0 rounded-2xl pointer-events-none"
                   style={{ background: 'radial-gradient(ellipse at 50% 30%, rgba(201,168,76,0.12) 0%, transparent 70%)' }} />
                 <div className="relative z-10">
-                  <div className="text-6xl mb-4">🌌</div>
+                  <div className="text-6xl mb-4">✦</div>
                   <h3 className="font-serif text-gold-400 text-2xl mb-3">{t('aboutDreamTitle', 'A Collaborative Dream')}</h3>
                   <p className="text-gray-400 text-sm leading-relaxed mb-6">
                     {t('aboutDreamText', 'For the first time in digital history, the stalwarts of Vedic Astrology, KP System, Numerology, Lal Kitab, and Vastu Shastra have united under one cosmic canopy.')}

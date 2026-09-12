@@ -87,8 +87,8 @@ export default function TodayChoghadiyaPage() {
                 className="bg-cosmic-800/60 border border-gold-500/45 rounded-2xl p-5 mb-6 text-center">
                 <p className="text-gray-200 text-sm">{data.date}</p>
                 <div className="flex items-center justify-center gap-6 mt-2">
-                  <span className="text-sm text-orange-300">🌅 Sunrise {data.sunrise}</span>
-                  <span className="text-sm text-purple-300">🌇 Sunset {data.sunset}</span>
+                  <span className="text-sm text-orange-300">◈ Sunrise {data.sunrise}</span>
+                  <span className="text-sm text-purple-300">◈ Sunset {data.sunset}</span>
                 </div>
               </motion.div>
 

@@ -6,11 +6,11 @@ import usePanchangPlace from '../hooks/usePanchangPlace';
 import PanchangPlacePicker from '../components/PanchangPlacePicker';
 
 const MUHURTA_INFO = [
-  { key:'brahma',  icon:'🌅', title:'Brahma Muhurta',  color:'#FF9F43', desc:'The Creator\'s time — 1.5 hours before sunrise. Best for meditation, prayer, yoga, and starting spiritual practices. The most sattvic period of the day.' },
-  { key:'pratah',  icon:'🌄', title:'Pratah Sandhya',  color:'#FFD93D', desc:'Dawn twilight — the transition at sunrise. Auspicious for bathing, prayers, and morning rituals.' },
+  { key:'brahma',  icon:'◈',  title:'Brahma Muhurta',  color:'#FF9F43', desc:'The Creator\'s time — 1.5 hours before sunrise. Best for meditation, prayer, yoga, and starting spiritual practices. The most sattvic period of the day.' },
+  { key:'pratah',  icon:'◈',  title:'Pratah Sandhya',  color:'#FFD93D', desc:'Dawn twilight — the transition at sunrise. Auspicious for bathing, prayers, and morning rituals.' },
   { key:'abhijit', icon:'☉', title:'Abhijit Muhurta', color:'#6BCB77', desc:'The midday muhurta — when the Sun is at its peak power. This is the most powerful auspicious period for starting any important work, signing contracts, or making major decisions.' },
-  { key:'vijaya',  icon:'🏆', title:'Vijaya Muhurta',  color:'#74B9FF', desc:'Victory time — 2 muhurtas before sunset. Excellent for important tasks, winning competitions, and new ventures in the afternoon.' },
-  { key:'godhuli', icon:'🐄', title:'Godhuli Muhurta', color:'#FD79A8', desc:'Cow-dust time — at sunset when cattle return. Traditionally one of the most auspicious times for marriage ceremonies and new beginnings.' },
+  { key:'vijaya',  icon:'✦',  title:'Vijaya Muhurta',  color:'#74B9FF', desc:'Victory time — 2 muhurtas before sunset. Excellent for important tasks, winning competitions, and new ventures in the afternoon.' },
+  { key:'godhuli', icon:'◆',  title:'Godhuli Muhurta', color:'#FD79A8', desc:'Cow-dust time — at sunset when cattle return. Traditionally one of the most auspicious times for marriage ceremonies and new beginnings.' },
   { key:'nisitha', icon:'☽', title:'Nisitha Muhurta',  color:'#A29BFE', desc:'Midnight muhurta — around 12 AM. Sacred for Shiva worship, deep meditation, and tantric practices.' },
 ];
 

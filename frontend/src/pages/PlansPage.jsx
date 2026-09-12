@@ -82,7 +82,7 @@ export default function PlansPage() {
     } catch (err) {
       const msg = err.response?.data?.error || 'Failed to initiate payment';
       if (msg.includes('not configured')) {
-        toast('Payment gateway coming soon — Razorpay keys not yet added.', { icon: '🔧' });
+        toast('Payment gateway coming soon — Razorpay keys not yet added.', { icon: '◆' });
       } else {
         toast.error(msg);
       }

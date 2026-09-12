@@ -503,7 +503,7 @@ export default function HomePage() {
               {(purposeCards || [
                 {title:'Swabhav',      subtitle:'Your Nature',       icon:'✦', desc:'Discover your innate personality traits, strengths, and patterns written in the stars at the moment of your birth', link:'/purpose'},
                 {title:'Karma Path',   subtitle:'Your Life Purpose', icon:'☯',  desc:'Understand your dharma — the unique contribution your soul came to make in this lifetime, guided by your Nakshatra', link:'/purpose'},
-                {title:'Personality',  subtitle:'Sun, Moon & Lagna', icon:'💠', desc:'Your Sun, Moon, and Ascendant form a cosmic trinity. Uncover the layers of who you truly are', link:'/kundali'},
+                {title:'Personality',  subtitle:'Sun, Moon & Lagna', icon:'◈', desc:'Your Sun, Moon, and Ascendant form a cosmic trinity. Uncover the layers of who you truly are', link:'/kundali'},
               ]).map((card,i) => (
                 <motion.div key={card.row_id || card.id || card.title || i} data-edit-item={card.row_id && `purpose_cards:${card.row_id}`}
                   initial={{opacity:0,y:30}} whileInView={{opacity:1,y:0}} viewport={{once:true}}

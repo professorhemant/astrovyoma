@@ -119,7 +119,7 @@ export default function FestivalCalendarPage() {
 
         {/* Header */}
         <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-10">
-          <div className="text-5xl mb-4">🗓️</div>
+          <div className="text-5xl mb-4">◆</div>
           <h1 className="text-3xl font-serif text-gold-400 mb-2">Hindu Festival & Planetary Events Calendar</h1>
           <p className="text-cosmic-300 text-sm max-w-xl mx-auto">
             Festivals, Ekadashi, Purnima, Amavasya, eclipses, retrogrades and transits — computed from the Swiss Ephemeris for any month you page to.

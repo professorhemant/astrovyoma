@@ -124,7 +124,7 @@ function AppointmentCard({ appt, onCancel }) {
           </div>
 
           <div className="text-xs text-cosmic-400 mb-2">
-            {scheduledIST} · {appt.duration_mins} min · {MODE_ICON[appt.mode] || '💬'} {appt.mode}
+            {scheduledIST} · {appt.duration_mins} min · {MODE_ICON[appt.mode] || '◆'} {appt.mode}
           </div>
 
           {appt.concern_category && appt.concern_category !== 'general' && (

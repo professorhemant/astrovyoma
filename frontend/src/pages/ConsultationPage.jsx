@@ -224,7 +224,7 @@ export default function ConsultationPage() {
       micMuted ? await localTracksRef.current[0].setMuted(false) : await localTracksRef.current[0].setMuted(true);
     }
     setMicMuted(!micMuted);
-    toast(micMuted ? 'Mic on' : 'Mic muted', { icon: micMuted ? '🎙️' : '🔇', duration: 1500 });
+    toast(micMuted ? 'Mic on' : 'Mic muted', { icon: micMuted ? '◈' : '✗', duration: 1500 });
   }
 
   async function toggleCam() {
@@ -400,9 +400,9 @@ export default function ConsultationPage() {
               </div>
             </div>
             <div className="flex flex-col items-center gap-2">
-              <div className="w-16 h-16 rounded-full bg-cosmic-800 border-2 border-gold-500/60 flex items-center justify-center text-3xl shadow-lg shadow-gold-500/10">👤</div>
+              <div className="w-16 h-16 rounded-full bg-cosmic-800 border-2 border-gold-500/60 flex items-center justify-center text-3xl shadow-lg shadow-gold-500/10">◆</div>
               <span className="text-gray-300 text-xs font-medium">You</span>
-              <span className={`text-xs ${micMuted ? 'text-red-400' : 'text-green-400'}`}>{micMuted ? '🔇 Muted' : '🎙️ Speaking'}</span>
+              <span className={`text-xs ${micMuted ? 'text-red-400' : 'text-green-400'}`}>{micMuted ? '✗ Muted' : '◈ Speaking'}</span>
             </div>
           </div>
           <div className="flex justify-center gap-4 mt-4">

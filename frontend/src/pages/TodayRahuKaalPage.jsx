@@ -44,7 +44,7 @@ export default function TodayRahuKaalPage() {
         <div className="max-w-4xl mx-auto">
 
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-10">
-            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">⚠️ Inauspicious Period</p>
+            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">⚠ Inauspicious Period</p>
             <h1 className="font-serif text-3xl md:text-5xl text-red-400 mb-3" style={{ textShadow:'0 0 30px rgba(239,68,68,0.4)' }}>Today's Rahu Kaal</h1>
             <p className="text-gray-200 text-sm">The inauspicious period governed by shadow planet Rahu — avoid new beginnings</p>
           </motion.div>
@@ -63,18 +63,18 @@ export default function TodayRahuKaalPage() {
               <motion.div initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }}
                 className="bg-gradient-to-br from-red-900/30 to-cosmic-900/80 border border-red-500/55 rounded-3xl p-8 mb-6 text-center"
                 style={{ boxShadow:'0 0 60px rgba(239,68,68,0.15)' }}>
-                <div className="text-5xl mb-3">🐉</div>
+                <div className="text-5xl mb-3">☊</div>
                 <p className="text-gray-200 text-sm uppercase tracking-widest mb-2">{data.date}</p>
                 <h2 className="font-serif text-2xl text-red-300 mb-2">Rahu Kaal</h2>
                 <p className="font-serif text-4xl text-red-400 font-bold mb-2" style={{ textShadow:'0 0 20px rgba(239,68,68,0.5)' }}>{data.rahuKaal}</p>
                 {data.isRahuActive && (
                   <div className="mt-3 inline-flex items-center gap-2 bg-red-500/20 border border-red-500/40 text-red-300 px-5 py-2 rounded-full text-sm animate-pulse">
-                    ⚠️ Rahu Kaal is Active Right Now
+                    ⚠ Rahu Kaal is Active Right Now
                   </div>
                 )}
                 <div className="flex items-center justify-center gap-6 mt-4 text-sm text-gray-200">
-                  <span>🌅 Sunrise {data.sunrise}</span>
-                  <span>🌇 Sunset {data.sunset}</span>
+                  <span>◈ Sunrise {data.sunrise}</span>
+                  <span>◈ Sunset {data.sunset}</span>
                 </div>
               </motion.div>
 
@@ -82,14 +82,14 @@ export default function TodayRahuKaalPage() {
               <div className="grid md:grid-cols-3 gap-4 mb-6">
                 <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.1 }}
                   className="bg-red-500/10 border border-red-500/50 rounded-2xl p-5 text-center">
-                  <div className="text-3xl mb-2">🐉</div>
+                  <div className="text-3xl mb-2">☊</div>
                   <p className="text-gray-200 text-xs uppercase tracking-wider mb-1">Rahu Kaal</p>
                   <p className="font-serif text-lg text-red-400 font-semibold">{data.rahuKaal}</p>
                   <p className="text-gray-200 text-sm mt-2">Most inauspicious — avoid all new starts</p>
                 </motion.div>
                 <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.15 }}
                   className="bg-orange-500/10 border border-orange-500/25 rounded-2xl p-5 text-center">
-                  <div className="text-3xl mb-2">⚠️</div>
+                  <div className="text-3xl mb-2">⚠</div>
                   <p className="text-gray-200 text-xs uppercase tracking-wider mb-1">Yamaganda Kaal</p>
                   <p className="font-serif text-lg text-orange-400 font-semibold">{data.yamaganda}</p>
                   <p className="text-gray-200 text-sm mt-2">Yama's period — avoid new ventures</p>

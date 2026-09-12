@@ -342,7 +342,7 @@ export default function YogaFinderPage() {
                 <div className="absolute inset-0 pointer-events-none"
                   style={{ background: 'radial-gradient(ellipse at 30% 50%, rgba(201,168,76,0.08) 0%, transparent 65%)' }} />
                 <div className="relative z-10">
-                  <p className="text-gold-500/60 text-[10px] uppercase tracking-[0.25em] mb-2">🌌</p>
+                  <p className="text-gold-500/60 text-[10px] uppercase tracking-[0.25em] mb-2">✦</p>
                   <h2 className="font-serif text-gold-400 text-xl md:text-2xl mb-1">
                     {lang === 'hi'
                       ? 'मुख्य ब्रह्मांडीय संरेखण: आपके ग्रह योग'
@@ -401,7 +401,7 @@ export default function YogaFinderPage() {
               {/* ── 4 Key Dimensions panel ── */}
               <div className="card-cosmic rounded-2xl p-6 border border-gold-600/15">
                 <p className="text-gold-400 font-serif text-lg mb-1">
-                  {lang === 'hi' ? '🔭 योग खोजक द्वारा मूल्यांकित मुख्य आयाम' : '🔭 Key Dimensions Evaluated'}
+                  {lang === 'hi' ? '◈ योग खोजक द्वारा मूल्यांकित मुख्य आयाम' : '◈ Key Dimensions Evaluated'}
                 </p>
                 <p className="text-gray-500 text-xs mb-5 leading-relaxed">
                   {lang === 'hi'
@@ -474,7 +474,7 @@ export default function YogaFinderPage() {
               {/* ── Disclaimer / strength note ── */}
               <div className="rounded-2xl border border-gold-600/15 bg-gold-500/5 p-5">
                 <p className="text-gold-400 text-xs font-semibold mb-2">
-                  {lang === 'hi' ? '📌 मूल्यांकन मार्गदर्शिका' : '📌 System Note on Strength'}
+                  {lang === 'hi' ? '◆ मूल्यांकन मार्गदर्शिका' : '◆ System Note on Strength'}
                 </p>
                 <p className="text-gray-400 text-xs leading-relaxed">
                   {lang === 'hi'
@@ -490,7 +490,7 @@ export default function YogaFinderPage() {
           {!data && !loading && (
             <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="text-center py-20">
-              <div className="text-7xl mb-5">🔯</div>
+              <div className="text-7xl mb-5">✦</div>
               <p className="text-gray-300 text-lg font-serif mb-2">
                 {lang === 'hi' ? 'अपने ग्रह योगों की खोज करें' : 'Discover Your Planetary Yogas'}
               </p>

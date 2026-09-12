@@ -563,7 +563,7 @@ export default function MuhurtaPage() {
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
                     {[
-                      ['🗓️','Day',          data.panchang.vara],
+                      ['◆','Day',           data.panchang.vara],
                       ['♄','Ruled By',     data.panchang.varaLord],
                       ['☽','Tithi',        data.panchang.tithi],
                       ['✦','Nakshatra',    data.panchang.nakshatra],
@@ -578,7 +578,7 @@ export default function MuhurtaPage() {
                   </div>
                   <div className="flex gap-3 mt-3 text-xs text-gray-500">
                     <span>↑ Sunrise: <span className="text-gray-300">{data.panchang.sunrise}</span></span>
-                    <span>🌇 Sunset: <span className="text-gray-300">{data.panchang.sunset}</span></span>
+                    <span>◈ Sunset: <span className="text-gray-300">{data.panchang.sunset}</span></span>
                   </div>
                 </div>
               </div>
@@ -644,7 +644,7 @@ export default function MuhurtaPage() {
           {!data && !loading && (
             <motion.div key="empty" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
               className="text-center py-16">
-              <div className="text-6xl mb-4">🕐</div>
+              <div className="text-6xl mb-4">◈</div>
               <p className="text-gray-400 text-lg">Select an event and date to find the most auspicious Muhurta</p>
               <p className="text-gray-500 text-sm mt-2">Tithi, Nakshatra, Vara, Yoga and Choghadiya all analysed together</p>
             </motion.div>

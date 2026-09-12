@@ -155,7 +155,7 @@ export default function TodayTithiPage() {
                   className="bg-cosmic-800/40 border border-gold-500/40 rounded-2xl overflow-hidden mb-8">
                   <div className="flex items-center justify-between px-5 py-4 border-b border-gold-500/25">
                     <h3 className="text-gold-400 font-serif font-semibold">Tithi Schedule</h3>
-                    <span className="text-gray-200 text-xs">📍 {data.location}</span>
+                    <span className="text-gray-200 text-xs">◆ {data.location}</span>
                   </div>
                   <div className="divide-y divide-gold-500/10">
                     {data.tithiChart.map((entry, i) => (

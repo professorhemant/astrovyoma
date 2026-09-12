@@ -6,7 +6,7 @@ import usePanchangPlace from '../hooks/usePanchangPlace';
 import PanchangPlacePicker from '../components/PanchangPlacePicker';
 
 const ELEMENT_STYLE = {
-  Earth:  { bg:'bg-yellow-500/10',  border:'border-yellow-500/30',  text:'text-yellow-300',  icon:'🌍' },
+  Earth:  { bg:'bg-yellow-500/10',  border:'border-yellow-500/30',  text:'text-yellow-300',  icon:'⊕' },
   Water:  { bg:'bg-blue-500/10',    border:'border-blue-500/30',    text:'text-blue-300',    icon:'▽' },
   Fire:   { bg:'bg-red-500/10',     border:'border-red-500/30',     text:'text-red-300',     icon:'△' },
   Air:    { bg:'bg-cyan-500/10',    border:'border-cyan-500/30',    text:'text-cyan-300',    icon:'◇' },

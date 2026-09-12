@@ -90,7 +90,7 @@ export default function WalletPage() {
     } catch (err) {
       const msg = err.response?.data?.error || 'Recharge failed';
       if (msg.includes('not configured')) {
-        toast('Payment gateway coming soon — Razorpay keys not yet added.', { icon: '🔧' });
+        toast('Payment gateway coming soon — Razorpay keys not yet added.', { icon: '◆' });
       } else {
         toast.error(msg);
       }

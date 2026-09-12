@@ -419,7 +419,7 @@ export default function GochraPage() {
                 </Link>
                 <Link to="/astrologers"
                   className="flex-1 text-center py-3 rounded-xl border border-gold-600/30 text-gold-400 text-sm font-semibold hover:bg-gold-500/10 transition-all">
-                  🔭 Consult an Astrologer
+                  ◈ Consult an Astrologer
                 </Link>
               </div>
             </motion.div>

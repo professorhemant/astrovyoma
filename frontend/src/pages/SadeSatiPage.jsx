@@ -183,7 +183,7 @@ export default function SadeSatiPage() {
                       </div>
                     ) : result.dhaiya ? (
                       <div>
-                        <p className="text-orange-300 font-semibold text-base">⚠️ {result.dhaiya.type} (Small Panoti) Active — Saturn in {result.dhaiya.sign}</p>
+                        <p className="text-orange-300 font-semibold text-base">⚠ {result.dhaiya.type} (Small Panoti) Active — Saturn in {result.dhaiya.sign}</p>
                         <p className="text-gray-400 text-sm mt-0.5">Ends: {formatDate(result.dhaiya.end)}</p>
                       </div>
                     ) : (

@@ -110,7 +110,7 @@ function ReportCard({ report, onDelete }) {
               )}
               {meta.birth_place && (
                 <span className="text-xs bg-white/5 border border-white/10 rounded-full px-2.5 py-0.5 text-cosmic-300 truncate max-w-[180px]">
-                  📍 {meta.birth_place}
+                  ◆ {meta.birth_place}
                 </span>
               )}
             </div>
@@ -246,7 +246,7 @@ export default function ConsultationHistoryPage() {
         <div className="flex gap-1 bg-cosmic-900 rounded-xl p-1 border border-gold-500/10 mb-6 max-w-xs mx-auto">
           <button onClick={() => setActiveTab('reports')}
             className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'reports' ? 'bg-gold-500/20 text-gold-400' : 'text-cosmic-500 hover:text-cosmic-300'}`}>
-            📋 Reports {reports.length > 0 && <span className="ml-1 text-xs opacity-70">({reports.length})</span>}
+            ◈ Reports {reports.length > 0 && <span className="ml-1 text-xs opacity-70">({reports.length})</span>}
           </button>
           <button onClick={() => setActiveTab('consultations')}
             className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'consultations' ? 'bg-gold-500/20 text-gold-400' : 'text-cosmic-500 hover:text-cosmic-300'}`}>
@@ -262,7 +262,7 @@ export default function ConsultationHistoryPage() {
               <motion.div key="reports" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 {reports.length === 0 ? (
                   <div className="text-center py-20">
-                    <div className="text-6xl mb-6">📋</div>
+                    <div className="text-6xl mb-6">◈</div>
                     <p className="text-gray-200 text-lg font-serif mb-2">No saved reports yet</p>
                     <p className="text-gray-400 text-sm mb-8">Generate a Kundali, KP chart, or Muhurta and save it here</p>
                     <div className="flex flex-wrap gap-3 justify-center">

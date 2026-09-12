@@ -17,7 +17,7 @@ const DURATIONS  = [{ v:15, l:'15 min' }, { v:30, l:'30 min' }, { v:60, l:'1 hou
 // `voice` is what a seeker calls it; `audio` is what the consultation endpoint
 // calls it. The name that travels to the server is set here so the two cannot
 // drift, and joining maps it back.
-const MODES      = [{ v:'voice', l:'🎙 Voice', d:'Audio call' }, { v:'video', l:'📹 Video', d:'Video call' }];
+const MODES      = [{ v:'voice', l:'◈ Voice', d:'Audio call' }, { v:'video', l:'◆ Video', d:'Video call' }];
 const CONCERNS   = ['Marriage & Relationships','Career & Business','Finance & Wealth','Health','Education','Children','Foreign Travel','Spiritual Guidance','General Reading'];
 const STEP_LABELS= ['Date & Duration','Time Slot','Session Details','Confirm'];
 
