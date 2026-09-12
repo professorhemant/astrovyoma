@@ -113,10 +113,10 @@ function TransitCard({ transit }) {
 
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {[
-                  { icon:'💼', label:'Career', val: fx.career },
-                  { icon:'❤️', label:'Love',   val: fx.love },
-                  { icon:'💚', label:'Health', val: fx.health },
-                  { icon:'💰', label:'Finance',val: fx.finance },
+                  { icon:'◆', label:'Career', val: fx.career },
+                  { icon:'♥', label:'Love',   val: fx.love },
+                  { icon:'✧', label:'Health', val: fx.health },
+                  { icon:'◈', label:'Finance',val: fx.finance },
                 ].map(({ icon, label, val }) => (
                   <div key={label} className="bg-cosmic-800/50 rounded-lg p-2.5 border border-white/5">
                     <p className="text-gray-500 mb-1">{icon} {label}</p>

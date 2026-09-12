@@ -39,7 +39,7 @@ export default function ChatbotPage() {
     setMessages([{
       id: 'welcome',
       role: 'assistant',
-      content: `नमस्ते 🙏 मैं AstroVyoma AI हूँ — आपका व्यक्तिगत वैदिक ज्योतिष मार्गदर्शक।\n\n${user ? (kundali ? `मैं आपकी कुण्डली देख सकता हूँ — ${kundali?.lagna} लग्न, ${kundali?.moon_sign} में चंद्रमा, ${kundali?.nakshatra} नक्षत्र। आपकी जन्मपत्री में गहरा ज्ञान छिपा है।` : 'एक बार अपनी मुफ्त कुण्डली बनाएं — फिर मैं आपकी वास्तविक ग्रह स्थिति के आधार पर व्यक्तिगत मार्गदर्शन दे सकता हूँ।') : 'बेहतर अनुभव के लिए लॉगिन करें और अपनी कुण्डली बनाएं। मैं सामान्य ज्योतिष प्रश्नों का उत्तर भी दे सकता हूँ!'}\n\nआप क्या जानना चाहते हैं?`,
+      content: `नमस्ते ✦ मैं AstroVyoma AI हूँ — आपका व्यक्तिगत वैदिक ज्योतिष मार्गदर्शक।\n\n${user ? (kundali ? `मैं आपकी कुण्डली देख सकता हूँ — ${kundali?.lagna} लग्न, ${kundali?.moon_sign} में चंद्रमा, ${kundali?.nakshatra} नक्षत्र। आपकी जन्मपत्री में गहरा ज्ञान छिपा है।` : 'एक बार अपनी मुफ्त कुण्डली बनाएं — फिर मैं आपकी वास्तविक ग्रह स्थिति के आधार पर व्यक्तिगत मार्गदर्शन दे सकता हूँ।') : 'बेहतर अनुभव के लिए लॉगिन करें और अपनी कुण्डली बनाएं। मैं सामान्य ज्योतिष प्रश्नों का उत्तर भी दे सकता हूँ!'}\n\nआप क्या जानना चाहते हैं?`,
       created_at: new Date().toISOString()
     }]);
   }, [user]);
@@ -73,7 +73,7 @@ export default function ChatbotPage() {
     setMessages([{
       id: 'welcome-new',
       role: 'assistant',
-      content: 'Chat cleared. Ask me anything about your Vedic birth chart and cosmic path. 🙏',
+      content: 'Chat cleared. Ask me anything about your Vedic birth chart and cosmic path. ✦',
       created_at: new Date().toISOString()
     }]);
   }
@@ -139,7 +139,7 @@ export default function ChatbotPage() {
           className="flex-shrink-0 flex items-center justify-between px-4 md:px-8 py-2.5 border-b transition-all hover:brightness-110"
           style={{ background: 'linear-gradient(to right,rgba(100,35,5,0.5),rgba(50,15,2,0.6))', borderColor: 'rgba(201,168,76,0.15)' }}>
           <div className="flex items-center gap-2.5">
-            <span className="text-lg">🙏</span>
+            <span className="text-lg font-serif text-gold-400/70">ॐ</span>
             <div>
               <span className="text-xs font-semibold" style={{ color: '#F5A623' }}>पंडित AI जी से बात करें</span>
               <span className="text-[10px] ml-2" style={{ color: '#9A7040' }}>— Live avatar • हिंदी voice • Vedic persona</span>

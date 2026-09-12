@@ -6,7 +6,7 @@ import { muhurta as muhurtaApi, reportHistory as historyApi, kundali as kundaliA
 import { useAuth } from '../context/AuthContext';
 
 const CHOG_COLOR = { 'Very Auspicious':'#6BCB77', Auspicious:'#74B9FF', 'Inauspicious':'#FF6B6B' };
-const CHOG_ICON  = { Amrit:'✨', Shubh:'🌟', Labh:'💰', Char:'✈️', Rog:'⚠️', Kaal:'🚫', Udveg:'❌' };
+const CHOG_ICON  = { Amrit:'✧', Shubh:'✦', Labh:'◈', Char:'→', Rog:'⚠', Kaal:'✗', Udveg:'✗' };
 
 function ScoreRing({ score, verdict, color }) {
   const r = 44, c = 2 * Math.PI * r;
@@ -33,7 +33,7 @@ function FactorRow({ factor }) {
   const isBad  = factor.quality === 'Inauspicious';
   return (
     <div className="flex items-start gap-3 py-2 border-b border-gold-600/05 last:border-0">
-      <span className="text-lg mt-0.5">{isGood ? '✅' : isBad ? '❌' : '➖'}</span>
+      <span className="text-lg mt-0.5">{isGood ? '✓' : isBad ? '✗' : '–'}</span>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-gray-400 text-xs uppercase tracking-wider">{factor.label}:</span>
@@ -64,7 +64,7 @@ function ChoghadiyaSlot({ slot }) {
         </span>
       )}
       <div className="flex items-center gap-1.5">
-        <span className="text-base">{CHOG_ICON[slot.name] || '⏰'}</span>
+        <span className="text-base">{CHOG_ICON[slot.name] || '◈'}</span>
         <span className="font-semibold text-sm" style={{ color: natColor }}>{slot.name}</span>
       </div>
       <p className="text-gray-400 text-xs">{slot.start} – {slot.end}</p>
@@ -188,7 +188,7 @@ export default function MuhurtaPage() {
             {/* Mode toggle — finding dates is the primary job, checking one is secondary */}
             <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-cosmic-900/60 border border-gold-600/15">
               {[
-                { key:'find',  label:'📅 Find Best Dates', hint:'Show me when' },
+                { key:'find',  label:'◆ Find Best Dates', hint:'Show me when' },
                 { key:'check', label:'🔍 Check a Date',    hint:'Is this date good?' },
               ].map(m => (
                 <button key={m.key} type="button"
@@ -451,7 +451,7 @@ export default function MuhurtaPage() {
                 {/* Best time today — only if today is good */}
                 {data.scoring.score >= 55 && data.best_slots?.length > 0 && data.best_slots[0] && (
                   <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/20 border border-white/10">
-                    <span className="text-green-400 text-sm font-semibold">⏰ Best Time Today:</span>
+                    <span className="text-green-400 text-sm font-semibold">◈ Best Time Today:</span>
                     <span className="text-white text-sm">{data.best_slots[0].start} – {data.best_slots[0].end} ({data.best_slots[0].name})</span>
                   </div>
                 )}
@@ -460,7 +460,7 @@ export default function MuhurtaPage() {
               {/* ── Personal warnings (Vipat/Pratyari/Vadha tara, 4/8/12 Chandra Bala) ── */}
               {data.scoring.warnings?.length > 0 && (
                 <div className="rounded-2xl p-5 border border-red-500/40 bg-red-500/5">
-                  <p className="font-serif text-base text-red-300 mb-2">⚠️ Personal caution for your birth star</p>
+                  <p className="font-serif text-base text-red-300 mb-2">⚠ Personal caution for your birth star</p>
                   <ul className="space-y-1.5">
                     {data.scoring.warnings.map((w, i) => (
                       <li key={i} className="text-gray-300 text-sm flex gap-2">
@@ -504,7 +504,7 @@ export default function MuhurtaPage() {
               {data.best_dates?.length > 0 && (
                 <div className={`rounded-2xl p-5 border ${data.scoring.score < 55 ? 'border-amber-500/40 bg-amber-500/5' : 'border-gold-600/20'}`}>
                   <p className="font-serif text-base mb-1" style={{ color: data.scoring.score < 55 ? '#FFD93D' : '#C9A84C' }}>
-                    {data.scoring.score < 55 ? '📅 Better Dates Recommended' : '📅 Next Best Date'}
+                    {data.scoring.score < 55 ? '◆ Better Dates Recommended' : '◆ Next Best Date'}
                   </p>
                   <p className="text-gray-500 text-xs mb-4">
                     {data.scoring.score < 55
@@ -564,11 +564,11 @@ export default function MuhurtaPage() {
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
                     {[
                       ['🗓️','Day',          data.panchang.vara],
-                      ['🪐','Ruled By',     data.panchang.varaLord],
-                      ['🌙','Tithi',        data.panchang.tithi],
-                      ['⭐','Nakshatra',    data.panchang.nakshatra],
-                      ['☀️','Yoga',         data.panchang.yoga],
-                      ['⏰','Karana',       data.panchang.karana],
+                      ['♄','Ruled By',     data.panchang.varaLord],
+                      ['☽','Tithi',        data.panchang.tithi],
+                      ['✦','Nakshatra',    data.panchang.nakshatra],
+                      ['☉','Yoga',         data.panchang.yoga],
+                      ['◈','Karana',       data.panchang.karana],
                     ].map(([icon,label,val]) => (
                       <div key={label} className="bg-cosmic-900/40 rounded-lg p-2.5">
                         <p className="text-gray-500 text-xs">{icon} {label}</p>
@@ -577,7 +577,7 @@ export default function MuhurtaPage() {
                     ))}
                   </div>
                   <div className="flex gap-3 mt-3 text-xs text-gray-500">
-                    <span>🌅 Sunrise: <span className="text-gray-300">{data.panchang.sunrise}</span></span>
+                    <span>↑ Sunrise: <span className="text-gray-300">{data.panchang.sunrise}</span></span>
                     <span>🌇 Sunset: <span className="text-gray-300">{data.panchang.sunset}</span></span>
                   </div>
                 </div>
@@ -594,7 +594,7 @@ export default function MuhurtaPage() {
               {/* Best slots */}
               {data.best_slots.length > 0 && (
                 <div className="card-cosmic rounded-2xl p-5 border border-green-600/20">
-                  <p className="text-green-400 font-serif text-base mb-1">✅ Best Times for {data.event_icon} {data.event_label.split(' (')[0]}</p>
+                  <p className="text-green-400 font-serif text-base mb-1">✓ Best Times for {data.event_icon} {data.event_label.split(' (')[0]}</p>
                   <p className="text-gray-500 text-xs mb-4">Auspicious Choghadiya slots (Rahu Kaal excluded)</p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {data.best_slots.map((s, i) => (
@@ -611,15 +611,15 @@ export default function MuhurtaPage() {
               {/* Choghadiya */}
               <div className="card-cosmic rounded-2xl p-5 border border-gold-600/20">
                 <div className="flex items-center justify-between mb-4">
-                  <p className="text-gold-400 font-serif text-base">⏰ Choghadiya for the Day</p>
+                  <p className="text-gold-400 font-serif text-base">◈ Choghadiya for the Day</p>
                   <div className="flex gap-2 text-xs">
                     <button onClick={() => setShowNight(false)}
                       className={`px-3 py-1 rounded-full border transition-all ${!showNight ? 'border-gold-500/60 text-gold-400 bg-gold-500/10' : 'border-gold-600/20 text-gray-400'}`}>
-                      Day ☀️
+                      Day ☉
                     </button>
                     <button onClick={() => setShowNight(true)}
                       className={`px-3 py-1 rounded-full border transition-all ${showNight ? 'border-gold-500/60 text-gold-400 bg-gold-500/10' : 'border-gold-600/20 text-gray-400'}`}>
-                      Night 🌙
+                      Night ☽
                     </button>
                   </div>
                 </div>
@@ -634,7 +634,7 @@ export default function MuhurtaPage() {
               {/* Special notes */}
               {data.notes && (
                 <div className="rounded-xl border border-gold-600/20 bg-gold-500/5 p-5">
-                  <p className="text-gold-400 text-sm font-semibold mb-2">📿 Shastra Note</p>
+                  <p className="text-gold-400 text-sm font-semibold mb-2">✦ Shastra Note</p>
                   <p className="text-gray-300 text-sm leading-relaxed">{data.notes}</p>
                 </div>
               )}

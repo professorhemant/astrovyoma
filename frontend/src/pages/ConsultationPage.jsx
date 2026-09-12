@@ -330,7 +330,7 @@ export default function ConsultationPage() {
             {/* Remote (astrologer) video */}
             <div id="remote-video-container" className="relative w-72 h-44 bg-cosmic-900 rounded-xl border border-gold-600/20 overflow-hidden flex items-center justify-center">
               <div className="text-center">
-                <div className="text-5xl mb-2">🔮</div>
+                <div className="text-5xl mb-2 font-serif text-gold-400/40">✦</div>
                 <p className="text-gray-300 text-xs px-4">Waiting for {astrologerName} to join...</p>
               </div>
               <div className="absolute top-2 left-2 text-xs bg-black/60 text-gray-300 px-2 py-0.5 rounded-full">{astrologerName}</div>
@@ -379,7 +379,7 @@ export default function ConsultationPage() {
         <div className="bg-black/30 border-b border-gold-600/10 py-5 px-4">
           <div className="flex items-center justify-center gap-8">
             <div className="flex flex-col items-center gap-2">
-              <div className="w-16 h-16 rounded-full bg-cosmic-800 border-2 border-gold-600/40 flex items-center justify-center text-3xl shadow-lg shadow-gold-500/10">🔮</div>
+              <div className="w-16 h-16 rounded-full bg-cosmic-800 border-2 border-gold-600/40 flex items-center justify-center text-3xl shadow-lg shadow-gold-500/10 font-serif text-gold-400/60">✦</div>
               <span className="text-gold-400 text-xs font-medium">{astrologerName}</span>
               <span className={`text-xs ${astrologerJoined ? 'text-green-400' : 'text-gray-300'}`}>
                 {astrologerJoined ? 'Joined' : 'Waiting to join…'}

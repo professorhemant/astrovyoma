@@ -339,7 +339,7 @@ export default function DreamInterpretationPage() {
         </div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-          <div className="text-5xl mb-3">🌙</div>
+          <div className="text-5xl mb-3 font-serif" style={{ color:'#74B9FF' }}>☽</div>
           <h1 className="font-serif text-3xl text-gold-400 mb-2">{t.title}</h1>
           <p className="text-cosmic-400 text-sm max-w-lg mx-auto">{t.subtitle}</p>
         </motion.div>
@@ -417,7 +417,7 @@ export default function DreamInterpretationPage() {
             </div>
 
             <button type="submit" disabled={loading} className="btn-gold w-full py-3 text-sm font-semibold disabled:opacity-50">
-              🌙 {loading ? t.submitting : t.submit}
+              ☽ {loading ? t.submitting : t.submit}
             </button>
           </form>
         </motion.div>
@@ -426,7 +426,7 @@ export default function DreamInterpretationPage() {
           {loading && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="text-center py-12 space-y-3">
-              <div className="text-4xl animate-pulse">🌙</div>
+              <div className="text-4xl animate-pulse font-serif" style={{ color:'#74B9FF' }}>☽</div>
               <p className="text-gold-400 font-serif animate-pulse">{t.loadingLine}</p>
             </motion.div>
           )}

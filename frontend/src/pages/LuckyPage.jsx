@@ -114,14 +114,14 @@ export default function LuckyPage() {
               <div>
                 <p className="text-gold-400 font-serif text-lg text-center mb-4">✦ Today's Lucky Factors ✦</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <LuckyCard icon="🎨" label="Lucky Color"   value={data.luckyColor}     valueColor={data.luckyColorHex} />
-                  <LuckyCard icon="🔢" label="Lucky Number"  value={data.luckyNumber}    valueColor="#C9A84C" />
-                  <LuckyCard icon="🧭" label="Lucky Direction" value={data.luckyDirection} valueColor="#60A5FA" />
-                  <LuckyCard icon="⏰" label="Lucky Hour"    value={data.luckyHour}      valueColor="#A78BFA" />
-                  <LuckyCard icon="📅" label="Lucky Day"     value={data.luckyDay}       valueColor="#34D399" />
-                  <LuckyCard icon="💎" label="Lucky Stone"   value={data.luckyStone}     valueColor="#FB7185" />
-                  <LuckyCard icon="⚙️" label="Lucky Metal"   value={data.luckyMetal}     valueColor="#FCD34D" />
-                  <LuckyCard icon="🦁" label="Lucky Animal"  value={data.luckyAnimal}    valueColor="#F97316" />
+                  <LuckyCard icon="◈" label="Lucky Color"   value={data.luckyColor}     valueColor={data.luckyColorHex} />
+                  <LuckyCard icon="✦" label="Lucky Number"  value={data.luckyNumber}    valueColor="#C9A84C" />
+                  <LuckyCard icon="◆" label="Lucky Direction" value={data.luckyDirection} valueColor="#60A5FA" />
+                  <LuckyCard icon="◈" label="Lucky Hour"    value={data.luckyHour}      valueColor="#A78BFA" />
+                  <LuckyCard icon="◆" label="Lucky Day"     value={data.luckyDay}       valueColor="#34D399" />
+                  <LuckyCard icon="◈" label="Lucky Stone"   value={data.luckyStone}     valueColor="#FB7185" />
+                  <LuckyCard icon="◆" label="Lucky Metal"   value={data.luckyMetal}     valueColor="#FCD34D" />
+                  <LuckyCard icon="✧" label="Lucky Animal"  value={data.luckyAnimal}    valueColor="#F97316" />
                 </div>
               </div>
 
@@ -172,7 +172,7 @@ export default function LuckyPage() {
                 </Link>
                 <Link to="/horoscope/extended"
                   className="flex-1 text-center py-3 rounded-xl border border-gold-600/30 text-gold-400 text-sm font-semibold hover:bg-gold-500/10 transition-all">
-                  📅 Weekly & Monthly
+                  ◆ Weekly & Monthly
                 </Link>
               </div>
             </motion.div>
@@ -181,7 +181,7 @@ export default function LuckyPage() {
           {!selectedSign && !loading && (
             <motion.div key="empty" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
               className="text-center py-16">
-              <div className="text-6xl mb-4">🍀</div>
+              <div className="text-6xl mb-4 font-serif text-gold-400/40">✧</div>
               <p className="text-gray-400 text-lg">Select your zodiac sign to reveal today's lucky factors</p>
               <p className="text-gray-500 text-sm mt-2">Lucky color, number, direction, hour, stone, mantra, and more</p>
             </motion.div>

@@ -168,7 +168,7 @@ export default function BlogArticlePage() {
 
             {/* CTA */}
             <div className="card-cosmic p-4 text-center">
-              <div className="text-2xl mb-2">🔮</div>
+              <div className="text-2xl mb-2 font-serif text-gold-400/60">✦</div>
               <p className="text-cosmic-300 text-xs mb-3">Get personalised insights from your birth chart</p>
               <Link to="/kundali" className="btn-cosmic w-full py-2 text-xs block">Generate Free Kundali</Link>
             </div>

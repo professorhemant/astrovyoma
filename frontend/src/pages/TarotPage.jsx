@@ -9,10 +9,10 @@ import { useAuth } from '../context/AuthContext';
 
 // ── Element colors ─────────────────────────────────────────────────────────────
 const ELEMENT_COLORS = {
-  Fire:  { bg: 'rgba(251,146,60,0.15)',  text: '#FB923C', icon: '🔥' },
-  Earth: { bg: 'rgba(110,231,183,0.15)', text: '#6EE7B7', icon: '🌿' },
-  Air:   { bg: 'rgba(147,197,253,0.15)', text: '#93C5FD', icon: '💨' },
-  Water: { bg: 'rgba(196,181,253,0.15)', text: '#C4B5FD', icon: '💧' },
+  Fire:  { bg: 'rgba(251,146,60,0.15)',  text: '#FB923C', icon: '△' },
+  Earth: { bg: 'rgba(110,231,183,0.15)', text: '#6EE7B7', icon: '✧' },
+  Air:   { bg: 'rgba(147,197,253,0.15)', text: '#93C5FD', icon: '◇' },
+  Water: { bg: 'rgba(196,181,253,0.15)', text: '#C4B5FD', icon: '▽' },
 };
 
 // ── Planetary weather ─────────────────────────────────────────────────────────
@@ -23,14 +23,14 @@ function getMoonPhase() {
   const cycle = 29.53 * 24 * 60 * 60 * 1000;
   const elapsed = ((Date.now() - knownNewMoon) % cycle + cycle) % cycle;
   const day = elapsed / (24 * 60 * 60 * 1000);
-  if (day < 1.5)  return { phase: 'New Moon',        glyph: '🌑' };
-  if (day < 7)    return { phase: 'Waxing Crescent',  glyph: '🌒' };
-  if (day < 9)    return { phase: 'First Quarter',    glyph: '🌓' };
-  if (day < 14)   return { phase: 'Waxing Gibbous',   glyph: '🌔' };
-  if (day < 16)   return { phase: 'Full Moon',        glyph: '🌕' };
-  if (day < 21)   return { phase: 'Waning Gibbous',   glyph: '🌖' };
-  if (day < 23)   return { phase: 'Last Quarter',     glyph: '🌗' };
-  return           { phase: 'Waning Crescent',        glyph: '🌘' };
+  if (day < 1.5)  return { phase: 'New Moon',        glyph: '●' };
+  if (day < 7)    return { phase: 'Waxing Crescent',  glyph: '☽' };
+  if (day < 9)    return { phase: 'First Quarter',    glyph: '◐' };
+  if (day < 14)   return { phase: 'Waxing Gibbous',   glyph: '◕' };
+  if (day < 16)   return { phase: 'Full Moon',        glyph: '○' };
+  if (day < 21)   return { phase: 'Waning Gibbous',   glyph: '◔' };
+  if (day < 23)   return { phase: 'Last Quarter',     glyph: '◑' };
+  return           { phase: 'Waning Crescent',        glyph: '☾' };
 }
 
 function getTodayWeather() {
@@ -595,7 +595,7 @@ export default function TarotPage() {
               <motion.div initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.2 }}
                 className="mb-6 px-6 py-5 rounded-2xl mx-auto max-w-md"
                 style={{ background:'rgba(168,85,247,0.07)', border:'1px solid rgba(168,85,247,0.18)' }}>
-                <div className="text-2xl mb-2">🕯️</div>
+                <div className="text-2xl mb-2 font-serif text-gold-400/60">◉</div>
                 <h3 className="font-serif text-base mb-2" style={{ color:'#E9D5FF' }}>
                   {lang === 'en' ? 'Set Your Intention' : 'अपना संकल्प जगाएं'}
                 </h3>

@@ -51,7 +51,7 @@ export default function PurposePage() {
       <div className="relative min-h-screen bg-cosmic-950">
         <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="card-cosmic p-10 text-center max-w-md">
-            <div className="text-5xl mb-4">🔮</div>
+            <div className="text-5xl mb-4 font-serif text-gold-400/60">✦</div>
             <h2 className="font-serif text-3xl text-gold-400 mb-3">Discover Your Purpose</h2>
             <p className="text-gray-200 mb-6 leading-relaxed">Generate your free Kundali first to unlock your soul's purpose, personality blueprint, and cosmic life path.</p>
             <button onClick={() => navigate(user ? '/kundali' : '/register')} className="btn-gold px-8 py-3">
@@ -86,7 +86,7 @@ export default function PurposePage() {
           {/* Life Purpose */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="card-cosmic p-8 border border-gold-600/30">
             <div className="flex items-start gap-4">
-              <div className="text-4xl">🌟</div>
+              <div className="text-4xl font-serif leading-none" style={{ color:'#C9A84C', textShadow:'0 0 10px rgba(201,168,76,0.5)' }}>✦</div>
               <div>
                 <div className="text-xs text-gold-600 uppercase tracking-widest mb-1">Your Life Purpose</div>
                 <h2 className="font-serif text-2xl text-gold-400 mb-3">{kundali.nakshatra} Nakshatra</h2>
@@ -132,13 +132,13 @@ export default function PurposePage() {
             <h2 className="font-serif text-gold-400 text-2xl mb-6">Karma Path — Rahu-Ketu Axis</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-cosmic-900/60 rounded-xl p-5">
-                <div className="text-2xl mb-2">🐍</div>
+                <div className="text-2xl mb-2 font-serif" style={{ color:'#C9A84C' }}>☊</div>
                 <div className="text-gold-400 font-semibold mb-1">Rahu in {rahuSign}</div>
                 <div className="text-xs text-gray-300 mb-2">North Node — Soul's Destiny</div>
                 <p className="text-gray-200 text-sm leading-relaxed">{PLANET_MEANINGS.Rahu} With Rahu in {rahuSign}, your soul is growing toward the qualities of this sign in this lifetime.</p>
               </div>
               <div className="bg-cosmic-900/60 rounded-xl p-5">
-                <div className="text-2xl mb-2">🔮</div>
+                <div className="text-2xl mb-2 font-serif" style={{ color:'#C9A84C' }}>☋</div>
                 <div className="text-gold-400 font-semibold mb-1">Ketu in {ketuSign}</div>
                 <div className="text-xs text-gray-300 mb-2">South Node — Past Life Gifts</div>
                 <p className="text-gray-200 text-sm leading-relaxed">{PLANET_MEANINGS.Ketu} With Ketu in {ketuSign}, you carry deep mastery of this sign's energy from previous lifetimes.</p>
@@ -151,7 +151,7 @@ export default function PurposePage() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="card-cosmic p-8 border border-gold-600/20">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-full bg-gold-600/20 border border-gold-600/40 flex items-center justify-center">
-                  <span className="text-gold-400 text-xl">🔮</span>
+                  <span className="text-gold-400 text-xl font-serif">✦</span>
                 </div>
                 <div>
                   <div className="text-xs text-gold-600 uppercase tracking-widest">Current Phase</div>

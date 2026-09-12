@@ -16,7 +16,7 @@ const SUGGESTIONS = [
 function TypingIndicator() {
   return (
     <div className="flex items-end gap-2 mb-4">
-      <div className="w-8 h-8 rounded-full bg-gold-500/20 flex items-center justify-center text-sm shrink-0">🔮</div>
+      <div className="w-8 h-8 rounded-full bg-gold-500/20 flex items-center justify-center text-sm shrink-0 font-serif text-gold-400/60">✦</div>
       <div className="bg-cosmic-800 border border-gold-500/20 rounded-2xl rounded-bl-none px-4 py-3">
         <div className="flex gap-1 items-center h-4">
           {[0, 1, 2].map(i => (
@@ -41,7 +41,7 @@ function MessageBubble({ msg, astrologerName }) {
       className={`flex items-end gap-2 mb-4 ${isUser ? 'flex-row-reverse' : ''}`}
     >
       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm shrink-0 ${isUser ? 'bg-blue-500/20 text-blue-300' : 'bg-gold-500/20 text-gold-400'}`}>
-        {isUser ? '👤' : '🔮'}
+        {isUser ? '◉' : '✦'}
       </div>
       <div className={`max-w-[75%] ${isUser ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
         <div className={`text-[10px] text-cosmic-500 ${isUser ? 'text-right' : ''}`}>
@@ -254,7 +254,7 @@ export default function ChatConsultPage() {
           <button onClick={() => setShowEndModal(true)} className="text-cosmic-400 hover:text-red-400 transition-colors text-sm p-1">
             ✕
           </button>
-          <div className="w-9 h-9 rounded-full bg-gold-500/20 flex items-center justify-center text-lg shrink-0">🔮</div>
+          <div className="w-9 h-9 rounded-full bg-gold-500/20 flex items-center justify-center text-lg shrink-0 font-serif text-gold-400/60">✦</div>
           <div className="flex-1 min-w-0">
             <div className="text-cosmic-100 font-medium text-sm truncate">{astrologerName}</div>
             <div className="flex items-center gap-2">

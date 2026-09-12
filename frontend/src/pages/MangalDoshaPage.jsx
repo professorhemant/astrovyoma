@@ -334,9 +334,9 @@ export default function MangalDoshaPage() {
                     Mangal Dosha is examined from three reference points. Even one active perspective makes a person Manglik.
                   </p>
                   <div className="space-y-4">
-                    <PerspectiveCard data={r.analysis.fromLagna}  label="From Lagna (Ascendant)" icon="⬆️" />
-                    <PerspectiveCard data={r.analysis.fromMoon}   label="From Moon (Chandra Lagna)" icon="🌙" />
-                    <PerspectiveCard data={r.analysis.fromVenus}  label="From Venus (Shukra Lagna)" icon="♀️" />
+                    <PerspectiveCard data={r.analysis.fromLagna}  label="From Lagna (Ascendant)" icon="↑" />
+                    <PerspectiveCard data={r.analysis.fromMoon}   label="From Moon (Chandra Lagna)" icon="☽" />
+                    <PerspectiveCard data={r.analysis.fromVenus}  label="From Venus (Shukra Lagna)" icon="♀" />
                   </div>
                   <div className="bg-cosmic-900/50 rounded-xl p-4 border border-gold-600/10 text-xs text-gray-500 leading-relaxed">
                     <strong className="text-gray-400">Weight of perspectives:</strong> Lagna chart carries the highest weight (100%),
@@ -386,7 +386,7 @@ export default function MangalDoshaPage() {
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
                   {!r.isManglik ? (
                     <div className="text-center py-12">
-                      <div className="text-4xl mb-3">✅</div>
+                      <div className="text-4xl mb-3 text-emerald-400">✓</div>
                       <p className="text-emerald-400 font-semibold">No remedies needed</p>
                       <p className="text-gray-500 text-sm mt-2">You do not have Mangal Dosha. No Mars-specific remedies are required.</p>
                     </div>

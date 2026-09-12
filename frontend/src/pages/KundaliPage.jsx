@@ -1808,7 +1808,7 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
         <div className="space-y-4">
           <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${kaalSarp ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'}`}>
             {kaalSarp
-              ? `🐍 Kaal Sarp Dosha Present — ${kaalSarpType?.name || 'Type Unknown'}`
+              ? `☊ Kaal Sarp Dosha Present — ${kaalSarpType?.name || 'Type Unknown'}`
               : '✓ Chart is Free from Kaal Sarp Dosha'}
           </div>
           {kaalSarp && kaalSarpType && (

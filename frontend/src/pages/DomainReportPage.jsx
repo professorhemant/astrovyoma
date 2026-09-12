@@ -8,10 +8,10 @@ import BirthPlacePicker from '../components/BirthPlacePicker';
 import { useAuth } from '../context/AuthContext';
 
 const DOMAIN_TABS = [
-  { key: 'career',  label: 'Career',  icon: '💼', color: 'from-blue-600 to-indigo-700' },
-  { key: 'love',    label: 'Love',    icon: '❤️', color: 'from-rose-600 to-pink-700' },
-  { key: 'finance', label: 'Finance', icon: '💰', color: 'from-emerald-600 to-green-700' },
-  { key: 'health',  label: 'Health',  icon: '🌿', color: 'from-teal-600 to-cyan-700' },
+  { key: 'career',  label: 'Career',  icon: '◆', color: 'from-blue-600 to-indigo-700' },
+  { key: 'love',    label: 'Love',    icon: '♥', color: 'from-rose-600 to-pink-700' },
+  { key: 'finance', label: 'Finance', icon: '◈', color: 'from-emerald-600 to-green-700' },
+  { key: 'health',  label: 'Health',  icon: '✧', color: 'from-teal-600 to-cyan-700' },
 ];
 
 const LABEL_COLORS = {

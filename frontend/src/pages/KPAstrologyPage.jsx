@@ -10,15 +10,15 @@ import { Bookmark } from 'lucide-react';
 const TABS = ['KP Report', 'Cuspal Sub-Lords', 'Planetary Lords', 'Significators', 'Event Query'];
 
 const EVENT_OPTIONS = [
-  { value: 'marriage',     label: '💍 Marriage' },
-  { value: 'career',       label: '💼 Career / Job' },
-  { value: 'finance',      label: '💰 Finance / Wealth' },
-  { value: 'health',       label: '🏥 Health' },
-  { value: 'education',    label: '🎓 Education' },
-  { value: 'travel',       label: '✈️ Travel / Foreign' },
-  { value: 'property',     label: '🏠 Property / House' },
-  { value: 'children',     label: '👶 Children' },
-  { value: 'spirituality', label: '🙏 Spirituality / Moksha' },
+  { value: 'marriage',     label: '♥ Marriage' },
+  { value: 'career',       label: '◆ Career / Job' },
+  { value: 'finance',      label: '◈ Finance / Wealth' },
+  { value: 'health',       label: '✧ Health' },
+  { value: 'education',    label: '✦ Education' },
+  { value: 'travel',       label: '→ Travel / Foreign' },
+  { value: 'property',     label: '◆ Property / House' },
+  { value: 'children',     label: '◈ Children' },
+  { value: 'spirituality', label: 'ॐ Spirituality / Moksha' },
 ];
 
 const PLANET_COLOR = {
@@ -84,23 +84,23 @@ const DASHA_DESC = {
 };
 
 const AREA_CONFIG = [
-  { domain:'career',     icon:'💼', label:'Career & Profession',      primaryHouse:10, favorable:[10,6,11], avoid:[8,12],
+  { domain:'career',     icon:'◆', label:'Career & Profession',      primaryHouse:10, favorable:[10,6,11], avoid:[8,12],
     pos:'Career houses (10, 6, 11) are well signified — professional growth and recognition are strongly supported.',
     neg:'Career houses are under challenging influence — obstacles and delays may arise. Consistent effort during the right dasha will break through.',
     mix:'Career shows a mixed picture — opportunities exist but obstacles too. Patience and timing are critical.' },
-  { domain:'marriage',   icon:'💍', label:'Marriage & Relationships',  primaryHouse:7,  favorable:[7,2,11], avoid:[6,8,12],
+  { domain:'marriage',   icon:'♥', label:'Marriage & Relationships',  primaryHouse:7,  favorable:[7,2,11], avoid:[6,8,12],
     pos:'The 7th house sub-lord signifies partnership houses well — harmonious marriage and lasting relationships are indicated.',
     neg:'The 7th house sub-lord signifies challenging houses (6, 8, or 12) — delays or friction in relationships are possible. Patience and communication are essential.',
     mix:'Relationships show both promise and complexity. Marriage is indicated but may need careful partner selection and adjustments.' },
-  { domain:'wealth',     icon:'💰', label:'Wealth & Finance',          primaryHouse:2,  favorable:[2,11,9], avoid:[6,8,12],
+  { domain:'wealth',     icon:'◈', label:'Wealth & Finance',          primaryHouse:2,  favorable:[2,11,9], avoid:[6,8,12],
     pos:'Wealth houses (2, 11) are strongly signified — financial gains through multiple sources are indicated. Investments in favorable dasha periods will grow well.',
     neg:'The 2nd house sub-lord signifies loss or expenditure houses — unnecessary outflow of money is possible. Avoid risky investments and maintain strict financial discipline.',
     mix:'Finances are moderate — income is indicated but so are expenditures. Systematic saving and avoiding speculation are important.' },
-  { domain:'health',     icon:'🏥', label:'Health & Vitality',         primaryHouse:1,  favorable:[1,11],   avoid:[6,8,12],
+  { domain:'health',     icon:'✧', label:'Health & Vitality',         primaryHouse:1,  favorable:[1,11],   avoid:[6,8,12],
     pos:'The Ascendant sub-lord supports good health and physical vitality. The chart indicates a strong constitution with good recovery ability.',
     neg:'The Ascendant sub-lord points to some health concerns — preventive care is important. Be especially cautious during 6th or 8th house dasha periods.',
     mix:'Health is generally manageable but not without periodic concerns. A healthy lifestyle and regular checkups are advisable.' },
-  { domain:'education',  icon:'🎓', label:'Education & Learning',      primaryHouse:5,  favorable:[4,5,9],  avoid:[8,12],
+  { domain:'education',  icon:'✦', label:'Education & Learning',      primaryHouse:5,  favorable:[4,5,9],  avoid:[8,12],
     pos:'Education houses (4, 5, 9) are well supported — higher education, certifications, and intellectual achievements are strongly indicated.',
     neg:'Educational matters may face interruptions or delays. Practical, focused fields of study and consistent effort will overcome obstacles.',
     mix:'Education is supported but requires focused effort. Success comes through steady preparation rather than last-minute work.' },
@@ -144,7 +144,7 @@ function ReportTab({ data }) {
       {/* Overall Verdict */}
       <div className={`rounded-xl p-5 border-l-4 ${overallGood ? 'border-emerald-400 bg-emerald-400/5' : 'border-amber-400 bg-amber-400/5'}`}>
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-xl">{overallGood ? '✨' : '⚡'}</span>
+          <span className="text-xl">{overallGood ? '✧' : '◆'}</span>
           <h3 className={`font-serif text-base font-semibold ${overallGood ? 'text-emerald-400' : 'text-amber-400'}`}>
             {overallGood ? 'Overall Favorable Chart — Positive Outlook' : 'Chart Needs Effort — Growth Through Discipline'}
           </h3>
@@ -612,7 +612,7 @@ export default function KPAstrologyPage() {
 
         {/* Header */}
         <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} className="text-center mb-10">
-          <div className="text-5xl mb-3">🔯</div>
+          <div className="text-5xl mb-3 font-serif text-gold-400/60">✦</div>
           <h1 className="font-serif text-3xl text-gold-400 mb-2">KP Astrology</h1>
           <p className="text-cosmic-400 text-sm max-w-lg mx-auto">
             Krishnamurti Paddhati — precise astrology using Cuspal Sub-Lords, Significators, and Ruling Planets
