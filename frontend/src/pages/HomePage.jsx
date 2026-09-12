@@ -294,12 +294,13 @@ export default function HomePage() {
             size={num(siteSettings?.heroMarqueeSize, 17)}
           />
           {/* zodiac mandala overlaid on banner — vertically centered, slightly left */}
-          {/* top: the desktop offset is tuned for a ~693px hero; on a phone the
-              same figure lands the wheel behind the navbar, so anchor it by
-              percentage there, clear of the headline and above the clock. */}
+          {/* top: on a phone the hero is only 320px tall with the headline at
+              64px; 60% keeps the mandala below the headline text and just above
+              the clock (which sits at the bottom). Desktop uses the admin-set
+              CSS variable. */}
           <div
             data-edit="mandala" data-edit-label="Zodiac wheel"
-            className="absolute flex flex-col items-center justify-center pointer-events-none top-[38%] md:top-[var(--mandala-top)]"
+            className="absolute flex flex-col items-center justify-center pointer-events-none top-[60%] md:top-[var(--mandala-top)]"
             style={{ ...mandalaPos, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
             <img
               src="/zodiac-mandala.webp"
@@ -331,8 +332,9 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Panchang today widget — desktop only, left column below mandala */}
-          <div className="hidden md:block absolute top-[280px] left-4 z-20 w-64">
+          {/* Panchang today widget — xl+ only, upper area right of centre so it
+              does not overlap the mandala which spins in the left column. */}
+          <div className="hidden xl:block absolute top-[8px] left-[38%] z-20 w-64">
             <HeroPanchangWidget overlay={true} />
           </div>
           </div>

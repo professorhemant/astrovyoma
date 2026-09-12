@@ -172,6 +172,12 @@ async function start() {
       await sequelize.query(`UPDATE site_settings SET value = '8' WHERE key = 'clockBottom' AND value = '81'`);
     } catch (_) {}
 
+    // Fix bad admin-panel values: clockLeft=0 hides clock off left edge; clockBottom=-40 clips it below image.
+    try {
+      await sequelize.query(`UPDATE site_settings SET value = '14' WHERE key = 'clockLeft' AND CAST(value AS DECIMAL) < 5`);
+      await sequelize.query(`UPDATE site_settings SET value = '12' WHERE key = 'clockBottom' AND CAST(value AS DECIMAL) < 0`);
+    } catch (_) {}
+
     await seedAstrologers();
     await seedRealAstrologers();
     // Fills the editable lists with the copy the site already ships, so moving a
