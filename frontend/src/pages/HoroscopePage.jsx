@@ -20,7 +20,8 @@ const SIGNS = [
   { name: 'Pisces',      nameHi: 'मीन',       symbol: '♓', dates: 'Feb 19 – Mar 20', element: 'Water', ruling: 'Jupiter', color: '#74B9FF' },
 ];
 
-const ELEMENT_ICON = { Fire: '🔥', Earth: '🌍', Air: '💨', Water: '💧' };
+const ELEMENT_COLOR  = { Fire: '#FF6B6B', Earth: '#6BCB77', Air: '#FFD93D', Water: '#74B9FF' };
+const ELEMENT_SYMBOL = { Fire: '△', Earth: '⊕', Air: '◇', Water: '▽' };
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -87,8 +88,7 @@ export default function HoroscopePage() {
 
           {/* Birth Details Form */}
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-            <div className="bg-cosmic-800/60 border border-gold-500/30 rounded-2xl p-6 md:p-8 mb-14"
-              style={{ boxShadow: '0 0 50px rgba(201,168,76,0.08), inset 0 1px 0 rgba(201,168,76,0.1)' }}>
+            <div className="card-cosmic p-6 md:p-8 mb-14">
 
               <h2 className="font-serif text-xl text-gold-300 text-center mb-6">Enter Your Birth Details</h2>
 
@@ -104,7 +104,7 @@ export default function HoroscopePage() {
                       onChange={e => set('name', e.target.value)}
                       placeholder="Your full name"
                       required
-                      className="w-full bg-cosmic-900/70 border border-gold-600/20 rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-gold-400/60 text-sm transition-colors"
+                      className="input-cosmic"
                     />
                   </div>
                   <div>
@@ -112,7 +112,7 @@ export default function HoroscopePage() {
                     <select
                       value={form.sex}
                       onChange={e => set('sex', e.target.value)}
-                      className="w-full bg-cosmic-900/70 border border-gold-600/20 rounded-xl px-4 py-2.5 text-gray-200 focus:outline-none focus:border-gold-400/60 text-sm transition-colors"
+                      className="input-cosmic"
                     >
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
@@ -127,7 +127,7 @@ export default function HoroscopePage() {
                     <select
                       value={form.day}
                       onChange={e => set('day', e.target.value)}
-                      className="bg-cosmic-900/70 border border-gold-600/20 rounded-xl px-3 py-2.5 text-gray-200 focus:outline-none focus:border-gold-400/60 text-sm transition-colors"
+                      className="input-cosmic"
                     >
                       {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
                         <option key={d} value={d}>{d}</option>
@@ -136,7 +136,7 @@ export default function HoroscopePage() {
                     <select
                       value={form.month}
                       onChange={e => set('month', e.target.value)}
-                      className="bg-cosmic-900/70 border border-gold-600/20 rounded-xl px-3 py-2.5 text-gray-200 focus:outline-none focus:border-gold-400/60 text-sm transition-colors"
+                      className="input-cosmic"
                     >
                       {MONTHS.map((m, i) => (
                         <option key={i} value={i + 1}>{m}</option>
@@ -149,7 +149,7 @@ export default function HoroscopePage() {
                       min="1900"
                       max={new Date().getFullYear()}
                       placeholder="Year"
-                      className="bg-cosmic-900/70 border border-gold-600/20 rounded-xl px-3 py-2.5 text-gray-200 focus:outline-none focus:border-gold-400/60 text-sm transition-colors"
+                      className="input-cosmic"
                     />
                   </div>
                 </div>
@@ -162,7 +162,7 @@ export default function HoroscopePage() {
                       <select
                         value={form.hour}
                         onChange={e => set('hour', e.target.value)}
-                        className="w-full bg-cosmic-900/70 border border-gold-600/20 rounded-xl px-3 py-2.5 text-gray-200 focus:outline-none focus:border-gold-400/60 text-sm transition-colors"
+                        className="input-cosmic"
                       >
                         {Array.from({ length: 24 }, (_, i) => i).map(h => (
                           <option key={h} value={h}>{String(h).padStart(2, '0')}</option>
@@ -174,7 +174,7 @@ export default function HoroscopePage() {
                       <select
                         value={form.minute}
                         onChange={e => set('minute', e.target.value)}
-                        className="w-full bg-cosmic-900/70 border border-gold-600/20 rounded-xl px-3 py-2.5 text-gray-200 focus:outline-none focus:border-gold-400/60 text-sm transition-colors"
+                        className="input-cosmic"
                       >
                         {Array.from({ length: 60 }, (_, i) => i).map(m => (
                           <option key={m} value={m}>{String(m).padStart(2, '0')}</option>
@@ -186,7 +186,7 @@ export default function HoroscopePage() {
                       <select
                         value={form.second}
                         onChange={e => set('second', e.target.value)}
-                        className="w-full bg-cosmic-900/70 border border-gold-600/20 rounded-xl px-3 py-2.5 text-gray-200 focus:outline-none focus:border-gold-400/60 text-sm transition-colors"
+                        className="input-cosmic"
                       >
                         {Array.from({ length: 60 }, (_, i) => i).map(s => (
                           <option key={s} value={s}>{String(s).padStart(2, '0')}</option>
@@ -210,7 +210,7 @@ export default function HoroscopePage() {
 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-gold-600 to-gold-400 text-cosmic-950 font-semibold rounded-xl py-3 text-base hover:opacity-90 transition-opacity mt-2"
+                  className="btn-gold w-full py-3 text-base mt-2"
                 >
                   Get Personalized Horoscope
                 </button>
@@ -225,7 +225,7 @@ export default function HoroscopePage() {
             <p className="text-gray-400 text-xs">Or select your zodiac sign directly</p>
             <div className="mt-4 flex flex-wrap justify-center gap-3">
               <Link to="/horoscope/extended"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gold-500/40 bg-gold-500/10 text-gold-300 text-sm font-semibold hover:bg-gold-500/20 transition-all">
+                className="inline-flex items-center gap-2 px-5 py-2.5 btn-outline-gold text-sm font-semibold">
                 Weekly – Monthly – Yearly Forecasts
               </Link>
             </div>
@@ -242,12 +242,15 @@ export default function HoroscopePage() {
               >
                 <Link
                   to={`/horoscope/${sign.name.toLowerCase()}`}
-                  className="flex flex-col items-center gap-1.5 p-3 rounded-2xl border transition-all duration-200 bg-cosmic-800/50 border-gold-600/10 hover:border-gold-400/40 hover:bg-cosmic-800/80 hover:shadow-lg block"
+                  className="flex flex-col items-center gap-1.5 p-3 rounded-2xl border transition-all duration-200 bg-cosmic-800/50 border-gold-600/10 hover:border-gold-400/40 hover:bg-cosmic-800/80 block"
+                  style={{ '--tw-shadow': 'none' }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 18px rgba(201,168,76,0.18)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = ''; }}
                 >
                   <ZodiacIcon sign={sign.name} size={52} />
                   <span className="text-gold-400 font-semibold text-sm leading-tight" style={{ fontFamily: "'Noto Sans Devanagari',sans-serif" }}>{sign.nameHi}</span>
                   <span className="text-gray-300 text-[10px]">{sign.name}</span>
-                  <span className="text-gray-300 text-[10px]">{ELEMENT_ICON[sign.element]}</span>
+                  <span className="text-[10px] font-medium" style={{ color: ELEMENT_COLOR[sign.element] }}>{ELEMENT_SYMBOL[sign.element]}</span>
                   <span className="text-gray-300 text-[10px]">{sign.dates.split(' – ')[0]}</span>
                 </Link>
               </motion.div>
@@ -258,10 +261,10 @@ export default function HoroscopePage() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
             className="mt-12 text-center">
             <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
-              <Link to="/kundali" className="flex-1 text-center bg-gradient-to-r from-gold-600 to-gold-400 text-cosmic-950 font-semibold rounded-full py-3 text-sm hover:opacity-90 transition-opacity">
+              <Link to="/kundali" className="flex-1 text-center btn-gold py-3 text-sm">
                 Get My Kundali
               </Link>
-              <Link to="/astrologers" className="flex-1 text-center border border-gold-500/40 text-gold-400 rounded-full py-3 text-sm hover:bg-gold-500/10 transition-colors">
+              <Link to="/astrologers" className="flex-1 text-center btn-outline-gold py-3 text-sm">
                 Talk to Astrologer
               </Link>
             </div>
