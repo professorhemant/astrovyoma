@@ -1,12 +1,14 @@
 # AstroVyoma — Claude Code Instructions
 
 ## Deployment Workflow
-- Auto-deploys to Railway on every push to `main` branch (both backend + frontend).
+- GitHub auto-deploy NOT reliable — always use `railway up` manually.
+- Backend deploy: `RAILWAY_TOKEN=6895367b-32cc-46d6-8775-5590e5437b0d railway up --service backend --detach` from ROOT (C:\Users\hks26\AstroVyoma)
+- Frontend deploy: `cd frontend && RAILWAY_TOKEN=6895367b-32cc-46d6-8775-5590e5437b0d railway up --service frontend --detach` — MUST run from inside frontend/ (running from root times out due to upload size).
 - Backend URL: https://backend-production-6068.up.railway.app
 - Frontend URL: https://frontend-production-cceb.up.railway.app
-- After pushing, wait ~2-3 minutes for Railway build + deploy to complete before testing.
+- Custom domain: https://astrovyoma.com (use this for verification, not the railway.app URL)
+- After deploying, wait ~3-5 minutes for build + deploy to complete before testing.
 - Always verify the live site after deploy — do not claim done without checking.
-- If changes don't appear: check Railway dashboard for build errors; Docker cache can cause stale builds — add ARG cache-bust to Dockerfile if needed.
 
 ## Verification Before Claiming Done
 - After any kundali/chart change: call the live API directly to verify calculation output.
