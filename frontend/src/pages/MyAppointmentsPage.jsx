@@ -111,7 +111,7 @@ function AppointmentCard({ appt, onCancel }) {
       <div className="flex items-start gap-4">
         {/* Avatar */}
         <div className="w-11 h-11 rounded-full bg-gold-500/20 flex items-center justify-center text-xl shrink-0">
-          {ast.photo_url ? <img src={ast.photo_url} alt="" className="w-full h-full rounded-full object-cover" /> : '🔮'}
+          {ast.photo_url ? <img src={ast.photo_url} alt="" className="w-full h-full rounded-full object-cover" /> : '✦'}
         </div>
 
         {/* Info */}
@@ -206,7 +206,7 @@ export default function MyAppointmentsPage() {
       <div className="max-w-2xl mx-auto">
 
         <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-8">
-          <div className="text-4xl mb-3">📅</div>
+          <div className="text-4xl mb-3 font-serif text-gold-400/60">◆</div>
           <h1 className="text-2xl font-serif text-gold-400">My Appointments</h1>
           <p className="text-cosmic-400 text-sm mt-1">Scheduled sessions with your astrologers</p>
         </motion.div>

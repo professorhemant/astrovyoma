@@ -658,11 +658,11 @@ export default function VastuPage() {
           className="flex flex-wrap gap-3 mt-10 pt-6 border-t border-gold-600/10">
           <Link to="/remedies"
             className="flex-1 text-center py-3 rounded-xl border border-gold-600/30 text-gold-400 text-sm font-semibold hover:bg-gold-500/10 transition-all">
-            🌿 Vedic Remedies
+            ✧ Vedic Remedies
           </Link>
           <Link to="/panchang"
             className="flex-1 text-center py-3 rounded-xl border border-gold-600/30 text-gold-400 text-sm font-semibold hover:bg-gold-500/10 transition-all">
-            📅 Shubh Muhurat
+            ◆ Shubh Muhurat
           </Link>
           <Link to="/vastu-pooja"
             className="flex-1 text-center py-3 rounded-xl border border-gold-600/30 text-gold-400 text-sm font-semibold hover:bg-gold-500/10 transition-all">

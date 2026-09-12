@@ -78,7 +78,7 @@ export default function TodayTithiPage() {
                 <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.05 }}
                   className="flex items-center justify-center gap-3 mb-6 flex-wrap">
                   <div className="bg-gold-500/10 border border-gold-500/40 rounded-full px-5 py-2 flex items-center gap-2 text-sm">
-                    <span className="text-gold-400">⏰</span>
+                    <span className="text-gold-400">◈</span>
                     <span className="text-gray-200">Tithi ends at</span>
                     <span className="text-gold-300 font-semibold">{data.tithiEnds.time}</span>
                     <span className={`text-xs ${data.tithiEnds.day === 'Tomorrow' ? 'text-yellow-500/70' : 'text-gray-200'}`}>({data.tithiEnds.day})</span>
@@ -123,7 +123,7 @@ export default function TodayTithiPage() {
               <div className="grid md:grid-cols-2 gap-4 mb-6">
                 <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.2 }}
                   className="bg-green-500/10 border border-green-500/50 rounded-2xl p-6">
-                  <h3 className="text-green-400 font-semibold text-lg mb-3 flex items-center gap-2">✅ Favorable Activities</h3>
+                  <h3 className="text-green-400 font-semibold text-lg mb-3 flex items-center gap-2">✓ Favorable Activities</h3>
                   <p className="text-gray-300 text-sm leading-relaxed">{data.goodFor}</p>
                 </motion.div>
                 <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.25 }}

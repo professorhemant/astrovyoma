@@ -42,7 +42,7 @@ export default function CrystalDetailPage() {
   );
   if (error || !crystal) return (
     <div className="relative z-10 min-h-screen pt-32 flex flex-col items-center justify-center gap-4">
-      <div className="text-4xl">💎</div>
+      <div className="text-4xl font-serif text-gold-400">◈</div>
       <p className="text-cosmic-400">{error}</p>
       <Link to="/crystals" className="btn-cosmic px-5 py-2 text-sm">← Back to Crystal Guide</Link>
     </div>
@@ -178,7 +178,7 @@ export default function CrystalDetailPage() {
             {/* Mall CTA */}
             {crystal.mallProductId ? (
               <div className="card-cosmic p-5 text-center border border-gold-500/30">
-                <div className="text-2xl mb-2">🛍️</div>
+                <div className="text-2xl mb-2 font-serif text-gold-400">✧</div>
                 <h3 className="text-gold-400 font-serif text-sm mb-1">Available in Astro Mall</h3>
                 <p className="text-cosmic-400 text-xs mb-4">Lab-certified, astrologer-charged gemstone ready to ship.</p>
                 <Link to={`/mall/product/${crystal.mallProductId}`} className="btn-cosmic w-full py-2.5 text-sm block text-center">
@@ -187,7 +187,7 @@ export default function CrystalDetailPage() {
               </div>
             ) : (
               <div className="card-cosmic p-5 text-center">
-                <div className="text-2xl mb-2">🛍️</div>
+                <div className="text-2xl mb-2 font-serif text-gold-400">✧</div>
                 <h3 className="text-cosmic-300 font-serif text-sm mb-1">Shop Related Items</h3>
                 <p className="text-cosmic-500 text-xs mb-4">Browse our full collection of gemstones and healing crystals.</p>
                 <Link to="/mall" className="w-full py-2.5 text-sm block text-center border border-cosmic-700 text-cosmic-300 rounded-xl hover:bg-white/5 transition-colors">
@@ -198,7 +198,7 @@ export default function CrystalDetailPage() {
 
             {/* Kundali CTA */}
             <div className="card-cosmic p-5 text-center">
-              <div className="text-2xl mb-2">🔮</div>
+              <div className="text-2xl mb-2 font-serif text-gold-400">✦</div>
               <p className="text-cosmic-400 text-xs mb-3">Get a personalised gemstone recommendation based on your birth chart.</p>
               <Link to="/kundali" className="w-full py-2.5 text-sm block text-center border border-gold-500/30 text-gold-400 rounded-xl hover:bg-gold-500/10 transition-colors">
                 Check My Chart

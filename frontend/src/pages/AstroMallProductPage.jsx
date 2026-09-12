@@ -8,15 +8,15 @@ import RichText from '../components/RichText';
 import { mall } from '../api';
 
 const CATEGORY_STYLE = {
-  gemstones: { grad:'from-blue-900/80 to-indigo-950',   icon:'💎' },
-  rudraksha: { grad:'from-amber-900/80 to-orange-950',  icon:'🔮' },
-  yantras:   { grad:'from-yellow-900/80 to-amber-950',  icon:'⭐' },
-  bracelets: { grad:'from-purple-900/80 to-violet-950', icon:'📿' },
-  kavach:    { grad:'from-red-900/80 to-rose-950',      icon:'🛡️' },
-  murtis:    { grad:'from-orange-900/80 to-yellow-950', icon:'🕉️' },
-  pyramids:  { grad:'from-teal-900/80 to-cyan-950',     icon:'🔺' },
-  malas:     { grad:'from-pink-900/80 to-fuchsia-950',  icon:'📿' },
-  combos:    { grad:'from-emerald-900/80 to-green-950', icon:'🎁' },
+  gemstones: { grad:'from-blue-900/80 to-indigo-950',   icon:'◈' },
+  rudraksha: { grad:'from-amber-900/80 to-orange-950',  icon:'◉' },
+  yantras:   { grad:'from-yellow-900/80 to-amber-950',  icon:'✦' },
+  bracelets: { grad:'from-purple-900/80 to-violet-950', icon:'◆' },
+  kavach:    { grad:'from-red-900/80 to-rose-950',      icon:'⊛' },
+  murtis:    { grad:'from-orange-900/80 to-yellow-950', icon:'ॐ' },
+  pyramids:  { grad:'from-teal-900/80 to-cyan-950',     icon:'△' },
+  malas:     { grad:'from-pink-900/80 to-fuchsia-950',  icon:'◆' },
+  combos:    { grad:'from-emerald-900/80 to-green-950', icon:'✧' },
 };
 
 function FAQItem({ q, a }) {
@@ -122,9 +122,9 @@ export default function AstroMallProductPage() {
               {/* Trust badges below image */}
               <div className="grid grid-cols-3 gap-3 mt-4">
                 {[
-                  { icon:'✅', text: product.certification || 'Lab Certified' },
-                  { icon:'🙏', text:'Astrologer Energised' },
-                  { icon:'🚚', text:'Free Shipping' },
+                  { icon:'✓', text: product.certification || 'Lab Certified' },
+                  { icon:'ॐ', text:'Astrologer Energised' },
+                  { icon:'→', text:'Free Shipping' },
                 ].map(b => (
                   <div key={b.text} className="bg-cosmic-800/60 border border-gold-500/25 rounded-xl p-2.5 text-center">
                     <div className="text-xl mb-1">{b.icon}</div>
@@ -144,7 +144,7 @@ export default function AstroMallProductPage() {
                   <span className="bg-cosmic-800 border border-gold-500/30 text-gray-300 text-xs px-3 py-1 rounded-full">🪐 {product.planet}</span>
                 )}
                 {product.bestDay && (
-                  <span className="bg-cosmic-800 border border-gold-500/30 text-gray-300 text-xs px-3 py-1 rounded-full">📅 Best day: {product.bestDay}</span>
+                  <span className="bg-cosmic-800 border border-gold-500/30 text-gray-300 text-xs px-3 py-1 rounded-full">◆ Best day: {product.bestDay}</span>
                 )}
               </div>
 
@@ -182,7 +182,7 @@ export default function AstroMallProductPage() {
 
               {/* Benefits */}
               <div className="bg-cosmic-800/50 border border-gold-500/25 rounded-2xl p-4">
-                <h3 className="text-gold-400 font-semibold text-sm mb-3">✨ Key Benefits</h3>
+                <h3 className="text-gold-400 font-semibold text-sm mb-3">✧ Key Benefits</h3>
                 <ul className="space-y-2">
                   {product.benefits.map((b, i) => (
                     <li key={i} className="flex items-start gap-2 text-gray-300 text-sm">
@@ -263,7 +263,7 @@ export default function AstroMallProductPage() {
                 <div className="flex flex-wrap gap-3">
                   {product.bestDay && (
                     <div className="bg-gold-500/10 border border-gold-500/30 rounded-xl px-4 py-2.5 flex items-center gap-2">
-                      <span className="text-xl">📅</span>
+                      <span className="text-xl font-serif text-gold-400">◆</span>
                       <div>
                         <p className="text-gray-300 text-xs">Best Day</p>
                         <p className="text-gold-300 font-semibold text-sm">{product.bestDay}</p>
@@ -272,7 +272,7 @@ export default function AstroMallProductPage() {
                   )}
                   {product.bestTime && (
                     <div className="bg-gold-500/10 border border-gold-500/30 rounded-xl px-4 py-2.5 flex items-center gap-2">
-                      <span className="text-xl">⏰</span>
+                      <span className="text-xl font-serif text-gold-400">◈</span>
                       <div>
                         <p className="text-gray-300 text-xs">Best Time</p>
                         <p className="text-gold-300 font-semibold text-sm">{product.bestTime}</p>

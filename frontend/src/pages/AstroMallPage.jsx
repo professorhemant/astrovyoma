@@ -16,8 +16,8 @@ const SORT_OPTIONS = [
 ];
 
 const CATEGORY_ICONS = {
-  gemstones:'💎', rudraksha:'🟤', yantras:'🔯', bracelets:'📿',
-  kavach:'🛡️', murtis:'🙏', pyramids:'🔺', malas:'📿', combos:'🎁',
+  gemstones:'◈', rudraksha:'◉', yantras:'✦', bracelets:'◆',
+  kavach:'⊛', murtis:'ॐ', pyramids:'△', malas:'◆', combos:'✧',
 };
 
 export default function AstroMallPage() {
@@ -79,7 +79,7 @@ export default function AstroMallPage() {
       <div className="relative z-10 bg-gold-500/10 border-b border-gold-500/25 pt-16">
         <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8 py-2 px-4 text-xs text-gold-300">
           <span className="flex items-center gap-1.5">🚚 <b>Free Shipping</b> on all orders</span>
-          <span className="hidden sm:flex items-center gap-1.5">✨ <b>Energised</b> by Expert Astrologers</span>
+          <span className="hidden sm:flex items-center gap-1.5">✧ <b>Energised</b> by Expert Astrologers</span>
           <span className="flex items-center gap-1.5">🔬 <b>100% Authentic</b> & Certified</span>
           <span className="hidden sm:flex items-center gap-1.5">↩️ <b>7-Day</b> Easy Returns</span>
           <span className="flex items-center gap-1.5">📞 <b>COD</b> Available</span>
@@ -177,13 +177,13 @@ export default function AstroMallPage() {
                 {activeCategory
                   ? `${CATEGORY_ICONS[activeCategory] || ''} ${activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}`
                   : activePurpose
-                  ? `✨ ${activePurpose.charAt(0).toUpperCase() + activePurpose.slice(1)} Products`
+                  ? `✧ ${activePurpose.charAt(0).toUpperCase() + activePurpose.slice(1)} Products`
                   : search
                   ? `Search: "${search}"`
                   // The unfiltered grid is every product in the shop, not a
                   // selection. It called itself "Bestsellers & Featured"
                   // while nothing had ever been sold.
-                  : '✨ All Products'}
+                  : '✧ All Products'}
               </h2>
               {!loading && (
                 <span className="text-gray-200 text-sm">({products.length} products)</span>
@@ -253,7 +253,7 @@ export default function AstroMallPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               {[
                 { icon:'🔬', title:'Lab Certified', desc:'Every product tested and certified for authenticity' },
-                { icon:'🕉️', title:'Astrologer Energised', desc:'Charged with mantras by our panel of Vedic experts' },
+                { icon:'ॐ', title:'Astrologer Energised', desc:'Charged with mantras by our panel of Vedic experts' },
                 { icon:'🚚', title:'Free Shipping', desc:'Free delivery on all orders across India' },
                 { icon:'↩️', title:'7-Day Returns', desc:'Hassle-free returns if you\'re not satisfied' },
               ].map(item => (

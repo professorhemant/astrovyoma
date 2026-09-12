@@ -138,7 +138,7 @@ export default function TodayRahuKaalPage() {
               {/* Safe times today */}
               <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.35 }}
                 className="bg-green-500/10 border border-green-500/50 rounded-2xl p-5 mb-8 text-center">
-                <h3 className="text-green-400 font-semibold mb-2">✅ Best Time Today</h3>
+                <h3 className="text-green-400 font-semibold mb-2">✓ Best Time Today</h3>
                 <p className="text-white text-sm">The Abhijit Muhurta (midday) is always auspicious — 11:48 AM to 12:36 PM IST</p>
               </motion.div>
 

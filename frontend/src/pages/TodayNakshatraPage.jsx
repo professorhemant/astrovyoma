@@ -7,10 +7,10 @@ import PanchangPlacePicker from '../components/PanchangPlacePicker';
 
 const ELEMENT_STYLE = {
   Earth:  { bg:'bg-yellow-500/10',  border:'border-yellow-500/30',  text:'text-yellow-300',  icon:'🌍' },
-  Water:  { bg:'bg-blue-500/10',    border:'border-blue-500/30',    text:'text-blue-300',    icon:'💧' },
-  Fire:   { bg:'bg-red-500/10',     border:'border-red-500/30',     text:'text-red-300',     icon:'🔥' },
-  Air:    { bg:'bg-cyan-500/10',    border:'border-cyan-500/30',    text:'text-cyan-300',    icon:'💨' },
-  Ether:  { bg:'bg-purple-500/10',  border:'border-purple-500/30',  text:'text-purple-300',  icon:'✨' },
+  Water:  { bg:'bg-blue-500/10',    border:'border-blue-500/30',    text:'text-blue-300',    icon:'▽' },
+  Fire:   { bg:'bg-red-500/10',     border:'border-red-500/30',     text:'text-red-300',     icon:'△' },
+  Air:    { bg:'bg-cyan-500/10',    border:'border-cyan-500/30',    text:'text-cyan-300',    icon:'◇' },
+  Ether:  { bg:'bg-purple-500/10',  border:'border-purple-500/30',  text:'text-purple-300',  icon:'✧' },
 };
 const RULER_COLOR = {
   Sun:'#FF9F43', Moon:'#74B9FF', Mars:'#FF6B6B', Mercury:'#6BCB77',
@@ -43,7 +43,7 @@ export default function TodayNakshatraPage() {
         <div className="max-w-4xl mx-auto">
 
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-10">
-            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">🌟 Panchang — Second Limb</p>
+            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">✦ Panchang — Second Limb</p>
             <h1 className="font-serif text-3xl md:text-5xl text-gold-400 mb-3" style={{ textShadow:'0 0 30px rgba(201,168,76,0.4)' }}>Today's Nakshatra</h1>
             <p className="text-gray-200 text-sm">The Moon's lunar mansion — one of the 27 cosmic star clusters</p>
           </motion.div>
@@ -62,7 +62,7 @@ export default function TodayNakshatraPage() {
               <motion.div initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }}
                 className="bg-gradient-to-br from-cosmic-800/80 to-cosmic-900/80 border border-gold-500/50 rounded-3xl p-8 mb-6 text-center"
                 style={{ boxShadow:`0 0 60px ${rulerColor}15` }}>
-                <div className="text-5xl mb-3">⭐</div>
+                <div className="text-5xl mb-3 font-serif" style={{ color: rulerColor }}>✦</div>
                 <p className="text-gray-200 text-sm uppercase tracking-widest mb-2">{data.date}</p>
                 <h2 className="font-serif text-5xl mb-2" style={{ color: rulerColor, textShadow:`0 0 20px ${rulerColor}50` }}>{data.nakshatra}</h2>
                 <div className="flex items-center justify-center gap-3 flex-wrap mt-3">
@@ -78,7 +78,7 @@ export default function TodayNakshatraPage() {
                 <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.05 }}
                   className="flex items-center justify-center gap-3 mb-6 flex-wrap">
                   <div className="bg-purple-500/10 border border-purple-500/40 rounded-full px-5 py-2 flex items-center gap-2 text-sm">
-                    <span className="text-purple-300">⏰</span>
+                    <span className="text-purple-300">◈</span>
                     <span className="text-gray-200">Nakshatra ends at</span>
                     <span className="text-purple-300 font-semibold">{data.nakshatraEnds.time}</span>
                     <span className={`text-xs ${data.nakshatraEnds.day === 'Tomorrow' ? 'text-yellow-500/70' : 'text-gray-300'}`}>({data.nakshatraEnds.day})</span>
@@ -95,9 +95,9 @@ export default function TodayNakshatraPage() {
               {/* Ruler & Deity */}
               <div className="grid md:grid-cols-3 gap-4 mb-6">
                 {[
-                  { icon:'🪐', label:'Ruling Planet', value: data.ruler, color: rulerColor },
-                  { icon:'🙏', label:'Presiding Deity', value: data.deity, color:'#C9A84C' },
-                  { icon:'⭐', label:'Symbol', value: data.symbol, color:'#A29BFE' },
+                  { icon:'♄', label:'Ruling Planet', value: data.ruler, color: rulerColor },
+                  { icon:'ॐ', label:'Presiding Deity', value: data.deity, color:'#C9A84C' },
+                  { icon:'✦', label:'Symbol', value: data.symbol, color:'#A29BFE' },
                 ].map((item, i) => (
                   <motion.div key={item.label} initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay: 0.1 + i * 0.05 }}
                     className="bg-cosmic-800/60 border border-gold-500/40 rounded-2xl p-5 text-center">
@@ -112,7 +112,7 @@ export default function TodayNakshatraPage() {
               <div className="grid md:grid-cols-2 gap-4 mb-6">
                 <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.25 }}
                   className="bg-green-500/10 border border-green-500/50 rounded-2xl p-6">
-                  <h3 className="text-green-400 font-semibold text-lg mb-3 flex items-center gap-2">✅ Favored Activities</h3>
+                  <h3 className="text-green-400 font-semibold text-lg mb-3 flex items-center gap-2">✓ Favored Activities</h3>
                   <p className="text-white text-sm leading-relaxed">{data.goodFor}</p>
                 </motion.div>
                 <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.3 }}

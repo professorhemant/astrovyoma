@@ -247,7 +247,7 @@ export default function JoinAsAstrologerPage() {
           {[
             { icon: '₹', label: `${share}% Earnings`, sub: 'Your share of every consultation' },
             { icon: '🆓', label: 'No Joining Fee', sub: 'No registration or subscription charge' },
-            { icon: '⏰', label: 'Flexible Hours', sub: 'Work on your own schedule' },
+            { icon: '◈', label: 'Flexible Hours', sub: 'Work on your own schedule' },
           ].map(b => (
             <div key={b.label} className="card-cosmic px-6 py-4 text-center min-w-[160px]">
               <div className="text-2xl mb-1">{b.icon}</div>

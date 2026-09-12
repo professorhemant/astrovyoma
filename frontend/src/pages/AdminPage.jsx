@@ -535,7 +535,7 @@ function AstrologersTab() {
                     {a.email && <div className="text-gray-500 text-xs">{a.email}</div>}
                   </td>
                   <td className="py-2 pr-3 text-gold-400">₹{a.price_per_min}</td>
-                  <td className="py-2 pr-3">⭐ {a.rating}</td>
+                  <td className="py-2 pr-3">✦ {a.rating}</td>
                   <td className="py-2 pr-3 text-gray-400">{a.completed_orders}</td>
                   <td className="py-2 pr-3">
                     <span className={`px-2 py-0.5 rounded text-xs ${a.is_online ? 'bg-green-900/50 text-green-300' : 'bg-cosmic-800 text-gray-500'}`}>{a.is_online ? 'Online' : 'Offline'}</span>

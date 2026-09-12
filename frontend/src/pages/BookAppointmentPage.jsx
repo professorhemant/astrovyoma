@@ -198,7 +198,7 @@ export default function BookAppointmentPage() {
         {astrologer && (
           <div className="card-cosmic p-4 mb-6 flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-gold-500/20 flex items-center justify-center text-xl shrink-0">
-              {astrologer.display_name?.[0] || '🔮'}
+              {astrologer.display_name?.[0] || '✦'}
             </div>
             <div>
               <div className="text-cosmic-100 font-semibold">{astrologer.display_name}</div>

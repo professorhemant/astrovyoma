@@ -431,9 +431,9 @@ export default function NumerologyPage() {
                       <motion.div key={yog.name} initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }}
                         className="mb-5 p-4 rounded-2xl border-2 border-gold-400/60 bg-gold-500/10 relative overflow-hidden"
                         style={{ boxShadow:'0 0 32px rgba(201,168,76,0.25)' }}>
-                        <div className="absolute top-0 right-0 text-7xl opacity-10 select-none pr-3 pt-1">✨</div>
+                        <div className="absolute top-0 right-0 text-7xl opacity-10 select-none pr-3 pt-1">✧</div>
                         <div className="relative flex items-start gap-3">
-                          <span className="text-2xl">✨</span>
+                          <span className="text-2xl">✧</span>
                           <div>
                             <p className="text-gold-300 font-serif text-lg font-semibold">{yog.name}</p>
                             <p className="text-gold-400 text-xs mb-1">{yog.rarity}</p>
@@ -695,11 +695,11 @@ export default function NumerologyPage() {
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.2 }}>
             <div className="grid md:grid-cols-3 gap-4 mt-2">
               {[
-                { icon:'🔢', title:'Psychic Number', sub:'Moolank', desc:'Based on your birth day. Reveals your core personality, inner nature, and how you instinctively approach life.' },
-                { icon:'⭐', title:'Destiny Number', sub:'Bhagyank', desc:'Based on your full birth date. Reveals your life path, karmic mission, and the destiny you came to fulfill.' },
+                { icon:'✦', title:'Psychic Number', sub:'Moolank', desc:'Based on your birth day. Reveals your core personality, inner nature, and how you instinctively approach life.' },
+                { icon:'✦', title:'Destiny Number', sub:'Bhagyank', desc:'Based on your full birth date. Reveals your life path, karmic mission, and the destiny you came to fulfill.' },
                 { icon:'🔤', title:'Name Number', sub:'Namank — Chaldean', desc:'Each letter vibrates at a specific frequency. Your name number shows how the world perceives you and your outer success potential.' },
                 { icon:'🔲', title:'Lo Shu Grid', sub:'Chinese Magic Square', desc:'Your birth digits fill a 3×3 magic grid. Active formations reveal strengths; rare Raj Yog and Rajat Yog alignments bring extraordinary fortune.' },
-                { icon:'📅', title:'Personal Year', sub:'Current Year Energy', desc:'A 9-year cycle governs your life. Your personal year number reveals the dominant theme and energy available to you this year.' },
+                { icon:'◆', title:'Personal Year', sub:'Current Year Energy', desc:'A 9-year cycle governs your life. Your personal year number reveals the dominant theme and energy available to you this year.' },
                 { icon:'🎲', title:'Prashna Game', sub:'Intuitive Reading', desc:'Pick 2 numbers that speak to you right now. The planets behind your choices reveal what the universe is communicating to you in this moment.' },
               ].map(item => (
                 <div key={item.title} className="card-cosmic p-5 border border-gold-600/15 hover:border-gold-400/30 transition-colors">

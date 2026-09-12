@@ -24,11 +24,11 @@ const TONES = {
 const toneOf = (t) => TONES[t] || TONES.gold;
 
 const CRITERIA = [
-  { emoji: '📿', title: 'At least 3 years of practice', desc: 'Consulting real people, not only study. Longer practice raises the per-minute rate you can ask for.' },
-  { emoji: '🎓', title: 'A tradition you can name', desc: 'Vedic, KP, Nadi, Lal Kitab, numerology, Vastu, tarot — guru-shishya lineage counts as much as an institutional certificate.' },
-  { emoji: '🗣️', title: 'Fluent in Hindi or English', desc: 'Any further language you speak widens the seekers matched to you and is shown on your profile.' },
-  { emoji: '📱', title: 'A smartphone and steady internet', desc: 'Consultations run over chat and call in the browser. Nothing to install.' },
-  { emoji: '☮️', title: 'No fear-based predictions', desc: 'A hard rule, not a preference. A difficult period is delivered with the remedy beside it, never as doom to be paid away.' },
+  { emoji: '✦', title: 'At least 3 years of practice', desc: 'Consulting real people, not only study. Longer practice raises the per-minute rate you can ask for.' },
+  { emoji: '◈', title: 'A tradition you can name', desc: 'Vedic, KP, Nadi, Lal Kitab, numerology, Vastu, tarot — guru-shishya lineage counts as much as an institutional certificate.' },
+  { emoji: '◆', title: 'Fluent in Hindi or English', desc: 'Any further language you speak widens the seekers matched to you and is shown on your profile.' },
+  { emoji: '◆', title: 'A smartphone and steady internet', desc: 'Consultations run over chat and call in the browser. Nothing to install.' },
+  { emoji: '✧', title: 'No fear-based predictions', desc: 'A hard rule, not a preference. A difficult period is delivered with the remedy beside it, never as doom to be paid away.' },
 ];
 
 const DOCUMENTS = [
@@ -49,12 +49,12 @@ const STEPS = [
 ];
 
 const KIT = [
-  { emoji: '🪪', tone: 'gold', title: 'Your own profile page', desc: 'A page on AstroVyoma carrying your photograph, biography, disciplines, languages, credentials and rate — a link you can share anywhere as your own.' },
-  { emoji: '🎛️', tone: 'violet', title: 'The Pandit Portal', desc: 'Your working screen. Switch online or offline in one tap, see who is waiting, and watch what you have earned build up through the day.' },
-  { emoji: '💬', tone: 'blue', title: 'Chat and call consultations', desc: 'Both run in the browser with per-minute billing handled for you. Your personal number is never shown to a seeker.' },
-  { emoji: '📅', tone: 'emerald', title: 'Appointments and pooja bookings', desc: 'Seekers can book a slot ahead of time or commission a pooja. Both arrive in your portal with the birth details already filled in.' },
-  { emoji: '📊', tone: 'gold', title: 'An earnings record', desc: 'Every consultation listed with its minutes, what the seeker paid and what came to you. Nothing about your payout is hidden from you.' },
-  { emoji: '🤝', tone: 'violet', title: 'The panel behind you', desc: 'A complex chart can be taken to the wider panel for a second reading. You are joined to a guild, not left alone with a queue.' },
+  { emoji: '◈', tone: 'gold', title: 'Your own profile page', desc: 'A page on AstroVyoma carrying your photograph, biography, disciplines, languages, credentials and rate — a link you can share anywhere as your own.' },
+  { emoji: '◆', tone: 'violet', title: 'The Pandit Portal', desc: 'Your working screen. Switch online or offline in one tap, see who is waiting, and watch what you have earned build up through the day.' },
+  { emoji: '◆', tone: 'blue', title: 'Chat and call consultations', desc: 'Both run in the browser with per-minute billing handled for you. Your personal number is never shown to a seeker.' },
+  { emoji: '◆', tone: 'emerald', title: 'Appointments and pooja bookings', desc: 'Seekers can book a slot ahead of time or commission a pooja. Both arrive in your portal with the birth details already filled in.' },
+  { emoji: '◈', tone: 'gold', title: 'An earnings record', desc: 'Every consultation listed with its minutes, what the seeker paid and what came to you. Nothing about your payout is hidden from you.' },
+  { emoji: '✦', tone: 'violet', title: 'The panel behind you', desc: 'A complex chart can be taken to the wider panel for a second reading. You are joined to a guild, not left alone with a queue.' },
 ];
 
 const CONDUCT = [

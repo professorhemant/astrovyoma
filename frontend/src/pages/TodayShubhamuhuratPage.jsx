@@ -8,13 +8,13 @@ import PanchangPlacePicker from '../components/PanchangPlacePicker';
 const MUHURTA_INFO = [
   { key:'brahma',  icon:'🌅', title:'Brahma Muhurta',  color:'#FF9F43', desc:'The Creator\'s time — 1.5 hours before sunrise. Best for meditation, prayer, yoga, and starting spiritual practices. The most sattvic period of the day.' },
   { key:'pratah',  icon:'🌄', title:'Pratah Sandhya',  color:'#FFD93D', desc:'Dawn twilight — the transition at sunrise. Auspicious for bathing, prayers, and morning rituals.' },
-  { key:'abhijit', icon:'☀️', title:'Abhijit Muhurta', color:'#6BCB77', desc:'The midday muhurta — when the Sun is at its peak power. This is the most powerful auspicious period for starting any important work, signing contracts, or making major decisions.' },
+  { key:'abhijit', icon:'☉', title:'Abhijit Muhurta', color:'#6BCB77', desc:'The midday muhurta — when the Sun is at its peak power. This is the most powerful auspicious period for starting any important work, signing contracts, or making major decisions.' },
   { key:'vijaya',  icon:'🏆', title:'Vijaya Muhurta',  color:'#74B9FF', desc:'Victory time — 2 muhurtas before sunset. Excellent for important tasks, winning competitions, and new ventures in the afternoon.' },
   { key:'godhuli', icon:'🐄', title:'Godhuli Muhurta', color:'#FD79A8', desc:'Cow-dust time — at sunset when cattle return. Traditionally one of the most auspicious times for marriage ceremonies and new beginnings.' },
-  { key:'nisitha', icon:'🌙', title:'Nisitha Muhurta',  color:'#A29BFE', desc:'Midnight muhurta — around 12 AM. Sacred for Shiva worship, deep meditation, and tantric practices.' },
+  { key:'nisitha', icon:'☽', title:'Nisitha Muhurta',  color:'#A29BFE', desc:'Midnight muhurta — around 12 AM. Sacred for Shiva worship, deep meditation, and tantric practices.' },
 ];
 
-const ACTIVITY_ICONS = { Marriage:'💍', Business:'💼', Travel:'✈️', Education:'📚', Property:'🏠', Medicine:'💊' };
+const ACTIVITY_ICONS = { Marriage:'♥', Business:'◆', Travel:'→', Education:'✦', Property:'◆', Medicine:'✧' };
 
 export default function TodayShubhamuhuratPage() {
   const [data, setData] = useState(null);
@@ -37,7 +37,7 @@ export default function TodayShubhamuhuratPage() {
         <div className="max-w-4xl mx-auto">
 
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-10">
-            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">✨ Auspicious Timings</p>
+            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">✧ Auspicious Timings</p>
             <h1 className="font-serif text-3xl md:text-5xl text-gold-400 mb-3" style={{ textShadow:'0 0 30px rgba(201,168,76,0.4)' }}>Today's Shubha Muhurat</h1>
             <p className="text-gray-200 text-sm">Sacred time windows for important activities — aligned with planetary rhythms</p>
           </motion.div>
@@ -61,12 +61,12 @@ export default function TodayShubhamuhuratPage() {
                   <div className="mt-3 flex flex-wrap gap-2 justify-center">
                     {data.isSarvarthaSiddhi && (
                       <span className="bg-green-500/20 border border-green-500/60 text-green-300 text-xs px-3 py-1.5 rounded-full">
-                        ✨ Sarvartha Siddhi Yoga — Highly Auspicious Day
+                        ✧ Sarvartha Siddhi Yoga — Highly Auspicious Day
                       </span>
                     )}
                     {data.isAmritSiddhi && (
                       <span className="bg-blue-500/20 border border-blue-500/60 text-blue-300 text-xs px-3 py-1.5 rounded-full">
-                        ⭐ Amrit Siddhi Yoga — Nectar of Success
+                        ✦ Amrit Siddhi Yoga — Nectar of Success
                       </span>
                     )}
                   </div>
@@ -122,7 +122,7 @@ export default function TodayShubhamuhuratPage() {
                   {Object.entries(data.activities || {}).map(([activity, time]) => time && (
                     <div key={activity} className="bg-cosmic-900/50 rounded-xl p-3">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-lg">{ACTIVITY_ICONS[activity] || '⭐'}</span>
+                        <span className="text-lg">{ACTIVITY_ICONS[activity] || '✦'}</span>
                         <span className="text-gold-400 font-medium text-sm">{activity}</span>
                       </div>
                       <p className="text-white text-sm">{time}</p>

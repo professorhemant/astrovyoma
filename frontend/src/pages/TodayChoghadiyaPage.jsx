@@ -67,7 +67,7 @@ export default function TodayChoghadiyaPage() {
         <div className="max-w-3xl mx-auto">
 
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-10">
-            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">⏰ Vedic Time Division</p>
+            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">◈ Vedic Time Division</p>
             <h1 className="font-serif text-3xl md:text-5xl text-gold-400 mb-3" style={{ textShadow:'0 0 30px rgba(201,168,76,0.4)' }}>Today's Choghadiya</h1>
             <p className="text-gray-200 text-sm">8 auspicious & inauspicious time periods — day and night</p>
           </motion.div>
@@ -94,7 +94,7 @@ export default function TodayChoghadiyaPage() {
 
               {/* Day / Night Tabs */}
               <div className="flex bg-cosmic-800/60 border border-gold-500/45 rounded-2xl p-1 mb-5">
-                {[['day','☀️ Day Choghadiya'],['night','🌙 Night Choghadiya']].map(([key, label]) => (
+                {[['day','☉ Day Choghadiya'],['night','☽ Night Choghadiya']].map(([key, label]) => (
                   <button key={key} onClick={() => setTab(key)}
                     className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${tab===key ? 'bg-gold-500/20 text-gold-400 border border-gold-500/55' : 'text-gray-200 hover:text-gray-300'}`}>
                     {label}

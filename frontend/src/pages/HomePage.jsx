@@ -362,7 +362,7 @@ export default function HomePage() {
                   style={{ background: 'rgba(6,4,18,0.62)', backdropFilter: 'blur(6px)' }} />
             <span className="dream-blink relative inline-flex items-center gap-2.5 font-serif text-lg sm:text-xl text-gold-400"
                   style={{ animation: 'dreamBlink 1.6s ease-in-out infinite' }}>
-              <span aria-hidden="true">🌙</span>
+              <span aria-hidden="true">☽</span>
               सपने कुछ कहते हैं
               <span aria-hidden="true">✦</span>
             </span>
@@ -501,7 +501,7 @@ export default function HomePage() {
             </motion.div>
             <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
               {(purposeCards || [
-                {title:'Swabhav',      subtitle:'Your Nature',       icon:'🌟', desc:'Discover your innate personality traits, strengths, and patterns written in the stars at the moment of your birth', link:'/purpose'},
+                {title:'Swabhav',      subtitle:'Your Nature',       icon:'✦', desc:'Discover your innate personality traits, strengths, and patterns written in the stars at the moment of your birth', link:'/purpose'},
                 {title:'Karma Path',   subtitle:'Your Life Purpose', icon:'☯',  desc:'Understand your dharma — the unique contribution your soul came to make in this lifetime, guided by your Nakshatra', link:'/purpose'},
                 {title:'Personality',  subtitle:'Sun, Moon & Lagna', icon:'💠', desc:'Your Sun, Moon, and Ascendant form a cosmic trinity. Uncover the layers of who you truly are', link:'/kundali'},
               ]).map((card,i) => (

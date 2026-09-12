@@ -207,10 +207,10 @@ export default function SadeSatiPage() {
               {/* Tabs */}
               <div className="flex gap-1 p-1 bg-cosmic-900/60 rounded-2xl border border-gold-600/15 mb-6 overflow-x-auto">
                 {[
-                  { id:'status',   label:'Current Status', icon:'🪐' },
-                  { id:'effects',  label:'Moon Sign Effects', icon:'🌙' },
-                  { id:'timeline', label:'Timeline', icon:'📅' },
-                  { id:'remedies', label:'Remedies', icon:'🛕' },
+                  { id:'status',   label:'Current Status', icon:'♄' },
+                  { id:'effects',  label:'Moon Sign Effects', icon:'☽' },
+                  { id:'timeline', label:'Timeline', icon:'◆' },
+                  { id:'remedies', label:'Remedies', icon:'ॐ' },
                 ].map(tab => (
                   <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                     className={`flex-1 min-w-max flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-sm font-medium transition-all ${

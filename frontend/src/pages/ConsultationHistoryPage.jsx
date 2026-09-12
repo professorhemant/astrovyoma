@@ -250,7 +250,7 @@ export default function ConsultationHistoryPage() {
           </button>
           <button onClick={() => setActiveTab('consultations')}
             className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'consultations' ? 'bg-gold-500/20 text-gold-400' : 'text-cosmic-500 hover:text-cosmic-300'}`}>
-            🔮 Sessions {consultations.length > 0 && <span className="ml-1 text-xs opacity-70">({consultations.length})</span>}
+            ✦ Sessions {consultations.length > 0 && <span className="ml-1 text-xs opacity-70">({consultations.length})</span>}
           </button>
         </div>
 
@@ -287,7 +287,7 @@ export default function ConsultationHistoryPage() {
               <motion.div key="consultations" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 {consultations.length === 0 ? (
                   <div className="text-center py-20">
-                    <div className="text-6xl mb-6">🔮</div>
+                    <div className="text-6xl mb-6 font-serif text-gold-400/40">✦</div>
                     <p className="text-gray-200 text-lg font-serif mb-2">No consultations yet</p>
                     <p className="text-gray-400 text-sm mb-8">Book a session with one of our Vedic astrologers</p>
                     <Link to="/astrologers" className="btn-gold px-8 py-3">Meet Our Astrologers</Link>

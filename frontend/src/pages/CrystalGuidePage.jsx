@@ -98,7 +98,7 @@ export default function CrystalGuidePage() {
 
         {/* Header */}
         <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-10">
-          <div className="text-5xl mb-4">💎</div>
+          <div className="text-5xl mb-4 font-serif text-gold-400">◈</div>
           <h1 className="text-3xl font-serif text-gold-400 mb-2">Crystal & Gemstone Guide</h1>
           <p className="text-cosmic-300 text-sm max-w-xl mx-auto">
             Explore the 9 Navagraha gems and healing crystals of Vedic astrology — their planetary rulers, benefits, and how to use them.
@@ -171,7 +171,7 @@ export default function CrystalGuidePage() {
         {/* Mall CTA */}
         <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.5 }}
           className="mt-12 text-center card-cosmic p-6 border-gold-500/20">
-          <div className="text-3xl mb-3">🛍️</div>
+          <div className="text-3xl mb-3 font-serif text-gold-400">✧</div>
           <h3 className="text-gold-400 font-serif text-lg mb-2">Shop Certified Gemstones</h3>
           <p className="text-cosmic-400 text-sm mb-4">
             Astro-charged, lab-certified gemstones — Blue Sapphire, Yellow Sapphire, Red Coral, Emerald, and more.

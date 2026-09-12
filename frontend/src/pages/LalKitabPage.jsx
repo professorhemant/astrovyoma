@@ -377,7 +377,7 @@ export default function LalKitabPage() {
                   <motion.div key="rin" initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}>
                     {data.rin.length === 0 ? (
                       <div className="text-center py-12">
-                        <div className="text-5xl mb-3">✨</div>
+                        <div className="text-5xl mb-3 font-serif text-gold-400/40">✧</div>
                         <p className="text-green-400 font-semibold text-lg">No Rin Detected</p>
                         <p className="text-gray-500 text-sm mt-2">Your chart shows no significant ancestral or karmic debts in this analysis.</p>
                       </div>

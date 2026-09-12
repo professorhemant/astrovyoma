@@ -5,8 +5,8 @@ import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 const CATEGORY_ICON = {
-  gemstones:'💎', rudraksha:'🔮', yantras:'⭐', bracelets:'📿',
-  kavach:'🛡️', murtis:'🕉️', pyramids:'🔺', malas:'📿', combos:'🎁',
+  gemstones:'◈', rudraksha:'◉', yantras:'✦', bracelets:'◆',
+  kavach:'⊛', murtis:'ॐ', pyramids:'△', malas:'◆', combos:'✧',
 };
 
 export default function CartPage() {
@@ -34,7 +34,7 @@ export default function CartPage() {
         <div className="max-w-5xl mx-auto">
 
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="mb-8">
-            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-2">🕉️ Sacred Store</p>
+            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-2">ॐ Sacred Store</p>
             <h1 className="font-serif text-3xl md:text-4xl text-gold-400">Your Cart</h1>
             <p className="text-gray-200 text-sm mt-1">{totalItems} item{totalItems !== 1 ? 's' : ''} — energised & ready to dispatch</p>
           </motion.div>
@@ -48,7 +48,7 @@ export default function CartPage() {
                   initial={{ opacity:0, x:-10 }} animate={{ opacity:1, x:0 }} transition={{ delay: i * 0.05 }}
                   className="bg-cosmic-800/60 border border-gold-500/30 rounded-2xl p-4 flex items-center gap-4">
                   <div className="w-16 h-16 rounded-xl bg-cosmic-900/80 flex items-center justify-center text-3xl flex-shrink-0">
-                    {CATEGORY_ICON[item.category] || '📦'}
+                    {CATEGORY_ICON[item.category] || '◆'}
                   </div>
                   <div className="flex-1 min-w-0">
                     <Link to={`/mall/product/${item.id}`} className="text-white font-medium text-sm hover:text-gold-300 transition-colors line-clamp-2">{item.name}</Link>
@@ -106,11 +106,11 @@ export default function CartPage() {
               <button className="w-full bg-gradient-to-r from-gold-600 to-gold-400 text-cosmic-950 font-bold rounded-xl py-3 hover:opacity-90 transition-opacity mb-3">
                 Proceed to Checkout
               </button>
-              <p className="text-center text-gray-300 text-xs">🔒 Secure checkout — COD available</p>
+              <p className="text-center text-gray-300 text-xs">⊛ Secure checkout — COD available</p>
 
               {/* Trust badges */}
               <div className="mt-4 pt-4 border-t border-gold-500/20 grid grid-cols-2 gap-2">
-                {[['✅','Lab Certified'],['🙏','Energised'],['🚚','Free Ship'],['🔄','7-Day Return']].map(([icon,label]) => (
+                {[['✓','Lab Certified'],['ॐ','Energised'],['→','Free Ship'],['◆','7-Day Return']].map(([icon,label]) => (
                   <div key={label} className="flex items-center gap-1.5 text-xs text-gray-200">
                     <span>{icon}</span><span>{label}</span>
                   </div>

@@ -74,9 +74,9 @@ function Divider() {
 // ── Stats ─────────────────────────────────────────────────────────────────────
 const STATS = [
   { value: 'Detailed',   label: 'Kundli Analysis',      icon: '🔭' },
-  { value: 'Actionable', label: 'Life Remedies',        icon: '🌟' },
-  { value: 'Real-Time',  label: 'Chart Generation',     icon: '🔭' },
-  { value: 'Daily',      label: 'Horoscope Updates',    icon: '🌟' },
+  { value: 'Actionable', label: 'Life Remedies',        icon: '✦' },
+  { value: 'Real-Time',  label: 'Chart Generation',     icon: '◈' },
+  { value: 'Daily',      label: 'Horoscope Updates',    icon: '✦' },
   { value: '5,000+',     label: 'Years of Vedic Wisdom', icon: '📜' },
   { value: '100%',       label: 'Confidential & Secure', icon: '🔐' },
 ];
@@ -98,7 +98,7 @@ const EXPERTISE = [
   { icon: '🪐', tone: 'gold', title: 'Traditional Vedic & KP Astrology',
     approach: 'Pinpoint timing of events using exact planetary degrees.',
     result: 'Clarity on Career, Finance & Relationships' },
-  { icon: '🔢', tone: 'violet', title: 'Advanced Numerology',
+  { icon: '✦', tone: 'violet', title: 'Advanced Numerology',
     approach: 'Harmonizing your name and birth frequencies with cosmic vibrations.',
     result: 'Enhanced personal branding and luck alignment' },
   { icon: '🏠', tone: 'emerald', title: 'Scientific Vastu Shastra',
@@ -112,7 +112,7 @@ const PROMISES = [
     desc: 'Your birth data and life challenges are treated with the highest level of data security and spiritual privacy. What you share stays sacred.' },
   { emoji: '⚖️', title: 'Uncompromising Integrity',
     desc: 'If a chart shows a challenging period, we present it with honesty — immediately followed by the exact cosmic tools required to navigate it.' },
-  { emoji: '📿', title: 'Authentic Lineage',
+  { emoji: '✦', title: 'Authentic Lineage',
     desc: 'Every consultant on AstroVyoma is strictly vetted for credentialing, ethical standards, and predictive accuracy. No shortcuts, no imposters.' },
 ];
 
@@ -160,7 +160,7 @@ export default function AboutUsPage() {
         {/* Floating glyphs */}
         <FloatingSymbol symbol="♈" style={{ top: '14%', left: '4%' }} />
         <FloatingSymbol symbol="♎" style={{ top: '22%', right: '5%' }} />
-        <FloatingSymbol symbol="🔮" style={{ top: '55%', left: '2%' }} />
+        <FloatingSymbol symbol="✦" style={{ top: '55%', left: '2%' }} />
         <FloatingSymbol symbol="✦"  style={{ top: '70%', right: '3%' }} />
         <FloatingSymbol symbol="♓" style={{ bottom: '12%', left: '8%' }} />
         <FloatingSymbol symbol="🪐" style={{ top: '35%', right: '8%' }} />
@@ -245,7 +245,7 @@ export default function AboutUsPage() {
               </motion.p>
 
               <motion.div {...fadeUp(0.24)} className="mt-8 border border-gold-600/20 rounded-2xl p-5 bg-gold-500/5">
-                <p className="text-gold-400 text-sm font-medium mb-2">{t('aboutMissionLabel', '🌟 Our Mission')}</p>
+                <p className="text-gold-400 text-sm font-medium mb-2">{t('aboutMissionLabel', '✦ Our Mission')}</p>
                 <p className="text-gray-300 text-sm leading-relaxed italic">
                   "{t('aboutMission', 'To demystify ancient stellar wisdom and deliver it with absolute mathematical precision to the modern world.')}"
                 </p>
@@ -422,7 +422,7 @@ export default function AboutUsPage() {
           </div>
 
           <div className="mt-12 flex flex-wrap justify-center gap-6 text-center">
-            {String(t('aboutBadges', '🔒 Data Secure\n🕉️ Vedic Authentic\n🤖 AI Enhanced\n⚡ Instant Results'))
+            {String(t('aboutBadges', '⊛ Data Secure\nॐ Vedic Authentic\n◆ AI Enhanced\n◈ Instant Results'))
               .split('\n').map(l => l.trim()).filter(Boolean)
               .map(line => {
                 // "🔒 Data Secure" — the emoji is whatever comes before the first

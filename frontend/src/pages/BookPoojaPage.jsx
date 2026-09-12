@@ -5,10 +5,10 @@ import BookingModal from '../components/BookingModal';
 import { pooja as poojaApi } from '../api';
 
 const HOW_IT_WORKS = [
-  { step:'01', icon:'🙏', title:'Choose Your Paath', desc:'Select from 11 sacred paaths — each performed with full Vedic rituals by our experienced Pandit Ji.' },
-  { step:'02', icon:'📅', title:'Book & Pay', desc:'Fill in your name, WhatsApp number, and preferred date. Pay the small paath fee to confirm.' },
-  { step:'03', icon:'🕉️', title:'Pandit Ji Performs', desc:'Our dedicated Pandit Ji performs the paath on your chosen date with proper sankalp in your name and gotra.' },
-  { step:'04', icon:'📲', title:'Receive Video Proof', desc:'A clear video of the complete paath is sent directly to your WhatsApp number within 24 hours of completion.' },
+  { step:'01', icon:'ॐ', title:'Choose Your Paath', desc:'Select from 11 sacred paaths — each performed with full Vedic rituals by our experienced Pandit Ji.' },
+  { step:'02', icon:'◆', title:'Book & Pay', desc:'Fill in your name, WhatsApp number, and preferred date. Pay the small paath fee to confirm.' },
+  { step:'03', icon:'✦', title:'Pandit Ji Performs', desc:'Our dedicated Pandit Ji performs the paath on your chosen date with proper sankalp in your name and gotra.' },
+  { step:'04', icon:'◈', title:'Receive Video Proof', desc:'A clear video of the complete paath is sent directly to your WhatsApp number within 24 hours of completion.' },
 ];
 
 const TESTIMONIALS = [
@@ -36,7 +36,7 @@ export default function BookPoojaPage() {
       <div className="relative z-10 pt-16">
         <div className="bg-gradient-to-r from-amber-700/80 via-orange-700/80 to-red-700/80 border-b border-amber-500/40 px-4 py-3">
           <p className="text-center text-amber-100 text-sm font-medium leading-relaxed max-w-3xl mx-auto">
-            🙏 <strong>Our Pandit Ji will perform these Pooja Paaths for you to get benefit sitting at home.</strong> A video will be sent to your mobile number on WhatsApp as proof of the paath. Book now and receive divine blessings without leaving your home. 📲
+            ✦ <strong>Our Pandit Ji will perform these Pooja Paaths for you to get benefit sitting at home.</strong> A video will be sent to your mobile number on WhatsApp as proof of the paath. Book now and receive divine blessings without leaving your home. ◈
           </p>
         </div>
       </div>
@@ -54,10 +54,10 @@ export default function BookPoojaPage() {
               Can't perform the paath yourself? Let our experienced Pandit Ji perform it on your behalf with proper Vedic rituals, sankalp in your name — and receive the complete video on WhatsApp.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
-              <span className="flex items-center gap-1.5 bg-green-500/15 border border-green-500/35 text-green-300 px-4 py-2 rounded-full">✅ Experienced Pandits</span>
-              <span className="flex items-center gap-1.5 bg-amber-500/15 border border-amber-500/35 text-amber-300 px-4 py-2 rounded-full">📲 Video on WhatsApp</span>
-              <span className="flex items-center gap-1.5 bg-blue-500/15 border border-blue-500/35 text-blue-300 px-4 py-2 rounded-full">🙏 Sankalp in Your Name</span>
-              <span className="flex items-center gap-1.5 bg-purple-500/15 border border-purple-500/35 text-purple-300 px-4 py-2 rounded-full">🏠 Performed at Temple</span>
+              <span className="flex items-center gap-1.5 bg-green-500/15 border border-green-500/35 text-green-300 px-4 py-2 rounded-full">✓ Experienced Pandits</span>
+              <span className="flex items-center gap-1.5 bg-amber-500/15 border border-amber-500/35 text-amber-300 px-4 py-2 rounded-full">◈ Video on WhatsApp</span>
+              <span className="flex items-center gap-1.5 bg-blue-500/15 border border-blue-500/35 text-blue-300 px-4 py-2 rounded-full">ॐ Sankalp in Your Name</span>
+              <span className="flex items-center gap-1.5 bg-purple-500/15 border border-purple-500/35 text-purple-300 px-4 py-2 rounded-full">✦ Performed at Temple</span>
             </div>
           </motion.div>
         </section>
@@ -100,12 +100,12 @@ export default function BookPoojaPage() {
             <h3 className="font-serif text-2xl text-amber-300 text-center mb-6">Why Book With AstroVyoma?</h3>
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
               {[
-                { icon:'👨‍🎓', title:'Vedic Scholars', desc:'All pandits hold traditional degrees from Vedic institutions with 10+ years of recitation experience.' },
-                { icon:'🎥', title:'Video Proof on WhatsApp', desc:'You receive a clear video of the complete paath on your registered WhatsApp — no trust required, just verify.' },
-                { icon:'📿', title:'Sankalp in Your Name', desc:'Every paath begins with a proper Sankalp (intention) in your name, gotra, and purpose.' },
-                { icon:'🛕', title:'Performed at Sacred Venue', desc:'Paaths are performed at a dedicated puja space with proper samagri, flowers, and incense.' },
-                { icon:'💬', title:'WhatsApp Updates', desc:'You receive booking confirmation and real-time updates throughout the paath on WhatsApp.' },
-                { icon:'💰', title:'Transparent Pricing', desc:'No hidden charges. Pay only the displayed amount. Secure UPI payment accepted.' },
+                { icon:'◈', title:'Vedic Scholars', desc:'All pandits hold traditional degrees from Vedic institutions with 10+ years of recitation experience.' },
+                { icon:'◆', title:'Video Proof on WhatsApp', desc:'You receive a clear video of the complete paath on your registered WhatsApp — no trust required, just verify.' },
+                { icon:'✦', title:'Sankalp in Your Name', desc:'Every paath begins with a proper Sankalp (intention) in your name, gotra, and purpose.' },
+                { icon:'ॐ', title:'Performed at Sacred Venue', desc:'Paaths are performed at a dedicated puja space with proper samagri, flowers, and incense.' },
+                { icon:'◆', title:'WhatsApp Updates', desc:'You receive booking confirmation and real-time updates throughout the paath on WhatsApp.' },
+                { icon:'◈', title:'Transparent Pricing', desc:'No hidden charges. Pay only the displayed amount. Secure UPI payment accepted.' },
               ].map(item => (
                 <div key={item.title} className="flex items-start gap-3">
                   <span className="text-3xl flex-shrink-0">{item.icon}</span>
@@ -148,7 +148,7 @@ export default function BookPoojaPage() {
             Consult an Astrologer
           </Link>
           <Link to="/mall" className="inline-block border border-gold-500/40 text-gold-400 rounded-full px-8 py-3 hover:bg-gold-500/10 transition-colors text-sm">
-            🛍️ Astro Mall
+            ✧ Astro Mall
           </Link>
         </div>
       </div>
@@ -180,8 +180,8 @@ function PaathCard({ paath, index, onBook }) {
         <h3 className="text-white font-serif text-xl font-bold leading-tight mb-1">{paath.name}</h3>
         <p className="text-white/80 text-sm">{paath.subtitle}</p>
         <div className="flex items-center justify-center gap-2 mt-3">
-          <span className="bg-white/15 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full">⏱️ {paath.duration}</span>
-          {paath.planet && <span className="bg-white/15 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full">🪐 {paath.planet}</span>}
+          <span className="bg-white/15 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full">◈ {paath.duration}</span>
+          {paath.planet && <span className="bg-white/15 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full">♄ {paath.planet}</span>}
         </div>
       </div>
 
@@ -229,13 +229,13 @@ function PaathCard({ paath, index, onBook }) {
             onClick={onBook}
             className="bg-gradient-to-r from-gold-600 to-gold-400 text-cosmic-950 font-bold text-sm rounded-xl px-6 py-2.5 hover:opacity-90 transition-opacity"
           >
-            🙏 Book Now
+            ✦ Book Now
           </button>
         </div>
 
         {paath.occasion && (
           <p className="text-gray-300 text-xs mt-3 border-t border-gold-500/15 pt-3">
-            📅 Best for: <span className="text-gray-200">{paath.occasion}</span>
+            ◆ Best for: <span className="text-gray-200">{paath.occasion}</span>
           </p>
         )}
       </div>

@@ -120,7 +120,7 @@ export default function PlansPage() {
 
         {/* Header */}
         <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-12">
-          <div className="text-5xl mb-4">💎</div>
+          <div className="text-5xl mb-4 font-serif text-gold-400/60">◈</div>
           <h1 className="text-3xl sm:text-4xl font-serif text-gold-400 mb-3">Choose Your Cosmic Plan</h1>
           <p className="text-cosmic-300 max-w-xl mx-auto text-sm">
             Unlock the full power of Vedic astrology — from AI-powered kundali insights to live consultations with expert astrologers.
