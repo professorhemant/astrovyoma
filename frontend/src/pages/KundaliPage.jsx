@@ -1766,7 +1766,7 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
       <AccordionSection title="Sade Sati Report" icon="♄">
         <div className="space-y-4">
           <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${sadeSatiPhase !== 'Not Running' ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30' : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'}`}>
-            {sadeSatiPhase !== 'Not Running' ? `🪐 Sade Sati Running — ${sadeSatiPhase}` : '✓ Sade Sati Not Currently Running'}
+            {sadeSatiPhase !== 'Not Running' ? `♄ Sade Sati Running — ${sadeSatiPhase}` : '✓ Sade Sati Not Currently Running'}
           </div>
           {saturnSign && moonSign && (
             <p className="text-gray-300 text-xs">Saturn is currently in <span className="text-gold-400">{saturnSign}</span>. Your Moon sign is <span className="text-gold-400">{moonSign}</span>.</p>
@@ -1966,7 +1966,7 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
         <p className="text-gray-300 text-xs mb-4">Based on current planetary positions and your birth Moon sign ({moonSign}), as of {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}.</p>
         <div className="space-y-5">
           <div>
-            <p className="text-gold-400 font-semibold text-sm mb-2">🪐 Saturn Transit Effect</p>
+            <p className="text-gold-400 font-semibold text-sm mb-2">♄ Saturn Transit Effect</p>
             <p className="text-gray-200 text-sm leading-relaxed">{saturnTransitInterpretation}</p>
             {saturnSign && <p className="text-gray-400 text-xs mt-1">Saturn is currently in <span className="text-gold-400">{saturnSign}</span>.</p>}
           </div>

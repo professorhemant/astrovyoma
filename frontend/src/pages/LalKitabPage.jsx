@@ -88,7 +88,7 @@ function RinCard({ rin }) {
     <div className="rounded-xl border border-red-500/30 bg-red-500/5 overflow-hidden">
       <button onClick={() => setOpen(o => !o)} className="w-full p-4 text-left flex items-center gap-3">
         <div className="w-10 h-10 rounded-full bg-red-500/15 border border-red-500/30 flex items-center justify-center flex-shrink-0">
-          <span className="text-red-400 text-lg">🔺</span>
+          <span className="text-red-400 text-lg">△</span>
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap">
@@ -245,7 +245,7 @@ export default function LalKitabPage() {
                     {saved ? 'Saved' : saving ? 'Saving…' : 'Save to History'}
                   </button>
                 )}
-                <div className="text-5xl mb-2">📖</div>
+                <div className="text-5xl mb-2 font-serif text-gold-400">◈</div>
                 <h2 className="font-serif text-2xl text-gold-400 mb-1">{data.lagna} Lagna · {data.moonSign} Moon</h2>
                 <p className="text-gray-500 text-xs mb-4">{data.nakshatra} Nakshatra · Lal Kitab Analysis</p>
                 <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border text-sm font-semibold"

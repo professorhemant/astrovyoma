@@ -132,7 +132,7 @@ export default function PanchangCalendarPage() {
               {calData.days.some(d => d.festival) && (
                 <motion.div initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.2 }}
                   className="bg-green-500/10 border border-green-500/50 rounded-2xl p-5 mb-6">
-                  <h3 className="text-green-400 font-semibold mb-3">🎉 Festivals This Month</h3>
+                  <h3 className="text-green-400 font-semibold mb-3">✦ Festivals This Month</h3>
                   <div className="space-y-2">
                     {calData.days.filter(d => d.festival).map(d => (
                       <div key={d.date} className="flex items-center gap-3 text-sm">

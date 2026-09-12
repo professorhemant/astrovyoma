@@ -6,8 +6,8 @@ import usePanchangPlace from '../hooks/usePanchangPlace';
 import PanchangPlacePicker from '../components/PanchangPlacePicker';
 
 const PAKSHA_PHASE = {
-  'Shukla Paksha': { label: 'Waxing Moon', icon: '🌒', desc: 'Bright fortnight — energy building, growth, new beginnings' },
-  'Krishna Paksha': { label: 'Waning Moon', icon: '🌘', desc: 'Dark fortnight — release, introspection, ancestor worship' },
+  'Shukla Paksha': { label: 'Waxing Moon', icon: '◐', desc: 'Bright fortnight — energy building, growth, new beginnings' },
+  'Krishna Paksha': { label: 'Waning Moon', icon: '◑', desc: 'Dark fortnight — release, introspection, ancestor worship' },
 };
 const NATURE_STYLE = {
   Nanda:  { bg: 'bg-blue-500/10', border: 'border-blue-500/30',  text: 'text-blue-300',   label: 'Nanda (Joyful)' },
@@ -44,7 +44,7 @@ export default function TodayTithiPage() {
         <div className="max-w-4xl mx-auto">
 
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-10">
-            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">🕉️ Panchang — First Limb</p>
+            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">ॐ Panchang — First Limb</p>
             <h1 className="font-serif text-3xl md:text-5xl text-gold-400 mb-3" style={{ textShadow:'0 0 30px rgba(201,168,76,0.4)' }}>Today's Tithi</h1>
             <p className="text-gray-200 text-sm">The lunar day — determined by the angular distance between Sun & Moon</p>
           </motion.div>
@@ -109,7 +109,7 @@ export default function TodayTithiPage() {
                 <motion.div initial={{ opacity:0, x:20 }} animate={{ opacity:1, x:0 }} transition={{ delay:0.1 }}
                   className="bg-cosmic-800/60 border border-gold-500/40 rounded-2xl p-6">
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="text-3xl">🙏</span>
+                    <span className="text-3xl font-serif text-gold-400">ॐ</span>
                     <div>
                       <p className="text-gold-400 font-serif font-semibold text-lg">Presiding Deity</p>
                       <p className="text-gray-200 text-sm">Divine ruler of this Tithi</p>
@@ -128,7 +128,7 @@ export default function TodayTithiPage() {
                 </motion.div>
                 <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.25 }}
                   className="bg-red-500/10 border border-red-500/50 rounded-2xl p-6">
-                  <h3 className="text-red-400 font-semibold text-lg mb-3 flex items-center gap-2">🚫 Activities to Avoid</h3>
+                  <h3 className="text-red-400 font-semibold text-lg mb-3 flex items-center gap-2">✗ Activities to Avoid</h3>
                   <p className="text-gray-300 text-sm leading-relaxed">{data.avoid}</p>
                 </motion.div>
               </div>

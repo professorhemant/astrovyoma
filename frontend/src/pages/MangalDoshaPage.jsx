@@ -413,7 +413,7 @@ export default function MangalDoshaPage() {
                         <p className="text-red-300 font-semibold mb-1">Book Mangal Shanti Puja</p>
                         <p className="text-gray-400 text-sm mb-3">A Vedic priest will perform a personalised puja with the correct mantras and rituals based on your chart.</p>
                         <Link to="/book-pooja" className="inline-flex items-center gap-2 px-6 py-2.5 bg-red-500/20 border border-red-400/40 text-red-300 rounded-xl text-sm font-semibold hover:bg-red-500/30 transition-all">
-                          🪔 Book Mangal Shanti Puja
+                          ✦ Book Mangal Shanti Puja
                         </Link>
                       </div>
                     </>

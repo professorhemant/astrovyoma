@@ -14,7 +14,7 @@ const JOIN_OPENS_MINS_BEFORE = 5;
 // used to offer, chat 410'd, voice 400'd, and only video worked.
 const CONSULTATION_MODE = { voice: 'audio', audio: 'audio', video: 'video' };
 
-const MODE_ICON = { chat:'💬', voice:'🎙', video:'📹' };
+const MODE_ICON = { chat:'◆', voice:'◈', video:'◈' };
 const STATUS_STYLE = {
   confirmed:  'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
   pending:    'bg-amber-500/15   text-amber-400   border-amber-500/30',
@@ -151,7 +151,7 @@ function AppointmentCard({ appt, onCancel }) {
                 )}
                 {isUpcoming && minsUntil <= 60 && minsUntil > JOIN_OPENS_MINS_BEFORE && (
                   <span className="text-xs text-amber-400 font-medium">
-                    🔔 Starting in {Math.ceil(minsUntil)} min
+                    ◈ Starting in {Math.ceil(minsUntil)} min
                   </span>
                 )}
               </>
@@ -228,7 +228,7 @@ export default function MyAppointmentsPage() {
           <div className="text-center py-16 text-gold-400 animate-pulse font-serif">✦ Loading…</div>
         ) : list.length === 0 ? (
           <div className="text-center py-16 space-y-4">
-            <div className="text-4xl">{tab === 'upcoming' ? '🗓️' : '📖'}</div>
+            <div className="text-4xl font-serif text-gold-400">{tab === 'upcoming' ? '◆' : '◈'}</div>
             <p className="text-cosmic-500">
               {tab === 'upcoming'
                 ? 'No upcoming appointments.'

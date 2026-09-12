@@ -96,7 +96,7 @@ export default function TodayRahuKaalPage() {
                 </motion.div>
                 <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.2 }}
                   className="bg-yellow-500/10 border border-yellow-500/25 rounded-2xl p-5 text-center">
-                  <div className="text-3xl mb-2">🪐</div>
+                  <div className="text-3xl mb-2 font-serif text-gold-400">♄</div>
                   <p className="text-gray-200 text-xs uppercase tracking-wider mb-1">Gulika Kaal</p>
                   <p className="font-serif text-lg text-yellow-400 font-semibold">{data.gulika}</p>
                   <p className="text-gray-200 text-sm mt-2">Saturn's shadow — moderately avoid</p>
@@ -106,7 +106,7 @@ export default function TodayRahuKaalPage() {
               {/* What to avoid */}
               <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.25 }}
                 className="bg-red-500/10 border border-red-500/50 rounded-2xl p-6 mb-6">
-                <h3 className="text-red-400 font-semibold text-lg mb-4 flex items-center gap-2">🚫 Avoid During Rahu Kaal</h3>
+                <h3 className="text-red-400 font-semibold text-lg mb-4 flex items-center gap-2">✗ Avoid During Rahu Kaal</h3>
                 <div className="grid sm:grid-cols-2 gap-2">
                   {INAUSPICIOUS_THINGS.map(item => (
                     <div key={item} className="flex items-center gap-2 text-white text-sm">

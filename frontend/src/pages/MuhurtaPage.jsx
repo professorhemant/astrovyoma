@@ -189,7 +189,7 @@ export default function MuhurtaPage() {
             <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-cosmic-900/60 border border-gold-600/15">
               {[
                 { key:'find',  label:'◆ Find Best Dates', hint:'Show me when' },
-                { key:'check', label:'🔍 Check a Date',    hint:'Is this date good?' },
+                { key:'check', label:'◈ Check a Date',    hint:'Is this date good?' },
               ].map(m => (
                 <button key={m.key} type="button"
                   onClick={() => { setMode(m.key); setData(null); setListData(null); }}

@@ -168,7 +168,7 @@ export default function LuckyPage() {
               <div className="flex flex-wrap gap-3 pt-2">
                 <Link to={`/horoscope/${data.sign}`}
                   className="flex-1 text-center py-3 rounded-xl border border-gold-600/30 text-gold-400 text-sm font-semibold hover:bg-gold-500/10 transition-all">
-                  📖 Today's Daily Reading
+                  ◆ Today's Daily Reading
                 </Link>
                 <Link to="/horoscope/extended"
                   className="flex-1 text-center py-3 rounded-xl border border-gold-600/30 text-gold-400 text-sm font-semibold hover:bg-gold-500/10 transition-all">

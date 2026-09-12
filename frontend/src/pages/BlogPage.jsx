@@ -96,7 +96,7 @@ export default function BlogPage() {
 
         {/* Header */}
         <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-10">
-          <div className="text-5xl mb-4">📚</div>
+          <div className="text-5xl mb-4 font-serif text-gold-400">◈</div>
           <h1 className="text-3xl font-serif text-gold-400 mb-2">Vedic Astrology Insights</h1>
           <p className="text-cosmic-300 text-sm max-w-xl mx-auto">
             Deep-dive articles on Jyotish, planetary transits, relationships, Vastu, and the art of living in alignment with the cosmos.

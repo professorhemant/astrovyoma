@@ -697,10 +697,10 @@ export default function NumerologyPage() {
               {[
                 { icon:'✦', title:'Psychic Number', sub:'Moolank', desc:'Based on your birth day. Reveals your core personality, inner nature, and how you instinctively approach life.' },
                 { icon:'✦', title:'Destiny Number', sub:'Bhagyank', desc:'Based on your full birth date. Reveals your life path, karmic mission, and the destiny you came to fulfill.' },
-                { icon:'🔤', title:'Name Number', sub:'Namank — Chaldean', desc:'Each letter vibrates at a specific frequency. Your name number shows how the world perceives you and your outer success potential.' },
-                { icon:'🔲', title:'Lo Shu Grid', sub:'Chinese Magic Square', desc:'Your birth digits fill a 3×3 magic grid. Active formations reveal strengths; rare Raj Yog and Rajat Yog alignments bring extraordinary fortune.' },
+                { icon:'◆', title:'Name Number', sub:'Namank — Chaldean', desc:'Each letter vibrates at a specific frequency. Your name number shows how the world perceives you and your outer success potential.' },
+                { icon:'◈', title:'Lo Shu Grid', sub:'Chinese Magic Square', desc:'Your birth digits fill a 3×3 magic grid. Active formations reveal strengths; rare Raj Yog and Rajat Yog alignments bring extraordinary fortune.' },
                 { icon:'◆', title:'Personal Year', sub:'Current Year Energy', desc:'A 9-year cycle governs your life. Your personal year number reveals the dominant theme and energy available to you this year.' },
-                { icon:'🎲', title:'Prashna Game', sub:'Intuitive Reading', desc:'Pick 2 numbers that speak to you right now. The planets behind your choices reveal what the universe is communicating to you in this moment.' },
+                { icon:'✧', title:'Prashna Game', sub:'Intuitive Reading', desc:'Pick 2 numbers that speak to you right now. The planets behind your choices reveal what the universe is communicating to you in this moment.' },
               ].map(item => (
                 <div key={item.title} className="card-cosmic p-5 border border-gold-600/15 hover:border-gold-400/30 transition-colors">
                   <div className="text-3xl mb-3">{item.icon}</div>

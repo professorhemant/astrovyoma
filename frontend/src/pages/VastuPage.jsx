@@ -181,7 +181,7 @@ const ROOMS = [
     ],
   },
   {
-    name: 'Puja / Prayer Room', icon: '🪔',
+    name: 'Puja / Prayer Room', icon: 'ॐ',
     bestDirection: 'Northeast (Best) or East',
     color: '#f59e0b',
     dos: [
@@ -201,7 +201,7 @@ const ROOMS = [
     ],
   },
   {
-    name: 'Study / Home Office', icon: '📚',
+    name: 'Study / Home Office', icon: '◈',
     bestDirection: 'North or East',
     color: '#3b82f6',
     dos: [
@@ -641,7 +641,7 @@ export default function VastuPage() {
                 <div className="flex flex-wrap gap-3 justify-center">
                   <Link to="/vastu-pooja"
                     className="inline-block btn-gold px-8 py-3 text-sm font-semibold">
-                    🏠 Book Vastu Puja →
+                    ✦ Book Vastu Puja →
                   </Link>
                   <Link to="/astrologers"
                     className="inline-block border border-gold-500/40 text-gold-400 px-8 py-3 rounded-xl text-sm font-semibold hover:bg-gold-500/10 transition-colors">
@@ -666,7 +666,7 @@ export default function VastuPage() {
           </Link>
           <Link to="/vastu-pooja"
             className="flex-1 text-center py-3 rounded-xl border border-gold-600/30 text-gold-400 text-sm font-semibold hover:bg-gold-500/10 transition-all">
-            🏠 Book Vastu Puja
+            ✦ Book Vastu Puja
           </Link>
         </motion.div>
       </div>

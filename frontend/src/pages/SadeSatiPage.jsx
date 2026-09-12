@@ -92,9 +92,9 @@ export default function SadeSatiPage() {
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.1 }}
             className="grid md:grid-cols-3 gap-4 mb-8">
             {[
-              { icon:'🌑', title:'Phase 1 — Rising', sub:'Saturn in 12th from Moon', desc:'Increased expenses, mental restlessness, potential for travel or relocation. Spiritual inclinations deepen. Lasts ~2.5 years.' },
-              { icon:'🪐', title:'Phase 2 — Peak', sub:'Saturn on your Moon sign', desc:'The most intense phase. Major life tests in career, relationships, and health. Greatest transformation potential. Lasts ~2.5 years.' },
-              { icon:'🌕', title:'Phase 3 — Setting', sub:'Saturn in 2nd from Moon', desc:'Recovery begins. Financial and health improvement. Past lessons integrate as wisdom. Lasts ~2.5 years.' },
+              { icon:'●', title:'Phase 1 — Rising', sub:'Saturn in 12th from Moon', desc:'Increased expenses, mental restlessness, potential for travel or relocation. Spiritual inclinations deepen. Lasts ~2.5 years.' },
+              { icon:'♄', title:'Phase 2 — Peak', sub:'Saturn on your Moon sign', desc:'The most intense phase. Major life tests in career, relationships, and health. Greatest transformation potential. Lasts ~2.5 years.' },
+              { icon:'○', title:'Phase 3 — Setting', sub:'Saturn in 2nd from Moon', desc:'Recovery begins. Financial and health improvement. Past lessons integrate as wisdom. Lasts ~2.5 years.' },
             ].map(c => (
               <div key={c.title} className="card-cosmic p-5 border border-gold-600/15">
                 <div className="text-3xl mb-2">{c.icon}</div>
@@ -131,7 +131,7 @@ export default function SadeSatiPage() {
             <button type="submit" disabled={loading}
               className="w-full py-4 bg-gold-500 text-cosmic-950 font-bold text-lg rounded-xl hover:bg-gold-400 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
               style={{ boxShadow:'0 0 24px rgba(201,168,76,0.3)' }}>
-              {loading ? <><Loader className="w-5 h-5 animate-spin" /> Calculating Saturn's Transit...</> : '🪐 Check My Sade Sati — साढ़े साती जाँचें'}
+              {loading ? <><Loader className="w-5 h-5 animate-spin" /> Calculating Saturn's Transit...</> : '♄ Check My Sade Sati — साढ़े साती जाँचें'}
             </button>
           </form>
         </motion.div>
@@ -151,7 +151,7 @@ export default function SadeSatiPage() {
                       : 'border-emerald-400/40 bg-emerald-500/8'
                 }`}
                 style={{ boxShadow: result.isActive ? '0 0 32px rgba(239,68,68,0.15)' : result.dhaiya ? '0 0 24px rgba(249,115,22,0.12)' : '0 0 24px rgba(34,197,94,0.12)' }}>
-                <div className="absolute top-0 right-0 text-8xl opacity-5 select-none pr-4 pt-2">🪐</div>
+                <div className="absolute top-0 right-0 text-8xl opacity-5 select-none pr-4 pt-2">♄</div>
                 <div className="relative flex flex-wrap items-center gap-4">
                   <div className="flex-shrink-0">
                     {result.isActive
@@ -170,7 +170,7 @@ export default function SadeSatiPage() {
                     </div>
                     {result.isActive ? (
                       <div>
-                        <p className="text-red-300 font-semibold text-lg">🪐 Sade Sati is Currently ACTIVE</p>
+                        <p className="text-red-300 font-semibold text-lg">♄ Sade Sati is Currently ACTIVE</p>
                         <div className="flex flex-wrap items-center gap-2 mt-1">
                           <PhaseBadge phase={result.currentPhase?.phase} />
                           <span className="text-gray-300 text-sm">{result.currentPhase?.name}</span>
@@ -356,9 +356,9 @@ export default function SadeSatiPage() {
                       </p>
                       <div className="grid md:grid-cols-3 gap-4">
                         {[
-                          { ph: 1, label:'🌑 Rising Phase', text: result.signEffects?.phase1, border:'border-orange-400/25', bg:'bg-orange-500/8' },
-                          { ph: 2, label:'🪐 Peak Phase',   text: result.signEffects?.phase2, border:'border-red-400/25',    bg:'bg-red-500/8' },
-                          { ph: 3, label:'🌕 Setting Phase',text: result.signEffects?.phase3, border:'border-amber-400/25',  bg:'bg-amber-500/8' },
+                          { ph: 1, label:'● Rising Phase', text: result.signEffects?.phase1, border:'border-orange-400/25', bg:'bg-orange-500/8' },
+                          { ph: 2, label:'♄ Peak Phase',   text: result.signEffects?.phase2, border:'border-red-400/25',    bg:'bg-red-500/8' },
+                          { ph: 3, label:'○ Setting Phase',text: result.signEffects?.phase3, border:'border-amber-400/25',  bg:'bg-amber-500/8' },
                         ].map(({ ph, label, text, border, bg }) => (
                           <div key={ph} className={`rounded-xl p-4 border ${border} ${bg} ${result.currentPhase?.phase === ph ? 'ring-1 ring-gold-400/40' : ''}`}>
                             <p className="text-gold-400 text-xs font-bold uppercase tracking-wider mb-2">{label}</p>
@@ -477,16 +477,16 @@ export default function SadeSatiPage() {
 
                     {/* Cross-sell: Book Pooja */}
                     <div className="card-cosmic p-6 border border-amber-500/30 bg-amber-500/5 relative overflow-hidden">
-                      <div className="absolute right-0 top-0 text-7xl opacity-10 pr-4 pt-2">🪔</div>
+                      <div className="absolute right-0 top-0 text-7xl opacity-10 pr-4 pt-2">♄</div>
                       <div className="relative">
-                        <h3 className="font-serif text-amber-300 text-lg mb-2">🛕 Book Shani Shanti Puja</h3>
+                        <h3 className="font-serif text-amber-300 text-lg mb-2">ॐ Book Shani Shanti Puja</h3>
                         <p className="text-gray-300 text-sm leading-relaxed mb-4">
                           A <span className="text-amber-300 font-medium">Shani Shanti Puja</span> performed by a qualified Vedic priest is one of the most powerful remedies during Sade Sati.
                           Our experienced Pandits perform the complete vidhi with Shani Yantra, Abhishek, and Homa.
                         </p>
                         <Link to="/book-pooja"
                           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-300 hover:bg-amber-500/30 transition-all text-sm font-semibold">
-                          🪔 Book Pooja Now
+                          ✦ Book Pooja Now
                         </Link>
                       </div>
                     </div>

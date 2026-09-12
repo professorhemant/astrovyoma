@@ -234,7 +234,7 @@ export default function ConsultationPage() {
     const camTrack = localTracksRef.current.find(t => t.trackMediaType === 'video');
     if (camTrack) { camOff ? await camTrack.setMuted(false) : await camTrack.setMuted(true); }
     setCamOff(!camOff);
-    toast(camOff ? 'Camera on' : 'Camera off', { icon: camOff ? '📷' : '🚫', duration: 1500 });
+    toast(camOff ? 'Camera on' : 'Camera off', { icon: camOff ? '◈' : '✗', duration: 1500 });
   }
 
   async function handleEndSession() {
@@ -263,7 +263,7 @@ export default function ConsultationPage() {
     return (
       <div className="min-h-screen bg-cosmic-950 flex items-center justify-center px-4" style={{ background: 'radial-gradient(ellipse at top, #1a1060 0%, #0A0E2A 40%, #04051A 100%)' }}>
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-cosmic-800/80 border border-gold-600/20 rounded-2xl p-8 max-w-sm w-full text-center">
-          <div className="text-4xl mb-4">🙏</div>
+          <div className="text-4xl mb-4 font-serif text-gold-400">✦</div>
           <h2 className="font-serif text-2xl text-gold-400 mb-2">Session Complete</h2>
           <p className="text-gray-200 text-sm mb-1">Duration: {formatTime(elapsed)}</p>
           <p className="text-gray-200 text-sm mb-6">Consultation cost: ₹{estimatedCost}</p>

@@ -117,7 +117,7 @@ export default function TodayNakshatraPage() {
                 </motion.div>
                 <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.3 }}
                   className="bg-red-500/10 border border-red-500/50 rounded-2xl p-6">
-                  <h3 className="text-red-400 font-semibold text-lg mb-3 flex items-center gap-2">🚫 Best to Avoid</h3>
+                  <h3 className="text-red-400 font-semibold text-lg mb-3 flex items-center gap-2">✗ Best to Avoid</h3>
                   <p className="text-white text-sm leading-relaxed">{data.avoid}</p>
                 </motion.div>
               </div>

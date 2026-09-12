@@ -198,7 +198,7 @@ const T = {
     domainLabels: [
       { id: 'general',  label: 'General',   icon: '✦' },
       { id: 'love',     label: 'Love',       icon: '♥' },
-      { id: 'career',   label: 'Career',     icon: '⚡' },
+      { id: 'career',   label: 'Career',     icon: '◆' },
       { id: 'spiritual',label: 'Spiritual',  icon: '☽' },
       { id: 'finances', label: 'Finances',   icon: '◆' },
     ],

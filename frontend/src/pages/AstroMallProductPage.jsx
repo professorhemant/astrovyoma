@@ -141,7 +141,7 @@ export default function AstroMallProductPage() {
               <div className="flex flex-wrap gap-2">
                 <span className="bg-gold-500/15 border border-gold-500/40 text-gold-300 text-xs px-3 py-1 rounded-full capitalize">{product.category}</span>
                 {product.planet && (
-                  <span className="bg-cosmic-800 border border-gold-500/30 text-gray-300 text-xs px-3 py-1 rounded-full">🪐 {product.planet}</span>
+                  <span className="bg-cosmic-800 border border-gold-500/30 text-gray-300 text-xs px-3 py-1 rounded-full">♄ {product.planet}</span>
                 )}
                 {product.bestDay && (
                   <span className="bg-cosmic-800 border border-gold-500/30 text-gray-300 text-xs px-3 py-1 rounded-full">◆ Best day: {product.bestDay}</span>
@@ -211,10 +211,10 @@ export default function AstroMallProductPage() {
 
               {/* Policies */}
               <div className="flex flex-wrap gap-3 text-xs text-gray-200">
-                <span className="flex items-center gap-1">🚚 Free Shipping</span>
-                <span className="flex items-center gap-1">🔄 7-Day Returns</span>
-                <span className="flex items-center gap-1">💵 COD Available</span>
-                <span className="flex items-center gap-1">🔒 Secure Payment</span>
+                <span className="flex items-center gap-1">→ Free Shipping</span>
+                <span className="flex items-center gap-1">◆ 7-Day Returns</span>
+                <span className="flex items-center gap-1">◈ COD Available</span>
+                <span className="flex items-center gap-1">⊛ Secure Payment</span>
               </div>
             </motion.div>
           </div>
@@ -242,7 +242,7 @@ export default function AstroMallProductPage() {
                 {product.planet && (
                   <div className="bg-cosmic-900/50 rounded-xl p-3">
                     <p className="text-gray-300 text-xs uppercase tracking-wider mb-1">Ruling Planet</p>
-                    <p className="text-white text-sm">🪐 {product.planet}</p>
+                    <p className="text-white text-sm">♄ {product.planet}</p>
                   </div>
                 )}
                 {product.zodiac?.length > 0 && (
