@@ -177,6 +177,39 @@ async function start() {
     // Fills the editable lists with the copy the site already ships, so moving a
     // page onto the database looks identical until an admin changes something.
     await require('./src/controllers/contentController').seedContent();
+
+    // One-time migration: force-reseed all CMS lists that previously used emoji
+    // icons so the live DB reflects the Unicode symbol updates in contentSchema.js.
+    // Guarded by a site_settings marker so it runs exactly once.
+    try {
+      const { ContentItem, SiteSettings } = require('./src/models');
+      const { LISTS } = require('./src/config/contentSchema');
+      const MIGRATION_KEY = 'emoji_to_unicode_reseed_v1';
+      const already = await SiteSettings.findOne({ where: { key: MIGRATION_KEY } });
+      if (!already) {
+        const LISTS_TO_RESET = [
+          'about_stats', 'about_pillars', 'about_expertise', 'about_promises',
+          'purpose_cards', 'home_features', 'nav_items',
+          'onboarding_criteria', 'onboarding_kit',
+          'subscription_plans', 'pages',
+        ];
+        for (const listKey of LISTS_TO_RESET) {
+          if (!LISTS[listKey]) continue;
+          await ContentItem.destroy({ where: { list_key: listKey } });
+          const seed = LISTS[listKey].seed || [];
+          if (seed.length) {
+            await ContentItem.bulkCreate(seed.map((data, i) => ({
+              list_key: listKey, sort_order: i, is_active: true, data: JSON.stringify(data),
+            })));
+          }
+        }
+        await SiteSettings.create({ key: MIGRATION_KEY, value: new Date().toISOString() });
+        console.log('[migration] emoji_to_unicode_reseed_v1 complete');
+      }
+    } catch (err) {
+      console.error('[migration] emoji_to_unicode_reseed_v1 failed:', err.message);
+    }
+
     app.listen(PORT, () => console.log(`AstroVyoma API running on port ${PORT}`));
   } catch (err) {
     console.error('Failed to start server:', err);
