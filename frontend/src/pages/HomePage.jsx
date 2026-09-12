@@ -262,7 +262,7 @@ export default function HomePage() {
               headline ended, and the guess was wrong the moment the headline
               wrapped differently — it printed straight over "Map Your Cosmic
               Journey". One container, two children, no arithmetic. */}
-          <div className="absolute inset-x-0 top-16 md:hidden pointer-events-none px-6 pt-2 text-center">
+          <div className="absolute inset-x-0 top-16 md:hidden pointer-events-none px-6 pt-2 text-center z-20">
             <h1 className="font-serif leading-snug text-[19px]"
               style={{ color: '#F3D98B', textShadow: '0 2px 16px rgba(0,0,0,0.9)' }}>
               Unveil Your Destiny.<br />Map Your Cosmic Journey.
@@ -293,19 +293,17 @@ export default function HomePage() {
             speed={num(siteSettings?.heroMarqueeSpeed, 26)}
             size={num(siteSettings?.heroMarqueeSize, 17)}
           />
-          {/* zodiac mandala overlaid on banner — vertically centered, slightly left */}
-          {/* top: on a phone the hero is only 320px tall with the headline at
-              64px; 60% keeps the mandala below the headline text and just above
-              the clock (which sits at the bottom). Desktop uses the admin-set
-              CSS variable. */}
+          {/* zodiac mandala — center-left of hero, original position. Headline is
+              z-20 so it always renders above this on mobile. Desktop uses the
+              admin-set CSS variable for top; size matches the Vedic Clock (200px). */}
           <div
             data-edit="mandala" data-edit-label="Zodiac wheel"
-            className="absolute flex flex-col items-center justify-center pointer-events-none top-[60%] md:top-[var(--mandala-top)]"
+            className="absolute flex flex-col items-center justify-center pointer-events-none top-[38%] md:top-[var(--mandala-top)]"
             style={{ ...mandalaPos, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
             <img
               src="/zodiac-mandala.webp"
               alt="Vedic Zodiac Mandala"
-              className="w-24 md:w-56 lg:w-[var(--mandala-size)]"
+              className="w-20 md:w-[200px]"
               style={{
                 animation: 'spinCW 120s linear infinite',
                 willChange: 'transform',
@@ -320,14 +318,11 @@ export default function HomePage() {
             </motion.p>
           </div>
 
-          {/* Vedic Clock — bottom-left of hero, aligned under mandala */}
-          {/* VedicClock lays out at a fixed 200x228. It is absolutely positioned,
-              so scaling the inner wrapper shrinks it on a phone without
-              disturbing anything around it. */}
+          {/* Vedic Clock — top-right of hero, under the Sign Up nav button. */}
           <div data-edit="clock" data-edit-label="Vedic clock"
-            className="absolute pointer-events-none"
-            style={{ ...clockPos, transform: 'translateX(-50%)', zIndex: 10 }}>
-            <div className="scale-[0.38] md:scale-100 origin-bottom">
+            className="absolute pointer-events-none right-4 top-2"
+            style={{ zIndex: 10 }}>
+            <div className="scale-[0.38] md:scale-100 origin-top-right">
               <VedicClock />
             </div>
           </div>
