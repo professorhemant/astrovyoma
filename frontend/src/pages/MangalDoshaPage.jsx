@@ -9,9 +9,9 @@ import BirthPlacePicker from '../components/BirthPlacePicker';
 
 const TABS = [
   { id: 'overview',      label: 'Overview',       icon: '♂' },
-  { id: 'perspectives',  label: 'Analysis',        icon: '🔍' },
-  { id: 'cancellations', label: 'Cancellations',   icon: '🛡' },
-  { id: 'remedies',      label: 'Remedies',        icon: '🪔' },
+  { id: 'perspectives',  label: 'Analysis',        icon: '◈' },
+  { id: 'cancellations', label: 'Cancellations',   icon: '⊛' },
+  { id: 'remedies',      label: 'Remedies',        icon: '✦' },
 ];
 
 function SeverityBar({ percent, color }) {
@@ -63,7 +63,7 @@ function PerspectiveCard({ data, label, icon }) {
             <span className="text-red-400 text-xs font-bold">{data.details.intensity}/10</span>
           </div>
           <p className="text-amber-300/80 text-xs mt-2 bg-amber-500/5 rounded-lg px-3 py-2 border border-amber-500/15">
-            💑 {data.details.marriage_impact}
+            ♥ {data.details.marriage_impact}
           </p>
         </div>
       )}
@@ -135,8 +135,8 @@ export default function MangalDoshaPage() {
             className="grid md:grid-cols-3 gap-4 mb-8">
             {[
               { icon: '♂', title: 'What is Mangal Dosha?', desc: 'When Mars occupies the 1st, 2nd, 4th, 7th, 8th, or 12th house from Lagna, Moon, or Venus in the birth chart. Classically associated with challenges in married life.' },
-              { icon: '⚖️', title: 'Is it always harmful?', desc: 'No. Many Mangliks have wonderful marriages. The dosha\'s impact depends on its severity, the specific house, and whether cancellation conditions apply. Modern astrology views it as manageable.' },
-              { icon: '🛡️', title: 'Can it be cancelled?', desc: 'Yes — Mars in own sign/exaltation, Jupiter\'s protection, Venus in Lagna, or two Manglik partners marrying each other are among the 12+ cancellation rules in Parashari tradition.' },
+              { icon: '⚖', title: 'Is it always harmful?', desc: 'No. Many Mangliks have wonderful marriages. The dosha\'s impact depends on its severity, the specific house, and whether cancellation conditions apply. Modern astrology views it as manageable.' },
+              { icon: '⊛', title: 'Can it be cancelled?', desc: 'Yes — Mars in own sign/exaltation, Jupiter\'s protection, Venus in Lagna, or two Manglik partners marrying each other are among the 12+ cancellation rules in Parashari tradition.' },
             ].map(c => (
               <div key={c.title} className="card-cosmic p-5 border border-red-600/15">
                 <div className="text-3xl mb-2">{c.icon}</div>
@@ -156,7 +156,7 @@ export default function MangalDoshaPage() {
                 <label className="block text-gray-300 text-sm mb-1.5">Your Name <span className="text-gray-500 text-xs">(optional)</span></label>
                 <input type="text" placeholder="e.g. Priya Sharma"
                   value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                  className="w-full bg-cosmic-900/80 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-gold-500/50 transition-all" />
+                  className="input-cosmic" />
               </div>
               <div>
                 <label className="block text-gray-300 text-sm mb-1.5 flex items-center gap-1.5">
@@ -169,7 +169,7 @@ export default function MangalDoshaPage() {
                   <Clock className="w-3.5 h-3.5 text-gold-500" /> Time of Birth <span className="text-red-400">*</span>
                 </label>
                 <input type="time" value={form.tob} onChange={e => setForm(f => ({ ...f, tob: e.target.value }))}
-                  className="w-full bg-cosmic-900/80 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 focus:outline-none focus:border-gold-500/50 transition-all" required />
+                  className="input-cosmic" required />
               </div>
               <div>
                 <BirthPlacePicker
@@ -207,7 +207,7 @@ export default function MangalDoshaPage() {
                 'border-emerald-500/50 bg-emerald-500/8'
               }`}>
                 <div className="text-5xl mb-3">
-                  {r.isManglik && !r.isCancelled ? '♂' : r.isManglik && r.isCancelled ? '🛡️' : '✅'}
+                  {r.isManglik && !r.isCancelled ? '♂' : r.isManglik && r.isCancelled ? '⊛' : '✓'}
                 </div>
                 <p className={`text-2xl font-serif font-bold mb-2 ${
                   r.isManglik && !r.isCancelled ? 'text-red-400' :

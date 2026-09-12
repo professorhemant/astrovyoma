@@ -20,9 +20,9 @@ const SIGNS = [
 ];
 
 const PERIODS = [
-  { id:'weekly',  label:'This Week',      icon:'📅' },
-  { id:'monthly', label:'This Month',     icon:'🗓' },
-  { id:'yearly',  label:'2026 Forecast',  icon:'🌟' },
+  { id:'weekly',  label:'This Week',      icon:'◆' },
+  { id:'monthly', label:'This Month',     icon:'◈' },
+  { id:'yearly',  label:'2026 Forecast',  icon:'✦' },
 ];
 
 function Section({ icon, title, children }) {
@@ -181,9 +181,9 @@ export default function WeeklyHoroscopePage() {
               {/* Weekly sections */}
               {period === 'weekly' && (
                 <div className="grid md:grid-cols-2 gap-4">
-                  <Section icon="💕" title="Love & Relationships">{data.love}</Section>
-                  <Section icon="💼" title="Career & Finance">{data.career}</Section>
-                  <Section icon="🌿" title="Health & Wellness">{data.health}</Section>
+                  <Section icon="♥" title="Love & Relationships">{data.love}</Section>
+                  <Section icon="◆" title="Career & Finance">{data.career}</Section>
+                  <Section icon="✧" title="Health & Wellness">{data.health}</Section>
                   <div className="card-cosmic rounded-xl p-5 border border-gold-600/15">
                     <p className="text-gold-400 font-semibold text-sm mb-3">Lucky Factors</p>
                     <div className="flex flex-wrap gap-2">
@@ -262,7 +262,7 @@ export default function WeeklyHoroscopePage() {
           {!selectedSign && !loading && (
             <motion.div key="empty" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
               className="text-center py-16">
-              <div className="text-6xl mb-4">🔮</div>
+              <div className="text-5xl mb-4 text-gold-400/40 font-serif">✦</div>
               <p className="text-gray-400 text-lg">Select your zodiac sign above to see your forecast</p>
               <p className="text-gray-500 text-sm mt-2">Weekly, monthly, and yearly predictions available</p>
             </motion.div>

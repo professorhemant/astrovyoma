@@ -51,7 +51,7 @@ export default function NakshatraPage() {
         <div className="max-w-6xl mx-auto">
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">⭐ Your Birth Star</p>
+            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">✦ Your Birth Star</p>
             <h1 className="font-serif text-3xl md:text-5xl text-gold-400 mb-3" style={{ textShadow: '0 0 30px rgba(201,168,76,0.4)' }}>Nakshatra Reading</h1>
             <p className="text-gray-200 max-w-xl mx-auto text-sm">The 27 lunar mansions of Vedic astrology — discover the star that defines your soul's blueprint</p>
           </motion.div>
@@ -63,14 +63,14 @@ export default function NakshatraPage() {
               <p className="text-gold-400 font-medium text-sm">Don't know your Nakshatra?</p>
               <p className="text-gray-300 text-xs">Generate your free Kundali to find your Moon's Nakshatra instantly</p>
             </div>
-            <Link to="/kundali" className="bg-gradient-to-r from-gold-600 to-gold-400 text-cosmic-950 font-semibold rounded-full px-6 py-2.5 text-sm hover:opacity-90 transition-opacity whitespace-nowrap">
+            <Link to="/kundali" className="btn-gold px-6 py-2.5 text-sm whitespace-nowrap">
               Find My Nakshatra ?
             </Link>
           </motion.div>
 
           {/* Search */}
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="🔍 Search nakshatra..."
-            className="w-full max-w-md mx-auto block bg-cosmic-800 border border-gold-600/20 rounded-full px-5 py-3 text-gray-200 text-sm focus:outline-none focus:border-gold-500/50 mb-8 transition-colors" />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search nakshatra..."
+            className="input-cosmic w-full max-w-md mx-auto block mb-8" />
 
           {/* Nakshatra grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-8">
