@@ -50,7 +50,7 @@ const NAK_TABLE = [
   { name:'UttaraBhadrapada', nameHi:'उत्तर भाद्रपद',     lord:'Saturn',  pada:[{en:'Du',hi:'दु'},{en:'Tha',hi:'थ'},{en:'Jha',hi:'झ'},{en:'Da',hi:'द'}] },
   { name:'Revati',           nameHi:'रेवती',             lord:'Mercury', pada:[{en:'De',hi:'दे'},{en:'Do',hi:'दो'},{en:'Cha',hi:'च'},{en:'Chi',hi:'चि'}] },
 ];
-const PLANET_SYMBOLS = { Sun:'☀️', Moon:'🌙', Mars:'♂️', Mercury:'☿', Jupiter:'♃', Venus:'♀️', Saturn:'♄', Rahu:'☊', Ketu:'☋' };
+const PLANET_SYMBOLS = { Sun:'☉', Moon:'☽', Mars:'♂', Mercury:'☿', Jupiter:'♃', Venus:'♀', Saturn:'♄', Rahu:'☊', Ketu:'☋' };
 const PLANET_COLORS = { Sun:'text-orange-400', Moon:'text-blue-300', Mars:'text-red-400', Mercury:'text-emerald-400', Jupiter:'text-yellow-400', Venus:'text-pink-400', Saturn:'text-violet-400', Rahu:'text-purple-400', Ketu:'text-slate-200' };
 
 // --- ASHTAKAVARGA COMPUTATION -------------------------------------------------
@@ -177,7 +177,8 @@ function AccordionSection({ title, icon, children, defaultOpen = false }) {
         className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-gold-500/5 transition-colors"
       >
         <span className="flex items-center gap-3">
-          <span className="text-xl leading-none">{icon}</span>
+          <span className="text-xl leading-none text-gold-400 font-serif"
+            style={{ textShadow: '0 0 10px rgba(201,168,76,0.5)' }}>{icon}</span>
           <span className="font-serif text-gold-400 text-lg">{title}</span>
         </span>
         <ChevronDown className={`w-5 h-5 text-gold-500 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
@@ -467,9 +468,9 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
           <div className="relative overflow-hidden rounded-2xl px-6 py-4"
             style={{ background: 'linear-gradient(135deg, #1a0a00 0%, #2e1200 45%, #1a0a10 100%)', border: '1px solid rgba(220,100,30,0.4)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
             <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4">
-              <div className="w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center text-2xl"
+              <div className="w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center"
                 style={{ background: 'radial-gradient(circle, rgba(220,100,30,0.25) 0%, rgba(80,10,10,0.6) 100%)', border: '2px solid rgba(220,100,30,0.55)' }}>
-                💑
+                <span className="font-serif text-2xl" style={{ color: '#f0a060', textShadow: '0 0 10px rgba(220,100,30,0.6)' }}>♥</span>
               </div>
               <div className="flex-1 text-center sm:text-left">
                 <h3 className="font-serif text-lg font-semibold" style={{color:'#f0a060'}}>कुंडली मिलान — Kundali Matching (Guna Milan)</h3>
@@ -497,9 +498,10 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
               {/* Avatar */}
               <div className="w-14 h-14 rounded-full flex-shrink-0 flex items-center justify-center"
                 style={{ background: 'radial-gradient(circle at 35% 35%, rgba(201,168,76,0.25) 0%, rgba(60,10,120,0.6) 100%)', border: '2px solid rgba(201,168,76,0.55)' }}>
-                <motion.span className="text-gold-400 text-2xl"
+                <motion.span className="font-serif text-gold-400 text-2xl"
                   animate={{ rotate: [0,12,-12,0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}>🔮</motion.span>
+                  style={{ textShadow: '0 0 14px rgba(201,168,76,0.6)' }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}>✦</motion.span>
               </div>
               {/* Text */}
               <div className="flex-1 text-center sm:text-left">
@@ -997,7 +999,7 @@ function KundaliResult({ kundali, chart, birthInfo, userName }) {
         {/* TAB: Planet in House */}
         {tab === 'planet-house' && (() => {
           const PLANET_ORDER = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
-          const PLANET_ICON = { Sun:'☀️', Moon:'🌙', Mars:'♂️', Mercury:'☿', Jupiter:'♃', Venus:'♀', Saturn:'♄', Rahu:'☊', Ketu:'☋' };
+          const PLANET_ICON = { Sun:'☉', Moon:'☽', Mars:'♂', Mercury:'☿', Jupiter:'♃', Venus:'♀', Saturn:'♄', Rahu:'☊', Ketu:'☋' };
           return (
             <motion.div key="planet-house" initial={{opacity:0}} animate={{opacity:1}} className="space-y-4">
               <div className="card-cosmic p-5">
@@ -1584,7 +1586,7 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
       <div className="section-divider-gold mb-8"><span>✦ Comprehensive Kundali Report ✦</span></div>
 
       {/* A. Personal Details Table */}
-      <AccordionSection title="Personal Details & Panchang" icon="📅" defaultOpen>
+      <AccordionSection title="Personal Details & Panchang" icon="☽" defaultOpen>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <tbody>
@@ -1622,7 +1624,7 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
       </AccordionSection>
 
       {/* B. Planetary Positions Table */}
-      <AccordionSection title="Planetary Positions (Graha Sthiti)" icon="🪐">
+      <AccordionSection title="Planetary Positions (Graha Sthiti)" icon="✦">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -1656,7 +1658,7 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
       </AccordionSection>
 
       {/* C. Lagna Phal */}
-      <AccordionSection title={`Lagna Phal — ${lagna} Ascendant Analysis`} icon="🌟">
+      <AccordionSection title={`Lagna Phal — ${lagna} Ascendant Analysis`} icon="☉">
         {lagnaInfo ? (
           <div className="space-y-4">
             <div>
@@ -1691,7 +1693,7 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
       </AccordionSection>
 
       {/* D. Nakshatra Phal */}
-      <AccordionSection title={`Nakshatra Phal — ${nakshatra} Birth Star Analysis`} icon="⭐">
+      <AccordionSection title={`Nakshatra Phal — ${nakshatra} Birth Star Analysis`} icon="✧">
         {nakInfo ? (
           <div className="space-y-4">
             {[
@@ -1715,12 +1717,12 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
       </AccordionSection>
 
       {/* E. Vistrit Bhavishhyaphal */}
-      <AccordionSection title="Vistrit Bhavishhyaphal — Detailed Life Reading" icon="🔮">
+      <AccordionSection title="Vistrit Bhavishhyaphal — Detailed Life Reading" icon="♃">
         <VistritBhavishhyaphal lagna={lagna} moonSign={moonSign} lagnaInfo={lagnaInfo} />
       </AccordionSection>
 
       {/* F. Mangal Dosha */}
-      <AccordionSection title="Mangal Dosha Analysis" icon="⚔️">
+      <AccordionSection title="Mangal Dosha Analysis" icon="♂">
         <div className="space-y-4">
           <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${hasMangalDosha ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'}`}>
             {hasMangalDosha ? '⚔️ Mangal Dosha Present' : '✓ No Mangal Dosha'}
@@ -1761,7 +1763,7 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
       </AccordionSection>
 
       {/* G. Sade Sati */}
-      <AccordionSection title="Sade Sati Report" icon="🪐">
+      <AccordionSection title="Sade Sati Report" icon="♄">
         <div className="space-y-4">
           <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${sadeSatiPhase !== 'Not Running' ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30' : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'}`}>
             {sadeSatiPhase !== 'Not Running' ? `🪐 Sade Sati Running — ${sadeSatiPhase}` : '✓ Sade Sati Not Currently Running'}
@@ -1802,7 +1804,7 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
       </AccordionSection>
 
       {/* H. Kaal Sarp Dosha */}
-      <AccordionSection title="Kaal Sarp Dosha Analysis" icon="🐍">
+      <AccordionSection title="Kaal Sarp Dosha Analysis" icon="☊">
         <div className="space-y-4">
           <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${kaalSarp ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'}`}>
             {kaalSarp
@@ -1824,7 +1826,7 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
       </AccordionSection>
 
       {/* I. Mahadasha Phal */}
-      <AccordionSection title="Current Mahadasha Phal — Life Period Reading" icon="🔮">
+      <AccordionSection title="Current Mahadasha Phal — Life Period Reading" icon="☽">
         {currentDasha ? (
           <div className="space-y-4">
             <div className="p-4 bg-gold-500/8 border border-gold-500/25 rounded-xl">
@@ -1896,7 +1898,7 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
       </AccordionSection>
 
       {/* J. Ashtakavarga */}
-      <AccordionSection title="Ashtakavarga (Bhinnashtakavarga + Sarvashtakavarga)" icon="📊">
+      <AccordionSection title="Ashtakavarga (Bhinnashtakavarga + Sarvashtakavarga)" icon="♃">
         <p className="text-gray-300 text-xs mb-3">Benefic points each planet contributes to each sign. Score 5+ is strong (green), 4 is average, 3 or below is weak (red). Sarvashtakavarga total of 28+ in a sign is considered strong; 25 or below is weak.</p>
         {ashtak ? (
           <div className="overflow-x-auto">
@@ -1960,7 +1962,7 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
       </AccordionSection>
 
       {/* K. Gochar Phal */}
-      <AccordionSection title="Gochar Phal — Current Transit Effects" icon="🌍">
+      <AccordionSection title="Gochar Phal — Current Transit Effects" icon="☉">
         <p className="text-gray-300 text-xs mb-4">Based on current planetary positions and your birth Moon sign ({moonSign}), as of {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}.</p>
         <div className="space-y-5">
           <div>
@@ -2210,7 +2212,7 @@ export default function KundaliPage() {
               <div>
                 <label className="text-gray-200 text-sm block mb-1.5">Your Name</label>
                 <input value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} placeholder="Enter your full name"
-                  className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 focus:outline-none focus:border-gold-500 text-sm" />
+                  className="input-cosmic" />
               </div>
               <div>
                 <label className="text-gray-200 text-sm block mb-1.5">Date of Birth *</label>
@@ -2225,7 +2227,7 @@ export default function KundaliPage() {
               <div>
                 <label className="text-gray-200 text-sm block mb-1.5">Gender</label>
                 <select value={form.gender} onChange={e=>setForm(f=>({...f,gender:e.target.value}))}
-                  className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 focus:outline-none focus:border-gold-500 text-sm">
+                  className="input-cosmic">
                   <option value="">Select gender</option>
                   <option>Male</option><option>Female</option><option>Non-binary</option>
                 </select>
