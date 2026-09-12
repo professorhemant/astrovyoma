@@ -6,7 +6,10 @@ import { MessageCircle, Calendar, Phone, Star, BadgeCheck } from 'lucide-react';
 export default function AstrologerCard({ astrologer }) {
   const navigate = useNavigate();
 
-  const isRealPhoto = astrologer.photo_url && !astrologer.photo_url.includes('dicebear');
+  const hasPhoto = astrologer.photo_url && !astrologer.photo_url.includes('dicebear');
+  // Initials fallback — one or two letters from the display name.
+  const initials = (astrologer.display_name || '?')
+    .split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
 
   return (
     <motion.div
@@ -36,12 +39,19 @@ export default function AstrologerCard({ astrologer }) {
         <div className="relative flex-shrink-0">
           <div className={`w-16 h-16 rounded-full overflow-hidden border-2 transition-all ${astrologer.is_verified ? 'border-gold-400/70' : 'border-gold-600/40 group-hover:border-gold-400/70'}`}
             style={astrologer.is_verified ? { boxShadow: '0 0 12px rgba(201,168,76,0.35)' } : {}}>
-            <img
-              src={astrologer.photo_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(astrologer.display_name)}`}
-              alt={astrologer.display_name}
-              className="w-full h-full object-cover"
-              onError={e => { e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${astrologer.display_name}`; }}
-            />
+            {hasPhoto ? (
+              <img
+                src={astrologer.photo_url}
+                alt={astrologer.display_name}
+                className="w-full h-full object-cover"
+                onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+              />
+            ) : null}
+            {/* Gold initials shown when there's no real photo */}
+            <div className={`w-full h-full flex items-center justify-center font-serif text-xl font-semibold select-none ${hasPhoto ? 'hidden' : 'flex'}`}
+              style={{ background: 'linear-gradient(135deg,#1e1040,#2a1860)', color: '#E8C547', textShadow: '0 0 12px rgba(201,168,76,0.5)' }}>
+              {initials}
+            </div>
           </div>
           {/* Back now that the Pandit Portal can actually take a call. */}
           <span className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-cosmic-800 ${astrologer.is_online ? 'bg-green-400 animate-pulse' : 'bg-gray-500'}`} />
