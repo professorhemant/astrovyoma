@@ -1,0 +1,23 @@
+backend/node_modules
+frontend/node_modules
+backend/*.db
+backend/*.log
+backend/*.pdf
+backend/assets
+frontend/dist
+.git
+# Root-level development artifacts (screenshots, PDFs, utility scripts)
+/*.png
+/*.pdf
+/*.json
+/compare_pdf.js
+/extract_pdf.js
+/gen_hemant_pdf.js
+/gen_swechha_pdf.js
+/pdf_viewer_server.js
+/pw_screenshot.js
+/read_pdf.js
+/screenshot_page.js
+/test_hindi_compare.js
+/verify_all_nakshatras.js
+/tools
