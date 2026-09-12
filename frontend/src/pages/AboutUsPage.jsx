@@ -73,44 +73,44 @@ function Divider() {
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
 const STATS = [
-  { value: 'Detailed',   label: 'Kundli Analysis',      icon: '🔭' },
+  { value: 'Detailed',   label: 'Kundli Analysis',      icon: '◈' },
   { value: 'Actionable', label: 'Life Remedies',        icon: '✦' },
   { value: 'Real-Time',  label: 'Chart Generation',     icon: '◈' },
   { value: 'Daily',      label: 'Horoscope Updates',    icon: '✦' },
-  { value: '5,000+',     label: 'Years of Vedic Wisdom', icon: '📜' },
-  { value: '100%',       label: 'Confidential & Secure', icon: '🔐' },
+  { value: '5,000+',     label: 'Years of Vedic Wisdom', icon: '✦' },
+  { value: '100%',       label: 'Confidential & Secure', icon: '⊛' },
 ];
 
 // ── Pillars ───────────────────────────────────────────────────────────────────
 const PILLARS = [
-  { emoji: '🏛️', tone: 'gold', title: 'The Elite Brain Trust',
+  { emoji: '✦', tone: 'gold', title: 'The Elite Brain Trust',
     desc: 'Our panel doesn\'t consist of hobbyists. It features celebrated authors, institutional scholars, and trusted advisors to industry captains, global tech leaders, and innovators.' },
-  { emoji: '🤝', tone: 'violet', title: 'Power of Collaboration',
+  { emoji: '◆', tone: 'violet', title: 'Power of Collaboration',
     desc: 'Unlike standalone consultations, AstroVyoma operates as a collaborative guild. For complex life blueprints, our top experts cross-verify planetary transits and charts to deliver unprecedented accuracy.' },
-  { emoji: '☮️', tone: 'emerald', title: 'No Fear-Mongering',
+  { emoji: '✧', tone: 'emerald', title: 'No Fear-Mongering',
     desc: 'We strictly forbid regressive, fear-inducing predictions. Our astrologers view a birth chart not as a fixed script of doom, but as a cosmic roadmap filled with potential and possibility.' },
-  { emoji: '🔬', tone: 'blue', title: 'Scientific Remedial Measures',
+  { emoji: '◈', tone: 'blue', title: 'Scientific Remedial Measures',
     desc: 'Our remedies are practical, energetic, and lifestyle-oriented — combining psychological grounding, gemstone science, sound frequencies (Mantras), and spatial alignment (Vastu).' },
 ];
 
 // ── Expertise areas ───────────────────────────────────────────────────────────
 const EXPERTISE = [
-  { icon: '🪐', tone: 'gold', title: 'Traditional Vedic & KP Astrology',
+  { icon: '◈', tone: 'gold', title: 'Traditional Vedic & KP Astrology',
     approach: 'Pinpoint timing of events using exact planetary degrees.',
     result: 'Clarity on Career, Finance & Relationships' },
   { icon: '✦', tone: 'violet', title: 'Advanced Numerology',
     approach: 'Harmonizing your name and birth frequencies with cosmic vibrations.',
     result: 'Enhanced personal branding and luck alignment' },
-  { icon: '🏠', tone: 'emerald', title: 'Scientific Vastu Shastra',
+  { icon: '✦', tone: 'emerald', title: 'Scientific Vastu Shastra',
     approach: 'Aligning living and digital workspaces with elemental energies.',
     result: 'Accelerated growth, peace, and abundance' },
 ];
 
 // ── Promises ──────────────────────────────────────────────────────────────────
 const PROMISES = [
-  { emoji: '🔐', title: 'Absolute Confidentiality',
+  { emoji: '⊛', title: 'Absolute Confidentiality',
     desc: 'Your birth data and life challenges are treated with the highest level of data security and spiritual privacy. What you share stays sacred.' },
-  { emoji: '⚖️', title: 'Uncompromising Integrity',
+  { emoji: '◆', title: 'Uncompromising Integrity',
     desc: 'If a chart shows a challenging period, we present it with honesty — immediately followed by the exact cosmic tools required to navigate it.' },
   { emoji: '✦', title: 'Authentic Lineage',
     desc: 'Every consultant on AstroVyoma is strictly vetted for credentialing, ethical standards, and predictive accuracy. No shortcuts, no imposters.' },
@@ -163,7 +163,7 @@ export default function AboutUsPage() {
         <FloatingSymbol symbol="✦" style={{ top: '55%', left: '2%' }} />
         <FloatingSymbol symbol="✦"  style={{ top: '70%', right: '3%' }} />
         <FloatingSymbol symbol="♓" style={{ bottom: '12%', left: '8%' }} />
-        <FloatingSymbol symbol="🪐" style={{ top: '35%', right: '8%' }} />
+        <FloatingSymbol symbol="♄" style={{ top: '35%', right: '8%' }} />
 
         <div className="relative z-10 max-w-5xl mx-auto text-center">
           <motion.p {...fadeUp(0)} className="text-gold-500/60 text-xs tracking-[0.25em] uppercase mb-4">
@@ -414,10 +414,10 @@ export default function AboutUsPage() {
 
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/kundali" className="btn-gold px-10 py-3.5 text-sm font-semibold shadow-[0_0_30px_rgba(201,168,76,0.3)]">
-              🪐 Get My Free Kundali
+              ◈ Get My Free Kundali
             </Link>
             <Link to="/astrologers" className="btn-outline-gold px-10 py-3.5 text-sm">
-              👁 Talk to an Astrologer
+              ◆ Talk to an Astrologer
             </Link>
           </div>
 

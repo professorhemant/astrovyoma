@@ -10,11 +10,11 @@ import SwastikBorder from '../components/SwastikBorder';
 
 // ── Category meta ──────────────────────────────────────────────────────────────
 const CATEGORY_META = {
-  'Pancha Mahapurusha': { color: '#FFD93D', bg: 'rgba(255,217,61,0.08)',  icon: '👑', label: 'Pancha Mahapurusha', labelHi: 'पंच महापुरुष योग' },
-  'Raja Yoga':          { color: '#C9A84C', bg: 'rgba(201,168,76,0.08)',  icon: '🔱', label: 'Raja Yoga',          labelHi: 'राज योग'           },
-  'Dhana Yoga':         { color: '#6BCB77', bg: 'rgba(107,203,119,0.08)', icon: '💰', label: 'Dhana Yoga',         labelHi: 'धन योग'            },
-  'Special Yoga':       { color: '#74B9FF', bg: 'rgba(116,185,255,0.08)', icon: '✨', label: 'Special Yoga',       labelHi: 'विशेष योग'         },
-  'Dosha':              { color: '#FF6B6B', bg: 'rgba(255,107,107,0.08)', icon: '⚠️', label: 'Dosha',              labelHi: 'दोष'               },
+  'Pancha Mahapurusha': { color: '#FFD93D', bg: 'rgba(255,217,61,0.08)',  icon: '✦', label: 'Pancha Mahapurusha', labelHi: 'पंच महापुरुष योग' },
+  'Raja Yoga':          { color: '#C9A84C', bg: 'rgba(201,168,76,0.08)',  icon: '◈', label: 'Raja Yoga',          labelHi: 'राज योग'           },
+  'Dhana Yoga':         { color: '#6BCB77', bg: 'rgba(107,203,119,0.08)', icon: '◆', label: 'Dhana Yoga',         labelHi: 'धन योग'            },
+  'Special Yoga':       { color: '#74B9FF', bg: 'rgba(116,185,255,0.08)', icon: '✧', label: 'Special Yoga',       labelHi: 'विशेष योग'         },
+  'Dosha':              { color: '#FF6B6B', bg: 'rgba(255,107,107,0.08)', icon: '⚠', label: 'Dosha',              labelHi: 'दोष'               },
 };
 
 const STRENGTH_CONFIG = {
@@ -26,24 +26,24 @@ const STRENGTH_CONFIG = {
 
 // ── Hero yoga-type explainer cards ───────────────────────────────────────────
 const YOGA_TYPES = [
-  { icon: '🔱', title: 'Raja Yogas',             titleHi: 'राजयोग',          color: '#C9A84C', desc: 'Status & Power — formed via Kendra + Trikona lord connections.',      descHi: 'सत्ता और प्रभाव — केंद्र और त्रिकोण भावेशों के संयोग से बनता है।'     },
-  { icon: '💰', title: 'Dhana Yogas',             titleHi: 'धनयोग',           color: '#6BCB77', desc: 'Wealth Accumulation — 2nd, 5th, 9th, 11th house lord linkages.',      descHi: 'धन संचय — द्वितीय, पंचम, नवम और एकादश भावेशों की युति से।'           },
-  { icon: '👑', title: 'Pancha Mahapurusha',      titleHi: 'पंच महापुरुष',   color: '#FFD93D', desc: 'Exceptional Traits — Mars/Mercury/Jupiter/Venus/Saturn in Kendra.',   descHi: 'असाधारण व्यक्तित्व — पाँच ग्रह केंद्र में स्वगृही या उच्च राशि में।' },
-  { icon: '⚡', title: 'Vipreet Raja Yoga',       titleHi: 'विपरीत राजयोग',  color: '#A78BFA', desc: 'Triumph Through Adversity — Dusthana lords placed in Dusthana.',      descHi: 'विपरीत में विजय — 6/8/12 भावेश का दूसरे दुःस्थान में स्थान।'         },
+  { icon: '◈', title: 'Raja Yogas',             titleHi: 'राजयोग',          color: '#C9A84C', desc: 'Status & Power — formed via Kendra + Trikona lord connections.',      descHi: 'सत्ता और प्रभाव — केंद्र और त्रिकोण भावेशों के संयोग से बनता है।'     },
+  { icon: '◆', title: 'Dhana Yogas',             titleHi: 'धनयोग',           color: '#6BCB77', desc: 'Wealth Accumulation — 2nd, 5th, 9th, 11th house lord linkages.',      descHi: 'धन संचय — द्वितीय, पंचम, नवम और एकादश भावेशों की युति से।'           },
+  { icon: '✦', title: 'Pancha Mahapurusha',      titleHi: 'पंच महापुरुष',   color: '#FFD93D', desc: 'Exceptional Traits — Mars/Mercury/Jupiter/Venus/Saturn in Kendra.',   descHi: 'असाधारण व्यक्तित्व — पाँच ग्रह केंद्र में स्वगृही या उच्च राशि में।' },
+  { icon: '◈', title: 'Vipreet Raja Yoga',       titleHi: 'विपरीत राजयोग',  color: '#A78BFA', desc: 'Triumph Through Adversity — Dusthana lords placed in Dusthana.',      descHi: 'विपरीत में विजय — 6/8/12 भावेश का दूसरे दुःस्थान में स्थान।'         },
 ];
 
 // ── 4 Dimensions (from doc) ──────────────────────────────────────────────────
 const DIMENSIONS_EN = [
-  { icon: '🔱', title: 'Material Elevation (Raja Yoga)',          desc: 'Gauges your capacity for leadership, social influence, and structural authority.' },
-  { icon: '💎', title: 'Financial Intelligence (Dhana Yoga)',      desc: 'Maps your channels of wealth generation, asset accumulation, and resource management.' },
-  { icon: '🌟', title: 'Internal Architecture (Mahapurusha Yoga)', desc: 'Identifies which element manifests as an extraordinary personality trait within you.' },
-  { icon: '⚡', title: 'Alchemical Resilience (Vipreet Raja Yoga)', desc: 'Tracks your innate ability to turn crises and obstacles into massive personal victories.' },
+  { icon: '◈', title: 'Material Elevation (Raja Yoga)',          desc: 'Gauges your capacity for leadership, social influence, and structural authority.' },
+  { icon: '◈', title: 'Financial Intelligence (Dhana Yoga)',      desc: 'Maps your channels of wealth generation, asset accumulation, and resource management.' },
+  { icon: '✦', title: 'Internal Architecture (Mahapurusha Yoga)', desc: 'Identifies which element manifests as an extraordinary personality trait within you.' },
+  { icon: '◆', title: 'Alchemical Resilience (Vipreet Raja Yoga)', desc: 'Tracks your innate ability to turn crises and obstacles into massive personal victories.' },
 ];
 const DIMENSIONS_HI = [
-  { icon: '🔱', title: 'भौतिक उत्थान (राजयोग)',           desc: 'यह समाज में आपके नेतृत्व, सामाजिक प्रभाव और प्रशासनिक अधिकार प्राप्त करने की क्षमता को मापता है।' },
-  { icon: '💎', title: 'वित्तीय बुद्धिमत्ता (धनयोग)',     desc: 'यह आपके जीवन में धन आगमन के स्रोतों, संपत्ति संचय और वित्तीय संसाधनों के प्रबंधन को दर्शाता है।' },
-  { icon: '🌟', title: 'व्यक्तित्व संरचना (महापुरुष योग)', desc: 'यह पहचान करता है कि कौन सा तत्व आपके भीतर असाधारण मानवीय गुण के रूप में प्रकट हो रहा है।'      },
-  { icon: '⚡', title: 'विपरीत विजय (विपरीत राजयोग)',      desc: 'यह संकटों और बाधाओं को बड़ी व्यक्तिगत जीत में बदलने की आपकी जन्मजात क्षमता को दर्शाता है।'       },
+  { icon: '◈', title: 'भौतिक उत्थान (राजयोग)',           desc: 'यह समाज में आपके नेतृत्व, सामाजिक प्रभाव और प्रशासनिक अधिकार प्राप्त करने की क्षमता को मापता है।' },
+  { icon: '◈', title: 'वित्तीय बुद्धिमत्ता (धनयोग)',     desc: 'यह आपके जीवन में धन आगमन के स्रोतों, संपत्ति संचय और वित्तीय संसाधनों के प्रबंधन को दर्शाता है।' },
+  { icon: '✦', title: 'व्यक्तित्व संरचना (महापुरुष योग)', desc: 'यह पहचान करता है कि कौन सा तत्व आपके भीतर असाधारण मानवीय गुण के रूप में प्रकट हो रहा है।'      },
+  { icon: '◆', title: 'विपरीत विजय (विपरीत राजयोग)',      desc: 'यह संकटों और बाधाओं को बड़ी व्यक्तिगत जीत में बदलने की आपकी जन्मजात क्षमता को दर्शाता है।'       },
 ];
 
 // ── Strength bar component ────────────────────────────────────────────────────
@@ -113,7 +113,7 @@ function YogaCard({ yoga, defaultOpen, lang }) {
               {/* Left: Effects */}
               <div className="bg-white/5 rounded-xl p-4">
                 <p className="text-[10px] uppercase tracking-widest mb-2" style={{ color: cat.color }}>
-                  {lang === 'hi' ? '⚡ प्रभाव एवं फल' : '⚡ Effects & Manifestation'}
+                  {lang === 'hi' ? '◆ प्रभाव एवं फल' : '◆ Effects & Manifestation'}
                 </p>
                 <p className="text-gray-200 text-sm leading-relaxed">{yoga.effects}</p>
               </div>
@@ -121,7 +121,7 @@ function YogaCard({ yoga, defaultOpen, lang }) {
               {yoga.remedies?.length > 0 && (
                 <div className="bg-white/5 rounded-xl p-4">
                   <p className="text-[10px] uppercase tracking-widest text-emerald-400 mb-2">
-                    {lang === 'hi' ? '🙏 उपाय' : '🙏 Remedies'}
+                    {lang === 'hi' ? 'ॐ उपाय' : 'ॐ Remedies'}
                   </p>
                   <ul className="space-y-1.5">
                     {yoga.remedies.map((r, i) => (
@@ -244,7 +244,7 @@ export default function YogaFinderPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
           className="card-cosmic rounded-2xl p-6 border border-gold-600/20 mb-8">
           <h2 className="font-serif text-gold-400 text-lg mb-5 flex items-center gap-2">
-            <span>🪐</span>
+            <span>♄</span>
             {lang === 'hi' ? 'अपना जन्म विवरण दर्ज करें' : 'Enter Your Birth Details'}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -380,7 +380,7 @@ export default function YogaFinderPage() {
               {data.summary.total > 0 && (
                 <div className="card-cosmic rounded-2xl p-5 border border-gold-600/15">
                   <p className="text-gold-400/70 text-[11px] uppercase tracking-widest mb-4">
-                    {lang === 'hi' ? '📊 योग वर्गीकरण' : '📊 Yoga Distribution'}
+                    {lang === 'hi' ? '◈ योग वर्गीकरण' : '◈ Yoga Distribution'}
                   </p>
                   <div className="grid md:grid-cols-2 gap-3">
                     {Object.entries(CATEGORY_META).map(([key, meta]) => {
@@ -425,7 +425,7 @@ export default function YogaFinderPage() {
               {categories.length > 2 && (
                 <div className="flex flex-wrap gap-2">
                   {categories.map(cat => {
-                    const meta = cat === 'All' ? { color: '#C9A84C', icon: '🔮', labelHi: 'सभी' } : CATEGORY_META[cat];
+                    const meta = cat === 'All' ? { color: '#C9A84C', icon: '✦', labelHi: 'सभी' } : CATEGORY_META[cat];
                     const isActive = activeCategory === cat;
                     return (
                       <button key={cat} onClick={() => setActiveCategory(cat)}
@@ -447,7 +447,7 @@ export default function YogaFinderPage() {
               {/* ── Yoga cards ── */}
               {filtered.length === 0 ? (
                 <div className="text-center py-12 text-gray-500">
-                  <p className="text-4xl mb-3">🔍</p>
+                  <p className="text-4xl mb-3 font-serif text-gold-400">◈</p>
                   <p>{lang === 'hi' ? 'इस श्रेणी में कोई योग नहीं मिला।' : 'No yogas found in this category.'}</p>
                 </div>
               ) : (
@@ -459,7 +459,7 @@ export default function YogaFinderPage() {
               {/* Empty chart */}
               {data.yogas.length === 0 && (
                 <div className="card-cosmic rounded-2xl p-10 border border-gold-600/20 text-center">
-                  <p className="text-5xl mb-4">🌟</p>
+                  <p className="text-5xl mb-4 font-serif text-gold-400">✦</p>
                   <p className="text-gold-400 font-serif text-xl mb-3">
                     {lang === 'hi' ? 'संतुलित कुंडली' : 'A Balanced Chart'}
                   </p>

@@ -78,11 +78,11 @@ export default function AstroMallPage() {
       {/* Trust bar */}
       <div className="relative z-10 bg-gold-500/10 border-b border-gold-500/25 pt-16">
         <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8 py-2 px-4 text-xs text-gold-300">
-          <span className="flex items-center gap-1.5">🚚 <b>Free Shipping</b> on all orders</span>
+          <span className="flex items-center gap-1.5">→ <b>Free Shipping</b> on all orders</span>
           <span className="hidden sm:flex items-center gap-1.5">✧ <b>Energised</b> by Expert Astrologers</span>
-          <span className="flex items-center gap-1.5">🔬 <b>100% Authentic</b> & Certified</span>
-          <span className="hidden sm:flex items-center gap-1.5">↩️ <b>7-Day</b> Easy Returns</span>
-          <span className="flex items-center gap-1.5">📞 <b>COD</b> Available</span>
+          <span className="flex items-center gap-1.5">◈ <b>100% Authentic</b> & Certified</span>
+          <span className="hidden sm:flex items-center gap-1.5">◆ <b>7-Day</b> Easy Returns</span>
+          <span className="flex items-center gap-1.5">◈ <b>COD</b> Available</span>
         </div>
       </div>
 
@@ -252,10 +252,10 @@ export default function AstroMallPage() {
             className="bg-cosmic-800/40 border border-gold-500/40 rounded-2xl p-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               {[
-                { icon:'🔬', title:'Lab Certified', desc:'Every product tested and certified for authenticity' },
+                { icon:'◈', title:'Lab Certified', desc:'Every product tested and certified for authenticity' },
                 { icon:'ॐ', title:'Astrologer Energised', desc:'Charged with mantras by our panel of Vedic experts' },
-                { icon:'🚚', title:'Free Shipping', desc:'Free delivery on all orders across India' },
-                { icon:'↩️', title:'7-Day Returns', desc:'Hassle-free returns if you\'re not satisfied' },
+                { icon:'→', title:'Free Shipping', desc:'Free delivery on all orders across India' },
+                { icon:'◆', title:'7-Day Returns', desc:'Hassle-free returns if you\'re not satisfied' },
               ].map(item => (
                 <div key={item.title}>
                   <div className="text-4xl mb-2">{item.icon}</div>

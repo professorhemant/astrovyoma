@@ -200,7 +200,7 @@ export default function PanditJiPage() {
     setMessages([{
       id: 'welcome',
       role: 'pandit',
-      content: 'हरि ॐ 🙏\n\nवत्स, आपका स्वागत है। मैं पंडित AI जी हूँ — आपका वैदिक ज्योतिषाचार्य।\n\nआपकी जन्मकुण्डली के आधार पर मैं आपके जीवन के हर प्रश्न का उत्तर दे सकता हूँ। निःसंकोच पूछिए।\n\nईश्वर आपका कल्याण करें। 🙏'
+      content: 'हरि ॐ ✦\n\nवत्स, आपका स्वागत है। मैं पंडित AI जी हूँ — आपका वैदिक ज्योतिषाचार्य।\n\nआपकी जन्मकुण्डली के आधार पर मैं आपके जीवन के हर प्रश्न का उत्तर दे सकता हूँ। निःसंकोच पूछिए।\n\nईश्वर आपका कल्याण करें। ✦'
     }]);
   }, [user]);
 
@@ -298,7 +298,7 @@ export default function PanditJiPage() {
       setMessages(p => [...p, { id: Date.now() + 1, role: 'pandit', content: reply }]);
       setTimeout(() => speak(reply), 400);
     } catch {
-      const err = 'क्षमा करें वत्स, कुछ विघ्न आ गया। पुनः प्रयास करें। 🙏';
+      const err = 'क्षमा करें वत्स, कुछ विघ्न आ गया। पुनः प्रयास करें। ✦';
       setMessages(p => [...p, { id: Date.now() + 1, role: 'pandit', content: err }]);
     } finally {
       setIsThinking(false);
@@ -312,7 +312,7 @@ export default function PanditJiPage() {
     setMessages([{
       id: 'reset',
       role: 'pandit',
-      content: 'हरि ॐ 🙏 नई वार्तालाप आरंभ हो गई। वत्स, पुनः पूछिए।'
+      content: 'हरि ॐ ✦ नई वार्तालाप आरंभ हो गई। वत्स, पुनः पूछिए।'
     }]);
   };
 
@@ -491,7 +491,7 @@ export default function PanditJiPage() {
                   {msg.role === 'pandit' && (
                     <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-sm"
                       style={{ background: 'linear-gradient(135deg,#C4590A,#7A3010)', border: '1px solid rgba(201,168,76,0.4)' }}>
-                      🙏
+                      ✦
                     </div>
                   )}
 
@@ -511,7 +511,7 @@ export default function PanditJiPage() {
               {isThinking && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
                   <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-sm"
-                    style={{ background: 'linear-gradient(135deg,#C4590A,#7A3010)', border: '1px solid rgba(201,168,76,0.4)' }}>🙏</div>
+                    style={{ background: 'linear-gradient(135deg,#C4590A,#7A3010)', border: '1px solid rgba(201,168,76,0.4)' }}>✦</div>
                   <div className="px-4 py-3 rounded-2xl rounded-tl-sm flex items-center gap-1"
                     style={{ background: 'rgba(100,35,5,0.4)', border: '1px solid rgba(201,168,76,0.2)' }}>
                     {[0, 0.18, 0.36].map(d => (

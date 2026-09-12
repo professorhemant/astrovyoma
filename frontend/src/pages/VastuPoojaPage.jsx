@@ -5,19 +5,19 @@ import BookingModal from '../components/BookingModal';
 import { pooja as poojaApi } from '../api';
 
 const HOW_IT_WORKS = [
-  { step: '01', icon: '🏠', title: 'Choose Your Puja', desc: 'Select the Vastu puja that matches your need — new home, defect removal, business, or land.' },
-  { step: '02', icon: '📅', title: 'Book & Pay', desc: 'Fill in your details and preferred date. Pay securely via UPI, card, or net banking.' },
-  { step: '03', icon: '🕉️', title: 'Pandit Ji Performs', desc: 'Our Vastu-expert Pandit Ji performs the puja with proper Vedic vidhi, sankalp in your name and gotra.' },
-  { step: '04', icon: '📲', title: 'Receive Video on WhatsApp', desc: 'A clear video of the complete puja is sent to your WhatsApp within 24 hours of completion.' },
+  { step: '01', icon: '✦', title: 'Choose Your Puja', desc: 'Select the Vastu puja that matches your need — new home, defect removal, business, or land.' },
+  { step: '02', icon: '◆', title: 'Book & Pay', desc: 'Fill in your details and preferred date. Pay securely via UPI, card, or net banking.' },
+  { step: '03', icon: 'ॐ', title: 'Pandit Ji Performs', desc: 'Our Vastu-expert Pandit Ji performs the puja with proper Vedic vidhi, sankalp in your name and gotra.' },
+  { step: '04', icon: '◈', title: 'Receive Video on WhatsApp', desc: 'A clear video of the complete puja is sent to your WhatsApp within 24 hours of completion.' },
 ];
 
 const VASTU_BENEFITS = [
-  { icon: '💰', title: 'Financial Prosperity', desc: 'Correct Vastu activates the north (Kubera) zone, attracting wealth and stable income.' },
-  { icon: '❤️', title: 'Family Harmony', desc: 'Balanced directions reduce conflicts, improve relationships, and create a peaceful home.' },
-  { icon: '🌿', title: 'Health & Vitality', desc: 'Proper east and northeast energy brings positive prana, improving physical and mental health.' },
-  { icon: '🚀', title: 'Career Growth', desc: 'Office and study Vastu alignment sharpens focus, attracts opportunities, and speeds success.' },
-  { icon: '😴', title: 'Restful Sleep', desc: 'Correct bedroom direction and head placement ensures deep, rejuvenating sleep every night.' },
-  { icon: '🛡️', title: 'Protection & Safety', desc: 'Vastu corrections create an energy shield that protects the family from negative forces.' },
+  { icon: '◈', title: 'Financial Prosperity', desc: 'Correct Vastu activates the north (Kubera) zone, attracting wealth and stable income.' },
+  { icon: '♥', title: 'Family Harmony', desc: 'Balanced directions reduce conflicts, improve relationships, and create a peaceful home.' },
+  { icon: '✧', title: 'Health & Vitality', desc: 'Proper east and northeast energy brings positive prana, improving physical and mental health.' },
+  { icon: '◆', title: 'Career Growth', desc: 'Office and study Vastu alignment sharpens focus, attracts opportunities, and speeds success.' },
+  { icon: '☽', title: 'Restful Sleep', desc: 'Correct bedroom direction and head placement ensures deep, rejuvenating sleep every night.' },
+  { icon: '⊛', title: 'Protection & Safety', desc: 'Vastu corrections create an energy shield that protects the family from negative forces.' },
 ];
 
 const TESTIMONIALS = [
@@ -57,7 +57,7 @@ export default function VastuPoojaPage() {
       <div className="relative z-10 pt-16">
         <div className="bg-gradient-to-r from-amber-900/90 via-orange-900/90 to-yellow-900/90 border-b border-amber-600/40 px-4 py-3">
           <p className="text-center text-amber-100 text-sm font-medium leading-relaxed max-w-3xl mx-auto">
-            🏠 <strong>Our Vastu-expert Pandit Ji performs these sacred pujas for you remotely.</strong> Receive divine Vastu blessings anywhere in India — with a WhatsApp video as proof. 📲
+            ✦ <strong>Our Vastu-expert Pandit Ji performs these sacred pujas for you remotely.</strong> Receive divine Vastu blessings anywhere in India — with a WhatsApp video as proof. ◈
           </p>
         </div>
       </div>
@@ -78,10 +78,10 @@ export default function VastuPoojaPage() {
               No physical changes to your home needed — powerful energetic corrections through sacred puja rituals.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
-              <span className="flex items-center gap-1.5 bg-green-500/15 border border-green-500/35 text-green-300 px-4 py-2 rounded-full">✅ Vastu Expert Pandits</span>
-              <span className="flex items-center gap-1.5 bg-amber-500/15 border border-amber-500/35 text-amber-300 px-4 py-2 rounded-full">📲 Video on WhatsApp</span>
-              <span className="flex items-center gap-1.5 bg-blue-500/15 border border-blue-500/35 text-blue-300 px-4 py-2 rounded-full">🙏 Sankalp in Your Name</span>
-              <span className="flex items-center gap-1.5 bg-orange-500/15 border border-orange-500/35 text-orange-300 px-4 py-2 rounded-full">🏠 No Demolition Needed</span>
+              <span className="flex items-center gap-1.5 bg-green-500/15 border border-green-500/35 text-green-300 px-4 py-2 rounded-full">✓ Vastu Expert Pandits</span>
+              <span className="flex items-center gap-1.5 bg-amber-500/15 border border-amber-500/35 text-amber-300 px-4 py-2 rounded-full">◈ Video on WhatsApp</span>
+              <span className="flex items-center gap-1.5 bg-blue-500/15 border border-blue-500/35 text-blue-300 px-4 py-2 rounded-full">ॐ Sankalp in Your Name</span>
+              <span className="flex items-center gap-1.5 bg-orange-500/15 border border-orange-500/35 text-orange-300 px-4 py-2 rounded-full">✦ No Demolition Needed</span>
             </div>
           </motion.div>
         </section>
@@ -147,12 +147,12 @@ export default function VastuPoojaPage() {
             <h3 className="font-serif text-2xl text-amber-300 text-center mb-6">Why Book With AstroVyoma?</h3>
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
               {[
-                { icon: '🎓', title: 'Vastu-Expert Pandits', desc: 'All our pandits specialise in Vastu Shastra with years of experience in Vastu Shanti, Griha Pravesh, and Bhoomi pujas.' },
-                { icon: '🎥', title: 'Video Proof on WhatsApp', desc: 'You receive a clear video of the complete puja on your registered WhatsApp — verify every step yourself.' },
-                { icon: '📿', title: 'Sankalp in Your Name', desc: 'Every puja begins with a proper Sankalp (intention) in your name, gotra, and specific Vastu purpose.' },
-                { icon: '🛕', title: 'Sacred Venue', desc: 'Pujas are performed at a dedicated puja space with authentic samagri, Vastu yantras, and proper Vedic setup.' },
-                { icon: '🚫', title: 'No Demolition Needed', desc: 'Our pujas energetically correct Vastu doshas without any physical changes to your home or office.' },
-                { icon: '💰', title: 'Transparent Pricing', desc: 'No hidden charges. Pay only the displayed amount. Secure UPI, card, and net banking accepted.' },
+                { icon: '◈', title: 'Vastu-Expert Pandits', desc: 'All our pandits specialise in Vastu Shastra with years of experience in Vastu Shanti, Griha Pravesh, and Bhoomi pujas.' },
+                { icon: '◆', title: 'Video Proof on WhatsApp', desc: 'You receive a clear video of the complete puja on your registered WhatsApp — verify every step yourself.' },
+                { icon: '✦', title: 'Sankalp in Your Name', desc: 'Every puja begins with a proper Sankalp (intention) in your name, gotra, and specific Vastu purpose.' },
+                { icon: 'ॐ', title: 'Sacred Venue', desc: 'Pujas are performed at a dedicated puja space with authentic samagri, Vastu yantras, and proper Vedic setup.' },
+                { icon: '⊛', title: 'No Demolition Needed', desc: 'Our pujas energetically correct Vastu doshas without any physical changes to your home or office.' },
+                { icon: '◈', title: 'Transparent Pricing', desc: 'No hidden charges. Pay only the displayed amount. Secure UPI, card, and net banking accepted.' },
               ].map(item => (
                 <div key={item.title} className="flex items-start gap-3">
                   <span className="text-3xl flex-shrink-0">{item.icon}</span>
@@ -232,7 +232,7 @@ function PujaCard({ puja, index, onBook }) {
         <h3 className="text-white font-serif text-xl font-bold leading-tight mb-1">{puja.name}</h3>
         <p className="text-white/80 text-sm">{puja.subtitle}</p>
         <div className="flex items-center justify-center gap-2 mt-3">
-          <span className="bg-white/15 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full">⏱️ {puja.duration}</span>
+          <span className="bg-white/15 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full">◈ {puja.duration}</span>
         </div>
       </div>
 
@@ -271,13 +271,13 @@ function PujaCard({ puja, index, onBook }) {
             onClick={onBook}
             className="bg-gradient-to-r from-amber-600 to-amber-400 text-cosmic-950 font-bold text-sm rounded-xl px-6 py-2.5 hover:opacity-90 transition-opacity"
           >
-            🏠 Book Now
+            ✦ Book Now
           </button>
         </div>
 
         {puja.occasion && (
           <p className="text-gray-400 text-xs mt-3 border-t border-amber-500/15 pt-3">
-            📅 Best for: <span className="text-gray-300">{puja.occasion}</span>
+            ◆ Best for: <span className="text-gray-300">{puja.occasion}</span>
           </p>
         )}
       </div>

@@ -81,7 +81,7 @@ export default function PanditPortalPage() {
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
           className="card-cosmic w-full max-w-sm p-8">
           <div className="text-center mb-8">
-            <div className="text-4xl mb-3">🕉️</div>
+            <div className="text-4xl mb-3 font-serif text-gold-400">ॐ</div>
             <h1 className="font-serif text-2xl text-gold-400">Pandit Portal</h1>
             <p className="text-gray-400 text-sm mt-1">AstroVyoma — Pandit Login</p>
           </div>

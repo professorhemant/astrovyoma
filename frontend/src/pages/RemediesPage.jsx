@@ -8,16 +8,16 @@ import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const CATEGORIES = [
-  { value: 'career', label: 'Career & Finance', icon: '💼' },
-  { value: 'love', label: 'Love & Marriage', icon: '💑' },
-  { value: 'health', label: 'Health & Vitality', icon: '🌿' },
-  { value: 'education', label: 'Education & Learning', icon: '📚' },
-  { value: 'legal', label: 'Legal Disputes', icon: '⚖️' },
-  { value: 'family', label: 'Family Harmony', icon: '🏠' },
-  { value: 'mental', label: 'Mental Peace', icon: '🧘' },
-  { value: 'debt', label: 'Debt & Losses', icon: '💸' },
-  { value: 'enemies', label: 'Enemies & Obstacles', icon: '🛡️' },
-  { value: 'children', label: 'Children & Fertility', icon: '🌸' },
+  { value: 'career', label: 'Career & Finance', icon: '◆' },
+  { value: 'love', label: 'Love & Marriage', icon: '♥' },
+  { value: 'health', label: 'Health & Vitality', icon: '✧' },
+  { value: 'education', label: 'Education & Learning', icon: '◈' },
+  { value: 'legal', label: 'Legal Disputes', icon: '◆' },
+  { value: 'family', label: 'Family Harmony', icon: '✦' },
+  { value: 'mental', label: 'Mental Peace', icon: 'ॐ' },
+  { value: 'debt', label: 'Debt & Losses', icon: '◈' },
+  { value: 'enemies', label: 'Enemies & Obstacles', icon: '⊛' },
+  { value: 'children', label: 'Children & Fertility', icon: '✧' },
 ];
 
 const PLANET_COLOR = {
@@ -190,15 +190,15 @@ export default function RemediesPage() {
 
               {/* Mantras */}
               {r.mantras?.length > 0 && (
-                <Section title="Mantras & Prayers" icon="🕉️" defaultOpen={true}>
+                <Section title="Mantras & Prayers" icon="ॐ" defaultOpen={true}>
                   <div className="space-y-4">
                     {r.mantras.map((m, i) => (
                       <div key={i} className="bg-cosmic-900/50 rounded-xl p-4 border border-gold-600/10">
                         <p className="font-serif text-gold-300 text-base mb-1">{m.mantra}</p>
                         <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-300 mt-2">
-                          {m.deity && <span>🙏 {m.deity}</span>}
-                          {m.count && <span>📿 {m.count}</span>}
-                          {m.benefit && <span>✨ {m.benefit}</span>}
+                          {m.deity && <span>ॐ {m.deity}</span>}
+                          {m.count && <span>◉ {m.count}</span>}
+                          {m.benefit && <span>✧ {m.benefit}</span>}
                         </div>
                       </div>
                     ))}
@@ -208,7 +208,7 @@ export default function RemediesPage() {
 
               {/* Gemstone */}
               {r.gemstone && (
-                <Section title="Gemstone Therapy" icon="💎">
+                <Section title="Gemstone Therapy" icon="◈">
                   <div className="grid sm:grid-cols-2 gap-3">
                     {[
                       ['Primary Gemstone', r.gemstone.primary],
@@ -229,13 +229,13 @@ export default function RemediesPage() {
 
               {/* Rudraksha */}
               {r.rudraksha && (
-                <Section title="Rudraksha" icon="📿">
+                <Section title="Rudraksha" icon="◉">
                   <p className="text-gray-300 text-sm leading-relaxed">{r.rudraksha}</p>
                 </Section>
               )}
 
               {/* Fasting & Charity */}
-              <Section title="Fasting & Charity" icon="🌙">
+              <Section title="Fasting & Charity" icon="☽">
                 <div className="space-y-3">
                   {r.fasting && (
                     <div>
@@ -254,13 +254,13 @@ export default function RemediesPage() {
 
               {/* Puja */}
               {r.puja && (
-                <Section title="Puja & Rituals" icon="🪔">
+                <Section title="Puja & Rituals" icon="ॐ">
                   <p className="text-gray-300 text-sm leading-relaxed">{r.puja}</p>
                 </Section>
               )}
 
               {/* Yantra & Colors */}
-              <Section title="Yantra & Color Therapy" icon="🔺">
+              <Section title="Yantra & Color Therapy" icon="△">
                 <div className="space-y-3">
                   {r.yantra && (
                     <div>
@@ -279,7 +279,7 @@ export default function RemediesPage() {
 
               {/* Do's and Don'ts */}
               {(r.dos?.length > 0 || r.donts?.length > 0) && (
-                <Section title="Do's & Don'ts" icon="✅">
+                <Section title="Do's & Don'ts" icon="✓">
                   <div className="grid sm:grid-cols-2 gap-4">
                     {r.dos?.length > 0 && (
                       <div>

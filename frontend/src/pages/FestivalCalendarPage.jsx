@@ -6,14 +6,14 @@ const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 const TYPE_META = {
-  'festival':        { label:'Festival',       color:'bg-amber-500/20 border-amber-500/40 text-amber-300',  dot:'bg-amber-400',    icon:'🎉' },
-  'purnima':         { label:'Purnima',         color:'bg-blue-500/20  border-blue-500/40  text-blue-300',   dot:'bg-blue-400',     icon:'🌕' },
-  'amavasya':        { label:'Amavasya',        color:'bg-indigo-500/20 border-indigo-500/40 text-indigo-300', dot:'bg-indigo-400', icon:'🌑' },
-  'eclipse':         { label:'Eclipse',         color:'bg-red-500/20   border-red-500/40   text-red-300',    dot:'bg-red-400',      icon:'🌒' },
+  'festival':        { label:'Festival',       color:'bg-amber-500/20 border-amber-500/40 text-amber-300',  dot:'bg-amber-400',    icon:'✦' },
+  'purnima':         { label:'Purnima',         color:'bg-blue-500/20  border-blue-500/40  text-blue-300',   dot:'bg-blue-400',     icon:'○' },
+  'amavasya':        { label:'Amavasya',        color:'bg-indigo-500/20 border-indigo-500/40 text-indigo-300', dot:'bg-indigo-400', icon:'●' },
+  'eclipse':         { label:'Eclipse',         color:'bg-red-500/20   border-red-500/40   text-red-300',    dot:'bg-red-400',      icon:'◑' },
   'retrograde-start':{ label:'Retrograde ↻',   color:'bg-orange-500/20 border-orange-500/40 text-orange-300', dot:'bg-orange-400', icon:'↩' },
   'retrograde-end':  { label:'Direct ↺',        color:'bg-emerald-500/20 border-emerald-500/40 text-emerald-300', dot:'bg-emerald-400', icon:'↪' },
-  'transit':         { label:'Transit',         color:'bg-cyan-500/20  border-cyan-500/40  text-cyan-300',   dot:'bg-cyan-400',     icon:'🪐' },
-  'ekadashi':        { label:'Ekadashi',        color:'bg-violet-500/20 border-violet-500/40 text-violet-300', dot:'bg-violet-400', icon:'🙏' },
+  'transit':         { label:'Transit',         color:'bg-cyan-500/20  border-cyan-500/40  text-cyan-300',   dot:'bg-cyan-400',     icon:'♄' },
+  'ekadashi':        { label:'Ekadashi',        color:'bg-violet-500/20 border-violet-500/40 text-violet-300', dot:'bg-violet-400', icon:'ॐ' },
 };
 
 const FILTERS = [
