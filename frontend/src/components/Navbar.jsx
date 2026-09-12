@@ -151,37 +151,42 @@ export default function Navbar() {
             <NavDropdown key={group.label} group={group} pathname={location.pathname} />
           ))}
 
-          {/* Talk to AstroVyoma AI — blinking highlight.
-              Three CTAs plus five dropdowns do not fit a 1280px bar at full
-              size, so the pills run compact and the AI label drops its verb
-              until there is room for it at 2xl. */}
-          <Link
-            to="/chat"
-            className="text-xs 2xl:text-sm transition-all flex items-center gap-1.5 px-2.5 2xl:px-3 py-1 rounded-full border border-gold-400/80 bg-gold-400/15 text-gold-300 font-medium whitespace-nowrap hover:bg-gold-400/25 animate-blink-ai"
-          >
-            {/* Each piece is its own flex item so the gap-1.5 spaces them —
-                a literal space here would stack on top of that gap. */}
-            <span>✦</span>
-            <span className="hidden 2xl:inline">Talk to</span>
-            <span>AstroVyoma AI</span>
-          </Link>
-
-          {/* The paid path — a solid button so it outranks the dropdowns */}
-          <Link
-            to="/astrologers"
-            className="btn-gold text-xs 2xl:text-sm px-3 2xl:px-4 py-1.5 whitespace-nowrap"
-          >
-            Talk to Astrologer
-          </Link>
-
-          {/* Supply side. Outlined rather than solid so it reads as the
-              secondary ask next to the paid path it sits beside. */}
-          <Link
-            to="/join-as-astrologer"
-            className="btn-outline-gold text-xs 2xl:text-sm px-3 2xl:px-4 py-1.5 whitespace-nowrap"
-          >
-            Join As Astrologer
-          </Link>
+          {/* Consult dropdown — merges AI + human astrologer into one CTA,
+              freeing ~200px that the two separate buttons occupied. */}
+          <div className="group relative h-full flex items-center">
+            <button className="btn-gold text-xs 2xl:text-sm px-3 2xl:px-4 py-1.5 whitespace-nowrap flex items-center gap-1.5 animate-blink-ai">
+              <span>✦</span>
+              <span>Consult</span>
+              <ChevronDown className="w-3 h-3 transition-transform duration-200 group-hover:rotate-180" />
+            </button>
+            <div className="absolute top-full right-0 w-56 invisible opacity-0 pointer-events-none group-hover:visible group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-75">
+              <div className="mt-1 bg-cosmic-900 border border-gold-600/20 rounded-xl overflow-hidden py-1"
+                style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.75)' }}>
+                <Link to="/chat"
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-gold-400 transition-colors duration-75">
+                  <span className="w-5 text-center text-gold-500">✦</span>
+                  <div>
+                    <div className="font-medium">AstroVyoma AI</div>
+                    <div className="text-xs text-gray-500">Instant · Free</div>
+                  </div>
+                </Link>
+                <Link to="/astrologers"
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-gold-400 transition-colors duration-75">
+                  <span className="w-5 text-center text-gold-500">☉</span>
+                  <div>
+                    <div className="font-medium">Talk to Astrologer</div>
+                    <div className="text-xs text-gray-500">Expert · Paid per min</div>
+                  </div>
+                </Link>
+                <div className="mx-3 my-0.5 border-t border-gold-600/10" />
+                <Link to="/join-as-astrologer"
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-400 hover:bg-white/5 hover:text-gold-400 transition-colors duration-75">
+                  <span className="w-5 text-center">⭐</span>
+                  <span>Join As Astrologer</span>
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="hidden xl:flex items-center gap-3 flex-shrink-0">
@@ -326,16 +331,19 @@ export default function Navbar() {
                 </div>
               </div>
 
-              {/* Both CTAs sit above the fold — they are why most people open this menu */}
+              {/* Consult options — two rows instead of one merged pill so each
+                  has enough tap area on a phone. */}
               <Link
                 to="/chat"
                 className="text-sm py-2.5 px-3 rounded-xl flex items-center gap-2 border border-gold-400/80 bg-gold-400/15 text-gold-300 font-medium animate-blink-ai"
               >
                 <span>✦</span>
-                Talk to AstroVyoma AI
+                <span className="flex-1">AstroVyoma AI</span>
+                <span className="text-[10px] text-gold-600">Instant · Free</span>
               </Link>
-              <Link to="/astrologers" className="btn-gold text-sm py-2.5 px-3 text-center mb-1">
-                Talk to Astrologer
+              <Link to="/astrologers" className="btn-gold text-sm py-2.5 px-3 text-center mb-1 flex items-center justify-between gap-2">
+                <span>Talk to Astrologer</span>
+                <span className="text-[10px] font-normal opacity-70">Paid per min</span>
               </Link>
 
               {navGroups.map(group => {

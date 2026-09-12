@@ -15,18 +15,18 @@ const ZODIAC_SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','
 const ZODIAC_SYMBOLS = { Aries:'♈',Taurus:'♉',Gemini:'♊',Cancer:'♋',Leo:'♌',Virgo:'♍',Libra:'♎',Scorpio:'♏',Sagittarius:'♐',Capricorn:'♑',Aquarius:'♒',Pisces:'♓' };
 
 const FREE_FEATURES = [
-  { icon: '🪐', title: 'Free Kundali', desc: 'Complete birth chart with planetary positions', link: '/kundali' },
-  { icon: '⭐', title: 'Daily Horoscope', desc: 'Personalized cosmic guidance every day', link: '/horoscope' },
-  { icon: '💫', title: 'Kundali Matching', desc: 'Find your soulmate compatibility', link: '/matching' },
-  { icon: '🔮', title: 'Nakshatra Reading', desc: 'Discover your birth star secrets', link: '/nakshatra' },
-  { icon: '🌙', title: 'Dasha Timeline', desc: 'Your life periods mapped to the stars', link: '/dasha' },
-  { icon: '🧮', title: 'Panchang', desc: 'Auspicious timings for every occasion', link: '/panchang' },
+  { icon: '♄', title: 'Free Kundali', desc: 'Complete birth chart with planetary positions', link: '/kundali' },
+  { icon: '☉', title: 'Daily Horoscope', desc: 'Personalized cosmic guidance every day', link: '/horoscope' },
+  { icon: '♀', title: 'Kundali Matching', desc: 'Find your soulmate compatibility', link: '/matching' },
+  { icon: '✦', title: 'Nakshatra Reading', desc: 'Discover your birth star secrets', link: '/nakshatra' },
+  { icon: '☽', title: 'Dasha Timeline', desc: 'Your life periods mapped to the stars', link: '/dasha' },
+  { icon: '☿', title: 'Panchang', desc: 'Auspicious timings for every occasion', link: '/panchang' },
 ];
 
 const TESTIMONIALS = [
-  { heading: 'Calculated, not guessed', text: 'Charts are computed with the Swiss Ephemeris using the Lahiri ayanamsha and Whole Sign houses — the same standard professional astrologers work to.' },
-  { heading: 'Free where it matters', text: 'Your full birth chart, planetary positions, dashas and nakshatra reading cost nothing, and no card is asked for.' },
-  { heading: 'You decide what you spend', text: 'Consultations are charged by the minute from your wallet, only while you are talking, and you can stop at any moment.' },
+  { icon: '☉', heading: 'Calculated, not guessed', text: 'Charts are computed with the Swiss Ephemeris using the Lahiri ayanamsha and Whole Sign houses — the same standard professional astrologers work to.' },
+  { icon: '✦', heading: 'Free where it matters', text: 'Your full birth chart, planetary positions, dashas and nakshatra reading cost nothing, and no card is asked for.' },
+  { icon: '☽', heading: 'You decide what you spend', text: 'Consultations are charged by the minute from your wallet, only while you are talking, and you can stop at any moment.' },
 ];
 
 const HOW_IT_WORKS = [
@@ -391,6 +391,23 @@ export default function HomePage() {
 
         </section>
 
+        {/* ── Trust Bar ── */}
+        <div className="relative z-10 py-3 px-4 border-b border-gold-600/10" style={{ background: 'rgba(18,9,58,0.6)' }}>
+          <div className="max-w-7xl mx-auto flex flex-wrap justify-center items-center gap-x-8 gap-y-1">
+            {[
+              { symbol: '☉', label: 'Swiss Ephemeris Engine' },
+              { symbol: '✦', label: '5,000+ Kundalis Generated' },
+              { symbol: '☽', label: 'Lahiri Ayanamsha Precision' },
+              { symbol: '♈', label: '12 Verified Astrologers' },
+            ].map(item => (
+              <span key={item.label} className="flex items-center gap-2 text-xs text-cosmic-300">
+                <span className="text-gold-500 text-sm">{item.symbol}</span>
+                {item.label}
+              </span>
+            ))}
+          </div>
+        </div>
+
         {/* ── Daily Horoscope ── */}
         {/* First thing under the hero: picking your sign is the shortest step a
             visitor can take, and it costs them nothing. No divider above it —
@@ -449,7 +466,7 @@ export default function HomePage() {
                     transition={{delay:i*0.1}}
                     whileHover={{y:-5,boxShadow:'0 0 30px rgba(201,168,76,0.2)',borderColor:'rgba(232,197,71,0.5)'}}
                     className="card-cosmic p-4 text-center cursor-pointer group h-full transition-all">
-                    <div className="text-3xl mb-2">{f.icon}</div>
+                    <div className="text-3xl mb-2 text-gold-400 font-serif" style={{ textShadow: '0 0 16px rgba(201,168,76,0.5)' }}>{f.icon}</div>
                     <h3 className="font-serif text-gold-400 text-base font-semibold mb-1 group-hover:text-gold-300">{f.title}</h3>
                     <p className="text-gray-400 text-xs leading-relaxed">{f.desc}</p>
                   </motion.div>
@@ -622,6 +639,9 @@ export default function HomePage() {
                     </>
                   ) : (
                     <>
+                      {t.icon && (
+                        <div className="text-2xl text-gold-400 mb-3 font-serif" style={{ textShadow: '0 0 16px rgba(201,168,76,0.4)' }}>{t.icon}</div>
+                      )}
                       {t.heading && (
                         <h3 className="text-gold-400 font-medium text-sm mb-3">{t.heading}</h3>
                       )}
