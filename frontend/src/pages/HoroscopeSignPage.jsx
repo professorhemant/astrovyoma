@@ -6,7 +6,9 @@ import ZodiacIcon from '../components/ZodiacIcon';
 import { horoscope as horoscopeApi } from '../api';
 import { useLanguage } from '../context/LanguageContext';
 
-const ELEMENT_ICON = { Fire: '🔥', Earth: '🌍', Air: '💨', Water: '💧' };
+const ELEMENT_COLOR  = { Fire: '#FF6B6B', Earth: '#6BCB77', Air: '#FFD93D', Water: '#74B9FF' };
+const ELEMENT_SYMBOL = { Fire: '△', Earth: '⊕', Air: '◇', Water: '▽' };
+const PLANET_SYMBOL  = { Sun:'☉', Moon:'☽', Mars:'♂', Mercury:'☿', Jupiter:'♃', Venus:'♀', Saturn:'♄' };
 
 const COLOR_CSS = {
   'Red':'#ef4444','Coral':'#f97316','Orange':'#f97316','Gold':'#c9a84c','Amber':'#f59e0b',
@@ -490,10 +492,10 @@ export default function HoroscopeSignPage() {
   const colorCss = COLOR_CSS[luckyColor] || '#c9a84c';
 
   const CATEGORIES = [
-    { key:'love',    label:'Love',    icon:'❤️', color:'#FF6B9D' },
-    { key:'career',  label:'Career',  icon:'💼', color:'#FFD93D' },
-    { key:'health',  label:'Health',  icon:'🌿', color:'#6BCB77' },
-    { key:'finance', label:'Finance', icon:'💰', color:'#C9A84C' },
+    { key:'love',    label:'Love',    icon:'♥', color:'#FF6B9D' },
+    { key:'career',  label:'Career',  icon:'◆', color:'#FFD93D' },
+    { key:'health',  label:'Health',  icon:'✧', color:'#6BCB77' },
+    { key:'finance', label:'Finance', icon:'◈', color:'#C9A84C' },
   ];
 
   return (
@@ -531,13 +533,13 @@ export default function HoroscopeSignPage() {
                 </h1>
                 <div className="flex items-center justify-center gap-2 flex-wrap">
                   <span className="bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full text-gray-300 text-sm">
-                    {ELEMENT_ICON[signData.element]} {signData.element}
+                    <span style={{ color: ELEMENT_COLOR[signData.element] }}>{ELEMENT_SYMBOL[signData.element]}</span> {signData.element}
                   </span>
                   <span className="bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full text-gray-300 text-sm">
-                    🪐 {signData.ruling}
+                    {PLANET_SYMBOL[signData.ruling] || '✦'} {signData.ruling}
                   </span>
                   <span className="bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full text-gray-200 text-sm">
-                    📅 {today}
+                    ✦ {today}
                   </span>
                 </div>
               </div>
@@ -546,8 +548,8 @@ export default function HoroscopeSignPage() {
 
           {/* Overview */}
           <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.1 }}
-            className="bg-cosmic-800/60 backdrop-blur-sm border border-gold-600/20 rounded-3xl p-6">
-            <h2 className="font-serif text-gold-400 text-xl mb-3">🌟 Today's Cosmic Reading</h2>
+            className="card-cosmic p-6">
+            <h2 className="font-serif text-gold-400 text-xl mb-3">✦ Today's Cosmic Reading</h2>
             {loading ? (
               <div className="flex items-center gap-3 text-gray-300 py-2">
                 <div className="flex gap-1">
@@ -565,12 +567,12 @@ export default function HoroscopeSignPage() {
 
           {/* Category breakdown */}
           <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.15 }}
-            className="bg-cosmic-800/60 border border-gold-600/20 rounded-3xl p-6">
+            className="card-cosmic p-6">
             <h2 className="font-serif text-gold-400 text-xl mb-4">Today's Energy Forecast</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {CATEGORIES.map(cat => (
                 <div key={cat.key} className="bg-cosmic-900/60 rounded-2xl p-4 text-center">
-                  <div className="text-2xl mb-2">{cat.icon}</div>
+                  <div className="text-2xl mb-2 font-serif" style={{ color: cat.color }}>{cat.icon}</div>
                   <p className="text-white text-sm font-semibold mb-2">{cat.label}</p>
                   <div className="flex justify-center gap-0.5 mb-3">
                     {[1,2,3,4,5].map(s => (
@@ -585,8 +587,8 @@ export default function HoroscopeSignPage() {
 
           {/* Lucky elements */}
           <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.2 }}
-            className="bg-cosmic-800/60 border border-gold-600/20 rounded-3xl p-6">
-            <h2 className="font-serif text-gold-400 text-xl mb-4">🍀 Lucky Elements Today</h2>
+            className="card-cosmic p-6">
+            <h2 className="font-serif text-gold-400 text-xl mb-4">✧ Lucky Elements Today</h2>
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center bg-cosmic-900/60 rounded-2xl p-4">
                 <div className="w-10 h-10 rounded-full mx-auto mb-2 border-2 border-white/10"
@@ -603,7 +605,7 @@ export default function HoroscopeSignPage() {
               </div>
               <div className="text-center bg-cosmic-900/60 rounded-2xl p-4">
                 <div className="w-10 h-10 rounded-full mx-auto mb-2 bg-purple-500/20 border border-purple-500/40 flex items-center justify-center">
-                  <span className="text-lg">🪐</span>
+                  <span className="font-serif text-gold-400 text-lg">◆</span>
                 </div>
                 <p className="text-gray-300 text-xs uppercase tracking-wider mb-1">Lucky Day</p>
                 <p className="text-white font-semibold text-sm">{signData.luckyDay}</p>
@@ -613,7 +615,7 @@ export default function HoroscopeSignPage() {
 
           {/* Compatibility */}
           <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.25 }}
-            className="bg-cosmic-800/60 border border-gold-600/20 rounded-3xl p-6">
+            className="card-cosmic p-6">
             <h2 className="font-serif text-gold-400 text-xl mb-1">Most Compatible Today</h2>
             <p className="text-gray-300 text-sm mb-4">Signs you harmonize with most today</p>
             <div className="flex gap-3 flex-wrap">
@@ -636,10 +638,10 @@ export default function HoroscopeSignPage() {
           {/* CTA */}
           <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.3 }}
             className="flex flex-col sm:flex-row gap-3">
-            <Link to="/kundali" className="flex-1 text-center bg-gradient-to-r from-gold-600 to-gold-400 text-cosmic-950 font-semibold rounded-full py-3 text-sm hover:opacity-90 transition-opacity">
+            <Link to="/kundali" className="flex-1 text-center btn-gold py-3 text-sm">
               Get My Free Kundali
             </Link>
-            <Link to="/astrologers" className="flex-1 text-center border border-gold-500/40 text-gold-400 rounded-full py-3 text-sm hover:bg-gold-500/10 transition-colors">
+            <Link to="/astrologers" className="flex-1 text-center btn-outline-gold py-3 text-sm">
               Talk to Astrologer
             </Link>
           </motion.div>

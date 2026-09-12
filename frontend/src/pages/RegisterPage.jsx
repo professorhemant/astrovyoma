@@ -72,23 +72,23 @@ export default function RegisterPage() {
           <div>
             <label className="text-gray-200 text-sm block mb-1.5">Full Name *</label>
             <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Your name"
-              className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 focus:outline-none focus:border-gold-500 text-sm" />
+              className="input-cosmic" />
           </div>
           <div>
             <label className="text-gray-200 text-sm block mb-1.5">Email *</label>
             <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="your@email.com"
-              className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 focus:outline-none focus:border-gold-500 text-sm" />
+              className="input-cosmic" />
           </div>
           <div>
             <label className="text-gray-200 text-sm block mb-1.5">Mobile Number *</label>
             <input type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="9876543210" inputMode="numeric"
-              className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 focus:outline-none focus:border-gold-500 text-sm" />
+              className="input-cosmic" />
           </div>
           <div className="relative">
             <label className="text-gray-200 text-sm block mb-1.5">Password *</label>
             <input type={showPass ? 'text' : 'password'} value={form.password}
               onChange={e => setForm(f => ({ ...f, password: e.target.value }))} placeholder="Min. 6 characters"
-              className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 pr-10 text-gray-200 focus:outline-none focus:border-gold-500 text-sm" />
+              className="input-cosmic pr-10" />
             <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-9 text-gray-300">
               {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
