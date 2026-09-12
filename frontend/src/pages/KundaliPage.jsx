@@ -1725,7 +1725,7 @@ function ComprehensiveReport({ data, kundali, dashas, currentDasha, pp, panchang
       <AccordionSection title="Mangal Dosha Analysis" icon="♂">
         <div className="space-y-4">
           <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${hasMangalDosha ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'}`}>
-            {hasMangalDosha ? '⚔️ Mangal Dosha Present' : '✓ No Mangal Dosha'}
+            {hasMangalDosha ? '♂ Mangal Dosha Present' : '✓ No Mangal Dosha'}
           </div>
           {marsHouse && (
             <p className="text-gray-300 text-xs">Mars is placed in House <span className="text-gold-400">{marsHouse}</span> ({marsSign}).
