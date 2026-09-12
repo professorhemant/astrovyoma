@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, Star, MessageCircle, Map } from 'lucide-react';
+import { Wallet, Star, MessageCircle, Map, Compass, Sparkles } from 'lucide-react';
 import { kundali as kundaliApi } from '../api';
 import SwastikBorder from '../components/SwastikBorder';
 import { useAuth } from '../context/AuthContext';
@@ -20,10 +20,10 @@ export default function DashboardPage() {
   const currentDasha = dashas.find(d => now >= new Date(d.start) && now <= new Date(d.end));
 
   const quickLinks = [
-    { icon: '🔮', label: 'View Kundali', desc: 'Your complete birth chart', onClick: () => navigate('/kundali') },
-    { icon: '✨', label: 'Find Purpose', desc: 'Soul blueprint & purpose', onClick: () => navigate('/purpose') },
-    { icon: '🌟', label: 'Talk to Astrologer', desc: 'Expert guidance now', onClick: () => navigate('/astrologers') },
-    { icon: '🤖', label: 'Talk to AstroVyoma AI', desc: 'Your personal AI astrologer', onClick: () => navigate('/chat') },
+    { Icon: Compass,        label: 'View Kundali',         desc: 'Your complete birth chart',    onClick: () => navigate('/kundali') },
+    { Icon: Sparkles,       label: 'Find Purpose',          desc: 'Soul blueprint & purpose',     onClick: () => navigate('/purpose') },
+    { Icon: Star,           label: 'Talk to Astrologer',    desc: 'Expert guidance now',          onClick: () => navigate('/astrologers') },
+    { Icon: MessageCircle,  label: 'Talk to AstroVyoma AI', desc: 'Your personal AI astrologer',  onClick: () => navigate('/chat') },
   ];
 
   return (
@@ -80,7 +80,7 @@ export default function DashboardPage() {
         {!kundali && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
             className="card-cosmic p-8 text-center mb-8 border border-gold-600/20">
-            <div className="text-4xl mb-3">🔮</div>
+            <Compass className="w-10 h-10 mx-auto mb-3" style={{ color: '#E8C547', filter: 'drop-shadow(0 0 8px rgba(201,168,76,0.5))' }} />
             <h2 className="font-serif text-gold-400 text-2xl mb-2">Generate Your Free Kundali</h2>
             <p className="text-gray-200 text-sm mb-5">Unlock your complete birth chart, personality report, and life purpose with Swiss Ephemeris precision.</p>
             <button onClick={() => navigate('/kundali')} className="btn-gold px-8 py-3">Generate Kundali ✦</button>
@@ -99,7 +99,7 @@ export default function DashboardPage() {
               whileHover={{ y: -3, boxShadow: '0 0 20px rgba(201,168,76,0.15)' }}
               className="card-cosmic p-5 text-center cursor-pointer group"
             >
-              <div className="text-3xl mb-2">{l.icon}</div>
+              <l.Icon className="w-7 h-7 mx-auto mb-2" style={{ color: '#E8C547', filter: 'drop-shadow(0 0 6px rgba(201,168,76,0.4))' }} />
               <div className="text-gold-400 text-sm font-medium group-hover:text-gold-300">{l.label}</div>
               <div className="text-gray-300 text-xs mt-0.5">{l.desc}</div>
             </motion.button>

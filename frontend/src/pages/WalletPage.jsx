@@ -132,7 +132,7 @@ export default function WalletPage() {
               </button>
             ))}
           </div>
-          <p className="text-gray-300 text-xs mt-3 text-center">🔒 Payments secured by Razorpay — UPI, cards, net banking & wallets.</p>
+          <p className="text-gray-300 text-xs mt-3 text-center">⊛ Payments secured by Razorpay — UPI, cards, net banking & wallets.</p>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="card-cosmic p-6">
@@ -145,7 +145,7 @@ export default function WalletPage() {
             <div className="text-center py-8 text-gold-400 animate-pulse">Loading transactions...</div>
           ) : transactions.length === 0 ? (
             <div className="text-center py-8">
-              <div className="text-3xl mb-2">💰</div>
+              <Wallet className="w-8 h-8 mx-auto mb-2 text-gold-500/50" />
               <p className="text-gray-300 text-sm">No transactions yet. Recharge to get started!</p>
             </div>
           ) : (
