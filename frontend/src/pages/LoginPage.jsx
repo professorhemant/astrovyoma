@@ -57,7 +57,7 @@ export default function LoginPage() {
               value={form.emailOrPhone}
               onChange={e => setForm(f => ({ ...f, emailOrPhone: e.target.value }))}
               placeholder="your@email.com or 9876543210"
-              className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 focus:outline-none focus:border-gold-500 text-sm"
+              className="input-cosmic"
             />
           </div>
           <div className="relative">
@@ -67,7 +67,7 @@ export default function LoginPage() {
               value={form.password}
               onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
               placeholder="Your password"
-              className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-3 pr-10 text-gray-200 focus:outline-none focus:border-gold-500 text-sm"
+              className="input-cosmic pr-10"
             />
             <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-9 text-gray-300">
               {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

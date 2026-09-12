@@ -6,10 +6,10 @@ import toast from 'react-hot-toast';
 import { numerology as numerologyApi } from '../api';
 
 const TABS = [
-  { id: 'profile',  label: 'Number Profile',  icon: '🔢' },
-  { id: 'loshu',    label: 'Lo Shu Grid',      icon: '🔲' },
-  { id: 'year',     label: 'Personal Year',    icon: '📅' },
-  { id: 'prashna',  label: 'Prashna Game',     icon: '🎲' },
+  { id: 'profile',  label: 'Number Profile',  icon: '✦' },
+  { id: 'loshu',    label: 'Lo Shu Grid',      icon: '⊞' },
+  { id: 'year',     label: 'Personal Year',    icon: '◆' },
+  { id: 'prashna',  label: 'Prashna Game',     icon: '◈' },
 ];
 
 const COMPAT_META = {
@@ -231,7 +231,7 @@ export default function NumerologyPage() {
                 <label className="block text-gray-300 text-sm mb-1.5">Your Name <span className="text-gray-500 text-xs">(for Name Number — Chaldean)</span></label>
                 <input type="text" placeholder="e.g. Rahul Sharma"
                   value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                  className="w-full bg-cosmic-900/80 border border-gold-600/20 rounded-xl px-4 py-3 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-gold-500/50 transition-all" />
+                  className="input-cosmic" />
               </div>
               <div>
                 <label className="block text-gray-300 text-sm mb-1.5 flex items-center gap-1.5">
@@ -250,8 +250,7 @@ export default function NumerologyPage() {
             </div>
 
             <button type="submit" disabled={loading}
-              className="w-full py-4 bg-gold-500 text-cosmic-950 font-bold text-lg rounded-xl hover:bg-gold-400 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
-              style={{ boxShadow:'0 0 24px rgba(201,168,76,0.3)' }}>
+              className="btn-gold w-full py-4 text-lg disabled:opacity-60 flex items-center justify-center gap-2">
               {loading
                 ? <><Loader className="w-5 h-5 animate-spin" /> Calculating...</>
                 : '✦ Reveal My Numbers — संख्या प्रकट करें'}

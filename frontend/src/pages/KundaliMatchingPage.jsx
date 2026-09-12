@@ -30,7 +30,7 @@ function PersonForm({ title, emoji, mode, value, onChange }) {
   const defaultSign = nidx >= 0 ? SIGN_LIST[NAK_SIGN[nidx]] : '';
 
   return (
-    <div className="bg-cosmic-800/60 border border-gold-600/20 rounded-2xl p-5">
+    <div className="card-cosmic p-5">
       <h3 className="font-serif text-gold-400 text-lg mb-4">{emoji} {title}</h3>
 
       <div className="space-y-3">
@@ -38,7 +38,7 @@ function PersonForm({ title, emoji, mode, value, onChange }) {
           <label className="text-gray-400 text-xs uppercase tracking-wider mb-1.5 block">Name (optional)</label>
           <input value={value.name || ''} onChange={e => onChange({ ...value, name: e.target.value })}
             placeholder="Enter name"
-            className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-2.5 text-gray-200 text-sm focus:outline-none focus:border-gold-500/50" />
+            className="input-cosmic" />
         </div>
 
         {mode === 'birth' ? (
@@ -51,7 +51,7 @@ function PersonForm({ title, emoji, mode, value, onChange }) {
               <div>
                 <label className="text-gray-400 text-xs uppercase tracking-wider mb-1.5 block">Time of Birth</label>
                 <input type="time" value={value.tob || '12:00'} onChange={e => onChange({ ...value, tob: e.target.value })}
-                  className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-3 py-2.5 text-gray-200 text-sm focus:outline-none focus:border-gold-500/50" />
+                  className="input-cosmic" />
               </div>
             </div>
             <div>
@@ -70,7 +70,7 @@ function PersonForm({ title, emoji, mode, value, onChange }) {
                 const nidx2 = NAKSHATRA_LIST.indexOf(e.target.value);
                 onChange({ ...value, nakshatra: e.target.value, moonSign: nidx2 >= 0 ? SIGN_LIST[NAK_SIGN[nidx2]] : value.moonSign });
               }}
-                className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-2.5 text-gray-200 text-sm focus:outline-none focus:border-gold-500/50">
+                className="input-cosmic">
                 <option value="">Select Nakshatra</option>
                 {NAKSHATRA_LIST.map((n, i) => <option key={n} value={n}>{i+1}. {n}</option>)}
               </select>
@@ -81,7 +81,7 @@ function PersonForm({ title, emoji, mode, value, onChange }) {
                 {value.nakshatra && <span className="ml-1 text-gray-600 normal-case text-xs">— auto: {defaultSign}</span>}
               </label>
               <select value={value.moonSign || ''} onChange={e => onChange({ ...value, moonSign: e.target.value })}
-                className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-4 py-2.5 text-gray-200 text-sm focus:outline-none focus:border-gold-500/50">
+                className="input-cosmic">
                 <option value="">Select Rashi</option>
                 {SIGN_LIST.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
@@ -236,8 +236,8 @@ export default function KundaliMatchingPage() {
           {/* Forms */}
           <motion.div initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.15 }}
             className="grid md:grid-cols-2 gap-5 mb-6">
-            <PersonForm title="Person 1" emoji="💙" mode={mode} value={p1} onChange={setP1} />
-            <PersonForm title="Person 2" emoji="💗" mode={mode} value={p2} onChange={setP2} />
+            <PersonForm title="Person 1" emoji="♡" mode={mode} value={p1} onChange={setP1} />
+            <PersonForm title="Person 2" emoji="♥" mode={mode} value={p2} onChange={setP2} />
           </motion.div>
 
           {mode === 'nakshatra' && (
@@ -250,7 +250,7 @@ export default function KundaliMatchingPage() {
 
           <div className="text-center mb-10">
             <button onClick={handleMatch} disabled={loading}
-              className="bg-gradient-to-r from-gold-600 to-gold-400 text-cosmic-950 font-bold rounded-full px-14 py-4 text-base hover:opacity-90 transition-opacity disabled:opacity-50 shadow-lg shadow-gold-500/20">
+              className="btn-gold px-14 py-4 text-base disabled:opacity-50">
               {loading
                 ? <span className="flex items-center gap-2"><Loader className="w-5 h-5 animate-spin" />Calculating…</span>
                 : '✦ Check Compatibility'}
@@ -318,7 +318,7 @@ export default function KundaliMatchingPage() {
 
                 {/* Person comparison */}
                 <div className="grid grid-cols-2 gap-3">
-                  {[{label:'Person 1', p:result.person1, emoji:'💙'}, {label:'Person 2', p:result.person2, emoji:'💗'}].map(({label,p,emoji}) => (
+                  {[{label:'Person 1', p:result.person1, emoji:'♡'}, {label:'Person 2', p:result.person2, emoji:'♥'}].map(({label,p,emoji}) => (
                     <div key={label} className="bg-cosmic-800/60 border border-gold-600/15 rounded-xl p-4 text-center">
                       <p className="text-gray-400 text-xs mb-1">{emoji} {p.name || label}</p>
                       <p className="text-gold-300 font-semibold">{p.nakshatra}</p>
@@ -356,12 +356,10 @@ export default function KundaliMatchingPage() {
                 <div className="text-center space-y-3">
                   <p className="text-gray-400 text-sm">For a complete matching report with Mangal Dosha, Nadi Dosha remedies, and auspicious muhurat, consult our expert astrologers</p>
                   <div className="flex flex-wrap gap-3 justify-center">
-                    <Link to="/astrologers"
-                      className="inline-block bg-gradient-to-r from-gold-600 to-gold-400 text-cosmic-950 font-semibold rounded-full px-10 py-3 hover:opacity-90 transition-opacity">
+                    <Link to="/astrologers" className="inline-block btn-gold px-10 py-3">
                       Consult an Expert →
                     </Link>
-                    <Link to="/mangal-dosha"
-                      className="inline-block border border-gold-500/40 text-gold-400 rounded-full px-8 py-3 hover:bg-gold-500/10 transition-all text-sm">
+                    <Link to="/mangal-dosha" className="inline-block btn-outline-gold px-8 py-3 text-sm">
                       ♂ Check Mangal Dosha
                     </Link>
                   </div>

@@ -11,9 +11,9 @@ const VARA_COLOR = { Sunday:'#FF9F43', Monday:'#74B9FF', Tuesday:'#FF6B6B', Wedn
 function Card({ icon, label, value, sub, color, ends, next }) {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-      className="bg-cosmic-800/60 border border-gold-500/40 rounded-2xl p-5">
+      className="card-cosmic p-5">
       <div className="flex items-start gap-3">
-        <div className="text-2xl">{icon}</div>
+        <div className="text-xl font-serif leading-none" style={{ color: color || '#C9A84C', textShadow: '0 0 8px rgba(201,168,76,0.4)' }}>{icon}</div>
         <div className="flex-1">
           <p className="text-gray-200 text-xs uppercase tracking-wider mb-1">{label}</p>
           <p className="font-serif text-lg font-semibold" style={{ color: color || '#C9A84C' }}>{value}</p>
@@ -56,7 +56,7 @@ export default function PanchangPage() {
         <div className="max-w-5xl mx-auto">
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">🕉️ Hindu Almanac</p>
+            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">ॐ Hindu Almanac</p>
             <h1 className="font-serif text-3xl md:text-5xl text-gold-400 mb-3" style={{ textShadow: '0 0 30px rgba(201,168,76,0.4)' }}>Daily Panchang</h1>
             <p className="text-gray-200 text-sm">The sacred Vedic calendar — five limbs of time guiding auspicious living</p>
           </motion.div>
@@ -107,32 +107,32 @@ export default function PanchangPage() {
               {/* Pancha Angas (Five Limbs) */}
               <h2 className="font-serif text-gold-400 text-xl mb-4">Pancha Anga ◆ Five Sacred Limbs</h2>
               <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                <Card icon="🌙" label="Tithi (Lunar Day)" value={data.tithi} sub={data.tithiMeaning} color="#C9A84C"
+                <Card icon="☽" label="Tithi (Lunar Day)" value={data.tithi} sub={data.tithiMeaning} color="#C9A84C"
                   ends={data.tithiEnds} next={data.nextTithi} />
-                <Card icon="⭐" label="Nakshatra (Moon Star)"
+                <Card icon="✦" label="Nakshatra (Moon Star)"
                   value={`${data.nakshatra}${data.nakshatraPada ? ` ◆ Pada ${data.nakshatraPada}` : ''}`}
                   sub="Moon's position among the 27 lunar mansions" color="#A29BFE"
                   ends={data.nakshatraEnds} next={data.nextNakshatra} />
-                <Card icon="☀️" label="Yoga (Luni-Solar)" value={data.yoga} sub="The combined Sun-Moon angle governs the day's energy" color="#6BCB77"
+                <Card icon="☉" label="Yoga (Luni-Solar)" value={data.yoga} sub="The combined Sun-Moon angle governs the day's energy" color="#6BCB77"
                   ends={data.yogaEnds} next={data.nextYoga} />
-                <Card icon="⏰" label="Karana (Half-Tithi)" value={data.karana} sub="Half-day division for muhurta decisions" color="#FFD93D"
+                <Card icon="◈" label="Karana (Half-Tithi)" value={data.karana} sub="Half-day division for muhurta decisions" color="#FFD93D"
                   ends={data.karanaEnds} next={data.nextKarana} />
-                <Card icon="📅" label="Vara (Weekday)" value={`${vara} ◆ ${data.varaLord}`} sub={`Ruled by ${data.varaLord}`} color={varColor} />
+                <Card icon="◆" label="Vara (Weekday)" value={`${vara} ◆ ${data.varaLord}`} sub={`Ruled by ${data.varaLord}`} color={varColor} />
                 {/* "Approximate timings for IST" named the timezone, which is
                     2,000 km wide and the one thing these times are not shared
                     across. Name the city they were computed for instead. */}
-                <Card icon="🌅" label="Sunrise / Sunset" value={`${data.sunrise} / ${data.sunset}`} sub={`At ${data.place?.label || place.label}`} color="#FF9F43" />
+                <Card icon="↑" label="Sunrise / Sunset" value={`${data.sunrise} / ${data.sunset}`} sub={`At ${data.place?.label || place.label}`} color="#FF9F43" />
               </div>
 
               {/* Auspicious & Inauspicious timings */}
               <div className="grid md:grid-cols-2 gap-6 mb-8">
                 <div className="bg-red-500/10 border border-red-500/50 rounded-2xl p-6">
-                  <h3 className="text-red-400 font-semibold mb-2 flex items-center gap-2">⚠️ Rahu Kaal</h3>
+                  <h3 className="text-red-400 font-semibold mb-2 flex items-center gap-2">⚠ Rahu Kaal</h3>
                   <p className="text-2xl font-serif text-red-400 font-bold mb-2">{data.rahuKaal}</p>
                   <p className="text-gray-200 text-sm">Inauspicious period governed by Rahu. Avoid starting new ventures, signing contracts, or important meetings during this time.</p>
                 </div>
                 <div className="bg-green-500/10 border border-green-500/50 rounded-2xl p-6">
-                  <h3 className="text-green-400 font-semibold mb-2 flex items-center gap-2">✨ Abhijit Muhurta</h3>
+                  <h3 className="text-green-400 font-semibold mb-2 flex items-center gap-2">✦ Abhijit Muhurta</h3>
                   <p className="text-2xl font-serif text-green-400 font-bold mb-2">{data.abhijit}</p>
                   <p className="text-gray-200 text-sm">The most auspicious time of the day — the midday muhurta. Ideal for starting important work, signing agreements, and beginning journeys.</p>
                   {/* Abhijit straddles solar midday and Rahu Kaal is one of the
@@ -150,9 +150,9 @@ export default function PanchangPage() {
 
               {/* Lucky elements & Good for */}
               <div className="grid md:grid-cols-3 gap-4 mb-8">
-                <Card icon="🎨" label="Lucky Color" value={data.luckyColor} color={varColor} />
-                <Card icon="🍀" label="Lucky Numbers" value={data.luckyNumber} color={varColor} />
-                <Card icon="✅" label="Good for Today" value="" sub={data.goodFor} color="#6BCB77" />
+                <Card icon="◈" label="Lucky Color" value={data.luckyColor} color={varColor} />
+                <Card icon="✧" label="Lucky Numbers" value={data.luckyNumber} color={varColor} />
+                <Card icon="✦" label="Good for Today" value="" sub={data.goodFor} color="#6BCB77" />
               </div>
 
               {/* Five elements info box */}
@@ -172,7 +172,7 @@ export default function PanchangPage() {
 
           <div className="text-center">
             <p className="text-gray-300 text-sm mb-4">Need an auspicious time for marriage, business launch, or travel? Consult our Muhurta specialists</p>
-            <Link to="/astrologers" className="inline-block bg-gradient-to-r from-gold-600 to-gold-400 text-cosmic-950 font-semibold rounded-full px-10 py-3 hover:opacity-90 transition-opacity">
+            <Link to="/astrologers" className="inline-block btn-gold px-10 py-3">
               Find Auspicious Timing →
             </Link>
           </div>
