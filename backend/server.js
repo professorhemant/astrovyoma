@@ -182,10 +182,10 @@ async function start() {
     // icons so the live DB reflects the Unicode symbol updates in contentSchema.js.
     // Guarded by a site_settings marker so it runs exactly once.
     try {
-      const { ContentItem, SiteSettings } = require('./src/models');
+      const { ContentItem, SiteSetting } = require('./src/models');
       const { LISTS } = require('./src/config/contentSchema');
       const MIGRATION_KEY = 'emoji_to_unicode_reseed_v1';
-      const already = await SiteSettings.findOne({ where: { key: MIGRATION_KEY } });
+      const already = await SiteSetting.findOne({ where: { key: MIGRATION_KEY } });
       if (!already) {
         const LISTS_TO_RESET = [
           'about_stats', 'about_pillars', 'about_expertise', 'about_promises',
@@ -203,7 +203,7 @@ async function start() {
             })));
           }
         }
-        await SiteSettings.create({ key: MIGRATION_KEY, value: new Date().toISOString() });
+        await SiteSetting.create({ key: MIGRATION_KEY, value: new Date().toISOString() });
         console.log('[migration] emoji_to_unicode_reseed_v1 complete');
       }
     } catch (err) {
