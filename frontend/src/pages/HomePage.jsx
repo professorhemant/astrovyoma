@@ -466,6 +466,91 @@ export default function HomePage() {
 
         <SectionDivider />
 
+        {/* ── Book Pooja ── */}
+        <section className="py-16 px-4 md:px-8 lg:px-16 relative z-10 overflow-hidden">
+          {/* Sacred amber glow */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            background: 'radial-gradient(ellipse at 50% 40%, rgba(180,80,10,0.22) 0%, rgba(120,40,5,0.10) 45%, transparent 75%)'
+          }} />
+          <div className="max-w-7xl mx-auto relative">
+
+            {/* Header */}
+            <motion.div initial={{opacity:0,y:24}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="text-center mb-12">
+              <p className="font-devanagari text-amber-400/80 text-lg mb-3 tracking-wide">ॐ नमः शिवाय · हर हर महादेव</p>
+              <h2 className="font-serif text-4xl md:text-6xl text-gold-400 mb-5 leading-tight"
+                style={{ textShadow:'0 0 50px rgba(201,168,76,0.4), 0 2px 20px rgba(0,0,0,0.8)' }}>
+                When Your Prayers<br className="hidden md:block" /> Need Sacred Hands
+              </h2>
+              <p className="text-gray-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+                Can't reach the temple? Our experienced Pandit Ji performs your sacred paath with full Vedic rituals —
+                <span className="text-gold-400 font-medium"> sankalp in your name</span>, complete video proof on WhatsApp.
+              </p>
+            </motion.div>
+
+            {/* Pooja cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+              {[
+                { icon:'🪔', name:'Satyanarayan Katha', desc:'Prosperity, family harmony & divine grace', border:'border-amber-500/30',  glow:'rgba(200,120,0,0.18)'   },
+                { icon:'📿', name:'Sunderkand Paath',   desc:'Remove obstacles, receive Lord Hanuman blessings', border:'border-orange-500/30', glow:'rgba(220,90,10,0.15)'   },
+                { icon:'🌙', name:'Maha Mrityunjaya',   desc:'Healing, longevity & protection from illness',      border:'border-blue-400/30',   glow:'rgba(60,100,220,0.15)'  },
+                { icon:'⭐', name:'Navgraha Shanti',    desc:'Pacify malefic planets — peace & good fortune',     border:'border-purple-400/30', glow:'rgba(140,60,200,0.15)'  },
+              ].map((p, i) => (
+                <motion.div key={p.name}
+                  initial={{opacity:0, y:16}} whileInView={{opacity:1, y:0}} viewport={{once:true}} transition={{delay: i * 0.09}}
+                  className={`relative rounded-2xl border ${p.border} p-5 text-center group hover:scale-[1.03] transition-transform duration-300 cursor-default`}
+                  style={{ background: `radial-gradient(ellipse at 50% 0%, ${p.glow} 0%, rgba(10,6,30,0.85) 70%)` }}>
+                  <div className="text-4xl mb-3 drop-shadow-lg">{p.icon}</div>
+                  <p className="text-gold-300 font-semibold text-sm mb-1.5 leading-snug">{p.name}</p>
+                  <p className="text-gray-400 text-xs leading-relaxed">{p.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Slogans strip */}
+            <div className="grid md:grid-cols-3 gap-4 mb-10 text-center">
+              {[
+                { heading:'"दूरी कोई बाधा नहीं"',   sub:'Distance is no barrier to devotion. Your faith reaches the divine.',       icon:'🙏' },
+                { heading:'"आपका संकल्प, हमारी सेवा"', sub:'Your intention, our sacred service. We perform with complete dedication.', icon:'◈' },
+                { heading:'"पूजा का प्रमाण, आपके हाथ"', sub:'Video proof of every paath delivered directly to your WhatsApp.',         icon:'📱' },
+              ].map((s, i) => (
+                <motion.div key={s.heading}
+                  initial={{opacity:0, y:12}} whileInView={{opacity:1, y:0}} viewport={{once:true}} transition={{delay: i * 0.1}}
+                  className="bg-cosmic-800/40 border border-white/8 rounded-2xl px-6 py-5">
+                  <div className="text-3xl mb-2">{s.icon}</div>
+                  <p className="font-devanagari text-gold-400 text-base font-semibold mb-1.5">{s.heading}</p>
+                  <p className="text-gray-400 text-xs leading-relaxed">{s.sub}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Trust badges + CTA */}
+            <motion.div initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
+              className="flex flex-col md:flex-row items-center justify-between gap-6
+                         bg-gradient-to-r from-amber-950/60 via-cosmic-800/60 to-amber-950/60
+                         border border-amber-600/25 rounded-3xl px-8 py-6">
+              <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2">
+                {[
+                  { icon:'✓', text:'Experienced Vedic Pandits',   cls:'text-green-400'  },
+                  { icon:'◈', text:'Video Proof on WhatsApp',      cls:'text-amber-400'  },
+                  { icon:'ॐ', text:'Sankalp in Your Name & Gotra', cls:'text-purple-300' },
+                  { icon:'✦', text:'Performed at Sacred Temple',   cls:'text-blue-400'   },
+                ].map(u => (
+                  <span key={u.text} className={`flex items-center gap-1.5 text-sm ${u.cls}`}>
+                    <span className="font-bold">{u.icon}</span>{u.text}
+                  </span>
+                ))}
+              </div>
+              <Link to="/book-pooja"
+                className="btn-gold px-8 py-3.5 text-base font-semibold whitespace-nowrap flex items-center gap-2 shrink-0 shadow-[0_0_30px_rgba(201,168,76,0.35)]">
+                Book Your Paath <ChevronRight className="w-4 h-4" />
+              </Link>
+            </motion.div>
+
+          </div>
+        </section>
+
+        <SectionDivider />
+
         {/* The AI chat preview that sat here moved to components/AiChatPreview.jsx.
             The real chat is a page of its own at /chat, reached from the navbar,
             the floating button and the dashboard. Drop the band back on any page
