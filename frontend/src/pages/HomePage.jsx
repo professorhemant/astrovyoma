@@ -5,7 +5,6 @@ import { Star, ChevronRight, Sparkles, Compass, ShieldCheck, BrainCircuit } from
 import ZodiacWheel from '../components/ZodiacWheel';
 import HeroMarquee from '../components/HeroMarquee';
 import TarotSection from '../components/TarotSection';
-import VedicClock from '../components/VedicClock';
 import HeroPanchangWidget from '../components/HeroPanchangWidget';
 import { horoscope as horoscopeApi, kundali as kundaliApi, content as contentApi } from '../api';
 import { useAuth } from '../context/AuthContext';
@@ -318,16 +317,8 @@ export default function HomePage() {
             </motion.p>
           </div>
 
-          {/* Vedic Clock — top-right of hero, under the Sign Up nav button. */}
-          <div data-edit="clock" data-edit-label="Vedic clock"
-            className="absolute pointer-events-none right-4 top-2"
-            style={{ zIndex: 10 }}>
-            <div className="scale-[0.38] md:scale-100 origin-top-right">
-              <VedicClock />
-            </div>
-          </div>
 
-          {/* Panchang today widget — xl+ only, upper area right of centre so it
+{/* Panchang today widget — xl+ only, upper area right of centre so it
               does not overlap the mandala which spins in the left column. */}
           <div className="hidden xl:block absolute top-[8px] left-[38%] z-20 w-64">
             <HeroPanchangWidget overlay={true} />

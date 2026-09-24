@@ -8,6 +8,7 @@ import { LanguageProvider } from './context/LanguageContext';
 import CosmicBackground from './components/CosmicBackground';
 import Navbar from './components/Navbar';
 import FloatingAIButton from './components/FloatingAIButton';
+import VedicClock from './components/VedicClock';
 import AstrologerPortalNotice from './components/AstrologerPortalNotice';
 import CompleteContactPrompt from './components/CompleteContactPrompt';
 import { auth as authApi } from './api';
@@ -115,6 +116,14 @@ function AppLayout() {
       {/* Only renders when the signed-in seeker shares a phone with an astrologer. */}
       {!isConsultation && !isAdmin && !isPortal && <AstrologerPortalNotice />}
       {!isAdmin && !isPortal && <FloatingAIButton />}
+
+      {/* Vedic Clock — fixed to viewport top-right corner, below the navbar */}
+      {!isConsultation && !isAdmin && !isPortal && (
+        <div className="fixed hidden md:block pointer-events-none"
+          style={{ top: '72px', right: '12px', zIndex: 40, transform: 'scale(0.65)', transformOrigin: 'top right' }}>
+          <VedicClock />
+        </div>
+      )}
 
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
