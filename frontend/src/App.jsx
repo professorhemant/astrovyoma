@@ -9,6 +9,7 @@ import CosmicBackground from './components/CosmicBackground';
 import Navbar from './components/Navbar';
 import FloatingAIButton from './components/FloatingAIButton';
 import VedicClock from './components/VedicClock';
+import PanchangBar from './components/PanchangBar';
 import AstrologerPortalNotice from './components/AstrologerPortalNotice';
 import CompleteContactPrompt from './components/CompleteContactPrompt';
 import { auth as authApi } from './api';
@@ -117,10 +118,13 @@ function AppLayout() {
       {!isConsultation && !isAdmin && !isPortal && <AstrologerPortalNotice />}
       {!isAdmin && !isPortal && <FloatingAIButton />}
 
-      {/* Vedic Clock — fixed to viewport top-right corner, below the navbar */}
+      {/* Panchang Bar — horizontal strip directly below the navbar */}
+      {!isConsultation && !isAdmin && !isPortal && <PanchangBar />}
+
+      {/* Vedic Clock — fixed to viewport top-right corner, below navbar + panchang bar */}
       {!isConsultation && !isAdmin && !isPortal && (
         <div className="fixed hidden md:block pointer-events-none"
-          style={{ top: '72px', right: '12px', zIndex: 40, transform: 'scale(0.65)', transformOrigin: 'top right' }}>
+          style={{ top: '100px', right: '12px', zIndex: 40, transform: 'scale(0.65)', transformOrigin: 'top right' }}>
           <VedicClock />
         </div>
       )}

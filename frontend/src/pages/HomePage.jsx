@@ -5,7 +5,6 @@ import { Star, ChevronRight, Sparkles, Compass, ShieldCheck, BrainCircuit } from
 import ZodiacWheel from '../components/ZodiacWheel';
 import HeroMarquee from '../components/HeroMarquee';
 import TarotSection from '../components/TarotSection';
-import HeroPanchangWidget from '../components/HeroPanchangWidget';
 import { horoscope as horoscopeApi, kundali as kundaliApi, content as contentApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 import VisualEditor from '../components/editor/VisualEditor';
@@ -318,11 +317,6 @@ export default function HomePage() {
           </div>
 
 
-{/* Panchang today widget — xl+ only, upper area right of centre so it
-              does not overlap the mandala which spins in the left column. */}
-          <div className="hidden xl:block absolute top-[8px] left-[38%] z-20 w-64">
-            <HeroPanchangWidget overlay={true} />
-          </div>
           </div>
 
           {/* ── CTA Buttons ── */}
