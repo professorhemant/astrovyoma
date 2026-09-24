@@ -3,7 +3,7 @@
 ## Deployment Workflow
 - GitHub auto-deploy NOT reliable — always use `railway up` manually.
 - Backend deploy: `RAILWAY_TOKEN=6895367b-32cc-46d6-8775-5590e5437b0d railway up --service backend --detach` from ROOT (C:\Users\hks26\AstroVyoma)
-- Frontend deploy: `cd frontend && RAILWAY_TOKEN=6895367b-32cc-46d6-8775-5590e5437b0d railway up --service frontend --detach` — MUST run from inside frontend/ (running from root times out due to upload size).
+- Frontend deploy: `RAILWAY_TOKEN=6895367b-32cc-46d6-8775-5590e5437b0d railway up --service frontend --detach` from ROOT (C:\Users\hks26\AstroVyoma) — MUST run from root so the snapshot includes the frontend/ subdirectory (service root dir setting is "frontend"). Running from inside frontend/ fails with "Root directory not found".
 - Backend URL: https://backend-production-6068.up.railway.app
 - Frontend URL: https://frontend-production-cceb.up.railway.app
 - Custom domain: https://astrovyoma.com (use this for verification, not the railway.app URL)
