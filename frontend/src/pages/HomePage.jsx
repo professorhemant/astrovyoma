@@ -187,8 +187,8 @@ export default function HomePage() {
       'data-edit-flow': row.row_id ? 'section_headings' : undefined,
       style: {
         ...(row.align ? { textAlign: row.align } : {}),
-        ...(Number.isFinite(row.spaceAbove) && row.spaceAbove ? { marginTop: `${row.spaceAbove}px` } : {}),
-        ...(Number.isFinite(row.spaceBelow) && row.spaceBelow ? { marginBottom: `${row.spaceBelow}px` } : {}),
+        ...(Number.isFinite(row.spaceAbove) && row.spaceAbove > 0 ? { marginTop: `${row.spaceAbove}px` } : {}),
+        ...(Number.isFinite(row.spaceBelow) && row.spaceBelow > 0 ? { marginBottom: `${row.spaceBelow}px` } : {}),
       },
     };
   };
@@ -474,8 +474,32 @@ export default function HomePage() {
           }} />
           <div className="max-w-7xl mx-auto relative">
 
+            {/* Trust Bar */}
+            <motion.div
+              initial={{ opacity: 0, y: -12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-10 rounded-2xl px-6 py-4 flex flex-wrap items-center justify-between gap-4"
+              style={{ background: 'rgba(20,12,56,0.85)', border: '1px solid rgba(201,168,76,0.18)' }}
+            >
+              <div className="flex flex-wrap items-center gap-x-7 gap-y-2 text-sm">
+                <span><span className="text-green-400 mr-1.5">✓</span><span className="text-gray-200">Experienced Vedic Pandits</span></span>
+                <span><span className="text-gold-400 mr-1.5">◆</span><span className="text-gray-200">Video Clip on WhatsApp</span></span>
+                <span><span className="text-blue-300 mr-1.5">ॐ</span><span className="text-gray-200">Sankalp in Your Name &amp; Gotra</span></span>
+                <span><span className="text-sky-300 mr-1.5">✦</span><span className="text-gray-200">Performed at Sacred Temple</span></span>
+              </div>
+              <Link
+                to="/book-pooja"
+                className="px-5 py-2 rounded-full font-semibold text-sm text-[#1a0a00] whitespace-nowrap flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, #C9A84C, #e8c96a)', boxShadow: '0 2px 12px rgba(201,168,76,0.35)' }}
+              >
+                Book Your Paath ›
+              </Link>
+            </motion.div>
+
             {/* Header */}
             <motion.div initial={{opacity:0,y:24}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="text-center mb-12">
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-gold-500 mb-3">✦ Divine Paath Seva</p>
               <p className="font-devanagari text-amber-400/80 text-lg mb-3 tracking-wide">ॐ नमः शिवाय · हर हर महादेव</p>
               <h2 className="font-serif text-4xl md:text-6xl text-gold-400 mb-5 leading-tight"
                 style={{ textShadow:'0 0 50px rgba(201,168,76,0.4), 0 2px 20px rgba(0,0,0,0.8)' }}>
@@ -483,7 +507,7 @@ export default function HomePage() {
               </h2>
               <p className="text-gray-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
                 Can't reach the temple? Our experienced Pandit Ji performs your sacred paath with full Vedic rituals —
-                <span className="text-gold-400 font-medium"> sankalp in your name</span>, complete video proof on WhatsApp.
+                <span className="text-gold-400 font-medium"> sankalp in your name</span> — video clip of sankalp in your name on WhatsApp.
               </p>
             </motion.div>
 
@@ -511,7 +535,7 @@ export default function HomePage() {
               {[
                 { heading:'"दूरी कोई बाधा नहीं"',   sub:'Distance is no barrier to devotion. Your faith reaches the divine.',       icon:'🙏' },
                 { heading:'"आपका संकल्प, हमारी सेवा"', sub:'Your intention, our sacred service. We perform with complete dedication.', icon:'◈' },
-                { heading:'"पूजा का प्रमाण, आपके हाथ"', sub:'Video proof of every paath delivered directly to your WhatsApp.',         icon:'📱' },
+                { heading:'"पूजा का प्रमाण, आपके हाथ"', sub:'Video clip of sankalp in your name delivered directly to your WhatsApp.', icon:'📱' },
               ].map((s, i) => (
                 <motion.div key={s.heading}
                   initial={{opacity:0, y:12}} whileInView={{opacity:1, y:0}} viewport={{once:true}} transition={{delay: i * 0.1}}
@@ -531,7 +555,7 @@ export default function HomePage() {
               <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2">
                 {[
                   { icon:'✓', text:'Experienced Vedic Pandits',   cls:'text-green-400'  },
-                  { icon:'◈', text:'Video Proof on WhatsApp',      cls:'text-amber-400'  },
+                  { icon:'◈', text:'Video Clip on WhatsApp',       cls:'text-amber-400'  },
                   { icon:'ॐ', text:'Sankalp in Your Name & Gotra', cls:'text-purple-300' },
                   { icon:'✦', text:'Performed at Sacred Temple',   cls:'text-blue-400'   },
                 ].map(u => (
