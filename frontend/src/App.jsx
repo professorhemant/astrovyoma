@@ -125,7 +125,7 @@ function AppLayout() {
       {/* CTA strip — homepage only, fixed directly below navbar (64px) + panchang bar (~40px) */}
       {!isConsultation && !isAdmin && !isPortal && location.pathname === '/' && (
         <div className="fixed left-0 right-0 z-[38] flex flex-wrap justify-center items-center gap-2 px-4 py-1"
-          style={{ top: '104px', background: 'rgba(8,5,22,0.95)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(201,168,76,0.18)' }}>
+          style={{ top: '104px', background: 'rgba(8,5,22,0.98)', borderBottom: '1px solid rgba(201,168,76,0.18)' }}>
           <Link to="/kundali" className="btn-gold font-semibold px-5 py-1 text-xs flex items-center gap-1.5">
             Get Free Kundali <ChevronRight className="w-3 h-3" />
           </Link>

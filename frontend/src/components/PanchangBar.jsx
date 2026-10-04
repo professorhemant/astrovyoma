@@ -38,9 +38,7 @@ export default function PanchangBar() {
       className="fixed left-0 right-0 z-[39] overflow-x-auto scrollbar-none"
       style={{
         top: '64px',
-        background: 'linear-gradient(90deg, rgba(6,4,18,0.97) 0%, rgba(12,7,35,0.95) 50%, rgba(6,4,18,0.97) 100%)',
-        backdropFilter: 'blur(14px)',
-        WebkitBackdropFilter: 'blur(14px)',
+        background: 'linear-gradient(90deg, rgba(6,4,18,0.99) 0%, rgba(12,7,35,0.99) 50%, rgba(6,4,18,0.99) 100%)',
         borderBottom: '1px solid rgba(201,168,76,0.2)',
       }}
     >

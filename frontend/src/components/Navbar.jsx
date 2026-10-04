@@ -138,7 +138,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 backdrop-blur-md ${scrolled ? 'bg-cosmic-900/95 shadow-lg shadow-black/30' : 'bg-cosmic-900/75'}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-cosmic-900/98 shadow-lg shadow-black/30' : 'bg-cosmic-900/95'}`}>
       <div className="w-full pl-4 pr-4 md:pr-8 h-16 flex items-center justify-between gap-2" style={{ borderBottom: '1px solid rgba(201,168,76,0.15)' }}>
         <Link to="/" className="flex items-center gap-2 flex-shrink-0">
           <span className="text-gold-400 text-2xl">✦</span>

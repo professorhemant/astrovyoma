@@ -56,7 +56,7 @@ function NebulaBg() {
 }
 
 function StarField() {
-  const stars = useMemo(() => Array.from({ length: 140 }, (_, i) => ({
+  const stars = useMemo(() => Array.from({ length: 70 }, (_, i) => ({
     id: i,
     x: (i * 7.3 + 11.7) % 100,
     y: (i * 13.1 + 5.3) % 100,
@@ -88,17 +88,6 @@ function StarField() {
 
 // ── Small reusables ───────────────────────────────────────────────────────────
 
-function FloatingSymbol({ symbol, style }) {
-  return (
-    <motion.div
-      animate={{ y: [0,-15,0], opacity: [0.25,0.65,0.25] }}
-      transition={{ duration: 4+Math.random()*3, repeat: Infinity, ease: 'easeInOut', delay: Math.random()*2 }}
-      className="absolute text-gold-400 pointer-events-none select-none"
-      style={{ fontSize: '1.5rem', textShadow: '0 0 12px rgba(201,168,76,0.5)', ...style }}>
-      {symbol}
-    </motion.div>
-  );
-}
 
 function SectionDivider() {
   return (
