@@ -314,7 +314,9 @@ export default function HomePage() {
               style={{ fontFamily: 'serif', color: '#C9A84C', letterSpacing: '0.12em', textShadow: '0 0 18px rgba(201,168,76,0.8)', textAlign: 'center' }}>
               यत्र ब्रह्माण्डे तत्र पिण्डे
             </motion.p>
-          {/* Book Your Paath — anchored to the bottom of the hero, visible on load */}
+          </div>
+
+          {/* Book Your Paath — anchored to the bottom of the hero inner div */}
           <div className="absolute bottom-0 left-0 right-0 z-20 flex flex-col items-center gap-2 px-4 py-4"
             style={{ background: 'linear-gradient(to bottom, transparent, rgba(8,5,22,0.92) 40%)' }}>
             <Link
