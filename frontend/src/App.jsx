@@ -124,16 +124,16 @@ function AppLayout() {
 
       {/* CTA strip — homepage only, fixed directly below navbar (64px) + panchang bar (~40px) */}
       {!isConsultation && !isAdmin && !isPortal && location.pathname === '/' && (
-        <div className="fixed left-0 right-0 z-[38] flex flex-wrap justify-center items-center gap-3 px-4 py-2.5"
+        <div className="fixed left-0 right-0 z-[38] flex flex-wrap justify-center items-center gap-2 px-4 py-1"
           style={{ top: '104px', background: 'rgba(8,5,22,0.95)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(201,168,76,0.18)' }}>
-          <Link to="/kundali" className="btn-gold font-semibold px-6 py-2 text-sm flex items-center gap-1.5">
-            Get Free Kundali <ChevronRight className="w-3.5 h-3.5" />
+          <Link to="/kundali" className="btn-gold font-semibold px-5 py-1 text-xs flex items-center gap-1.5">
+            Get Free Kundali <ChevronRight className="w-3 h-3" />
           </Link>
-          <Link to="/astrologers" className="btn-outline-gold font-medium px-6 py-2 text-sm">
+          <Link to="/astrologers" className="btn-outline-gold font-medium px-5 py-1 text-xs">
             Talk to Astrologer
           </Link>
-          <Link to="/chat" className="btn-outline-gold font-medium px-6 py-2 text-sm flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" /> Talk to AstroVyoma Powered AI
+          <Link to="/chat" className="btn-outline-gold font-medium px-5 py-1 text-xs flex items-center gap-1.5">
+            <Sparkles className="w-3 h-3" /> Talk to AstroVyoma Powered AI
           </Link>
         </div>
       )}
