@@ -314,38 +314,27 @@ export default function HomePage() {
               style={{ fontFamily: 'serif', color: '#C9A84C', letterSpacing: '0.12em', textShadow: '0 0 18px rgba(201,168,76,0.8)', textAlign: 'center' }}>
               यत्र ब्रह्माण्डे तत्र पिण्डे
             </motion.p>
+          {/* Book Your Paath — anchored to the bottom of the hero, visible on load */}
+          <div className="absolute bottom-0 left-0 right-0 z-20 flex flex-col items-center gap-2 px-4 py-4"
+            style={{ background: 'linear-gradient(to bottom, transparent, rgba(8,5,22,0.92) 40%)' }}>
+            <Link
+              to="/book-pooja"
+              className="px-10 py-3 rounded-full font-bold text-base text-[#1a0a00] whitespace-nowrap"
+              style={{ background: 'linear-gradient(135deg, #C9A84C, #e8c96a)', boxShadow: '0 4px 24px rgba(201,168,76,0.5)' }}
+            >
+              Book Your Paath ›
+            </Link>
+            <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-1 text-xs">
+              <span><span className="text-green-400 mr-1">✓</span><span className="text-gray-200">Experienced Vedic Pandits</span></span>
+              <span><span className="text-gold-400 mr-1">◆</span><span className="text-gray-200">Video Clip on WhatsApp</span></span>
+              <span><span className="text-blue-300 mr-1">ॐ</span><span className="text-gray-200">Sankalp in Your Name &amp; Gotra</span></span>
+              <span><span className="text-sky-300 mr-1">✦</span><span className="text-gray-200">Performed at Sacred Temple</span></span>
+            </div>
           </div>
 
-
           </div>
-
-          {/* ── CTA Buttons ── */}
-          {/* The seven tool pills that used to sit here (Tarot, Book Pooja, Astro
-              Mall, Vastu, Namkaran, Festivals, Crystals) now live under Tools ▾
-              and Shop ▾ in the navbar. Only the conversion paths stay on the
-              hero. In flow under the banner below xl:; from xl: up the hero
-              fills the screen, so they float over the artwork instead.
-              The scrim is what keeps the outline button readable — without it
-              it lands on the bright marble tabletop and disappears. */}
 
         </section>
-
-        {/* ── Trust Bar ── */}
-        <div className="relative z-10 py-3 px-4 border-b border-gold-600/10" style={{ background: 'rgba(18,9,58,0.6)' }}>
-          <div className="max-w-7xl mx-auto flex flex-wrap justify-center items-center gap-x-8 gap-y-1">
-            {[
-              { symbol: '☉', label: 'Swiss Ephemeris Engine' },
-              { symbol: '✦', label: '5,000+ Kundalis Generated' },
-              { symbol: '☽', label: 'Lahiri Ayanamsha Precision' },
-              { symbol: '♈', label: '12 Verified Astrologers' },
-            ].map(item => (
-              <span key={item.label} className="flex items-center gap-2 text-xs text-cosmic-300">
-                <span className="text-gold-500 text-sm">{item.symbol}</span>
-                {item.label}
-              </span>
-            ))}
-          </div>
-        </div>
 
 
         {/* ── Book Pooja ── */}
@@ -356,28 +345,6 @@ export default function HomePage() {
           }} />
           <div className="max-w-7xl mx-auto relative">
 
-            {/* Trust Bar — CTA centred */}
-            <motion.div
-              initial={{ opacity: 0, y: -12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="mb-10 rounded-2xl px-6 py-6 flex flex-col items-center gap-4 text-center"
-              style={{ background: 'rgba(20,12,56,0.85)', border: '1px solid rgba(201,168,76,0.18)' }}
-            >
-              <Link
-                to="/book-pooja"
-                className="px-10 py-4 rounded-full font-bold text-lg text-[#1a0a00] whitespace-nowrap"
-                style={{ background: 'linear-gradient(135deg, #C9A84C, #e8c96a)', boxShadow: '0 4px 24px rgba(201,168,76,0.5)' }}
-              >
-                Book Your Paath ›
-              </Link>
-              <div className="flex flex-wrap justify-center items-center gap-x-7 gap-y-2 text-sm">
-                <span><span className="text-green-400 mr-1.5">✓</span><span className="text-gray-200">Experienced Vedic Pandits</span></span>
-                <span><span className="text-gold-400 mr-1.5">◆</span><span className="text-gray-200">Video Clip on WhatsApp</span></span>
-                <span><span className="text-blue-300 mr-1.5">ॐ</span><span className="text-gray-200">Sankalp in Your Name &amp; Gotra</span></span>
-                <span><span className="text-sky-300 mr-1.5">✦</span><span className="text-gray-200">Performed at Sacred Temple</span></span>
-              </div>
-            </motion.div>
 
             {/* Header */}
             <motion.div initial={{opacity:0,y:24}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="text-center mb-12">
