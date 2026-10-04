@@ -478,28 +478,6 @@ export default function HomePage() {
               ))}
             </div>
 
-            {/* Trust badges + CTA */}
-            <motion.div initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
-              className="flex flex-col md:flex-row items-center justify-between gap-6
-                         bg-gradient-to-r from-amber-950/60 via-cosmic-800/60 to-amber-950/60
-                         border border-amber-600/25 rounded-3xl px-8 py-6">
-              <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2">
-                {[
-                  { icon:'✓', text:'Experienced Vedic Pandits',   cls:'text-green-400'  },
-                  { icon:'◈', text:'Video Clip on WhatsApp',       cls:'text-amber-400'  },
-                  { icon:'ॐ', text:'Sankalp in Your Name & Gotra', cls:'text-purple-300' },
-                  { icon:'✦', text:'Performed at Sacred Temple',   cls:'text-blue-400'   },
-                ].map(u => (
-                  <span key={u.text} className={`flex items-center gap-1.5 text-sm ${u.cls}`}>
-                    <span className="font-bold">{u.icon}</span>{u.text}
-                  </span>
-                ))}
-              </div>
-              <Link to="/book-pooja"
-                className="btn-gold px-8 py-3.5 text-base font-semibold whitespace-nowrap flex items-center gap-2 shrink-0 shadow-[0_0_30px_rgba(201,168,76,0.35)]">
-                Book Your Paath <ChevronRight className="w-4 h-4" />
-              </Link>
-            </motion.div>
 
           </div>
         </section>
