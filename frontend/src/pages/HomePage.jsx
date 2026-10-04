@@ -439,33 +439,6 @@ export default function HomePage() {
 
         <SectionDivider />
 
-        {/* ── Free Features ── */}
-        <section className="pt-2 pb-4 px-4 md:px-8 lg:px-16 relative z-10">
-          <div className="max-w-7xl mx-auto">
-            <motion.h2 initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
-              className="font-serif text-center text-3xl md:text-4xl text-gold-400 mb-4">
-              ✦ Everything Free to Start
-            </motion.h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {features.map((f,i) => (
-                <Link to={f.link} key={f.row_id || f.id || f.title || i} data-edit-item={f.row_id && `home_features:${f.row_id}`}>
-                  <motion.div
-                    initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}
-                    transition={{delay:i*0.1}}
-                    whileHover={{y:-5,boxShadow:'0 0 30px rgba(201,168,76,0.2)',borderColor:'rgba(232,197,71,0.5)'}}
-                    className="card-cosmic p-4 text-center cursor-pointer group h-full transition-all">
-                    <div className="text-3xl mb-2 text-gold-400 font-serif" style={{ textShadow: '0 0 16px rgba(201,168,76,0.5)' }}>{f.icon}</div>
-                    <h3 className="font-serif text-gold-400 text-base font-semibold mb-1 group-hover:text-gold-300">{f.title}</h3>
-                    <p className="text-gray-400 text-xs leading-relaxed">{f.desc}</p>
-                  </motion.div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <SectionDivider />
-
         {/* ── Book Pooja ── */}
         <section className="py-16 px-4 md:px-8 lg:px-16 relative z-10 overflow-hidden">
           {/* Sacred amber glow */}
