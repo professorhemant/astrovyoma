@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
+import { ChevronRight, Sparkles } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -120,6 +121,22 @@ function AppLayout() {
 
       {/* Panchang Bar — horizontal strip directly below the navbar */}
       {!isConsultation && !isAdmin && !isPortal && <PanchangBar />}
+
+      {/* CTA strip — homepage only, sits directly under the panchang bar */}
+      {!isConsultation && !isAdmin && !isPortal && location.pathname === '/' && (
+        <div className="relative z-10 flex flex-wrap justify-center items-center gap-3 px-4 py-3"
+          style={{ background: 'rgba(10,6,30,0.85)', borderBottom: '1px solid rgba(201,168,76,0.12)' }}>
+          <Link to="/kundali" className="btn-gold font-semibold px-6 py-2.5 text-sm flex items-center gap-1.5">
+            Get Free Kundali <ChevronRight className="w-3.5 h-3.5" />
+          </Link>
+          <Link to="/astrologers" className="btn-outline-gold font-medium px-6 py-2.5 text-sm">
+            Talk to Astrologer
+          </Link>
+          <Link to="/chat" className="btn-outline-gold font-medium px-6 py-2.5 text-sm flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5" /> Talk to AstroVyoma Powered AI
+          </Link>
+        </div>
+      )}
 
       {/* Vedic Clock — fixed to viewport top-right corner, below navbar + panchang bar */}
       {!isConsultation && !isAdmin && !isPortal && (

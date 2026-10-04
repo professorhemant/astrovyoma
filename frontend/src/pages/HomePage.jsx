@@ -327,55 +327,6 @@ export default function HomePage() {
               fills the screen, so they float over the artwork instead.
               The scrim is what keeps the outline button readable — without it
               it lands on the bright marble tabletop and disappears. */}
-          {/* ── Dreams ── */}
-          {/* Inside the hero rather than under it. Sat below the banner it was
-              at 916px on a 900px-tall screen — first thing past the fold, which
-              is the one place a promotion is guaranteed not to be seen.
-              It rides the same admin-set offset as the buttons and clears them
-              by a row's height, so moving the buttons in Site Settings moves
-              this with them instead of leaving the two overlapping. In Hindi,
-              because that is who the feature was written for. */}
-          <Link to="/dreams" data-edit="dreamsBanner" data-edit-label="Dreams banner" style={heroVars}
-            className="group relative z-20 block mx-4 sm:mx-auto sm:max-w-lg mt-3 rounded-2xl border border-gold-600/30
-                       px-5 py-3 text-center overflow-hidden transition-colors hover:border-gold-500/60
-                       xl:absolute xl:left-1/2 xl:-translate-x-1/2 xl:mt-0 xl:w-auto xl:min-w-[26rem]
-                       xl:bottom-[calc(var(--hero-btn-bottom)+5.25rem)]">
-            <span className="pointer-events-none absolute inset-0 rounded-2xl"
-                  style={{ background: 'rgba(6,4,18,0.62)', backdropFilter: 'blur(6px)' }} />
-            <span className="dream-blink relative inline-flex items-center gap-2.5 font-serif text-lg sm:text-xl text-gold-400"
-                  style={{ animation: 'dreamBlink 1.6s ease-in-out infinite' }}>
-              <span aria-hidden="true">☽</span>
-              सपने कुछ कहते हैं
-              <span aria-hidden="true">✦</span>
-            </span>
-            <span className="relative block mt-0.5 text-[11px] sm:text-xs text-cosmic-200">
-              अपना सपना लिखें — जानें वह किस पहर आया और कब फलेगा
-            </span>
-          </Link>
-
-          <div data-edit="heroButtons" data-edit-label="Hero buttons" style={heroVars}
-            className="relative z-20 grid grid-cols-2 sm:flex sm:flex-row gap-2.5 sm:gap-3 justify-center items-stretch pt-3 pb-4 px-4 mt-[var(--hero-btn-gap)]
-            xl:absolute xl:left-1/2 xl:-translate-x-1/2 xl:bottom-[var(--hero-btn-bottom)] xl:mt-0 xl:w-auto
-            xl:px-6 xl:py-3.5 xl:rounded-full xl:border xl:border-gold-600/25 xl:backdrop-blur-md">
-            <div className="hidden xl:block absolute inset-0 rounded-full pointer-events-none"
-              style={{ background: 'rgba(6,4,18,0.55)', boxShadow: '0 8px 40px rgba(6,4,18,0.55)' }} />
-            {/* Editable under Site Content -> Hero Buttons. An odd button out on
-                a phone spans the row so the two-up grid never leaves a gap. */}
-            {(heroCtas || [
-              { label: 'Get Free Kundali',      to: '/kundali',     style: 'solid'   },
-              { label: 'Talk to Astrologer',    to: '/astrologers', style: 'outline' },
-              { label: 'Talk to AstroVyoma AI', to: '/chat',        style: 'outline' },
-            ]).map((cta, i, all) => (
-              <Link key={cta.row_id || cta.id || i} to={cta.to} data-edit-item={cta.row_id && `hero_ctas:${cta.row_id}`}
-                className={`relative ${cta.style === 'solid' ? 'btn-gold font-semibold' : 'btn-outline-gold font-medium'}
-                  ${all.length % 2 === 1 && i === all.length - 1 ? 'col-span-2 sm:col-span-1' : ''}
-                  px-3 sm:px-7 py-3 text-xs flex items-center justify-center gap-2 xl:whitespace-nowrap`}>
-                {cta.style === 'solid'
-                  ? <>{cta.label} <ChevronRight className="w-3.5 h-3.5" /></>
-                  : <>{/AI/i.test(cta.label) && <Sparkles className="w-3.5 h-3.5" />}{cta.label}</>}
-              </Link>
-            ))}
-          </div>
 
         </section>
 
