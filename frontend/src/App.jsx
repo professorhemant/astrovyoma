@@ -93,15 +93,12 @@ function AppLayout() {
   const location = useLocation();
   const isConsultation = location.pathname.startsWith('/consult/');
   const isAdmin = location.pathname.startsWith('/admin');
-  // The Pandit Portal is an astrologer's workplace, not a shop. Carrying the
-  // customer navbar there put Kundali, Horoscope, Shop, a cart and a wallet
-  // balance across the top of a staff login — and the "go to the Pandit Portal"
-  // banner on the Pandit Portal.
   const isPortal = location.pathname.startsWith('/pandit-portal');
+  const [atTop, setAtTop] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    // GA4 page_view on every route change
+    setAtTop(true);
     if (window.gtag && import.meta.env.VITE_GA_MEASUREMENT_ID) {
       window.gtag('event', 'page_view', {
         page_path: location.pathname + location.search,
@@ -109,6 +106,13 @@ function AppLayout() {
       });
     }
   }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    if (location.pathname !== '/') return;
+    const onScroll = () => setAtTop(window.scrollY < 80);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [location.pathname]);
 
   return (
     <>
@@ -122,8 +126,8 @@ function AppLayout() {
       {/* Panchang Bar — horizontal strip directly below the navbar */}
       {!isConsultation && !isAdmin && !isPortal && <PanchangBar />}
 
-      {/* CTA strip — homepage only, fixed directly below navbar (64px) + panchang bar (~40px) */}
-      {!isConsultation && !isAdmin && !isPortal && location.pathname === '/' && (
+      {/* CTA strip — homepage only, hides after scrolling past the hero */}
+      {!isConsultation && !isAdmin && !isPortal && location.pathname === '/' && atTop && (
         <div className="fixed left-0 right-0 z-[38] flex flex-wrap justify-center items-center gap-2 px-4 py-1"
           style={{ top: '104px', background: 'rgba(8,5,22,0.98)', borderBottom: '1px solid rgba(201,168,76,0.18)' }}>
           <Link to="/kundali" className="btn-gold font-semibold px-5 py-1 text-xs flex items-center gap-1.5">
