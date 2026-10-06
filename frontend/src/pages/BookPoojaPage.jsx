@@ -1,14 +1,14 @@
-﻿import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import BookingModal from '../components/BookingModal';
 import { pooja as poojaApi } from '../api';
 
 const HOW_IT_WORKS = [
-  { step:'01', icon:'ॐ', title:'Choose Your Paath', desc:'Select from 11 sacred paaths — each performed with full Vedic rituals by our experienced Pandit Ji.' },
-  { step:'02', icon:'◆', title:'Book & Pay', desc:'Fill in your name, WhatsApp number, and preferred date. Pay the small paath fee to confirm.' },
-  { step:'03', icon:'✦', title:'Pandit Ji Performs', desc:'Our dedicated Pandit Ji performs the paath on your chosen date with proper sankalp in your name and gotra.' },
-  { step:'04', icon:'◈', title:'Receive Video Proof', desc:'A clear video of the complete paath is sent directly to your WhatsApp number within 24 hours of completion.' },
+  { step:'01', icon:'ॐ', title:'Choose Your Puja', desc:'Select from our sacred paaths and dosha nivaran pujas — each performed with full Vedic rituals by our experienced Pandit Ji.' },
+  { step:'02', icon:'◆', title:'Book & Pay', desc:'Fill in your name, WhatsApp number, and preferred date. Pay the small puja fee to confirm your booking instantly.' },
+  { step:'03', icon:'✦', title:'Pandit Ji Performs', desc:'Our dedicated Pandit Ji performs the puja on your chosen date with proper sankalp in your name and gotra.' },
+  { step:'04', icon:'◈', title:'Receive Video Clip', desc:'A clear video clip of sankalp in your name is sent directly to your WhatsApp number within 24 hours of completion.' },
 ];
 
 const TESTIMONIALS = [
@@ -17,26 +17,74 @@ const TESTIMONIALS = [
   { name:'Anita Verma', city:'Jaipur', text:'Maha Mrityunjaya Jaap for my mother\'s health recovery. She has shown significant improvement. Grateful to AstroVyoma for this service.', stars:5 },
 ];
 
+const TABS = [
+  {
+    id: 'paath',
+    label: 'Online Paath Seva',
+    icon: 'ॐ',
+    desc: 'Sacred recitations performed by our Pandit Ji on your behalf',
+  },
+  {
+    id: 'graha-dosha',
+    label: 'Graha & Dosha Puja',
+    icon: '♄',
+    desc: 'Planet appeasement and dosha removal pujas for life-changing relief',
+  },
+  {
+    id: 'deity-puja',
+    label: 'Deity & Special Pujas',
+    icon: '🌺',
+    desc: 'Wealth, prosperity, family, and life-event pujas for every occasion',
+  },
+  {
+    id: 'vastu',
+    label: 'Vastu Puja',
+    icon: '🏠',
+    desc: 'Home, office, and land Vastu dosha removal for peace and prosperity',
+  },
+];
+
 export default function BookPoojaPage() {
-  const [paaths, setPaaths] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState(null);
+  const [activeTab, setActiveTab]     = useState('paath');
+  const [paaths, setPaaths]           = useState([]);
+  const [grahaPujas, setGrahaPujas]   = useState([]);
+  const [deityPujas, setDeityPujas]   = useState([]);
+  const [vastuPujas, setVastuPujas]   = useState([]);
+  const [loading, setLoading]         = useState(true);
+  const [selected, setSelected]       = useState(null);
 
   useEffect(() => {
-    poojaApi.getPaaths()
-      .then(r => setPaaths(r.data.paaths))
-      .catch(() => setPaaths([]))
+    setLoading(true);
+    Promise.all([
+      poojaApi.getPaaths(),
+      poojaApi.getGrahaDoshaPujas(),
+      poojaApi.getDeityPujas(),
+      poojaApi.getVastuPujas(),
+    ])
+      .then(([r1, r2, r3, r4]) => {
+        setPaaths(r1.data.paaths || []);
+        setGrahaPujas(r2.data.paaths || []);
+        setDeityPujas(r3.data.paaths || []);
+        setVastuPujas(r4.data.paaths || []);
+      })
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  const displayItems =
+    activeTab === 'paath'       ? paaths :
+    activeTab === 'graha-dosha' ? grahaPujas :
+    activeTab === 'deity-puja'  ? deityPujas :
+    vastuPujas;
 
   return (
     <div className="relative min-h-screen bg-cosmic-950">
 
       {/* Top announcement banner */}
-      <div className="relative z-10 pt-16">
+      <div className="relative z-10 pt-24">
         <div className="bg-gradient-to-r from-amber-700/80 via-orange-700/80 to-red-700/80 border-b border-amber-500/40 px-4 py-3">
           <p className="text-center text-amber-100 text-sm font-medium leading-relaxed max-w-3xl mx-auto">
-            ✦ <strong>Our Pandit Ji will perform these Pooja Paaths for you to get benefit sitting at home.</strong> A video will be sent to your mobile number on WhatsApp as proof of the paath. Book now and receive divine blessings without leaving your home. ◈
+            ✦ <strong>Our Pandit Ji will perform these Pujas for you — receive divine blessings sitting at home.</strong> A video clip of sankalp in your name will be sent to your WhatsApp. Book now. ◈
           </p>
         </div>
       </div>
@@ -46,16 +94,16 @@ export default function BookPoojaPage() {
         {/* Hero */}
         <section className="px-4 md:px-8 lg:px-16 py-12 max-w-6xl mx-auto text-center">
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}>
-            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">✦ Divine Paath Seva</p>
+            <p className="text-gold-500/60 text-sm tracking-widest uppercase mb-3">✦ Online Puja Seva</p>
             <h1 className="font-serif text-3xl md:text-5xl text-gold-400 mb-4" style={{ textShadow:'0 0 30px rgba(201,168,76,0.45)' }}>
-              Book a Pooja Paath
+              Book an Online Puja
             </h1>
             <p className="text-gray-300 text-base max-w-2xl mx-auto leading-relaxed mb-6">
-              Can't perform the paath yourself? Let our experienced Pandit Ji perform it on your behalf with proper Vedic rituals, sankalp in your name — and receive the complete video on WhatsApp.
+              Can't perform the puja yourself? Let our experienced Pandit Ji perform it on your behalf with proper Vedic rituals, sankalp in your name — and receive a video clip on WhatsApp.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
               <span className="flex items-center gap-1.5 bg-green-500/15 border border-green-500/35 text-green-300 px-4 py-2 rounded-full">✓ Experienced Pandits</span>
-              <span className="flex items-center gap-1.5 bg-amber-500/15 border border-amber-500/35 text-amber-300 px-4 py-2 rounded-full">◈ Video on WhatsApp</span>
+              <span className="flex items-center gap-1.5 bg-amber-500/15 border border-amber-500/35 text-amber-300 px-4 py-2 rounded-full">◈ Video Clip on WhatsApp</span>
               <span className="flex items-center gap-1.5 bg-blue-500/15 border border-blue-500/35 text-blue-300 px-4 py-2 rounded-full">ॐ Sankalp in Your Name</span>
               <span className="flex items-center gap-1.5 bg-purple-500/15 border border-purple-500/35 text-purple-300 px-4 py-2 rounded-full">✦ Performed at Temple</span>
             </div>
@@ -77,19 +125,136 @@ export default function BookPoojaPage() {
           </div>
         </section>
 
-        {/* Paath Cards */}
+        {/* Category Tabs */}
         <section className="px-4 md:px-8 lg:px-16 max-w-6xl mx-auto">
-          <h2 className="font-serif text-gold-400 text-3xl text-center mb-2">Available Paath Seva</h2>
-          <p className="text-gray-200 text-sm text-center mb-8">Select any paath — our Pandit Ji will perform it with complete Vedic vidhi</p>
+          <div className="flex flex-col sm:flex-row gap-3 mb-8">
+            {TABS.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 flex items-center gap-3 rounded-2xl px-5 py-4 border transition-all duration-200 text-left ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-amber-700/60 to-orange-800/60 border-amber-500/60 shadow-lg shadow-amber-900/30'
+                    : 'bg-cosmic-800/40 border-gold-500/20 hover:border-gold-500/40'
+                }`}
+              >
+                <span className={`text-2xl flex-shrink-0 ${activeTab === tab.id ? 'scale-110' : ''} transition-transform`}>
+                  {tab.icon}
+                </span>
+                <div>
+                  <p className={`font-semibold text-sm ${activeTab === tab.id ? 'text-amber-200' : 'text-gold-400'}`}>
+                    {tab.label}
+                  </p>
+                  <p className="text-gray-400 text-xs mt-0.5 leading-snug">{tab.desc}</p>
+                </div>
+                {activeTab === tab.id && (
+                  <span className="ml-auto text-amber-400 text-lg flex-shrink-0">✦</span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Category intro banners */}
+          <AnimatePresence mode="wait">
+            {activeTab === 'graha-dosha' && (
+              <motion.div
+                key="graha-banner"
+                initial={{ opacity:0, y:-10 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-10 }}
+                className="mb-8 bg-gradient-to-r from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-2xl p-5"
+              >
+                <div className="flex flex-wrap items-start gap-4">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-indigo-200 font-semibold text-sm mb-1">♄ Graha Shanti & Dosha Nivaran Pujas</h3>
+                    <p className="text-gray-300 text-xs leading-relaxed">
+                      Planetary afflictions (Graha Peeda) and doshas like Kaal Sarp, Mangal, and Pitra Dosha directly block success, marriage, and health. Our Pandit Ji performs targeted pujas with the exact samagri, yantra, and mantras prescribed in Vedic texts for permanent relief.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs flex-shrink-0">
+                    <span className="bg-indigo-500/20 border border-indigo-400/30 text-indigo-200 px-3 py-1 rounded-full">✓ Yantra Energisation</span>
+                    <span className="bg-purple-500/20 border border-purple-400/30 text-purple-200 px-3 py-1 rounded-full">✓ Beej Mantra Jaap</span>
+                    <span className="bg-blue-500/20 border border-blue-400/30 text-blue-200 px-3 py-1 rounded-full">✓ Havan Included</span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+            {activeTab === 'deity-puja' && (
+              <motion.div
+                key="deity-banner"
+                initial={{ opacity:0, y:-10 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-10 }}
+                className="mb-8 bg-gradient-to-r from-amber-900/40 to-rose-900/40 border border-amber-500/30 rounded-2xl p-5"
+              >
+                <div className="flex flex-wrap items-start gap-4">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-amber-200 font-semibold text-sm mb-1">🌺 Deity Pujas & Life Event Ceremonies</h3>
+                    <p className="text-gray-300 text-xs leading-relaxed">
+                      From Mahalakshmi's wealth blessings to Santan Gopal's gift of progeny — these pujas connect you directly with the divine for specific life goals, celebrations, and family milestones. Each puja is performed with proper samagri, flowers, and Vedic vidhi.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs flex-shrink-0">
+                    <span className="bg-amber-500/20 border border-amber-400/30 text-amber-200 px-3 py-1 rounded-full">✓ Shodashopchara Vidhi</span>
+                    <span className="bg-rose-500/20 border border-rose-400/30 text-rose-200 px-3 py-1 rounded-full">✓ Deity-Specific Samagri</span>
+                    <span className="bg-yellow-500/20 border border-yellow-400/30 text-yellow-200 px-3 py-1 rounded-full">✓ Havan & Aarti</span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+            {activeTab === 'vastu' && (
+              <motion.div
+                key="vastu-banner"
+                initial={{ opacity:0, y:-10 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-10 }}
+                className="mb-8 bg-gradient-to-r from-green-900/40 to-teal-900/40 border border-green-500/30 rounded-2xl p-5"
+              >
+                <div className="flex flex-wrap items-start gap-4">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-green-200 font-semibold text-sm mb-1">🏠 Vastu Shanti & Space Purification Pujas</h3>
+                    <p className="text-gray-300 text-xs leading-relaxed">
+                      Vastu doshas in your home, office, or land silently cause health problems, financial blocks, and family conflicts. Our Pandit Ji performs complete Vastu Shanti pujas using Vedic mantras, Panch Tattva worship, and Vastu Yantra energisation — correcting doshas without any demolition.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs flex-shrink-0">
+                    <span className="bg-green-500/20 border border-green-400/30 text-green-200 px-3 py-1 rounded-full">✓ No Demolition Needed</span>
+                    <span className="bg-teal-500/20 border border-teal-400/30 text-teal-200 px-3 py-1 rounded-full">✓ Vastu Yantra Included</span>
+                    <span className="bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 px-3 py-1 rounded-full">✓ Home & Office Both</span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Section heading */}
+          <div className="text-center mb-8">
+            <h2 className="font-serif text-gold-400 text-3xl mb-2">
+              {activeTab === 'paath'        ? 'Available Paath Seva'
+               : activeTab === 'graha-dosha' ? 'Graha Shanti & Dosha Puja'
+               : activeTab === 'deity-puja'  ? 'Deity & Special Pujas'
+               : 'Vastu Shanti & Space Puja'}
+            </h2>
+            <p className="text-gray-200 text-sm">
+              {activeTab === 'paath'
+                ? 'Select any paath — our Pandit Ji will perform it with complete Vedic vidhi'
+                : activeTab === 'graha-dosha'
+                ? 'Targeted pujas for planetary doshas — relief that lasts a lifetime'
+                : activeTab === 'deity-puja'
+                ? 'Wealth, progeny, protection, and life-event pujas for every milestone'
+                : 'Remove Vastu doshas from home, office, or land — no demolition needed'}
+            </p>
+          </div>
 
           {loading ? (
-            <div className="text-center py-20 text-gold-400 font-serif text-xl animate-pulse">✦ Loading Paaths...</div>
+            <div className="text-center py-20 text-gold-400 font-serif text-xl animate-pulse">✦ Loading...</div>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {paaths.map((paath, i) => (
-                <PaathCard key={paath.id} paath={paath} index={i} onBook={() => setSelected(paath)} />
-              ))}
-            </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}
+                transition={{ duration:0.25 }}
+                className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
+              >
+                {displayItems.map((paath, i) => (
+                  <PaathCard key={paath.id} paath={paath} index={i} onBook={() => setSelected(paath)} />
+                ))}
+              </motion.div>
+            </AnimatePresence>
           )}
         </section>
 
@@ -101,10 +266,10 @@ export default function BookPoojaPage() {
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
               {[
                 { icon:'◈', title:'Vedic Scholars', desc:'All pandits hold traditional degrees from Vedic institutions with 10+ years of recitation experience.' },
-                { icon:'◆', title:'Video Proof on WhatsApp', desc:'You receive a clear video of the complete paath on your registered WhatsApp — no trust required, just verify.' },
-                { icon:'✦', title:'Sankalp in Your Name', desc:'Every paath begins with a proper Sankalp (intention) in your name, gotra, and purpose.' },
-                { icon:'ॐ', title:'Performed at Sacred Venue', desc:'Paaths are performed at a dedicated puja space with proper samagri, flowers, and incense.' },
-                { icon:'◆', title:'WhatsApp Updates', desc:'You receive booking confirmation and real-time updates throughout the paath on WhatsApp.' },
+                { icon:'◆', title:'Video Clip on WhatsApp', desc:'You receive a clear video clip of sankalp in your name on your registered WhatsApp — no trust required, just verify.' },
+                { icon:'✦', title:'Sankalp in Your Name', desc:'Every puja begins with a proper Sankalp (intention) in your name, gotra, and purpose.' },
+                { icon:'ॐ', title:'Performed at Sacred Venue', desc:'Pujas are performed at a dedicated puja space with proper samagri, flowers, and incense.' },
+                { icon:'◆', title:'WhatsApp Updates', desc:'You receive booking confirmation and real-time updates throughout the puja on WhatsApp.' },
                 { icon:'◈', title:'Transparent Pricing', desc:'No hidden charges. Pay only the displayed amount. Secure UPI payment accepted.' },
               ].map(item => (
                 <div key={item.title} className="flex items-start gap-3">
@@ -171,7 +336,6 @@ function PaathCard({ paath, index, onBook }) {
     >
       {/* Colored header */}
       <div className="relative px-6 pt-6 pb-5 text-center" style={gradStyle}>
-        {/* Discount badge */}
         <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-2.5 py-1 rounded-full">
           {discount}% OFF
         </div>

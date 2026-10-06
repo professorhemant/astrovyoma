@@ -331,6 +331,14 @@ export default function Navbar() {
                 </div>
               </div>
 
+              {/* Login / Sign Up — shown at top so it's immediately visible on short screens */}
+              {!user && (
+                <div className="flex gap-3 mb-1">
+                  <Link to="/login" className="btn-outline-gold px-4 py-2 text-sm flex-1 text-center">Login</Link>
+                  <Link to="/register" className="btn-gold px-4 py-2 text-sm flex-1 text-center">Sign Up</Link>
+                </div>
+              )}
+
               {/* Consult options — two rows instead of one merged pill so each
                   has enough tap area on a phone. */}
               <Link

@@ -164,7 +164,7 @@ export default function BookingModal({ paath, onClose }) {
                   <p className="text-amber-300 font-semibold text-sm mb-2">📲 What happens next:</p>
                   <ol className="text-gray-300 text-sm space-y-1.5 list-decimal ml-4">
                     <li>Our Pandit Ji will perform the paath on your chosen date</li>
-                    <li>A video of sankalp related to your paath will be sent to <strong className="text-white">{form.mobile}</strong> on WhatsApp within 24 hours</li>
+                    <li>A video clip of sankalp in your name will be sent to <strong className="text-white">{form.mobile}</strong> on WhatsApp within 24 hours</li>
                   </ol>
                 </div>
 
@@ -216,7 +216,7 @@ export default function BookingModal({ paath, onClose }) {
 
                 {/* Mobile */}
                 <div>
-                  <label className="block text-gray-300 text-xs uppercase tracking-wider mb-1.5">WhatsApp Mobile Number * <span className="text-gold-400/70 normal-case">(video will be sent here)</span></label>
+                  <label className="block text-gray-300 text-xs uppercase tracking-wider mb-1.5">WhatsApp Mobile Number * <span className="text-gold-400/70 normal-case">(video clip will be sent here)</span></label>
                   <input value={form.mobile} onChange={e => set('mobile', e.target.value.replace(/\D/,''))} required
                     placeholder="10-digit mobile number" maxLength={10}
                     className="w-full bg-cosmic-900/60 border border-gold-500/30 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold-500/70 placeholder-gray-600" />
@@ -257,7 +257,7 @@ export default function BookingModal({ paath, onClose }) {
 
                 {/* Info note */}
                 <div className="bg-gold-500/10 border border-gold-500/30 rounded-xl px-4 py-3 text-xs text-gray-300 leading-relaxed">
-                  📲 A video of sankalp related to your paath will be sent to your WhatsApp number within 24 hours of completion. Payment details will be shared after booking confirmation.
+                  📲 A video clip of sankalp in your name will be sent to your WhatsApp number within 24 hours of completion. Payment details will be shared after booking confirmation.
                 </div>
 
                 <button type="submit" disabled={submitting}

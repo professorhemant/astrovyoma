@@ -115,10 +115,12 @@ export const remedies = {
 };
 
 export const pooja = {
-  getPaaths:      ()     => api.get('/pooja/paaths'),
-  getVastuPujas:  ()     => api.get('/pooja/paaths?category=vastu'),
-  createOrder:    (data) => api.post('/pooja/order', data),
-  verifyPayment:  (data) => api.post('/pooja/verify', data),
+  getPaaths:          ()     => api.get('/pooja/paaths'),
+  getGrahaDoshaPujas: ()     => api.get('/pooja/paaths?category=graha-dosha'),
+  getDeityPujas:      ()     => api.get('/pooja/paaths?category=deity-puja'),
+  getVastuPujas:      ()     => api.get('/pooja/paaths?category=vastu'),
+  createOrder:        (data) => api.post('/pooja/order', data),
+  verifyPayment:      (data) => api.post('/pooja/verify', data),
 };
 
 export const mall = {

@@ -8,7 +8,7 @@ const HOW_IT_WORKS = [
   { step: '01', icon: '✦', title: 'Choose Your Puja', desc: 'Select the Vastu puja that matches your need — new home, defect removal, business, or land.' },
   { step: '02', icon: '◆', title: 'Book & Pay', desc: 'Fill in your details and preferred date. Pay securely via UPI, card, or net banking.' },
   { step: '03', icon: 'ॐ', title: 'Pandit Ji Performs', desc: 'Our Vastu-expert Pandit Ji performs the puja with proper Vedic vidhi, sankalp in your name and gotra.' },
-  { step: '04', icon: '◈', title: 'Receive Video on WhatsApp', desc: 'A clear video of the complete puja is sent to your WhatsApp within 24 hours of completion.' },
+  { step: '04', icon: '◈', title: 'Receive Video Clip', desc: 'A clear video clip of sankalp in your name is sent to your WhatsApp within 24 hours of completion.' },
 ];
 
 const VASTU_BENEFITS = [
@@ -54,10 +54,10 @@ export default function VastuPoojaPage() {
     <div className="relative min-h-screen bg-cosmic-950">
 
       {/* Top announcement banner */}
-      <div className="relative z-10 pt-16">
+      <div className="relative z-10 pt-24">
         <div className="bg-gradient-to-r from-amber-900/90 via-orange-900/90 to-yellow-900/90 border-b border-amber-600/40 px-4 py-3">
           <p className="text-center text-amber-100 text-sm font-medium leading-relaxed max-w-3xl mx-auto">
-            ✦ <strong>Our Vastu-expert Pandit Ji performs these sacred pujas for you remotely.</strong> Receive divine Vastu blessings anywhere in India — with a WhatsApp video as proof. ◈
+            ✦ <strong>Our Vastu-expert Pandit Ji performs these sacred pujas for you remotely.</strong> Receive divine Vastu blessings anywhere in India — a video clip of sankalp in your name sent to your WhatsApp. ◈
           </p>
         </div>
       </div>
@@ -79,7 +79,7 @@ export default function VastuPoojaPage() {
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
               <span className="flex items-center gap-1.5 bg-green-500/15 border border-green-500/35 text-green-300 px-4 py-2 rounded-full">✓ Vastu Expert Pandits</span>
-              <span className="flex items-center gap-1.5 bg-amber-500/15 border border-amber-500/35 text-amber-300 px-4 py-2 rounded-full">◈ Video on WhatsApp</span>
+              <span className="flex items-center gap-1.5 bg-amber-500/15 border border-amber-500/35 text-amber-300 px-4 py-2 rounded-full">◈ Video Clip on WhatsApp</span>
               <span className="flex items-center gap-1.5 bg-blue-500/15 border border-blue-500/35 text-blue-300 px-4 py-2 rounded-full">ॐ Sankalp in Your Name</span>
               <span className="flex items-center gap-1.5 bg-orange-500/15 border border-orange-500/35 text-orange-300 px-4 py-2 rounded-full">✦ No Demolition Needed</span>
             </div>
@@ -148,7 +148,7 @@ export default function VastuPoojaPage() {
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
               {[
                 { icon: '◈', title: 'Vastu-Expert Pandits', desc: 'All our pandits specialise in Vastu Shastra with years of experience in Vastu Shanti, Griha Pravesh, and Bhoomi pujas.' },
-                { icon: '◆', title: 'Video Proof on WhatsApp', desc: 'You receive a clear video of the complete puja on your registered WhatsApp — verify every step yourself.' },
+                { icon: '◆', title: 'Video Clip on WhatsApp', desc: 'You receive a clear video clip of sankalp in your name on your registered WhatsApp — verify every step yourself.' },
                 { icon: '✦', title: 'Sankalp in Your Name', desc: 'Every puja begins with a proper Sankalp (intention) in your name, gotra, and specific Vastu purpose.' },
                 { icon: 'ॐ', title: 'Sacred Venue', desc: 'Pujas are performed at a dedicated puja space with authentic samagri, Vastu yantras, and proper Vedic setup.' },
                 { icon: '⊛', title: 'No Demolition Needed', desc: 'Our pujas energetically correct Vastu doshas without any physical changes to your home or office.' },
