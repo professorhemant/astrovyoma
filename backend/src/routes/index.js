@@ -77,10 +77,12 @@ router.delete('/admin/astrologers/:id',         auth, adminAuth, adminController
 router.post('/admin/astrologers/:id/reset-pin', auth, adminAuth, adminController.resetAstrologerPin);
 router.post('/admin/astrologers/cleanup-demo', auth, adminAuth, adminController.cleanupDemoAstrologers);
 router.get('/admin/consultations',              auth, adminAuth, adminController.getConsultations);
+router.delete('/admin/consultations/:id',       auth, adminAuth, adminController.deleteConsultation);
 router.get('/admin/transactions',               auth, adminAuth, adminController.getTransactions);
 router.get('/admin/settings',                   auth, adminAuth, adminController.getSiteSettings);
 router.put('/admin/settings',                   auth, adminAuth, adminController.updateSiteSettings);
 router.get('/admin/appointments',               auth, adminAuth, adminController.getAppointments);
+router.delete('/admin/appointments/:id',        auth, adminAuth, adminController.deleteAppointment);
 router.get('/admin/revenue',                    auth, adminAuth, adminController.getRevenue);
 router.get('/admin/payouts',                    auth, adminAuth, payoutController.getPending);
 router.post('/admin/payouts/pay',               auth, adminAuth, payoutController.payAstrologer);
@@ -272,6 +274,15 @@ router.post('/subscriptions/verify', auth, subscriptionController.verifyPayment)
 router.get('/pooja/paaths',    poojaController.getPaaths);
 router.post('/pooja/order',    poojaController.createOrder);
 router.post('/pooja/verify',   poojaController.verifyAndBook);
+
+// Pandit portal — pooja bookings
+router.get('/pooja/pandit/bookings',          panditAuth, poojaController.getPanditBookings);
+router.post('/pooja/pandit/bookings/:id/done', panditAuth, poojaController.markPoojaCompleted);
+
+// Admin — pooja bookings + payouts
+router.get('/admin/pooja/bookings',   auth, adminAuth, poojaController.getAdminPoojaBookings);
+router.get('/admin/pooja/payouts',    auth, adminAuth, poojaController.getAdminPoojaPayouts);
+router.post('/admin/pooja/payouts/pay', auth, adminAuth, poojaController.payPanditForPooja);
 
 // Astro Mall routes
 router.get('/mall/categories',    mallController.getCategories);

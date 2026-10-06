@@ -489,10 +489,36 @@ async function setupAdmin(req, res) {
   }
 }
 
+async function deleteConsultation(req, res) {
+  try {
+    const { id } = req.params;
+    const row = await Consultation.findByPk(id);
+    if (!row) return res.status(404).json({ error: 'Not found' });
+    await row.destroy();
+    res.json({ message: 'Deleted' });
+  } catch (err) {
+    console.error('deleteConsultation error:', err);
+    res.status(500).json({ error: 'Failed to delete consultation' });
+  }
+}
+
+async function deleteAppointment(req, res) {
+  try {
+    const { id } = req.params;
+    const row = await Appointment.findByPk(id);
+    if (!row) return res.status(404).json({ error: 'Not found' });
+    await row.destroy();
+    res.json({ message: 'Deleted' });
+  } catch (err) {
+    console.error('deleteAppointment error:', err);
+    res.status(500).json({ error: 'Failed to delete appointment' });
+  }
+}
+
 module.exports = {
   getStats, getUsers, updateUser, deleteUser, cleanupDemoAstrologers,
   getAstrologers, createAstrologer, updateAstrologer, deleteAstrologer, resetAstrologerPin,
-  getConsultations, getTransactions, getAppointments, getRevenue,
+  getConsultations, deleteConsultation, getTransactions, getAppointments, deleteAppointment, getRevenue,
   getSiteSettings, updateSiteSettings,
   setupAdmin,
 };
