@@ -36,6 +36,15 @@ const EMPTY = {
 
 const MAX_PHOTO_BYTES = 2 * 1024 * 1024;
 
+const STARS = Array.from({ length: 18 }, (_, i) => ({
+  w: (((i * 7 + 3) % 3) + 1),
+  h: (((i * 11 + 5) % 3) + 1),
+  left: ((i * 37 + 13) % 97),
+  top: ((i * 53 + 7) % 95),
+  dur: 2 + (i % 4),
+  delay: (i % 5) * 0.6,
+}));
+
 const BENEFITS = [
   { icon: IndianRupee, title: 'Highest Payout', sub: 'Earn 60% of every consultation — the best split in the industry', color: 'text-gold-400', bg: 'bg-gold-500/10 border-gold-500/20' },
   { icon: Shield,      title: 'No Joining Fee', sub: 'Zero registration cost. No monthly subscription. No hidden charges', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
@@ -257,15 +266,12 @@ export default function JoinAsAstrologerPage() {
         style={{ background: 'radial-gradient(ellipse at 50% -10%, rgba(139,92,246,0.35) 0%, rgba(201,168,76,0.08) 40%, transparent 70%), #0d0820' }}>
 
         {/* Floating stars */}
-        {[...Array(18)].map((_, i) => (
+        {STARS.map((s, i) => (
           <motion.div key={i}
             className="absolute rounded-full bg-gold-400/30"
-            style={{
-              width: Math.random() * 3 + 1, height: Math.random() * 3 + 1,
-              left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`,
-            }}
+            style={{ width: s.w, height: s.h, left: `${s.left}%`, top: `${s.top}%` }}
             animate={{ opacity: [0.2, 0.8, 0.2], scale: [1, 1.4, 1] }}
-            transition={{ duration: 2 + Math.random() * 3, repeat: Infinity, delay: Math.random() * 3 }}
+            transition={{ duration: s.dur, repeat: Infinity, delay: s.delay }}
           />
         ))}
 
@@ -319,7 +325,7 @@ export default function JoinAsAstrologerPage() {
       {/* ══════════════════════════════════════
           BENEFITS GRID
       ══════════════════════════════════════ */}
-      <div className="py-16 px-4" style={{ background: '#110d2a' }}>
+      <div className="py-16 px-4" style={{ background: '#110d2a', position: 'relative', zIndex: 1 }}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
             <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#c9a84c' }}>Why Astrologers Choose Us</p>
@@ -343,7 +349,7 @@ export default function JoinAsAstrologerPage() {
       {/* ══════════════════════════════════════
           HOW IT WORKS
       ══════════════════════════════════════ */}
-      <div className="py-16 px-4" style={{ background: '#0d0820' }}>
+      <div className="py-16 px-4" style={{ background: '#0d0820', position: 'relative', zIndex: 1 }}>
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
             <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#c9a84c' }}>Simple & Fast</p>
@@ -370,7 +376,7 @@ export default function JoinAsAstrologerPage() {
       {/* ══════════════════════════════════════
           EARNINGS CALCULATOR
       ══════════════════════════════════════ */}
-      <div className="py-16 px-4" style={{ background: '#110d2a' }}>
+      <div className="py-16 px-4" style={{ background: '#110d2a', position: 'relative', zIndex: 1 }}>
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8">
             <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#c9a84c' }}>Earnings Potential</p>
@@ -427,7 +433,7 @@ export default function JoinAsAstrologerPage() {
           APPLICATION FORM
       ══════════════════════════════════════ */}
       <div ref={formRef} className="py-16 px-4"
-        style={{ background: 'radial-gradient(ellipse at 50% 100%, rgba(201,168,76,0.06) 0%, transparent 60%)' }}>
+        style={{ background: 'radial-gradient(ellipse at 50% 100%, rgba(201,168,76,0.06) 0%, transparent 60%)', position: 'relative', zIndex: 1 }}>
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-10">
             <p className="text-xs text-gold-600 uppercase tracking-widest mb-2">Join the Founding Panel</p>
@@ -677,7 +683,7 @@ export default function JoinAsAstrologerPage() {
       {/* ══════════════════════════════════════
           FOOTER STRIP
       ══════════════════════════════════════ */}
-      <div className="py-10 px-4 text-center border-t border-gold-600/10">
+      <div className="py-10 px-4 text-center border-t border-gold-600/10" style={{ position: 'relative', zIndex: 1 }}>
         <p className="text-gold-400 font-serif text-lg mb-1">ॐ नमः शिवाय</p>
         <p className="text-gray-600 text-xs">AstroVyoma — Connecting seekers with India's finest Vedic astrologers</p>
         <Link to="/" className="text-gold-600 hover:text-gold-400 text-xs mt-2 inline-block transition-colors">← Back to AstroVyoma</Link>
