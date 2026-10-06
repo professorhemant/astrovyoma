@@ -73,6 +73,7 @@ import MuhurtaPage              from './pages/MuhurtaPage';
 import VastuPoojaPage           from './pages/VastuPoojaPage';
 import YogaFinderPage           from './pages/YogaFinderPage';
 import AboutUsPage              from './pages/AboutUsPage';
+import PrivacyPolicyPage        from './pages/PrivacyPolicyPage';
 import ContentPage              from './pages/ContentPage';
 import JoinAsAstrologerPage    from './pages/JoinAsAstrologerPage';
 import AstrologerOnboardingPage from './pages/AstrologerOnboardingPage';
@@ -221,6 +222,7 @@ function AppLayout() {
             <Route path="/kp-astrology"          element={<KPAstrologyPage />} />
             <Route path="/gochra"               element={<GochraPage />} />
             <Route path="/about"                 element={<AboutUsPage />} />
+            <Route path="/privacy-policy"        element={<PrivacyPolicyPage />} />
             <Route path="/join-as-astrologer"   element={<JoinAsAstrologerPage />} />
             <Route path="/astrologer-kit"        element={<AstrologerOnboardingPage />} />
             {/* Last but one: any single-word address the app has not claimed
