@@ -24,15 +24,6 @@ export default function AstrologerCard({ astrologer }) {
           style={{ background: 'linear-gradient(to right, transparent, #C9A84C, transparent)' }} />
       )}
 
-      {/* Free minutes badge */}
-      {astrologer.free_minutes > 0 && (
-        <div className="absolute top-3 right-3 z-10">
-          <span className="text-xs font-bold px-2 py-0.5 rounded-full"
-            style={{ background: 'linear-gradient(135deg,#16a34a,#15803d)', color: '#fff', boxShadow: '0 0 8px rgba(22,163,74,0.5)' }}>
-            {astrologer.free_minutes} Min Free
-          </span>
-        </div>
-      )}
 
       <div className="flex items-start gap-3">
         {/* Photo */}
