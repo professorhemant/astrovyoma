@@ -219,4 +219,26 @@ async function sendAstrologerRejectionEmail(email, { name, reason }) {
   await deliver(email, 'About your AstroVyoma application', html, 'ASTRO-REJECTED', '-');
 }
 
-module.exports = { generateOtp, storeOtp, verifyOtp, secondsUntilResendAllowed, sendOtpEmail, sendPasswordResetEmail, sendAstrologerApprovalEmail, sendAstrologerRejectionEmail };
+async function sendNewApplicationAdminAlert(application) {
+  const adminEmail = process.env.ADMIN_EMAIL || 'prof.hemant.sgnr@gmail.com';
+  const html = `
+    <div style="font-family:sans-serif;max-width:520px;margin:auto;background:#0d0728;color:#f0e6c0;padding:32px;border-radius:12px;">
+      <h2 style="color:#C9A84C;font-family:serif;margin-bottom:4px;">&#10022; AstroVyoma</h2>
+      <p style="color:#d4c48a;font-size:18px;margin-bottom:20px;">New Pandit Application Received</p>
+      <table style="width:100%;background:#1a0a3a;border-radius:8px;padding:4px;margin-bottom:20px;border-collapse:collapse;">
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;width:40%;">Name</td><td style="padding:10px 16px;color:#f0e6c0;font-size:14px;font-weight:600;">${application.name}</td></tr>
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Phone</td><td style="padding:10px 16px;color:#C9A84C;font-size:14px;font-weight:600;">${application.phone}</td></tr>
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Email</td><td style="padding:10px 16px;color:#f0e6c0;font-size:13px;">${application.email}</td></tr>
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Skills</td><td style="padding:10px 16px;color:#f0e6c0;font-size:13px;">${application.skills || application.specialties || '—'}</td></tr>
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Experience</td><td style="padding:10px 16px;color:#f0e6c0;font-size:13px;">${application.experience_years} years</td></tr>
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Location</td><td style="padding:10px 16px;color:#f0e6c0;font-size:13px;">${application.location || '—'}</td></tr>
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Rate</td><td style="padding:10px 16px;color:#f0e6c0;font-size:13px;">₹${application.price_per_min}/min</td></tr>
+      </table>
+      <a href="https://astrovyoma.com/admin" style="display:inline-block;background:linear-gradient(135deg,#A07832,#E8C547);color:#04051A;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;">Review in Admin Panel →</a>
+      <p style="color:#9e8a6a;font-size:11px;margin-top:20px;">Sent automatically by AstroVyoma when a new pandit applies.</p>
+    </div>
+  `;
+  await deliver(adminEmail, `New Pandit Application — ${application.name} (${application.phone})`, html, 'ADMIN-ALERT', '-');
+}
+
+module.exports = { generateOtp, storeOtp, verifyOtp, secondsUntilResendAllowed, sendOtpEmail, sendPasswordResetEmail, sendAstrologerApprovalEmail, sendAstrologerRejectionEmail, sendNewApplicationAdminAlert };

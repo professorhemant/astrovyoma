@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const { sendAstrologerApprovalEmail, sendAstrologerRejectionEmail } = require('../services/otpService');
+const { sendAstrologerApprovalEmail, sendAstrologerRejectionEmail, sendNewApplicationAdminAlert } = require('../services/otpService');
 const { Op } = require('sequelize');
 const { AstrologerApplication, Astrologer } = require('../models');
 
@@ -47,6 +47,11 @@ async function submitApplication(req, res) {
       linkedin_url: linkedin_url || null,
       status: 'pending',
     });
+
+    // Fire-and-forget admin alert — never let it delay or fail the response
+    sendNewApplicationAdminAlert({
+      name, email, phone, skills, specialties, experience_years, price_per_min, location,
+    }).catch(err => console.error('[admin-alert] email failed:', err.message));
 
     res.status(201).json({
       success: true,
