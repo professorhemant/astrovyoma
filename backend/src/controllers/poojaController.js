@@ -8,6 +8,7 @@ const PAATHS = [
     subtitle: '11 Times',
     deity: 'Lord Hanuman',
     icon: '🌅',
+    image: '/images/hanuman.png',
     gradient: ['#FF6B35', '#C0392B'],
     duration: '3–4 Hours',
     price: 4749,

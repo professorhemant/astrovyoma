@@ -339,8 +339,11 @@ function PaathCard({ paath, index, onBook }) {
         <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-2.5 py-1 rounded-full">
           {discount}% OFF
         </div>
-        <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-300 ring-2 ring-white/40 shadow-lg">
-          <span className="text-4xl leading-none">{paath.icon}</span>
+        <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-300 ring-2 ring-white/40 shadow-lg overflow-hidden">
+          {paath.image
+            ? <img src={paath.image} alt={paath.deity} className="w-full h-full object-cover object-top" />
+            : <span className="text-4xl leading-none">{paath.icon}</span>
+          }
         </div>
         <p className="text-white/90 text-xs uppercase tracking-widest mb-1">{paath.deity}</p>
         <h3 className="text-white font-serif text-xl font-bold leading-tight mb-1">{paath.name}</h3>
