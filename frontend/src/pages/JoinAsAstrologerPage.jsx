@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { IndianRupee, Clock, Shield, Users, Zap, Star, CheckCircle, ChevronDown } from 'lucide-react';
 import ScrollDatePicker from '../components/ScrollDatePicker';
 import toast from 'react-hot-toast';
 import { astrologerApplications, content as contentApi } from '../api';
@@ -32,22 +34,43 @@ const EMPTY = {
   bio: '', why_join: '',
 };
 
-const MAX_PHOTO_BYTES = 2 * 1024 * 1024; // 2 MB
+const MAX_PHOTO_BYTES = 2 * 1024 * 1024;
+
+const BENEFITS = [
+  { icon: IndianRupee, title: 'Highest Payout', sub: 'Earn 60% of every consultation — the best split in the industry', color: 'text-gold-400', bg: 'bg-gold-500/10 border-gold-500/20' },
+  { icon: Shield,      title: 'No Joining Fee', sub: 'Zero registration cost. No monthly subscription. No hidden charges', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
+  { icon: Clock,       title: 'Flexible Hours', sub: 'Go live when you want. Take breaks freely. Your schedule, your rules', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
+  { icon: Zap,         title: 'Instant Activation', sub: 'Once approved, your portal goes live the same day — start earning immediately', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
+  { icon: Users,       title: 'Real Seekers', sub: 'Verified clients. No bots, no fake sessions. Genuine spiritual seekers', color: 'text-pink-400', bg: 'bg-pink-500/10 border-pink-500/20' },
+  { icon: Star,        title: 'Weekly Payouts', sub: 'Earnings transferred every Monday. Track every rupee in your portal', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' },
+];
+
+const HOW_STEPS = [
+  { n: '01', title: 'Apply in 5 minutes', body: 'Fill in your profile, skills, and set your rate. No documents needed upfront.' },
+  { n: '02', title: 'We review & approve', body: 'Our team calls you within 3–5 days. We check credentials and match your speciality.' },
+  { n: '03', title: 'Go live & earn', body: 'Get your Pandit Portal login. Toggle online and start receiving seekers instantly.' },
+];
 
 export default function JoinAsAstrologerPage() {
-  const [step, setStep] = useState(0);
-  const [form, setForm] = useState(EMPTY);
-  const [errors, setErrors] = useState({});
+  const [step, setStep]         = useState(0);
+  const [form, setForm]         = useState(EMPTY);
+  const [errors, setErrors]     = useState({});
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [share, setShare] = useState(60);
-  const photoInputRef = React.useRef(null);
+  const [loading, setLoading]   = useState(false);
+  const [share, setShare]       = useState(60);
+  const [minsPerDay, setMinsPerDay] = useState(30);
+  const [ratePerMin, setRatePerMin] = useState(30);
+  const photoInputRef = useRef(null);
+  const formRef       = useRef(null);
 
   useEffect(() => {
     contentApi.settings()
       .then(r => { const s = r.data?.settings?.astrologerSharePercent; if (Number.isFinite(s)) setShare(s); })
       .catch(() => {});
   }, []);
+
+  const weeklyEarning  = Math.round(minsPerDay * ratePerMin * (share / 100) * 7);
+  const monthlyEarning = Math.round(minsPerDay * ratePerMin * (share / 100) * 30);
 
   function set(key, value) {
     setForm(f => ({ ...f, [key]: value }));
@@ -123,34 +146,27 @@ export default function JoinAsAstrologerPage() {
     setLoading(true);
     try {
       await astrologerApplications.submit({
-        name: form.name.trim(),
-        email: form.email.trim(),
-        phone: form.phone.trim(),
-        dob: form.dob || undefined,
-        gender: form.gender || undefined,
+        name: form.name.trim(), email: form.email.trim(), phone: form.phone.trim(),
+        dob: form.dob || undefined, gender: form.gender || undefined,
         location: form.location.trim() || undefined,
         skills: form.skills.join(', ') || undefined,
         languages: form.languages.join(', ') || undefined,
         astrology_learned_from: form.astrology_learned_from.trim() || undefined,
         highest_qualification: form.highest_qualification.trim() || undefined,
-        degree: form.degree.trim() || undefined,
-        college: form.college.trim() || undefined,
-        other_platform: form.other_platform,
-        fulltime_job: form.fulltime_job,
+        degree: form.degree.trim() || undefined, college: form.college.trim() || undefined,
+        other_platform: form.other_platform, fulltime_job: form.fulltime_job,
         daily_hours: form.daily_hours || undefined,
         photo_url: form.photo_url.trim() || undefined,
         youtube_channel: form.youtube_channel.trim() || undefined,
         linkedin_url: form.linkedin_url.trim() || undefined,
         experience_years: parseInt(form.experience_years),
         price_per_min: parseFloat(form.price_per_min) || 30,
-        bio: form.bio.trim(),
-        why_join: form.why_join.trim() || undefined,
+        bio: form.bio.trim(), why_join: form.why_join.trim() || undefined,
         specialties: form.skills.join(', ') || undefined,
       });
       setSubmitted(true);
     } catch (err) {
-      const msg = err.response?.data?.error || 'Failed to submit. Please try again.';
-      toast.error(msg);
+      toast.error(err.response?.data?.error || 'Failed to submit. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -158,7 +174,6 @@ export default function JoinAsAstrologerPage() {
 
   const inp = (key) =>
     `w-full bg-cosmic-900 border ${errors[key] ? 'border-red-500/60' : 'border-gold-600/20'} rounded-xl px-4 py-3 text-gray-200 text-sm focus:outline-none focus:border-gold-500 transition-colors placeholder-gray-600`;
-
   const ta = (key) =>
     `w-full bg-cosmic-900 border ${errors[key] ? 'border-red-500/60' : 'border-gold-600/20'} rounded-xl px-4 py-3 text-gray-200 text-sm focus:outline-none focus:border-gold-500 transition-colors placeholder-gray-600 resize-none`;
 
@@ -169,16 +184,12 @@ export default function JoinAsAstrologerPage() {
         {hint && <p className="text-gray-500 text-xs mb-2">{hint}</p>}
         <div className="flex flex-wrap gap-2">
           {items.map(item => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => onToggle(item)}
+            <button key={item} type="button" onClick={() => onToggle(item)}
               className={`px-3 py-1.5 rounded-full text-xs border transition-all ${
                 selected.includes(item)
                   ? 'bg-gold-500 border-gold-500 text-cosmic-950 font-semibold'
                   : 'bg-cosmic-900 border-gold-600/20 text-gray-400 hover:border-gold-500/50'
-              }`}
-            >
+              }`}>
               {selected.includes(item) ? '✓ ' : '+ '}{item}
             </button>
           ))}
@@ -194,16 +205,12 @@ export default function JoinAsAstrologerPage() {
         <label className="text-gray-300 text-xs block mb-2">{label}</label>
         <div className="flex gap-3">
           {[true, false].map(opt => (
-            <button
-              key={String(opt)}
-              type="button"
-              onClick={() => onChange(opt)}
+            <button key={String(opt)} type="button" onClick={() => onChange(opt)}
               className={`flex-1 py-2.5 rounded-xl text-sm border transition-all ${
                 value === opt
                   ? 'bg-gold-500 border-gold-500 text-cosmic-950 font-semibold'
                   : 'bg-cosmic-900 border-gold-600/20 text-gray-400 hover:border-gold-500/40'
-              }`}
-            >
+              }`}>
               {opt ? 'Yes' : 'No'}
             </button>
           ))}
@@ -213,15 +220,19 @@ export default function JoinAsAstrologerPage() {
     );
   }
 
+  /* ── Success screen ── */
   if (submitted) {
     return (
       <div className="min-h-screen bg-cosmic-950 pt-24 pb-16 px-4 flex items-center justify-center">
-        <div className="card-cosmic p-10 max-w-md w-full text-center border border-green-500/30">
-          <div className="text-4xl mb-4">✦</div>
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
+          className="card-cosmic p-10 max-w-md w-full text-center border border-green-500/30">
+          <div className="w-16 h-16 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-8 h-8 text-green-400" />
+          </div>
           <h2 className="font-serif text-2xl text-green-400 mb-3">Application Submitted!</h2>
           <p className="text-gray-300 text-sm leading-relaxed mb-4">
-            Thank you <span className="text-gold-400 font-medium">{form.name}</span>! Our team will review your application
-            and contact you at <span className="text-gold-400">{form.email}</span> within 3–5 business days.
+            Thank you <span className="text-gold-400 font-medium">{form.name}</span>! Our team will review your
+            application and contact you at <span className="text-gold-400">{form.email}</span> within 3–5 business days.
           </p>
           <div className="text-left bg-cosmic-900/60 border border-gold-600/15 rounded-xl p-4 mb-6">
             <p className="text-gold-400 text-xs font-semibold mb-2">If approved</p>
@@ -231,310 +242,458 @@ export default function JoinAsAstrologerPage() {
             </p>
           </div>
           <Link to="/astrologers" className="btn-gold px-6 py-2.5 text-sm inline-block">Browse Astrologers</Link>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-cosmic-950 pt-20 pb-16">
-      {/* Hero */}
-      <div className="text-center py-10 px-4">
-        <div className="text-gold-400 text-3xl mb-3">✦</div>
-        <h1 className="font-serif text-4xl md:text-5xl text-gold-400 mb-3">Join AstroVyoma as an Astrologer</h1>
-        <p className="text-gray-400 text-lg">Join the founding panel and set your own terms</p>
-        <div className="flex flex-wrap justify-center gap-4 mt-6">
-          {[
-            { icon: '₹', label: `${share}% Earnings`, sub: 'Your share of every consultation' },
-            { icon: '◆',  label: 'No Joining Fee', sub: 'No registration or subscription charge' },
-            { icon: '◈', label: 'Flexible Hours', sub: 'Work on your own schedule' },
-          ].map(b => (
-            <div key={b.label} className="card-cosmic px-6 py-4 text-center min-w-[160px]">
-              <div className="text-2xl mb-1">{b.icon}</div>
-              <p className="text-gold-400 font-semibold text-sm">{b.label}</p>
-              <p className="text-gray-500 text-xs mt-0.5">{b.sub}</p>
-            </div>
-          ))}
+    <div className="min-h-screen bg-cosmic-950">
+
+      {/* ══════════════════════════════════════
+          HERO
+      ══════════════════════════════════════ */}
+      <div className="relative overflow-hidden pt-20 pb-20 px-4"
+        style={{ background: 'radial-gradient(ellipse at 50% -10%, rgba(139,92,246,0.35) 0%, rgba(201,168,76,0.08) 40%, transparent 70%), #0d0820' }}>
+
+        {/* Floating stars */}
+        {[...Array(18)].map((_, i) => (
+          <motion.div key={i}
+            className="absolute rounded-full bg-gold-400/30"
+            style={{
+              width: Math.random() * 3 + 1, height: Math.random() * 3 + 1,
+              left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`,
+            }}
+            animate={{ opacity: [0.2, 0.8, 0.2], scale: [1, 1.4, 1] }}
+            transition={{ duration: 2 + Math.random() * 3, repeat: Infinity, delay: Math.random() * 3 }}
+          />
+        ))}
+
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          {/* Om glyph */}
+          <motion.div initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, type: 'spring' }}
+            className="text-7xl font-serif mb-4 select-none"
+            style={{ color: '#c9a84c', textShadow: '0 0 60px rgba(201,168,76,0.5), 0 0 120px rgba(139,92,246,0.3)' }}>
+            ॐ
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
+            className="text-xs text-purple-300/70 uppercase tracking-[0.3em] mb-4">
+            AstroVyoma Pandit Portal
+          </motion.div>
+
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+            className="font-serif text-4xl md:text-6xl text-gold-400 leading-tight mb-4">
+            Share Your Divine Knowledge.<br />
+            <span className="text-white">Earn on Your Terms.</span>
+          </motion.h1>
+
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
+            className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto mb-8 leading-relaxed">
+            India's new sacred platform for Vedic astrologers. No middlemen. No locks. Just you, your wisdom, and seekers who need you.
+          </motion.p>
+
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              className="btn-gold px-8 py-4 text-base font-semibold rounded-full shadow-lg shadow-gold-500/20">
+              Apply Now — It's Free
+            </button>
+            <Link to="/astrologer-kit"
+              className="text-gray-400 hover:text-gold-400 transition-colors text-sm flex items-center gap-1">
+              Read the Astrologer Kit <ChevronDown className="w-3.5 h-3.5 rotate-[-90deg]" />
+            </Link>
+          </motion.div>
+
+          {/* Trust strip */}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
+            className="flex flex-wrap justify-center gap-6 mt-12 text-xs text-gray-500">
+            {['✦ Free to join', '✦ Weekly payouts every Monday', '✦ Your profile goes live within 24 hrs of approval', '✦ Cancel anytime'].map(t => (
+              <span key={t}>{t}</span>
+            ))}
+          </motion.div>
         </div>
-        <p className="text-gray-500 text-sm mt-6">
-          Want the full picture first?{' '}
-          <Link to="/astrologer-kit" className="text-gold-400 hover:underline">Read the astrologer's kit</Link>
-        </p>
       </div>
 
-      {/* Form */}
-      <div className="max-w-2xl mx-auto px-4">
-        {/* Step indicator */}
-        <div className="flex items-center mb-8 overflow-x-auto pb-1">
-          {STEPS.map((label, i) => (
-            <React.Fragment key={i}>
-              <div className="flex flex-col items-center flex-shrink-0">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
-                  i < step ? 'bg-green-500 text-white' : i === step ? 'bg-gold-500 text-cosmic-950' : 'bg-cosmic-800 text-gray-500'
-                }`}>
-                  {i < step ? '✓' : i + 1}
+      {/* ══════════════════════════════════════
+          BENEFITS GRID
+      ══════════════════════════════════════ */}
+      <div className="py-16 px-4 bg-cosmic-950/60">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-xs text-gold-600 uppercase tracking-widest mb-2">Why Astrologers Choose Us</p>
+            <h2 className="font-serif text-3xl text-gold-400">Built for Serious Pandits</h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {BENEFITS.map((b, i) => (
+              <motion.div key={b.title}
+                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+                className={`rounded-2xl border p-6 ${b.bg}`}>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${b.bg}`}>
+                  <b.icon className={`w-5 h-5 ${b.color}`} />
                 </div>
-                <span className={`text-xs mt-1 whitespace-nowrap ${i === step ? 'text-gold-400' : 'text-gray-600'}`}>{label}</span>
-              </div>
-              {i < STEPS.length - 1 && (
-                <div className={`flex-1 h-0.5 mx-2 mb-4 transition-colors min-w-[12px] ${i < step ? 'bg-green-500/50' : 'bg-cosmic-800'}`} />
-              )}
-            </React.Fragment>
-          ))}
+                <h3 className={`font-semibold text-sm mb-1.5 ${b.color}`}>{b.title}</h3>
+                <p className="text-gray-400 text-xs leading-relaxed">{b.sub}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
+      </div>
 
-        <div className="card-cosmic p-6 md:p-8">
-          <h2 className="font-serif text-xl text-gold-400 mb-6">Step {step + 1}: {STEPS[step]}</h2>
+      {/* ══════════════════════════════════════
+          HOW IT WORKS
+      ══════════════════════════════════════ */}
+      <div className="py-16 px-4" style={{ background: 'rgba(139,92,246,0.04)' }}>
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-xs text-gold-600 uppercase tracking-widest mb-2">Simple & Fast</p>
+            <h2 className="font-serif text-3xl text-gold-400">How It Works</h2>
+          </div>
 
-          <form onSubmit={step === 4 ? handleSubmit : e => { e.preventDefault(); handleNext(); }}>
-
-            {/* ── Step 0: Personal Info ── */}
-            {step === 0 && (
-              <div className="space-y-4">
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Full Name (नाम) *</label>
-                  <input type="text" value={form.name} onChange={e => set('name', e.target.value)}
-                    placeholder="Your full name" className={inp('name')} />
-                  {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {HOW_STEPS.map((s, i) => (
+              <motion.div key={s.n}
+                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.12 }}
+                className="relative text-center px-4">
+                {/* Connector line */}
+                {i < 2 && (
+                  <div className="hidden md:block absolute top-6 left-[calc(50%+32px)] right-0 h-px border-t border-dashed border-gold-600/20" />
+                )}
+                <div className="w-12 h-12 rounded-full border-2 border-gold-500/40 bg-gold-500/10 flex items-center justify-center mx-auto mb-4">
+                  <span className="text-gold-400 font-serif text-lg font-bold">{s.n}</span>
                 </div>
+                <h3 className="text-gray-200 font-semibold text-sm mb-2">{s.title}</h3>
+                <p className="text-gray-500 text-xs leading-relaxed">{s.body}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Date of Birth (जन्म तिथि) *</label>
-                  <ScrollDatePicker value={form.dob} onChange={v => set('dob', v)} max={new Date(Date.now() - 18 * 365.25 * 86400000).toISOString().split('T')[0]} />
-                  {errors.dob && <p className="text-red-400 text-xs mt-1">{errors.dob}</p>}
+      {/* ══════════════════════════════════════
+          EARNINGS CALCULATOR
+      ══════════════════════════════════════ */}
+      <div className="py-16 px-4 bg-cosmic-950/80">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center mb-8">
+            <p className="text-xs text-gold-600 uppercase tracking-widest mb-2">Earnings Potential</p>
+            <h2 className="font-serif text-3xl text-gold-400">See What You Could Earn</h2>
+          </div>
+
+          <div className="rounded-3xl border border-gold-500/20 bg-gradient-to-b from-gold-600/5 to-transparent p-8">
+            <div className="space-y-6 mb-8">
+              {/* Slider 1 */}
+              <div>
+                <div className="flex justify-between text-xs text-gray-400 mb-2">
+                  <span>Consulting minutes per day</span>
+                  <span className="text-gold-400 font-semibold">{minsPerDay} min</span>
                 </div>
+                <input type="range" min={5} max={120} step={5} value={minsPerDay}
+                  onChange={e => setMinsPerDay(Number(e.target.value))}
+                  className="w-full accent-yellow-500 cursor-pointer" />
+                <div className="flex justify-between text-[10px] text-gray-600 mt-1">
+                  <span>5 min</span><span>120 min</span>
+                </div>
+              </div>
 
-                <div>
-                  <label className="text-gray-300 text-xs block mb-2">Gender (लिंग) *</label>
-                  <div className="flex gap-3">
-                    {['Male', 'Female', 'Other'].map(g => (
-                      <button key={g} type="button" onClick={() => set('gender', g)}
-                        className={`flex-1 py-2.5 rounded-xl text-sm border transition-all ${
-                          form.gender === g
-                            ? 'bg-gold-500 border-gold-500 text-cosmic-950 font-semibold'
-                            : 'bg-cosmic-900 border-gold-600/20 text-gray-400 hover:border-gold-500/40'
-                        }`}>
-                        {g}
+              {/* Slider 2 */}
+              <div>
+                <div className="flex justify-between text-xs text-gray-400 mb-2">
+                  <span>Your rate per minute</span>
+                  <span className="text-gold-400 font-semibold">₹{ratePerMin}/min</span>
+                </div>
+                <input type="range" min={10} max={100} step={5} value={ratePerMin}
+                  onChange={e => setRatePerMin(Number(e.target.value))}
+                  className="w-full accent-yellow-500 cursor-pointer" />
+                <div className="flex justify-between text-[10px] text-gray-600 mt-1">
+                  <span>₹10</span><span>₹100</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Results */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="rounded-2xl bg-gold-600/10 border border-gold-500/20 p-5 text-center">
+                <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Weekly Earnings</p>
+                <p className="font-serif text-3xl text-gold-400">₹{weeklyEarning.toLocaleString('en-IN')}</p>
+              </div>
+              <div className="rounded-2xl bg-purple-600/10 border border-purple-500/20 p-5 text-center">
+                <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Monthly Earnings</p>
+                <p className="font-serif text-3xl text-purple-300">₹{monthlyEarning.toLocaleString('en-IN')}</p>
+              </div>
+            </div>
+
+            <p className="text-[10px] text-gray-600 text-center mt-4">
+              Based on {share}% astrologer share · ₹{ratePerMin}/min · {minsPerDay} min/day
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════
+          APPLICATION FORM
+      ══════════════════════════════════════ */}
+      <div ref={formRef} className="py-16 px-4"
+        style={{ background: 'radial-gradient(ellipse at 50% 100%, rgba(201,168,76,0.06) 0%, transparent 60%)' }}>
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-xs text-gold-600 uppercase tracking-widest mb-2">Join the Founding Panel</p>
+            <h2 className="font-serif text-3xl text-gold-400">Start Your Application</h2>
+            <p className="text-gray-500 text-sm mt-2">Takes about 5 minutes · Completely free</p>
+          </div>
+
+          {/* Step indicator */}
+          <div className="flex items-center mb-8 overflow-x-auto pb-1">
+            {STEPS.map((label, i) => (
+              <React.Fragment key={i}>
+                <div className="flex flex-col items-center flex-shrink-0">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
+                    i < step ? 'bg-green-500 text-white' : i === step ? 'bg-gold-500 text-cosmic-950' : 'bg-cosmic-800 text-gray-500'
+                  }`}>
+                    {i < step ? '✓' : i + 1}
+                  </div>
+                  <span className={`text-xs mt-1 whitespace-nowrap ${i === step ? 'text-gold-400' : 'text-gray-600'}`}>{label}</span>
+                </div>
+                {i < STEPS.length - 1 && (
+                  <div className={`flex-1 h-0.5 mx-2 mb-4 transition-colors min-w-[12px] ${i < step ? 'bg-green-500/50' : 'bg-cosmic-800'}`} />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+
+          <motion.div key={step} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.25 }}
+            className="card-cosmic p-6 md:p-8 border border-gold-600/15">
+
+            <h2 className="font-serif text-xl text-gold-400 mb-6">Step {step + 1}: {STEPS[step]}</h2>
+
+            <form onSubmit={step === 4 ? handleSubmit : e => { e.preventDefault(); handleNext(); }}>
+
+              {/* ── Step 0: Personal Info ── */}
+              {step === 0 && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-1.5">Full Name (नाम) *</label>
+                    <input type="text" value={form.name} onChange={e => set('name', e.target.value)}
+                      placeholder="Your full name" className={inp('name')} />
+                    {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
+                  </div>
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-1.5">Date of Birth (जन्म तिथि) *</label>
+                    <ScrollDatePicker value={form.dob} onChange={v => set('dob', v)}
+                      max={new Date(Date.now() - 18 * 365.25 * 86400000).toISOString().split('T')[0]} />
+                    {errors.dob && <p className="text-red-400 text-xs mt-1">{errors.dob}</p>}
+                  </div>
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-2">Gender (लिंग) *</label>
+                    <div className="flex gap-3">
+                      {['Male', 'Female', 'Other'].map(g => (
+                        <button key={g} type="button" onClick={() => set('gender', g)}
+                          className={`flex-1 py-2.5 rounded-xl text-sm border transition-all ${
+                            form.gender === g
+                              ? 'bg-gold-500 border-gold-500 text-cosmic-950 font-semibold'
+                              : 'bg-cosmic-900 border-gold-600/20 text-gray-400 hover:border-gold-500/40'
+                          }`}>
+                          {g}
+                        </button>
+                      ))}
+                    </div>
+                    {errors.gender && <p className="text-red-400 text-xs mt-1">{errors.gender}</p>}
+                  </div>
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-1.5">Email Address *</label>
+                    <input type="email" value={form.email} onChange={e => set('email', e.target.value)}
+                      placeholder="you@example.com" className={inp('email')} />
+                    {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
+                  </div>
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-1.5">Phone Number *</label>
+                    <input type="tel" value={form.phone} onChange={e => set('phone', e.target.value)}
+                      placeholder="+91 98765 43210" className={inp('phone')} />
+                    {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone}</p>}
+                  </div>
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-1.5">Current City, State, Country *</label>
+                    <input type="text" value={form.location} onChange={e => set('location', e.target.value)}
+                      placeholder="e.g. Jaipur, Rajasthan, India" className={inp('location')} />
+                    {errors.location && <p className="text-red-400 text-xs mt-1">{errors.location}</p>}
+                  </div>
+                </div>
+              )}
+
+              {/* ── Step 1: Skills & Languages ── */}
+              {step === 1 && (
+                <div className="space-y-6">
+                  <TagGrid label="Skills (स्किल) *" hint="Select all that apply — these appear on your public profile"
+                    items={SKILLS} selected={form.skills} onToggle={v => toggleTag('skills', v)} error={errors.skills} />
+                  <TagGrid label="Languages (भाषाएँ) *" hint="Languages you can consult in"
+                    items={LANGUAGES} selected={form.languages} onToggle={v => toggleTag('languages', v)} error={errors.languages} />
+                </div>
+              )}
+
+              {/* ── Step 2: Education & Availability ── */}
+              {step === 2 && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-1.5">From where did you learn Astrology? *</label>
+                    <input type="text" value={form.astrology_learned_from}
+                      onChange={e => set('astrology_learned_from', e.target.value)}
+                      placeholder="e.g. Sanskrit Mahavidyalaya, Gurukul, Self-taught"
+                      className={inp('astrology_learned_from')} />
+                    {errors.astrology_learned_from && <p className="text-red-400 text-xs mt-1">{errors.astrology_learned_from}</p>}
+                  </div>
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-1.5">Highest Qualification *</label>
+                    <input type="text" value={form.highest_qualification}
+                      onChange={e => set('highest_qualification', e.target.value)}
+                      placeholder="e.g. Jyotish Acharya, M.A. Sanskrit, B.A."
+                      className={inp('highest_qualification')} />
+                    {errors.highest_qualification && <p className="text-red-400 text-xs mt-1">{errors.highest_qualification}</p>}
+                  </div>
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-1.5">Degree / Diploma <span className="text-gray-600">(optional)</span></label>
+                    <input type="text" value={form.degree} onChange={e => set('degree', e.target.value)}
+                      placeholder="e.g. Jyotish Visharad, B.Sc." className={inp('degree')} />
+                  </div>
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-1.5">College / School / University <span className="text-gray-600">(optional)</span></label>
+                    <input type="text" value={form.college} onChange={e => set('college', e.target.value)}
+                      placeholder="e.g. BHU Varanasi, ICAS" className={inp('college')} />
+                  </div>
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-1.5">How many hours can you contribute daily? *</label>
+                    <select value={form.daily_hours} onChange={e => set('daily_hours', e.target.value)}
+                      className={inp('daily_hours')}>
+                      <option value="">Select hours</option>
+                      {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
+                    </select>
+                    {errors.daily_hours && <p className="text-red-400 text-xs mt-1">{errors.daily_hours}</p>}
+                  </div>
+                  <YesNo label="Are you working on any other online platform? *"
+                    value={form.other_platform} onChange={v => set('other_platform', v)} error={errors.other_platform} />
+                  <YesNo label="Are you currently working a full-time job? *"
+                    value={form.fulltime_job} onChange={v => set('fulltime_job', v)} error={errors.fulltime_job} />
+                </div>
+              )}
+
+              {/* ── Step 3: Profile & Pricing ── */}
+              {step === 3 && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-2">Profile Photo <span className="text-gray-600">(optional)</span></label>
+                    <div className="flex flex-col items-center gap-3">
+                      <button type="button" onClick={() => photoInputRef.current?.click()}
+                        className="relative w-28 h-28 rounded-full border-2 border-dashed border-gold-600/40 hover:border-gold-500 transition-colors overflow-hidden bg-cosmic-900 flex items-center justify-center group">
+                        {form.photo_url ? (
+                          <img src={form.photo_url} alt="Preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <svg viewBox="0 0 80 80" className="w-20 h-20 text-gray-700" fill="currentColor">
+                            <circle cx="40" cy="28" r="16" /><path d="M8 72c0-17.673 14.327-32 32-32s32 14.327 32 32" />
+                          </svg>
+                        )}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                          </svg>
+                        </div>
                       </button>
-                    ))}
+                      <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
+                      {form.photo_url
+                        ? <button type="button" onClick={() => set('photo_url', '')} className="text-red-400 text-xs hover:underline">Remove photo</button>
+                        : <p className="text-gray-500 text-xs text-center">Click to upload · JPG, PNG, WEBP · Max 2 MB</p>
+                      }
+                    </div>
                   </div>
-                  {errors.gender && <p className="text-red-400 text-xs mt-1">{errors.gender}</p>}
-                </div>
-
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Email Address *</label>
-                  <input type="email" value={form.email} onChange={e => set('email', e.target.value)}
-                    placeholder="you@example.com" className={inp('email')} />
-                  {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
-                </div>
-
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Phone Number *</label>
-                  <input type="tel" value={form.phone} onChange={e => set('phone', e.target.value)}
-                    placeholder="+91 98765 43210" className={inp('phone')} />
-                  {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone}</p>}
-                </div>
-
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Current City, State, Country *</label>
-                  <input type="text" value={form.location} onChange={e => set('location', e.target.value)}
-                    placeholder="e.g. Jaipur, Rajasthan, India" className={inp('location')} />
-                  {errors.location && <p className="text-red-400 text-xs mt-1">{errors.location}</p>}
-                </div>
-              </div>
-            )}
-
-            {/* ── Step 1: Skills & Languages ── */}
-            {step === 1 && (
-              <div className="space-y-6">
-                <TagGrid
-                  label="Skills (स्किल) *"
-                  hint="Select all that apply — these appear on your public profile"
-                  items={SKILLS}
-                  selected={form.skills}
-                  onToggle={v => toggleTag('skills', v)}
-                  error={errors.skills}
-                />
-                <TagGrid
-                  label="Languages (भाषाएँ) *"
-                  hint="Languages you can consult in"
-                  items={LANGUAGES}
-                  selected={form.languages}
-                  onToggle={v => toggleTag('languages', v)}
-                  error={errors.languages}
-                />
-              </div>
-            )}
-
-            {/* ── Step 2: Education & Availability ── */}
-            {step === 2 && (
-              <div className="space-y-4">
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">From where did you learn Astrology? *</label>
-                  <input type="text" value={form.astrology_learned_from}
-                    onChange={e => set('astrology_learned_from', e.target.value)}
-                    placeholder="e.g. Sanskrit Mahavidyalaya, Gurukul, Self-taught" className={inp('astrology_learned_from')} />
-                  {errors.astrology_learned_from && <p className="text-red-400 text-xs mt-1">{errors.astrology_learned_from}</p>}
-                </div>
-
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Highest Qualification *</label>
-                  <input type="text" value={form.highest_qualification}
-                    onChange={e => set('highest_qualification', e.target.value)}
-                    placeholder="e.g. Jyotish Acharya, M.A. Sanskrit, B.A." className={inp('highest_qualification')} />
-                  {errors.highest_qualification && <p className="text-red-400 text-xs mt-1">{errors.highest_qualification}</p>}
-                </div>
-
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Degree / Diploma <span className="text-gray-600">(optional)</span></label>
-                  <input type="text" value={form.degree} onChange={e => set('degree', e.target.value)}
-                    placeholder="e.g. Jyotish Visharad, B.Sc." className={inp('degree')} />
-                </div>
-
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">College / School / University <span className="text-gray-600">(optional)</span></label>
-                  <input type="text" value={form.college} onChange={e => set('college', e.target.value)}
-                    placeholder="e.g. BHU Varanasi, ICAS" className={inp('college')} />
-                </div>
-
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">How many hours can you contribute daily? *</label>
-                  <select value={form.daily_hours} onChange={e => set('daily_hours', e.target.value)}
-                    className={inp('daily_hours')}>
-                    <option value="">Select hours</option>
-                    {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
-                  </select>
-                  {errors.daily_hours && <p className="text-red-400 text-xs mt-1">{errors.daily_hours}</p>}
-                </div>
-
-                <YesNo
-                  label="Are you working on any other online platform? *"
-                  value={form.other_platform}
-                  onChange={v => set('other_platform', v)}
-                  error={errors.other_platform}
-                />
-
-                <YesNo
-                  label="Are you currently working a full-time job? *"
-                  value={form.fulltime_job}
-                  onChange={v => set('fulltime_job', v)}
-                  error={errors.fulltime_job}
-                />
-              </div>
-            )}
-
-            {/* ── Step 3: Profile & Pricing ── */}
-            {step === 3 && (
-              <div className="space-y-4">
-                <div>
-                  <label className="text-gray-300 text-xs block mb-2">Profile Photo (प्रोफाइल फोटो) <span className="text-gray-600">(optional)</span></label>
-                  <div className="flex flex-col items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => photoInputRef.current?.click()}
-                      className="relative w-28 h-28 rounded-full border-2 border-dashed border-gold-600/40 hover:border-gold-500 transition-colors overflow-hidden bg-cosmic-900 flex items-center justify-center group"
-                    >
-                      {form.photo_url ? (
-                        <img src={form.photo_url} alt="Preview" className="w-full h-full object-cover" />
-                      ) : (
-                        <svg viewBox="0 0 80 80" className="w-20 h-20 text-gray-700" fill="currentColor">
-                          <circle cx="40" cy="28" r="16" />
-                          <path d="M8 72c0-17.673 14.327-32 32-32s32 14.327 32 32" />
-                        </svg>
-                      )}
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                        </svg>
-                      </div>
-                    </button>
-                    <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
-                    {form.photo_url
-                      ? <button type="button" onClick={() => set('photo_url', '')} className="text-red-400 text-xs hover:underline">Remove photo</button>
-                      : <p className="text-gray-500 text-xs text-center">Click to upload · JPG, PNG, WEBP · Max 2 MB</p>
-                    }
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-1.5">YouTube Channel <span className="text-gray-600">(optional)</span></label>
+                    <input type="url" value={form.youtube_channel} onChange={e => set('youtube_channel', e.target.value)}
+                      placeholder="https://youtube.com/@yourchannel" className={inp('youtube_channel')} />
                   </div>
-                  <p className="text-gray-600 text-xs mt-2 text-center">Make sure your face is in the centre and clearly visible.</p>
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-1.5">LinkedIn Profile <span className="text-gray-600">(optional)</span></label>
+                    <input type="url" value={form.linkedin_url} onChange={e => set('linkedin_url', e.target.value)}
+                      placeholder="https://linkedin.com/in/yourprofile" className={inp('linkedin_url')} />
+                  </div>
+                  <div className="border-t border-gold-600/10 pt-4">
+                    <label className="text-gray-300 text-xs block mb-1.5">Years of Experience *</label>
+                    <input type="number" min="1" value={form.experience_years}
+                      onChange={e => set('experience_years', e.target.value)}
+                      placeholder="e.g. 8" className={inp('experience_years')} />
+                    {errors.experience_years && <p className="text-red-400 text-xs mt-1">{errors.experience_years}</p>}
+                  </div>
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-1.5">Preferred Price per Minute (₹) *</label>
+                    <input type="number" min="10" value={form.price_per_min}
+                      onChange={e => set('price_per_min', e.target.value)}
+                      className={inp('price_per_min')} />
+                    {errors.price_per_min && <p className="text-red-400 text-xs mt-1">{errors.price_per_min}</p>}
+                    <p className="text-gray-600 text-xs mt-1">Platform takes {100 - share}%; you keep {share}%</p>
+                  </div>
                 </div>
-
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">YouTube Channel <span className="text-gray-600">(optional)</span></label>
-                  <input type="url" value={form.youtube_channel} onChange={e => set('youtube_channel', e.target.value)}
-                    placeholder="https://youtube.com/@yourchannel" className={inp('youtube_channel')} />
-                </div>
-
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">LinkedIn Profile <span className="text-gray-600">(optional)</span></label>
-                  <input type="url" value={form.linkedin_url} onChange={e => set('linkedin_url', e.target.value)}
-                    placeholder="https://linkedin.com/in/yourprofile" className={inp('linkedin_url')} />
-                </div>
-
-                <div className="border-t border-gold-600/10 pt-4">
-                  <label className="text-gray-300 text-xs block mb-1.5">Years of Experience *</label>
-                  <input type="number" min="1" value={form.experience_years}
-                    onChange={e => set('experience_years', e.target.value)}
-                    placeholder="e.g. 8" className={inp('experience_years')} />
-                  {errors.experience_years && <p className="text-red-400 text-xs mt-1">{errors.experience_years}</p>}
-                </div>
-
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Preferred Price per Minute (₹) *</label>
-                  <input type="number" min="10" value={form.price_per_min}
-                    onChange={e => set('price_per_min', e.target.value)}
-                    className={inp('price_per_min')} />
-                  {errors.price_per_min && <p className="text-red-400 text-xs mt-1">{errors.price_per_min}</p>}
-                  <p className="text-gray-600 text-xs mt-1">Platform takes {100 - share}%; you keep {share}%</p>
-                </div>
-              </div>
-            )}
-
-            {/* ── Step 4: About You ── */}
-            {step === 4 && (
-              <div className="space-y-4">
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Your Bio *</label>
-                  <textarea value={form.bio} onChange={e => set('bio', e.target.value)} rows={4}
-                    placeholder="Tell seekers about yourself, your approach, your tradition, and what makes your readings unique..."
-                    className={ta('bio')} />
-                  {errors.bio && <p className="text-red-400 text-xs mt-1">{errors.bio}</p>}
-                </div>
-
-                <div>
-                  <label className="text-gray-300 text-xs block mb-1.5">Why should we choose you? <span className="text-gray-600">(optional)</span></label>
-                  <textarea value={form.why_join} onChange={e => set('why_join', e.target.value)} rows={4}
-                    placeholder="What makes you the right fit for AstroVyoma? What do seekers gain from your consultations?"
-                    className={ta('why_join')} maxLength={1000} />
-                  <p className="text-gray-600 text-xs mt-1 text-right">{form.why_join.length}/1000</p>
-                </div>
-
-                <div className="bg-cosmic-900/40 border border-gold-600/10 rounded-xl p-4 text-xs text-gray-500 leading-relaxed">
-                  <p className="text-gold-400 font-semibold mb-1">Submitting your application</p>
-                  By submitting, you confirm that all information is accurate. Our team reviews every application
-                  and will contact you within 3–5 business days. Approved astrologers get a Pandit Portal login
-                  via email with a 4-digit PIN.
-                </div>
-              </div>
-            )}
-
-            <div className="flex gap-3 mt-8">
-              {step > 0 && (
-                <button type="button" onClick={handleBack} className="btn-outline-gold flex-1 py-3 text-sm">
-                  Back
-                </button>
               )}
-              {step < 4 ? (
-                <button type="submit" className="btn-gold flex-1 py-3 text-sm">Next →</button>
-              ) : (
-                <button type="submit" disabled={loading}
-                  className="btn-gold flex-1 py-3 text-sm flex items-center justify-center gap-2">
-                  {loading && <span className="w-4 h-4 border-2 border-cosmic-950/50 border-t-cosmic-950 rounded-full animate-spin" />}
-                  Submit Application
-                </button>
+
+              {/* ── Step 4: About You ── */}
+              {step === 4 && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-1.5">Your Bio *</label>
+                    <textarea value={form.bio} onChange={e => set('bio', e.target.value)} rows={4}
+                      placeholder="Tell seekers about yourself, your approach, your tradition, and what makes your readings unique..."
+                      className={ta('bio')} />
+                    {errors.bio && <p className="text-red-400 text-xs mt-1">{errors.bio}</p>}
+                  </div>
+                  <div>
+                    <label className="text-gray-300 text-xs block mb-1.5">Why should we choose you? <span className="text-gray-600">(optional)</span></label>
+                    <textarea value={form.why_join} onChange={e => set('why_join', e.target.value)} rows={4}
+                      placeholder="What makes you the right fit for AstroVyoma? What do seekers gain from your consultations?"
+                      className={ta('why_join')} maxLength={1000} />
+                    <p className="text-gray-600 text-xs mt-1 text-right">{form.why_join.length}/1000</p>
+                  </div>
+                  <div className="bg-cosmic-900/40 border border-gold-600/10 rounded-xl p-4 text-xs text-gray-500 leading-relaxed">
+                    <p className="text-gold-400 font-semibold mb-1">Submitting your application</p>
+                    By submitting, you confirm that all information is accurate. Our team reviews every application
+                    and will contact you within 3–5 business days. Approved astrologers get a Pandit Portal login
+                    via email with a 4-digit PIN.
+                  </div>
+                </div>
               )}
-            </div>
-          </form>
+
+              <div className="flex gap-3 mt-8">
+                {step > 0 && (
+                  <button type="button" onClick={handleBack} className="btn-outline-gold flex-1 py-3 text-sm">
+                    ← Back
+                  </button>
+                )}
+                {step < 4 ? (
+                  <button type="submit" className="btn-gold flex-1 py-3 text-sm font-semibold">
+                    Continue →
+                  </button>
+                ) : (
+                  <button type="submit" disabled={loading}
+                    className="btn-gold flex-1 py-3 text-sm font-semibold flex items-center justify-center gap-2">
+                    {loading && <span className="w-4 h-4 border-2 border-cosmic-950/50 border-t-cosmic-950 rounded-full animate-spin" />}
+                    Submit Application
+                  </button>
+                )}
+              </div>
+            </form>
+          </motion.div>
         </div>
       </div>
+
+      {/* ══════════════════════════════════════
+          FOOTER STRIP
+      ══════════════════════════════════════ */}
+      <div className="py-10 px-4 text-center border-t border-gold-600/10">
+        <p className="text-gold-400 font-serif text-lg mb-1">ॐ नमः शिवाय</p>
+        <p className="text-gray-600 text-xs">AstroVyoma — Connecting seekers with India's finest Vedic astrologers</p>
+        <Link to="/" className="text-gold-600 hover:text-gold-400 text-xs mt-2 inline-block transition-colors">← Back to AstroVyoma</Link>
+      </div>
+
     </div>
   );
 }
