@@ -197,6 +197,7 @@ const PAATHS = [
     subtitle: 'All 9 Planets',
     deity: 'Nine Planets (Navgrah)',
     icon: '🌟',
+    image: '/images/navgrah.png',
     gradient: ['#4E342E', '#1B0000'],
     duration: '4–5 Hours',
     price: 19951,
