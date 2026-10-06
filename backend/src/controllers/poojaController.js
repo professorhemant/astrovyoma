@@ -678,10 +678,10 @@ const PAATHS = [
 
 const crypto  = require('crypto');
 const { getRazorpay } = require('../services/razorpay');
-
-// ── Bookings (in-memory for now) ──────────────────────────────────────────
-const bookings = [];
-let bookingCounter = 1000;
+const { PoojaBooking, Astrologer } = require('../models');
+const { notifyCustomerBookingConfirmed, notifyPanditNewBooking } = require('../services/notificationService');
+const { getSettings } = require('../services/settingsService');
+const { Op } = require('sequelize');
 
 function resolvePrice(paath, variant) {
   if (paath.variants && variant) {
@@ -691,15 +691,26 @@ function resolvePrice(paath, variant) {
   return paath.price;
 }
 
+function splitAmount(gross, commissionPercent) {
+  const commission = Math.round(gross * commissionPercent) / 100;
+  return { commission, net: Math.round((gross - commission) * 100) / 100 };
+}
+
+// Generate next sequential ref_id based on existing count
+async function nextRefId() {
+  const count = await PoojaBooking.count();
+  return `AVP${1001 + count}`;
+}
+
 function getPaaths(req, res) {
   const { category } = req.query;
   const paaths = category
     ? PAATHS.filter(p => p.category === category)
-    : PAATHS.filter(p => !p.category); // default: return only generic paaths
+    : PAATHS.filter(p => !p.category);
   res.json({ paaths });
 }
 
-// Step 1 — create a Razorpay order (called when user submits the booking form)
+// Step 1 — create Razorpay order
 async function createOrder(req, res) {
   try {
     const { paathId, name, mobile, date, variant } = req.body;
@@ -719,12 +730,7 @@ async function createOrder(req, res) {
       notes:    { paathId, name, mobile },
     });
 
-    res.json({
-      order_id: order.id,
-      amount:   order.amount,
-      currency: order.currency,
-      key:      process.env.RAZORPAY_KEY_ID,
-    });
+    res.json({ order_id: order.id, amount: order.amount, currency: order.currency, key: process.env.RAZORPAY_KEY_ID });
   } catch (err) {
     if (err.message === 'Razorpay credentials not configured') {
       return res.status(503).json({ error: 'Payment gateway not configured. Please set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env' });
@@ -734,8 +740,8 @@ async function createOrder(req, res) {
   }
 }
 
-// Step 2 — verify Razorpay payment and confirm the booking
-function verifyAndBook(req, res) {
+// Step 2 — verify payment, persist booking, notify via SMS
+async function verifyAndBook(req, res) {
   try {
     const {
       razorpay_order_id, razorpay_payment_id, razorpay_signature,
@@ -754,34 +760,221 @@ function verifyAndBook(req, res) {
     // Verify HMAC signature
     const hmac = crypto.createHmac('sha256', secret);
     hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);
-    const digest = hmac.digest('hex');
-    if (digest !== razorpay_signature) {
+    if (hmac.digest('hex') !== razorpay_signature) {
       return res.status(400).json({ error: 'Payment verification failed — invalid signature' });
     }
 
     const paath = PAATHS.find(p => p.id === paathId);
     if (!paath) return res.status(404).json({ error: 'Paath not found' });
 
-    const price = resolvePrice(paath, variant);
-    const refId = `AVP${++bookingCounter}`;
+    const gross = resolvePrice(paath, variant);
 
-    const booking = {
-      refId, paathId, paathName: paath.name, variant: variant || null,
-      name, mobile, date, timeSlot: timeSlot || 'Morning (5:30 – 8:00 AM)',
-      gotra: gotra || '', intention: intention || '',
-      price, status: 'Confirmed',
-      razorpay_order_id, razorpay_payment_id,
-      createdAt: new Date().toISOString(),
-    };
-    bookings.push(booking);
+    // Use platform commission setting (default 40%)
+    const settings = await getSettings().catch(() => ({ commissionPercent: 40 }));
+    const commissionPercent = Math.min(100, Math.max(0, Number(settings.commissionPercent) || 40));
+    const { commission, net } = splitAmount(gross, commissionPercent);
 
-    console.log(`[PoojaBooking] Payment confirmed — ${refId} | ${paath.name} | ${name} (${mobile}) | ₹${price}`);
+    // Auto-assign to the first verified pandit
+    const pandit = await Astrologer.findOne({ where: { is_verified: true }, attributes: ['id', 'phone'] });
 
-    res.json({ success: true, refId, booking });
+    const refId = await nextRefId();
+
+    const booking = await PoojaBooking.create({
+      ref_id:           refId,
+      paath_id:         paathId,
+      paath_name:       paath.name,
+      variant:          variant || null,
+      customer_name:    name,
+      customer_mobile:  mobile,
+      preferred_date:   date,
+      time_slot:        timeSlot || 'Flexible (Pandit Ji\'s discretion)',
+      gotra:            gotra || '',
+      intention:        intention || '',
+      gross_amount:     gross,
+      commission_percent: commissionPercent,
+      commission_amount:  commission,
+      net_amount:         net,
+      status:           'confirmed',
+      pandit_id:        pandit?.id || null,
+      razorpay_order_id,
+      razorpay_payment_id,
+    });
+
+    console.log(`[PoojaBooking] Confirmed — ${refId} | ${paath.name} | ${name} (${mobile}) | ₹${gross} | Pandit ₹${net}`);
+
+    // Fire-and-forget SMS — never let notification failure break the booking response
+    notifyCustomerBookingConfirmed({ mobile, name, paathName: paath.name, refId, date }).catch(() => {});
+    if (pandit?.phone) {
+      notifyPanditNewBooking({
+        panditMobile: pandit.phone,
+        refId, paathName: paath.name,
+        customerName: name, date,
+        timeSlot: timeSlot || 'Flexible',
+        panditAmount: net,
+      }).catch(() => {});
+    }
+
+    res.json({ success: true, refId, booking: { refId, paathName: paath.name } });
   } catch (err) {
     console.error('verifyAndBook error:', err);
     res.status(500).json({ error: 'Booking failed after payment' });
   }
 }
 
-module.exports = { getPaaths, createOrder, verifyAndBook };
+// ── Pandit portal — see own pooja bookings ────────────────────────────────
+
+async function getPanditBookings(req, res) {
+  try {
+    const { panditId } = req.pandit;
+    const bookings = await PoojaBooking.findAll({
+      where: { pandit_id: panditId },
+      order: [['created_at', 'DESC']],
+      limit: 100,
+    });
+    res.json({ bookings: bookings.map(shapePandit) });
+  } catch (err) {
+    console.error('getPanditBookings error:', err);
+    res.status(500).json({ error: 'Failed to load pooja bookings' });
+  }
+}
+
+async function markPoojaCompleted(req, res) {
+  try {
+    const { panditId } = req.pandit;
+    const booking = await PoojaBooking.findByPk(req.params.id);
+    if (!booking) return res.status(404).json({ error: 'Booking not found' });
+    if (booking.pandit_id !== panditId) return res.status(403).json({ error: 'Not your booking' });
+    if (booking.status !== 'confirmed') return res.status(400).json({ error: `Cannot mark as completed — current status is ${booking.status}` });
+
+    await booking.update({ status: 'completed' });
+    console.log(`[PoojaBooking] Completed — ${booking.ref_id} marked done by Pandit Ji`);
+    res.json({ success: true, refId: booking.ref_id });
+  } catch (err) {
+    console.error('markPoojaCompleted error:', err);
+    res.status(500).json({ error: 'Failed to mark booking as completed' });
+  }
+}
+
+// Pandit-facing shape — shows customer paid + their earnings, no commission breakdown
+function shapePandit(b) {
+  return {
+    id:            b.id,
+    ref_id:        b.ref_id,
+    paath_name:    b.paath_name,
+    variant:       b.variant,
+    customer_name: b.customer_name,
+    preferred_date: b.preferred_date,
+    time_slot:     b.time_slot,
+    gotra:         b.gotra,
+    intention:     b.intention,
+    customer_paid: parseFloat(b.gross_amount),
+    your_earnings: parseFloat(b.net_amount),
+    status:        b.status,
+    paid_at:       b.paid_at,
+    created_at:    b.created_at,
+  };
+}
+
+// ── Admin — full pooja bookings view ─────────────────────────────────────
+
+async function getAdminPoojaBookings(req, res) {
+  try {
+    const { status, limit = 100, offset = 0 } = req.query;
+    const where = status ? { status } : {};
+    const { count, rows } = await PoojaBooking.findAndCountAll({
+      where,
+      order: [['created_at', 'DESC']],
+      limit:  parseInt(limit),
+      offset: parseInt(offset),
+    });
+    res.json({ total: count, bookings: rows.map(shapeAdmin) });
+  } catch (err) {
+    console.error('getAdminPoojaBookings error:', err);
+    res.status(500).json({ error: 'Failed to load pooja bookings' });
+  }
+}
+
+async function getAdminPoojaPayouts(req, res) {
+  try {
+    // All completed but not yet paid bookings — these are owed to pandit
+    const pending = await PoojaBooking.findAll({
+      where: { status: 'completed' },
+      order: [['created_at', 'ASC']],
+    });
+
+    const totalOwed = pending.reduce((sum, b) => sum + parseFloat(b.net_amount), 0);
+
+    // Recent paid bookings
+    const recent = await PoojaBooking.findAll({
+      where: { status: 'paid' },
+      order: [['paid_at', 'DESC']],
+      limit: 20,
+    });
+
+    res.json({
+      pending: pending.map(shapeAdmin),
+      totalOwed: Math.round(totalOwed * 100) / 100,
+      recent: recent.map(shapeAdmin),
+    });
+  } catch (err) {
+    console.error('getAdminPoojaPayouts error:', err);
+    res.status(500).json({ error: 'Failed to load pooja payouts' });
+  }
+}
+
+async function payPanditForPooja(req, res) {
+  try {
+    const { booking_ids, reference } = req.body;
+    if (!Array.isArray(booking_ids) || !booking_ids.length) {
+      return res.status(400).json({ error: 'booking_ids array is required' });
+    }
+
+    const rows = await PoojaBooking.findAll({
+      where: { id: { [Op.in]: booking_ids }, status: 'completed' },
+    });
+    if (!rows.length) return res.json({ paid: 0, amount: 0, message: 'Nothing to pay — bookings may already be paid or not yet completed.' });
+
+    const amount = rows.reduce((sum, b) => sum + parseFloat(b.net_amount), 0);
+    await PoojaBooking.update(
+      { status: 'paid', paid_at: new Date(), payout_reference: reference || null },
+      { where: { id: { [Op.in]: rows.map(r => r.id) } } }
+    );
+
+    console.log(`[PoojaPayouts] Marked ${rows.length} booking(s) paid — ₹${Math.round(amount * 100) / 100}${reference ? ` (ref: ${reference})` : ''}`);
+    res.json({ paid: rows.length, amount: Math.round(amount * 100) / 100 });
+  } catch (err) {
+    console.error('payPanditForPooja error:', err);
+    res.status(500).json({ error: 'Failed to record payout' });
+  }
+}
+
+function shapeAdmin(b) {
+  return {
+    id:                 b.id,
+    ref_id:             b.ref_id,
+    paath_name:         b.paath_name,
+    variant:            b.variant,
+    customer_name:      b.customer_name,
+    customer_mobile:    b.customer_mobile,
+    preferred_date:     b.preferred_date,
+    time_slot:          b.time_slot,
+    gotra:              b.gotra,
+    intention:          b.intention,
+    gross_amount:       parseFloat(b.gross_amount),
+    commission_percent: parseFloat(b.commission_percent),
+    commission_amount:  parseFloat(b.commission_amount),
+    net_amount:         parseFloat(b.net_amount),
+    status:             b.status,
+    pandit_id:          b.pandit_id,
+    razorpay_payment_id: b.razorpay_payment_id,
+    paid_at:            b.paid_at,
+    payout_reference:   b.payout_reference,
+    created_at:         b.created_at,
+  };
+}
+
+module.exports = {
+  getPaaths, createOrder, verifyAndBook,
+  getPanditBookings, markPoojaCompleted,
+  getAdminPoojaBookings, getAdminPoojaPayouts, payPanditForPooja,
+};

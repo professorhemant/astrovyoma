@@ -123,6 +123,25 @@ export const pooja = {
   verifyPayment:      (data) => api.post('/pooja/verify', data),
 };
 
+// Pandit portal pooja calls — use pandit token, not user token
+const panditApi = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
+panditApi.interceptors.request.use(cfg => {
+  const t = localStorage.getItem('pandit_token');
+  if (t) cfg.headers.Authorization = `Bearer ${t}`;
+  return cfg;
+});
+
+export const panditPooja = {
+  getBookings:    ()   => panditApi.get('/pooja/pandit/bookings'),
+  markDone:       (id) => panditApi.post(`/pooja/pandit/bookings/${id}/done`),
+};
+
+export const adminPooja = {
+  getBookings: (params) => api.get('/admin/pooja/bookings', { params }),
+  getPayouts:  ()       => api.get('/admin/pooja/payouts'),
+  pay:         (data)   => api.post('/admin/pooja/payouts/pay', data),
+};
+
 export const mall = {
   getCategories: ()       => api.get('/mall/categories'),
   getProducts:   (params) => api.get('/mall/products', { params }),

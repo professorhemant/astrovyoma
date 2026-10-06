@@ -37,6 +37,7 @@ const SiteSetting  = require('./SiteSetting')(sequelize);
 const ContentItem  = require('./ContentItem')(sequelize);
 const Media        = require('./Media')(sequelize);
 const AstrologerEarning = require('./AstrologerEarning')(sequelize);
+const PoojaBooking      = require('./PoojaBooking')(sequelize);
 
 User.hasOne(Astrologer, { foreignKey: 'user_id', as: 'astrologerProfile' });
 Astrologer.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
@@ -73,4 +74,4 @@ Appointment.belongsTo(Astrologer, { foreignKey: 'astrologer_id', as: 'astrologer
 User.hasMany(UserReport, { foreignKey: 'user_id', as: 'reports' });
 UserReport.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
-module.exports = { sequelize, User, Astrologer, Kundali, Consultation, Message, AiChatMessage, OtpCode, Transaction, Review, Subscription, Appointment, UserReport, AstrologerApplication, SiteSetting, ContentItem, Media, AstrologerEarning };
+module.exports = { sequelize, User, Astrologer, Kundali, Consultation, Message, AiChatMessage, OtpCode, Transaction, Review, Subscription, Appointment, UserReport, AstrologerApplication, SiteSetting, ContentItem, Media, AstrologerEarning, PoojaBooking };

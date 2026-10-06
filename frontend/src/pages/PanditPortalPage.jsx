@@ -5,6 +5,7 @@ import { Phone, Lock, LogOut, Wifi, WifiOff, IndianRupee, Clock } from 'lucide-r
 import PanditCallPanel from '../components/PanditCallPanel';
 import PanditSchedule from '../components/PanditSchedule';
 import CompleteContactPrompt from '../components/CompleteContactPrompt';
+import PanditPoojaBookings from '../components/PanditPoojaBookings';
 import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -273,6 +274,9 @@ export default function PanditPortalPage() {
             </>
           )}
         </div>
+
+        {/* Pooja bookings — new bookings from /book-pooja page */}
+        <PanditPoojaBookings />
 
         {/* Her hours, and who has booked them. The online toggle above is for
             someone wanting to talk *now*; this is the diary. */}

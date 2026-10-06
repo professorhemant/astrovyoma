@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
-import { admin as adminApi, astrologerApplications } from '../api';
+import { admin as adminApi, astrologerApplications, adminPooja } from '../api';
 import SettingsPanel from '../components/admin/SettingsPanel';
 import ContentTab from '../components/admin/ContentTab';
 import VisualEditorTab from '../components/admin/VisualEditorTab';
@@ -12,7 +12,7 @@ import {
   CheckCircle, XCircle, RefreshCw, ChevronLeft, ChevronRight,
   Shield, Bell, AlertTriangle, Calendar, TrendingUp,
   Phone, Mail, BarChart2, Eye, EyeOff, IndianRupee, FileText, Home, KeyRound, Pencil, MousePointer2,
-  Banknote
+  Banknote, BookOpen
 } from 'lucide-react';
 
 // Applications are the intake queue for Astrologers, so they sit next to them.
@@ -29,6 +29,7 @@ const TABS = [
   { key: 'transactions',  label: 'Transactions',   icon: Wallet },
   { key: 'revenue',       label: 'Revenue',        icon: TrendingUp },
   { key: 'payouts',       label: 'Payouts',        icon: Banknote },
+  { key: 'pooja',         label: 'Pooja Bookings', icon: BookOpen },
   { key: 'design',        label: 'Visual Editor',  icon: MousePointer2 },
   { key: 'content',       label: 'Site Content',   icon: Pencil },
   { key: 'settings',      label: 'Settings',       icon: Settings },
@@ -1430,6 +1431,247 @@ function ApplicationsTab({ onPendingChange }) {
   );
 }
 
+// ─── POOJA BOOKINGS TAB ───────────────────────────────────────────────────────
+const POOJA_STATUS_COLOR = {
+  confirmed: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
+  completed: 'text-blue-400  bg-blue-500/10  border-blue-500/30',
+  paid:      'text-green-400 bg-green-500/10 border-green-500/30',
+};
+
+function PoojaTab() {
+  const [bookings, setBookings] = useState([]);
+  const [payouts,  setPayouts]  = useState({ pending: [], totalOwed: 0, recent: [] });
+  const [loading,  setLoading]  = useState(true);
+  const [view,     setView]     = useState('bookings'); // 'bookings' | 'payouts'
+  const [paying,   setPaying]   = useState(false);
+  const [selected, setSelected] = useState([]);   // booking ids to pay
+  const [reference, setReference] = useState('');
+  const [confirmPay, setConfirmPay] = useState(false);
+
+  function loadAll() {
+    setLoading(true);
+    Promise.all([
+      adminPooja.getBookings(),
+      adminPooja.getPayouts(),
+    ])
+      .then(([b, p]) => {
+        setBookings(b.data.bookings || []);
+        setPayouts(p.data);
+        setSelected((p.data.pending || []).map(x => x.id));
+      })
+      .catch(() => toast.error('Failed to load pooja data'))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => { loadAll(); }, []);
+
+  async function handlePay() {
+    if (!selected.length) return;
+    setPaying(true);
+    try {
+      const { data } = await adminPooja.pay({ booking_ids: selected, reference: reference.trim() || undefined });
+      if (data.paid) {
+        toast.success(`Recorded ₹${data.amount?.toLocaleString('en-IN')} paid to Pandit Ji`);
+      } else {
+        toast(data.message || 'Nothing to settle');
+      }
+      setConfirmPay(false);
+      setReference('');
+      loadAll();
+    } catch {
+      toast.error('Failed to record payout');
+    } finally {
+      setPaying(false);
+    }
+  }
+
+  if (loading) return <div className="flex justify-center py-20"><Loader className="w-8 h-8 text-gold-400 animate-spin" /></div>;
+
+  const totalRevenue = bookings.reduce((s, b) => s + b.gross_amount, 0);
+  const platformRevenue = bookings.reduce((s, b) => s + b.commission_amount, 0);
+  const panditRevenue = bookings.reduce((s, b) => s + b.net_amount, 0);
+  const byStatus = bookings.reduce((acc, b) => { acc[b.status] = (acc[b.status] || 0) + 1; return acc; }, {});
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <h2 className="font-serif text-2xl text-gold-400">Pooja Bookings</h2>
+        <button onClick={loadAll} className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gold-400 transition-colors">
+          <RefreshCw className="w-3.5 h-3.5" /> Refresh
+        </button>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <StatCard label="Total Bookings"   value={bookings.length}                                                  icon={BookOpen} color="gold" />
+        <StatCard label="Total Revenue"    value={`₹${Math.round(totalRevenue).toLocaleString('en-IN')}`}           icon={IndianRupee} color="green" />
+        <StatCard label="Platform Earned"  value={`₹${Math.round(platformRevenue).toLocaleString('en-IN')}`}        icon={TrendingUp} color="blue"
+          sub={`${bookings[0]?.commission_percent ?? 40}% commission`} />
+        <StatCard label="Owed to Pandit"   value={`₹${Math.round(payouts.totalOwed).toLocaleString('en-IN')}`}      icon={Banknote} color="yellow"
+          sub={`${payouts.pending?.length || 0} completed, unpaid`} />
+      </div>
+
+      {/* Status summary */}
+      <div className="flex flex-wrap gap-3 mb-6">
+        {Object.entries(byStatus).map(([st, cnt]) => (
+          <span key={st} className={`text-xs px-3 py-1 rounded-full border ${POOJA_STATUS_COLOR[st] || ''}`}>
+            {st}: {cnt}
+          </span>
+        ))}
+      </div>
+
+      {/* Sub-nav */}
+      <div className="flex gap-2 mb-6">
+        {[
+          { key: 'bookings', label: `All Bookings (${bookings.length})` },
+          { key: 'payouts',  label: `Pending Payouts (${payouts.pending?.length || 0})` },
+        ].map(v => (
+          <button key={v.key} onClick={() => setView(v.key)}
+            className={`px-4 py-1.5 rounded-lg text-xs border transition-colors ${view === v.key ? 'bg-gold-500/10 text-gold-400 border-gold-500/40' : 'text-gray-400 border-gold-600/20 hover:text-gray-200'}`}>
+            {v.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── ALL BOOKINGS ── */}
+      {view === 'bookings' && (
+        bookings.length === 0 ? (
+          <div className="card-cosmic p-10 text-center">
+            <p className="text-gray-400 text-sm">No pooja bookings yet.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {bookings.map(b => (
+              <div key={b.id} className="card-cosmic p-4">
+                <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+                  <div>
+                    <p className="text-gold-400 font-semibold text-sm">{b.paath_name}{b.variant ? ` (${b.variant})` : ''}</p>
+                    <p className="text-gray-300 text-xs mt-0.5">{b.customer_name} · {b.customer_mobile}</p>
+                  </div>
+                  <span className={`text-[10px] px-2.5 py-1 rounded-full border ${POOJA_STATUS_COLOR[b.status] || ''}`}>
+                    {b.status}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs mb-3">
+                  <div>
+                    <p className="text-gray-500">Date</p>
+                    <p className="text-gray-200">{new Date(b.preferred_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Customer Paid</p>
+                    <p className="text-white font-semibold">₹{b.gross_amount?.toLocaleString('en-IN')}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Platform ({b.commission_percent}%)</p>
+                    <p className="text-blue-400">₹{b.commission_amount?.toLocaleString('en-IN')}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Pandit Ji (60%)</p>
+                    <p className="text-gold-400">₹{b.net_amount?.toLocaleString('en-IN')}</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-3 text-[10px] text-gray-600 border-t border-gold-600/10 pt-2">
+                  <span>Ref: {b.ref_id}</span>
+                  {b.time_slot && <span>Time: {b.time_slot}</span>}
+                  {b.gotra && <span>Gotra: {b.gotra}</span>}
+                  {b.razorpay_payment_id && <span>Razorpay: {b.razorpay_payment_id}</span>}
+                  {b.paid_at && <span className="text-green-600">Paid on {new Date(b.paid_at).toLocaleDateString('en-IN')}{b.payout_reference ? ` · ref ${b.payout_reference}` : ''}</span>}
+                </div>
+                {b.intention && (
+                  <p className="text-[10px] text-gray-600 mt-1 italic">"{b.intention}"</p>
+                )}
+              </div>
+            ))}
+          </div>
+        )
+      )}
+
+      {/* ── PENDING PAYOUTS ── */}
+      {view === 'payouts' && (
+        <div>
+          {payouts.pending?.length === 0 ? (
+            <div className="card-cosmic p-10 text-center mb-6">
+              <CheckCircle className="w-10 h-10 text-green-400 mx-auto mb-3" />
+              <p className="text-gray-400 text-sm">All completed pujas have been paid to Pandit Ji.</p>
+            </div>
+          ) : (
+            <div className="card-cosmic p-6 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Total owed to Pandit Ji</p>
+                  <p className="font-serif text-3xl text-gold-400">₹{payouts.totalOwed?.toLocaleString('en-IN')}</p>
+                  <p className="text-gray-500 text-xs mt-1">{payouts.pending?.length} completed puja{payouts.pending?.length !== 1 ? 's' : ''}</p>
+                </div>
+                <button
+                  onClick={() => setConfirmPay(true)}
+                  className="btn-gold px-5 py-2.5 text-sm font-semibold"
+                >
+                  Record Payment
+                </button>
+              </div>
+
+              {/* Confirm payment dialog */}
+              {confirmPay && (
+                <div className="border border-amber-500/40 bg-amber-500/5 rounded-2xl p-4 mt-4">
+                  <p className="text-amber-300 text-sm font-medium mb-1">Record payout to Pandit Ji</p>
+                  <p className="text-gray-400 text-xs mb-3">Make the UPI/bank transfer first, then enter the reference here and click confirm.</p>
+                  <input
+                    value={reference}
+                    onChange={e => setReference(e.target.value)}
+                    placeholder="UPI/transfer reference (optional)"
+                    className="input-cosmic text-sm mb-3 w-full"
+                  />
+                  <div className="flex gap-2">
+                    <button onClick={handlePay} disabled={paying}
+                      className="btn-gold px-4 py-2 text-sm disabled:opacity-60">
+                      {paying ? 'Recording…' : `Confirm — ₹${payouts.totalOwed?.toLocaleString('en-IN')} paid`}
+                    </button>
+                    <button onClick={() => { setConfirmPay(false); setReference(''); }}
+                      className="px-4 py-2 text-sm text-gray-400 border border-gray-600/40 rounded-xl hover:text-gray-200">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Pending list */}
+              <div className="space-y-2 mt-4">
+                {payouts.pending?.map(b => (
+                  <div key={b.id} className="flex items-center justify-between gap-3 bg-cosmic-900/50 rounded-xl px-3 py-2 text-xs">
+                    <div>
+                      <p className="text-gray-200">{b.paath_name}{b.variant ? ` (${b.variant})` : ''}</p>
+                      <p className="text-gray-500">{b.customer_name} · {new Date(b.preferred_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} · Ref {b.ref_id}</p>
+                    </div>
+                    <p className="text-gold-400 font-semibold shrink-0">₹{b.net_amount?.toLocaleString('en-IN')}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Recent paid */}
+          {payouts.recent?.length > 0 && (
+            <div>
+              <h3 className="text-xs text-gray-500 uppercase tracking-wider mb-3">Recently Paid</h3>
+              <div className="space-y-2">
+                {payouts.recent?.map(b => (
+                  <div key={b.id} className="flex items-center justify-between gap-3 bg-cosmic-900/50 rounded-xl px-3 py-2 text-xs">
+                    <div>
+                      <p className="text-gray-300">{b.paath_name} — {b.customer_name}</p>
+                      <p className="text-gray-600">Paid {new Date(b.paid_at).toLocaleDateString('en-IN')}{b.payout_reference ? ` · ref ${b.payout_reference}` : ''} · Ref {b.ref_id}</p>
+                    </div>
+                    <p className="text-green-400 font-semibold shrink-0">₹{b.net_amount?.toLocaleString('en-IN')}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── MAIN ADMIN PAGE ──────────────────────────────────────────────────────────
 export default function AdminPage() {
   const { user, logout, loading } = useAuth();
@@ -1472,6 +1714,7 @@ export default function AdminPage() {
     transactions:  <TransactionsTab />,
     revenue:       <RevenueTab />,
     payouts:       <PayoutsTab />,
+    pooja:         <PoojaTab />,
     design:        <VisualEditorTab />,
     content:       <ContentTab />,
     settings:      <SettingsTab />,
