@@ -17,7 +17,7 @@ const PAATHS = [
     description: 'Hanuman Chalisa recited 11 times by our experienced Pandit Ji with full Vedic rituals — flowers, incense, dhoop, and proper puja vidhi.',
     benefits: ['Removes obstacles and enemies', 'Bestows courage and physical strength', 'Protection from evil forces and black magic', 'Fulfils sincere wishes and desires'],
     occasion: 'Hanuman Jayanti, Tuesdays, Saturdays, Mangal Dosha remedies',
-    includes: ['Hanuman Chalisa × 11', 'Hanuman Aarti', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Hanuman Chalisa × 11', 'Hanuman Aarti', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -35,7 +35,7 @@ const PAATHS = [
     description: 'Complete Shri Ramayan Paath performed by our Pandit Ji as a divine offering — removes all doshas, brings peace, prosperity, and divine blessings of Lord Ram.',
     benefits: ['Removes all types of papa (sins) and doshas', 'Brings peace, prosperity, and happiness', 'Fulfils long-pending wishes and desires', 'Blesses with health, wealth, and harmony'],
     occasion: 'Ram Navami, Vivah, Griha Pravesh, General auspicious occasions',
-    includes: ['Sampurna Ramayan recitation', 'Ram Aarti & Prasad', 'Sankalp in your name', 'WhatsApp video proof'],
+    includes: ['Sampurna Ramayan recitation', 'Ram Aarti & Prasad', 'Sankalp in your name', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -53,7 +53,7 @@ const PAATHS = [
     description: 'Sunderkand — the 5th chapter of Ramayan — is the most auspicious paath for removing obstacles, achieving victory, and receiving Hanuman ji\'s direct blessings.',
     benefits: ['Removes all obstacles from life', 'Brings victory in legal, career, and personal matters', 'Protects from enemies and negative forces', 'Bestows courage, faith, and divine protection'],
     occasion: 'Every Tuesday & Saturday, Hanuman Jayanti, Rahu/Ketu dosha remedies',
-    includes: ['Sunderkand recitation (1–11 times)', 'Hanuman Aarti', 'Sankalp in your name', 'WhatsApp video proof'],
+    includes: ['Sunderkand recitation (1–11 times)', 'Hanuman Aarti', 'Sankalp in your name', 'Video clip on WhatsApp'],
     variants: [
       { label: '1 Time',   price: 10449, originalPrice: 10999, duration: '1.5 Hours' },
       { label: '3 Times',  price: 28499, originalPrice: 29999, duration: '4 Hours' },
@@ -98,7 +98,7 @@ const PAATHS = [
     description: 'Satya Narayan Katha is the most beloved and widely performed puja for home, business, and personal prosperity — bestowing the blessings of Lord Satyanarayana Vishnu.',
     benefits: ['Brings prosperity and happiness to home & family', 'Removes obstacles from business and career', 'Fulfils all righteous wishes and desires', 'Ideal for griha pravesh, marriage, and new beginnings'],
     occasion: 'Purnima, Griha Pravesh, Marriage, New Business, Monthly puja',
-    includes: ['Sampurna Satyanarayan Katha (5 Adhyayas)', 'Vishnu Aarti & Prasad', 'Sankalp in your name', 'WhatsApp video proof'],
+    includes: ['Sampurna Satyanarayan Katha (5 Adhyayas)', 'Vishnu Aarti & Prasad', 'Sankalp in your name', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -116,7 +116,7 @@ const PAATHS = [
     description: 'Aditya Hridaya Strot — the divine hymn of the Sun God taught by Sage Agastya to Lord Ram — recited 11 times for success, health, confidence, and solar energy activation.',
     benefits: ['Boosts confidence, willpower, and leadership', 'Strengthens Sun in the horoscope', 'Removes eye and heart-related health issues', 'Brings victory, recognition, and government favour'],
     occasion: 'Sunday, Makar Sankranti, Surya Jayanti, Chhath Puja',
-    includes: ['Aditya Hridaya Strot × 11', 'Surya Aarti', 'Sankalp in your name', 'WhatsApp video proof'],
+    includes: ['Aditya Hridaya Strot × 11', 'Surya Aarti', 'Sankalp in your name', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -134,7 +134,7 @@ const PAATHS = [
     description: 'Shiv Mans Pooja is a meditative mental worship of Lord Shiva — imagining and offering all 16 upachara (services) to Shiva in the mind, as described in the scriptures.',
     benefits: ['Deep spiritual connection with Lord Shiva', 'Removes all mental stress and anxiety', 'Enhances meditation and inner peace', 'Bestows liberation (moksha) energy and divine grace'],
     occasion: 'Shivratri, Mondays, Shravan Month, Pradosh Vrat',
-    includes: ['Shiv Mans Pooja complete recitation', 'Shiva Aarti & Abhishek', 'Sankalp in your name', 'WhatsApp video proof'],
+    includes: ['Shiv Mans Pooja complete recitation', 'Shiva Aarti & Abhishek', 'Sankalp in your name', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -152,7 +152,7 @@ const PAATHS = [
     description: 'Shiv Ashtak — eight beautiful Sanskrit shlokas in praise of Lord Shiva — recited 11 times to invoke Shiva\'s blessings for health, peace, and spiritual upliftment.',
     benefits: ['Invokes Lord Shiva\'s direct blessings', 'Removes Shani and Rahu-related problems', 'Bestows health and long life', 'Creates divine peace and positive energy in home'],
     occasion: 'Mondays, Shivratri, Shravan Month, Sade Sati',
-    includes: ['Shiv Ashtak × 11', 'Shiva Aarti', 'Sankalp in your name', 'WhatsApp video proof'],
+    includes: ['Shiv Ashtak × 11', 'Shiva Aarti', 'Sankalp in your name', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -170,7 +170,7 @@ const PAATHS = [
     description: 'Hanuman Ashtak — the eight devotional verses of Lord Hanuman — recited 11 times for courage, protection, and removal of all problems and evil influences.',
     benefits: ['Instant protection from evil and enemies', 'Builds courage and confidence', 'Removes all types of fears', 'Bestows Hanuman ji\'s powerful protection shield'],
     occasion: 'Tuesdays, Saturdays, Hanuman Jayanti, Mangal Dosha',
-    includes: ['Hanuman Ashtak × 11', 'Hanuman Aarti', 'Sankalp in your name', 'WhatsApp video proof'],
+    includes: ['Hanuman Ashtak × 11', 'Hanuman Aarti', 'Sankalp in your name', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -188,7 +188,7 @@ const PAATHS = [
     description: 'Durga Saptashati (Chandi Paath) — 700 sacred shlokas of Maa Durga — is the most powerful paath for removing all evils, winning over enemies, and receiving the divine mother\'s supreme blessings.',
     benefits: ['Destroys all negative energies and enemies', 'Removes witchcraft, black magic, and evil eye', 'Blesses with health, wealth, and happiness', 'Grants divine protection of the entire family'],
     occasion: 'Navratri, Durga Ashtami, Dussehra, Black magic removal',
-    includes: ['Sampurna Durga Saptashati (700 shlokas)', 'Durga Aarti & Havan', 'Sankalp in your name', 'WhatsApp video proof'],
+    includes: ['Sampurna Durga Saptashati (700 shlokas)', 'Durga Aarti & Havan', 'Sankalp in your name', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -206,7 +206,7 @@ const PAATHS = [
     description: 'Navgrah Pooja — simultaneous worship and appeasement of all nine planets — performed for complete astrological balance, removal of planetary doshas, and harmonising all cosmic influences.',
     benefits: ['Pacifies all 9 planetary afflictions at once', 'Removes Sade Sati, Mangal, Rahu-Ketu doshas', 'Brings harmony between all planetary forces', 'Ideal before marriage, business launch, or house entry'],
     occasion: 'Before marriage/griha pravesh, Sade Sati, Janma Nakshatra, New Year',
-    includes: ['Navgrah Stotra & Puja vidhi', 'Havan with 9 specific samagri', 'Sankalp in your name', 'WhatsApp video proof'],
+    includes: ['Navgrah Stotra & Puja vidhi', 'Havan with 9 specific samagri', 'Sankalp in your name', 'Video clip on WhatsApp'],
     variants: null,
   },
 
@@ -227,7 +227,7 @@ const PAATHS = [
     description: 'Shani Graha Shanti Puja pacifies Saturn — the most feared planet in Vedic astrology. Essential during Sade Sati, Dhaiya, or Shani Mahadasha to reduce hardships and transform Saturn\'s energy into discipline and success.',
     benefits: ['Reduces intensity of Sade Sati & Shani Dhaiya', 'Removes delays, obstacles, and career setbacks', 'Transforms Saturn\'s hardship into spiritual growth', 'Brings relief from chronic illness linked to Saturn'],
     occasion: 'Sade Sati, Shani Dhaiya, Shani Mahadasha/Antardasha, Saturdays',
-    includes: ['Shani Stotra & 108-name recitation', 'Shani Yantra energisation', 'Til (sesame) havan', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Shani Stotra & 108-name recitation', 'Shani Yantra energisation', 'Til (sesame) havan', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -246,7 +246,7 @@ const PAATHS = [
     description: 'Rahu Shanti Puja pacifies the shadow planet Rahu — responsible for sudden upheavals, confusion, obsessive thinking, and deception. Performed during Rahu Mahadasha or when Rahu is afflicted in the birth chart.',
     benefits: ['Removes Rahu-caused confusion, fear, and anxiety', 'Protects from hidden enemies and deception', 'Reduces effects of Kaal Sarp Dosha (Rahu axis)', 'Brings clarity of mind and stable decision-making'],
     occasion: 'Rahu Mahadasha, Rahu-Ketu transit, Kaal Sarp Dosha, Rahu in 1st/7th/8th house',
-    includes: ['Rahu Stotra & beej mantra jaap', 'Rahu Yantra energisation', 'Blue cloth & coconut offering', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Rahu Stotra & beej mantra jaap', 'Rahu Yantra energisation', 'Blue cloth & coconut offering', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -265,7 +265,7 @@ const PAATHS = [
     description: 'Ketu Shanti Puja removes malefic effects of Ketu — the planet of spiritual detachment, sudden losses, and karmic debts. Essential when Ketu causes health issues, accidents, or spiritual confusion in the chart.',
     benefits: ['Removes sudden losses and unexpected setbacks', 'Reduces health issues linked to Ketu (nerves, infections)', 'Balances karmic debts from past lives', 'Brings spiritual clarity and liberation from illusion'],
     occasion: 'Ketu Mahadasha, Ketu transit, accidents/health fears, spiritual seekers',
-    includes: ['Ketu Stotra & beej mantra jaap', 'Ketu Yantra energisation', 'Multicolour cloth & camphor offering', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Ketu Stotra & beej mantra jaap', 'Ketu Yantra energisation', 'Multicolour cloth & camphor offering', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -284,7 +284,7 @@ const PAATHS = [
     description: 'Kaal Sarp Dosha forms when all 7 planets are hemmed between Rahu and Ketu, causing repeated failures, health crises, and blocked destiny. Our Pandit Ji performs complete dosha nivaran with specific mantras for all 12 Kaal Sarp types.',
     benefits: ['Removes all 12 types of Kaal Sarp Dosha', 'Unlocks stalled success in career, marriage, and finances', 'Removes recurring nightmares and serpent-related fears', 'Clears delayed marriage and childbirth obstacles'],
     occasion: 'All planets between Rahu-Ketu in chart, repeated failures, marriage delays, persistent bad luck',
-    includes: ['Kaal Sarp type identification & Sankalp', 'Nag Devta puja & Shiva abhishek', 'Sarpa Suktam recitation', 'Specific mantra per dosha type', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Kaal Sarp type identification & Sankalp', 'Nag Devta puja & Shiva abhishek', 'Sarpa Suktam recitation', 'Specific mantra per dosha type', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: [
       { label: 'Standard (1 Type)',       price: 14246, originalPrice: 14996, duration: '5–6 Hours' },
       { label: 'Complete (All 12 Types)', price: 28499, originalPrice: 29999, duration: '1 Full Day' },
@@ -306,7 +306,7 @@ const PAATHS = [
     description: 'Pitra Dosha (ancestral debt) occurs when departed ancestors have unresolved wishes or improper last rites — causing repeated family problems, health crises, and childbirth difficulties across generations. This puja frees both the living and the departed souls.',
     benefits: ['Frees ancestors from unsatisfied desires and unrest', 'Removes generational health and family problems', 'Resolves childbirth difficulties and progeny issues', 'Brings lasting peace to family and departed souls'],
     occasion: 'Pitru Paksha (Shraddh), repeated family problems, childbirth difficulties, Saturn in 9th house',
-    includes: ['Pitra Tarpan (water offering to ancestors)', 'Vishnu Sahasranaam recitation', 'Pind Daan arrangement', 'Til & sesame havan', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Pitra Tarpan (water offering to ancestors)', 'Vishnu Sahasranaam recitation', 'Pind Daan arrangement', 'Til & sesame havan', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -325,7 +325,7 @@ const PAATHS = [
     description: 'Mangal Dosha (Kuja Dosha) is the most feared marriage-related dosha in India — formed when Mars is in 1st, 4th, 7th, 8th, or 12th house. This puja permanently reduces dosha intensity and removes obstacles to finding and keeping a compatible life partner.',
     benefits: ['Permanently reduces Mangal Dosha intensity', 'Removes marriage delays and compatibility hurdles', 'Protects married life from conflicts and separation', 'Boosts career confidence and physical vitality'],
     occasion: 'Before marriage, kundali matching issues, Mars in 1/4/7/8/12 house, Mangal Mahadasha',
-    includes: ['Mangal Stotra & 108-name archana', 'Red cloth & masoor dal offering', 'Hanuman Chalisa recitation', 'Mangal Yantra energisation', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Mangal Stotra & 108-name archana', 'Red cloth & masoor dal offering', 'Hanuman Chalisa recitation', 'Mangal Yantra energisation', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -344,7 +344,7 @@ const PAATHS = [
     description: 'Surya Graha Shanti Puja pacifies the Sun — the king of planets — for those suffering from poor confidence, father-related conflicts, career stagnation, or eye/heart health problems. Performed at sunrise with Aditya Hridaya and specific Surya mantras.',
     benefits: ['Boosts confidence, authority, and leadership', 'Removes conflicts with father and government', 'Relieves Sun-related health issues (eyes, heart)', 'Strengthens Sun in the horoscope for career growth'],
     occasion: 'Surya Mahadasha/Antardasha, Sun in debilitation, Sundays, Makar Sankranti',
-    includes: ['Surya Stotra & Aditya Hridayam recitation', 'Surya Yantra energisation', 'Red flower & wheat offering', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Surya Stotra & Aditya Hridayam recitation', 'Surya Yantra energisation', 'Red flower & wheat offering', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -363,7 +363,7 @@ const PAATHS = [
     description: 'Chandra Graha Shanti Puja pacifies the Moon — the planet of mind, emotions, and mother. Ideal when Moon is afflicted causing anxiety, insomnia, emotional instability, or troubled relationship with mother. Performed on Purnima with white flowers and milk offering.',
     benefits: ['Brings mental peace, emotional stability, and clarity', 'Removes insomnia, anxiety, and mood disorders', 'Heals relationship with mother and female figures', 'Strengthens intuition, memory, and emotional intelligence'],
     occasion: 'Chandra Mahadasha, Moon in Scorpio or debilitation, Mondays, Purnima',
-    includes: ['Chandra Stotra & 108-name archana', 'Chandra Yantra energisation', 'White flower & milk offering', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Chandra Stotra & 108-name archana', 'Chandra Yantra energisation', 'White flower & milk offering', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -382,7 +382,7 @@ const PAATHS = [
     description: 'Budh Graha Shanti Puja pacifies Mercury — the planet of intellect, communication, and business. When afflicted, Mercury causes speech problems, business losses, poor decision-making, and skin issues. This puja activates sharp intellect and communication skills.',
     benefits: ['Sharpens intellect, memory, and analytical skills', 'Removes speech disorders and communication blocks', 'Attracts business success and negotiation ability', 'Relieves Mercury-related skin and nervous system issues'],
     occasion: 'Budh Mahadasha, Mercury retrograde effects, Wednesdays, business problems',
-    includes: ['Budh Stotra & beej mantra jaap', 'Budh Yantra energisation', 'Green cloth & moong dal offering', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Budh Stotra & beej mantra jaap', 'Budh Yantra energisation', 'Green cloth & moong dal offering', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -401,7 +401,7 @@ const PAATHS = [
     description: 'Guru Graha Shanti Puja pacifies Jupiter — the most benefic planet and Guru of the gods. When afflicted, Jupiter causes financial mismanagement, poor judgement, marital discord, and blocked spiritual growth. This puja restores Jupiter\'s wisdom and blessings in full.',
     benefits: ['Restores wisdom, good judgement, and spiritual guidance', 'Removes obstacles in marriage, wealth, and higher education', 'Attracts blessings of teachers, mentors, and elders', 'Brings dharmic success, children\'s wellbeing, and abundance'],
     occasion: 'Guru Mahadasha, Jupiter in Capricorn (debilitation), Thursdays, marriage delays',
-    includes: ['Brihaspati Stotra & Vishnu Sahasranaam', 'Guru Yantra energisation', 'Yellow flower & chana dal offering', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Brihaspati Stotra & Vishnu Sahasranaam', 'Guru Yantra energisation', 'Yellow flower & chana dal offering', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -420,7 +420,7 @@ const PAATHS = [
     description: 'Shukra Graha Shanti Puja pacifies Venus — the planet of love, beauty, luxury, and relationships. When afflicted, Venus causes relationship breakdowns, lack of comfort, poor artistic expression, and reproductive health issues. This puja activates Shukra\'s full grace.',
     benefits: ['Restores love, romance, and marital harmony', 'Attracts luxury, comfort, and material pleasures', 'Removes relationship breakdowns and divorce fears', 'Heals reproductive health and hormonal balance'],
     occasion: 'Shukra Mahadasha, Venus in Virgo (debilitation), Fridays, relationship troubles',
-    includes: ['Shukra Stotra & beej mantra jaap', 'Shukra Yantra energisation', 'White flower & ghee offering', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Shukra Stotra & beej mantra jaap', 'Shukra Yantra energisation', 'White flower & ghee offering', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
 
@@ -441,7 +441,7 @@ const PAATHS = [
     description: 'Mahalakshmi Puja invokes the direct blessings of Goddess Lakshmi — the divine bestower of wealth, beauty, and abundance. Performed with lotus flowers, turmeric, and gold-coloured samagri for maximum Lakshmi energy activation.',
     benefits: ['Removes financial blocks and recurring debt', 'Attracts wealth, business success, and abundance', 'Brings harmony and luxury into home', 'Activates Lakshmi energy on Fridays and auspicious days'],
     occasion: 'Fridays, Diwali, Akshaya Tritiya, Navratri, new business launch',
-    includes: ['Lakshmi Stotra & Ashta Lakshmi Aarti', 'Lotus & turmeric offering', 'Shodashopchara (16-step) puja', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Lakshmi Stotra & Ashta Lakshmi Aarti', 'Lotus & turmeric offering', 'Shodashopchara (16-step) puja', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -460,7 +460,7 @@ const PAATHS = [
     description: 'Ashta Lakshmi Puja worships all 8 manifestations of Goddess Lakshmi — Adi Lakshmi, Dhana Lakshmi, Dhanya Lakshmi, Gaja Lakshmi, Santana Lakshmi, Veera Lakshmi, Vijaya Lakshmi, and Vidya Lakshmi — granting 8-fold prosperity across all life domains.',
     benefits: ['Activates all 8 forms of prosperity simultaneously', 'Grants wealth, grain, family, courage, and victory', 'Removes poverty, debt, and lack in every area of life', 'Most powerful Lakshmi puja for complete abundance'],
     occasion: 'Varalakshmi Vrat, Diwali, Navratri, Fridays, major wealth goals',
-    includes: ['Ashta Lakshmi Stotra (8-form worship)', '8 separate samagri sets for each form', 'Lotus & champa flower offering', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Ashta Lakshmi Stotra (8-form worship)', '8 separate samagri sets for each form', 'Lotus & champa flower offering', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -479,7 +479,7 @@ const PAATHS = [
     description: 'Maha Vishnu Puja invokes Lord Vishnu — the Preserver of the Universe — for divine protection, dharmic success, and family harmony. Performed with Tulsi, Panchamrit abhishek, and Vishnu Sahasranaam recitation for full blessings.',
     benefits: ['Grants divine protection from all negativity and enemies', 'Removes obstacles in dharmic work, career, and business', 'Brings harmony, stability, and peace to family life', 'Ideal before major life decisions or new beginnings'],
     occasion: 'Ekadashi, Vaikunta Ekadashi, Vishnu Jayanti, Griha Pravesh, Vivah',
-    includes: ['Vishnu Sahasranaam recitation', 'Panchamrit abhishek with Tulsi', 'Sudarshana Chakra mantra', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Vishnu Sahasranaam recitation', 'Panchamrit abhishek with Tulsi', 'Sudarshana Chakra mantra', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -498,7 +498,7 @@ const PAATHS = [
     description: 'Santan Gopal Puja is performed for couples seeking a child, those with repeated pregnancy loss, or parents seeking protection for an unborn or newborn child. Lord Santan Gopal (the child form of Krishna) is worshipped with deep devotion for the gift of progeny.',
     benefits: ['Blesses childless couples with the gift of a child', 'Removes obstacles causing repeated miscarriage or pregnancy loss', 'Protects the health and future of an unborn child', 'Ensures safe delivery and healthy, intelligent progeny'],
     occasion: 'Childless couples, repeated pregnancy loss, pregnancy protection, Janmashtami',
-    includes: ['Santan Gopal Stotra & 108-name archana', 'Panchamrit abhishek of Bal Krishna', 'Yellow flowers & butter offering', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Santan Gopal Stotra & 108-name archana', 'Panchamrit abhishek of Bal Krishna', 'Yellow flowers & butter offering', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -517,7 +517,7 @@ const PAATHS = [
     description: 'Namkaran Puja is the sacred Hindu naming ceremony performed for a newborn — traditionally on the 11th day after birth. Our Pandit Ji performs the complete vidhi including Jatakarma, Nakshatr Pooja, and the formal name announcement under divine blessings.',
     benefits: ['Gives the child an auspicious name aligned with birth Nakshatra', 'Invokes divine blessings for the child\'s long, healthy life', 'Removes any birth-related doshas or inauspicious yoga', 'Marks a blessed beginning for the child\'s life journey'],
     occasion: '11th day after birth, or any auspicious day chosen by family',
-    includes: ['Jatakarma & Nakshatra Puja', 'Ganesha & Saraswati invocation', 'Name announcement ceremony', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Jatakarma & Nakshatra Puja', 'Ganesha & Saraswati invocation', 'Name announcement ceremony', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -536,7 +536,7 @@ const PAATHS = [
     description: 'Janma Din Puja (Birthday Puja) is performed on one\'s birthday to receive blessings from the Ashta Chiranjeevi (8 immortal beings) and one\'s Ishta Devta. It neutralises the negative effects of the Solar Return, removes Janma Nakshatra doshas, and sets a positive tone for the year ahead.',
     benefits: ['Neutralises malefic effects of the solar return year', 'Removes Janma Nakshatra and birth-day doshas', 'Bestows health, success, and protection for the year ahead', 'Receives blessings of all 8 immortal Chiranjeevi beings'],
     occasion: 'Birthday (Janma Din), Solar Return, Janma Nakshatra day',
-    includes: ['Ashta Chiranjeevi invocation', 'Ishta Devta archana', 'Ayush Havan (longevity ritual)', 'Sankalp in your name & gotra', 'WhatsApp video proof'],
+    includes: ['Ashta Chiranjeevi invocation', 'Ishta Devta archana', 'Ayush Havan (longevity ritual)', 'Sankalp in your name & gotra', 'Video clip on WhatsApp'],
     variants: null,
   },
 
@@ -557,7 +557,7 @@ const PAATHS = [
     description: 'A complete Vastu Shanti Havan performed by our expert Pandit Ji to remove all Vastu doshas from your home or office. Includes Vastu Purusha Mandala mantras, Panch Devta worship, and full havan with Vedic samagri.',
     benefits: ['Removes all Vastu doshas from home or office', 'Brings peace, health, and financial prosperity', 'Neutralises all negative cosmic energies', 'Restores positive Prana flow through the space'],
     occasion: 'Shifting to new home, after major renovation, persistent family problems',
-    includes: ['Vastu Purusha Mandala Puja', 'Panch Devta Havan', 'Vastu Stotra recitation', 'Sankalp in your name', 'WhatsApp video proof'],
+    includes: ['Vastu Purusha Mandala Puja', 'Panch Devta Havan', 'Vastu Stotra recitation', 'Sankalp in your name', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -576,7 +576,7 @@ const PAATHS = [
     description: 'Griha Pravesh is the sacred housewarming ceremony performed before entering a new home. Our Pandit Ji conducts the complete puja with Ganesha puja, Vastu Shanti, Navagraha worship, and Griha Devta Havan — ensuring divine blessings for the new home.',
     benefits: ['Invites divine blessings into the new home', 'Removes any construction-related doshas', 'Ensures harmony, health, and prosperity', 'Auspicious beginning for family life in new home'],
     occasion: 'Moving into a new house or apartment, after construction completion',
-    includes: ['Ganesha Puja & Kalash Sthapana', 'Vastu Shanti Havan', 'Navagraha Worship', 'Griha Devta Puja', 'Sankalp in your name', 'WhatsApp video proof'],
+    includes: ['Ganesha Puja & Kalash Sthapana', 'Vastu Shanti Havan', 'Navagraha Worship', 'Griha Devta Puja', 'Sankalp in your name', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -595,7 +595,7 @@ const PAATHS = [
     description: 'Bhoomi Puja is the sacred worship of Mother Earth (Bhoomi Devi) performed before the first brick is laid. It seeks divine permission from the earth and ensures a blessed, dosha-free construction from the very foundation.',
     benefits: ['Seeks divine permission from Mother Earth', 'Removes underground Vastu doshas', 'Ensures smooth construction without accidents', 'Blesses the land for health and prosperity of future occupants'],
     occasion: 'Before construction begins on any plot, house, or commercial building',
-    includes: ['Bhoomi Devi Puja', 'Vastu Purusha Sthapana', 'Panch Tattva worship', 'Sankalp in your name', 'WhatsApp video proof'],
+    includes: ['Bhoomi Devi Puja', 'Vastu Purusha Sthapana', 'Panch Tattva worship', 'Sankalp in your name', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -614,7 +614,7 @@ const PAATHS = [
     description: 'Targeted Vastu Dosh Nivaran Puja for correcting specific Vastu defects — such as toilet in northeast, south-facing entrance, or kitchen in wrong direction — without any physical construction changes.',
     benefits: ['Corrects specific Vastu defects energetically', 'No demolition or construction required', 'Removes effects of toilet in NE, S entrance, etc.', 'Brings immediate relief from Vastu-related problems'],
     occasion: 'Specific Vastu dosha identified by expert, persistent problems in one area of life',
-    includes: ['Vastu Dosh diagnosis mantras', 'Targeted remedy puja', 'Vastu Yantra energisation', 'Sankalp in your name', 'WhatsApp video proof'],
+    includes: ['Vastu Dosh diagnosis mantras', 'Targeted remedy puja', 'Vastu Yantra energisation', 'Sankalp in your name', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -633,7 +633,7 @@ const PAATHS = [
     description: 'Office Vastu Puja aligns your business premises with cosmic energies to attract wealth, clients, and success. Our Pandit Ji performs Kubera Puja, Vastu Shanti, and Lakshmi worship for maximum business prosperity.',
     benefits: ['Attracts wealth, clients, and business growth', 'Removes obstacles in business and career', 'Improves employee harmony and productivity', 'Activates Kubera energy for financial abundance'],
     occasion: 'Opening a new office or shop, business facing losses, moving to new business premises',
-    includes: ['Kubera Puja & Vastu Shanti', 'Lakshmi worship', 'Vastu Mandala consecration', 'Sankalp in your name', 'WhatsApp video proof'],
+    includes: ['Kubera Puja & Vastu Shanti', 'Lakshmi worship', 'Vastu Mandala consecration', 'Sankalp in your name', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -652,7 +652,7 @@ const PAATHS = [
     description: 'Vastu Kalash Sthapana is a lighter, affordable Vastu puja to energise your home with positive cosmic vibrations. A copper Kalash is consecrated with Ganga Jal, herbs, and Vastu mantras and placed in the northeast corner.',
     benefits: ['Fills home with positive cosmic energy', 'Ideal affordable option for general Vastu correction', 'Activates the sacred northeast (Ishaan) corner', 'Quick and powerful — results felt immediately'],
     occasion: 'General Vastu improvement, new month / Navratri / Purnima, small home corrections',
-    includes: ['Copper Kalash consecration', 'Vastu Mantra chanting', 'Panch Tattva puja', 'Sankalp in your name', 'WhatsApp video proof'],
+    includes: ['Copper Kalash consecration', 'Vastu Mantra chanting', 'Panch Tattva puja', 'Sankalp in your name', 'Video clip on WhatsApp'],
     variants: null,
   },
   {
@@ -671,7 +671,7 @@ const PAATHS = [
     description: 'Plot Puja (Zameen Puja or Bhoomi Shanti) is performed for agricultural land, empty plots, or inherited land to remove any negative energies, ancestral doshas, or underground Vastu defects — blessing the land for prosperity.',
     benefits: ['Removes ancestral or inherited land doshas', 'Clears negative history of the land', 'Blesses agricultural land for good harvest', 'Ideal before selling or building on inherited land'],
     occasion: 'Inherited land, agricultural land blessing, empty plot before sale or construction',
-    includes: ['Bhoomi Shanti puja', 'Ancestral dosha removal mantras', 'Land energisation rituals', 'Sankalp in your name', 'WhatsApp video proof'],
+    includes: ['Bhoomi Shanti puja', 'Ancestral dosha removal mantras', 'Land energisation rituals', 'Sankalp in your name', 'Video clip on WhatsApp'],
     variants: null,
   },
 ];
