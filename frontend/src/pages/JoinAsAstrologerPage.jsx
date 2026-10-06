@@ -328,16 +328,14 @@ export default function JoinAsAstrologerPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {BENEFITS.map((b, i) => (
-              <motion.div key={b.title}
-                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+              <div key={b.title}
                 className={`rounded-2xl border p-6 ${b.bg}`}>
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${b.bg}`}>
                   <b.icon className={`w-5 h-5 ${b.color}`} />
                 </div>
                 <h3 className={`font-semibold text-sm mb-1.5 ${b.color}`}>{b.title}</h3>
                 <p className="text-gray-400 text-xs leading-relaxed">{b.sub}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -355,10 +353,7 @@ export default function JoinAsAstrologerPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {HOW_STEPS.map((s, i) => (
-              <motion.div key={s.n}
-                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }} transition={{ delay: i * 0.12 }}
-                className="relative text-center px-4">
+              <div key={s.n} className="relative text-center px-4">
                 {/* Connector line */}
                 {i < 2 && (
                   <div className="hidden md:block absolute top-6 left-[calc(50%+32px)] right-0 h-px border-t border-dashed border-gold-600/20" />
@@ -368,7 +363,7 @@ export default function JoinAsAstrologerPage() {
                 </div>
                 <h3 className="text-gray-200 font-semibold text-sm mb-2">{s.title}</h3>
                 <p className="text-gray-500 text-xs leading-relaxed">{s.body}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
