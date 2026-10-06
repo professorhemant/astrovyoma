@@ -319,22 +319,21 @@ export default function JoinAsAstrologerPage() {
       {/* ══════════════════════════════════════
           BENEFITS GRID
       ══════════════════════════════════════ */}
-      <div className="py-16 px-4 bg-cosmic-950/60">
+      <div className="py-16 px-4" style={{ background: '#110d2a' }}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
-            <p className="text-xs text-gold-600 uppercase tracking-widest mb-2">Why Astrologers Choose Us</p>
-            <h2 className="font-serif text-3xl text-gold-400">Built for Serious Pandits</h2>
+            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#c9a84c' }}>Why Astrologers Choose Us</p>
+            <h2 className="font-serif text-3xl" style={{ color: '#e8d48b' }}>Built for Serious Pandits</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {BENEFITS.map((b, i) => (
-              <div key={b.title}
-                className={`rounded-2xl border p-6 ${b.bg}`}>
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${b.bg}`}>
-                  <b.icon className={`w-5 h-5 ${b.color}`} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {BENEFITS.map((b) => (
+              <div key={b.title} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(201,168,76,0.3)', borderRadius: '16px', padding: '24px' }}>
+                <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(201,168,76,0.15)', border: '1px solid rgba(201,168,76,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                  <b.icon style={{ width: 20, height: 20, color: '#c9a84c' }} />
                 </div>
-                <h3 className={`font-semibold text-sm mb-1.5 ${b.color}`}>{b.title}</h3>
-                <p className="text-gray-400 text-xs leading-relaxed">{b.sub}</p>
+                <h3 style={{ fontWeight: 600, fontSize: 15, color: '#e8d48b', marginBottom: 8 }}>{b.title}</h3>
+                <p style={{ fontSize: 13, color: '#9ca3af', lineHeight: 1.6 }}>{b.sub}</p>
               </div>
             ))}
           </div>
@@ -344,25 +343,24 @@ export default function JoinAsAstrologerPage() {
       {/* ══════════════════════════════════════
           HOW IT WORKS
       ══════════════════════════════════════ */}
-      <div className="py-16 px-4" style={{ background: 'rgba(139,92,246,0.04)' }}>
+      <div className="py-16 px-4" style={{ background: '#0d0820' }}>
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
-            <p className="text-xs text-gold-600 uppercase tracking-widest mb-2">Simple & Fast</p>
-            <h2 className="font-serif text-3xl text-gold-400">How It Works</h2>
+            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#c9a84c' }}>Simple & Fast</p>
+            <h2 className="font-serif text-3xl" style={{ color: '#e8d48b' }}>How It Works</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {HOW_STEPS.map((s, i) => (
               <div key={s.n} className="relative text-center px-4">
-                {/* Connector line */}
                 {i < 2 && (
-                  <div className="hidden md:block absolute top-6 left-[calc(50%+32px)] right-0 h-px border-t border-dashed border-gold-600/20" />
+                  <div className="hidden md:block absolute top-6 left-[calc(50%+32px)] right-0 h-px" style={{ borderTop: '1px dashed rgba(201,168,76,0.35)' }} />
                 )}
-                <div className="w-12 h-12 rounded-full border-2 border-gold-500/40 bg-gold-500/10 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-gold-400 font-serif text-lg font-bold">{s.n}</span>
+                <div style={{ width: 52, height: 52, borderRadius: '50%', border: '2px solid rgba(201,168,76,0.6)', background: 'rgba(201,168,76,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                  <span style={{ fontFamily: 'serif', fontSize: 18, fontWeight: 700, color: '#c9a84c' }}>{s.n}</span>
                 </div>
-                <h3 className="text-gray-200 font-semibold text-sm mb-2">{s.title}</h3>
-                <p className="text-gray-500 text-xs leading-relaxed">{s.body}</p>
+                <h3 style={{ fontWeight: 600, fontSize: 14, color: '#e5e7eb', marginBottom: 8 }}>{s.title}</h3>
+                <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.6 }}>{s.body}</p>
               </div>
             ))}
           </div>
@@ -372,57 +370,53 @@ export default function JoinAsAstrologerPage() {
       {/* ══════════════════════════════════════
           EARNINGS CALCULATOR
       ══════════════════════════════════════ */}
-      <div className="py-16 px-4 bg-cosmic-950/80">
+      <div className="py-16 px-4" style={{ background: '#110d2a' }}>
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8">
-            <p className="text-xs text-gold-600 uppercase tracking-widest mb-2">Earnings Potential</p>
-            <h2 className="font-serif text-3xl text-gold-400">See What You Could Earn</h2>
+            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#c9a84c' }}>Earnings Potential</p>
+            <h2 className="font-serif text-3xl" style={{ color: '#e8d48b' }}>See What You Could Earn</h2>
           </div>
 
-          <div className="rounded-3xl border border-gold-500/20 bg-gradient-to-b from-gold-600/5 to-transparent p-8">
+          <div style={{ border: '1px solid rgba(201,168,76,0.4)', borderRadius: 24, background: 'rgba(201,168,76,0.06)', padding: 32 }}>
             <div className="space-y-6 mb-8">
-              {/* Slider 1 */}
               <div>
-                <div className="flex justify-between text-xs text-gray-400 mb-2">
+                <div className="flex justify-between text-xs mb-2" style={{ color: '#9ca3af' }}>
                   <span>Consulting minutes per day</span>
-                  <span className="text-gold-400 font-semibold">{minsPerDay} min</span>
+                  <span style={{ color: '#c9a84c', fontWeight: 600 }}>{minsPerDay} min</span>
                 </div>
                 <input type="range" min={5} max={120} step={5} value={minsPerDay}
                   onChange={e => setMinsPerDay(Number(e.target.value))}
-                  className="w-full accent-yellow-500 cursor-pointer" />
-                <div className="flex justify-between text-[10px] text-gray-600 mt-1">
+                  className="w-full cursor-pointer accent-yellow-500" />
+                <div className="flex justify-between mt-1" style={{ fontSize: 11, color: '#4b5563' }}>
                   <span>5 min</span><span>120 min</span>
                 </div>
               </div>
-
-              {/* Slider 2 */}
               <div>
-                <div className="flex justify-between text-xs text-gray-400 mb-2">
+                <div className="flex justify-between text-xs mb-2" style={{ color: '#9ca3af' }}>
                   <span>Your rate per minute</span>
-                  <span className="text-gold-400 font-semibold">₹{ratePerMin}/min</span>
+                  <span style={{ color: '#c9a84c', fontWeight: 600 }}>₹{ratePerMin}/min</span>
                 </div>
                 <input type="range" min={10} max={100} step={5} value={ratePerMin}
                   onChange={e => setRatePerMin(Number(e.target.value))}
-                  className="w-full accent-yellow-500 cursor-pointer" />
-                <div className="flex justify-between text-[10px] text-gray-600 mt-1">
+                  className="w-full cursor-pointer accent-yellow-500" />
+                <div className="flex justify-between mt-1" style={{ fontSize: 11, color: '#4b5563' }}>
                   <span>₹10</span><span>₹100</span>
                 </div>
               </div>
             </div>
 
-            {/* Results */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-2xl bg-gold-600/10 border border-gold-500/20 p-5 text-center">
-                <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Weekly Earnings</p>
-                <p className="font-serif text-3xl text-gold-400">₹{weeklyEarning.toLocaleString('en-IN')}</p>
+              <div style={{ borderRadius: 16, background: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.4)', padding: '20px 16px', textAlign: 'center' }}>
+                <p style={{ fontSize: 10, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Weekly Earnings</p>
+                <p style={{ fontFamily: 'serif', fontSize: 28, color: '#c9a84c', fontWeight: 700 }}>₹{weeklyEarning.toLocaleString('en-IN')}</p>
               </div>
-              <div className="rounded-2xl bg-purple-600/10 border border-purple-500/20 p-5 text-center">
-                <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Monthly Earnings</p>
-                <p className="font-serif text-3xl text-purple-300">₹{monthlyEarning.toLocaleString('en-IN')}</p>
+              <div style={{ borderRadius: 16, background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.4)', padding: '20px 16px', textAlign: 'center' }}>
+                <p style={{ fontSize: 10, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Monthly Earnings</p>
+                <p style={{ fontFamily: 'serif', fontSize: 28, color: '#c4b5fd', fontWeight: 700 }}>₹{monthlyEarning.toLocaleString('en-IN')}</p>
               </div>
             </div>
 
-            <p className="text-[10px] text-gray-600 text-center mt-4">
+            <p style={{ fontSize: 11, color: '#4b5563', textAlign: 'center', marginTop: 12 }}>
               Based on {share}% astrologer share · ₹{ratePerMin}/min · {minsPerDay} min/day
             </p>
           </div>
