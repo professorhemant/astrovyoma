@@ -128,7 +128,12 @@ export default function BookingModal({ paath, onClose }) {
             <button onClick={onClose} className="absolute top-4 right-4 text-white/90 hover:text-white bg-black/20 rounded-full p-1.5 transition-colors">
               <X className="w-4 h-4" />
             </button>
-            <div className="text-5xl mb-2">{paath.icon}</div>
+            <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center ring-2 ring-white/40 shadow-lg overflow-hidden">
+              {paath.image
+                ? <img src={paath.image} alt={paath.deity} className="w-full h-full object-cover object-top" />
+                : <span className="text-4xl leading-none">{paath.icon}</span>
+              }
+            </div>
             <p className="text-white/80 text-xs uppercase tracking-widest mb-1">{paath.deity}</p>
             <h2 className="text-white font-serif text-xl font-bold leading-tight">{paath.name}</h2>
             <p className="text-white/90 text-sm">{paath.subtitle}</p>
