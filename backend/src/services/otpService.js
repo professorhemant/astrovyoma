@@ -241,4 +241,37 @@ async function sendNewApplicationAdminAlert(application) {
   await deliver(adminEmail, `New Pandit Application — ${application.name} (${application.phone})`, html, 'ADMIN-ALERT', '-');
 }
 
-module.exports = { generateOtp, storeOtp, verifyOtp, secondsUntilResendAllowed, sendOtpEmail, sendPasswordResetEmail, sendAstrologerApprovalEmail, sendAstrologerRejectionEmail, sendNewApplicationAdminAlert };
+async function sendRevenueAlert({ kind, userName, userEmail, userPhone, amount, bonus, plan, billing, paymentId, newBalance }) {
+  const adminEmail = process.env.ADMIN_EMAIL || 'prof.hemant.sgnr@gmail.com';
+  const isWallet = kind === 'wallet';
+  const subject = isWallet
+    ? `💰 Wallet Recharge ₹${amount} — ${userName || userEmail || 'User'}`
+    : `🌟 Plan Purchase (${plan}) ₹${amount} — ${userName || userEmail || 'User'}`;
+
+  const html = `
+    <div style="font-family:sans-serif;max-width:520px;margin:auto;background:#0d0728;color:#f0e6c0;padding:32px;border-radius:12px;">
+      <h2 style="color:#C9A84C;font-family:serif;margin-bottom:4px;">✦ AstroVyoma</h2>
+      <p style="color:#d4c48a;font-size:18px;margin-bottom:20px;">${isWallet ? '💰 Wallet Recharge Received' : '🌟 Plan Purchase Completed'}</p>
+      <table style="width:100%;background:#1a0a3a;border-radius:8px;padding:4px;margin-bottom:20px;border-collapse:collapse;">
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;width:40%;">Customer</td><td style="padding:10px 16px;color:#f0e6c0;font-size:14px;font-weight:600;">${userName || '—'}</td></tr>
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Email</td><td style="padding:10px 16px;color:#f0e6c0;font-size:13px;">${userEmail || '—'}</td></tr>
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Phone</td><td style="padding:10px 16px;color:#C9A84C;font-size:13px;">${userPhone || '—'}</td></tr>
+        ${isWallet ? `
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Amount Paid</td><td style="padding:10px 16px;color:#C9A84C;font-size:18px;font-weight:700;">₹${amount}</td></tr>
+        ${bonus ? `<tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Bonus Added</td><td style="padding:10px 16px;color:#4ade80;font-size:14px;">+₹${bonus}</td></tr>` : ''}
+        ${newBalance !== undefined ? `<tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">New Balance</td><td style="padding:10px 16px;color:#f0e6c0;font-size:13px;">₹${newBalance}</td></tr>` : ''}
+        ` : `
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Plan</td><td style="padding:10px 16px;color:#C9A84C;font-size:16px;font-weight:700;">${plan} (${billing})</td></tr>
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Amount Paid</td><td style="padding:10px 16px;color:#C9A84C;font-size:18px;font-weight:700;">₹${amount}</td></tr>
+        `}
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Payment ID</td><td style="padding:10px 16px;color:#f0e6c0;font-size:11px;">${paymentId}</td></tr>
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Time</td><td style="padding:10px 16px;color:#f0e6c0;font-size:13px;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST</td></tr>
+      </table>
+      <a href="https://astrovyoma.com/admin" style="display:inline-block;background:linear-gradient(135deg,#A07832,#E8C547);color:#04051A;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;">View in Admin Panel →</a>
+      <p style="color:#9e8a6a;font-size:11px;margin-top:20px;">Sent automatically by AstroVyoma on every successful payment.</p>
+    </div>
+  `;
+  await deliver(adminEmail, subject, html, 'REVENUE', '-');
+}
+
+module.exports = { generateOtp, storeOtp, verifyOtp, secondsUntilResendAllowed, sendOtpEmail, sendPasswordResetEmail, sendAstrologerApprovalEmail, sendAstrologerRejectionEmail, sendNewApplicationAdminAlert, sendRevenueAlert };

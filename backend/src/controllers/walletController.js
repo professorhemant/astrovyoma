@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const { User, Transaction } = require('../models');
 const { creditRecharge } = require('../services/walletService');
 const { getRazorpay } = require('../services/razorpay');
+const { sendRevenueAlert } = require('../services/otpService');
 
 // Recharge packs are defined here, not on the client. The wallet buys real
 // astrologer minutes, so both the price and the promo bonus have to come from
@@ -113,6 +114,20 @@ async function verifyRecharge(req, res) {
       description: `Wallet recharge ₹${paid}`,
     });
     if (!result.success) return res.status(400).json({ error: result.reason || 'Recharge failed' });
+
+    if (!result.duplicate) {
+      const user = await User.findByPk(req.user.id, { attributes: ['name', 'email', 'phone'] });
+      sendRevenueAlert({
+        kind: 'wallet',
+        userName: user?.name,
+        userEmail: user?.email,
+        userPhone: user?.phone,
+        amount: paid,
+        bonus: pack.bonus,
+        paymentId: razorpay_payment_id,
+        newBalance: result.balance,
+      }).catch(err => console.error('[revenue-alert] wallet email failed:', err.message));
+    }
 
     res.json({
       success:   true,

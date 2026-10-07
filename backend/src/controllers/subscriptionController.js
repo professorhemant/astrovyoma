@@ -1,6 +1,7 @@
 const crypto  = require('crypto');
 const { User, Subscription } = require('../models');
 const { getRazorpay } = require('../services/razorpay');
+const { sendRevenueAlert } = require('../services/otpService');
 
 const PLANS = {
   silver: {
@@ -199,6 +200,18 @@ exports.verifyPayment = async (req, res) => {
       { subscription_plan: sub.plan, subscription_expires_at: expiresAt },
       { where: { id: req.user.id } }
     );
+
+    const user = await User.findByPk(req.user.id, { attributes: ['name', 'email', 'phone'] });
+    sendRevenueAlert({
+      kind: 'plan',
+      userName: user?.name,
+      userEmail: user?.email,
+      userPhone: user?.phone,
+      amount: sub.amount,
+      plan: sub.plan,
+      billing: sub.duration_months === 12 ? 'yearly' : 'monthly',
+      paymentId: razorpay_payment_id,
+    }).catch(err => console.error('[revenue-alert] plan email failed:', err.message));
 
     res.json({ success: true, plan: sub.plan, expires_at: expiresAt });
   } catch (err) {
