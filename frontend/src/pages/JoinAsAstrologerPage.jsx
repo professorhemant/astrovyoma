@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import PhotoUpload from '../components/PhotoUpload';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { IndianRupee, Clock, Shield, Users, Zap, Star, CheckCircle, ChevronDown } from 'lucide-react';
@@ -147,8 +148,6 @@ const EMPTY = {
   bio: '', why_join: '',
 };
 
-const MAX_PHOTO_BYTES = 2 * 1024 * 1024;
-
 const STARS = Array.from({ length: 18 }, (_, i) => ({
   w: (((i * 7 + 3) % 3) + 1),
   h: (((i * 11 + 5) % 3) + 1),
@@ -182,8 +181,7 @@ export default function JoinAsAstrologerPage() {
   const [share, setShare]       = useState(60);
   const [minsPerDay, setMinsPerDay] = useState(30);
   const [ratePerMin, setRatePerMin] = useState(30);
-  const photoInputRef = useRef(null);
-  const formRef       = useRef(null);
+  const formRef = useRef(null);
 
   useEffect(() => {
     contentApi.settings()
@@ -205,15 +203,6 @@ export default function JoinAsAstrologerPage() {
       return { ...f, [key]: arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val] };
     });
     setErrors(e => ({ ...e, [key]: undefined }));
-  }
-
-  function handlePhotoChange(e) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > MAX_PHOTO_BYTES) { toast.error('Photo must be under 2 MB'); return; }
-    const reader = new FileReader();
-    reader.onload = ev => set('photo_url', ev.target.result);
-    reader.readAsDataURL(file);
   }
 
   function validateStep(s) {
@@ -672,28 +661,12 @@ export default function JoinAsAstrologerPage() {
                 <div className="space-y-4">
                   <div>
                     <label className="text-gray-300 text-xs block mb-2">Profile Photo <span className="text-gray-600">(optional)</span></label>
-                    <div className="flex flex-col items-center gap-3">
-                      <button type="button" onClick={() => photoInputRef.current?.click()}
-                        className="relative w-28 h-28 rounded-full border-2 border-dashed border-gold-600/40 hover:border-gold-500 transition-colors overflow-hidden bg-cosmic-900 flex items-center justify-center group">
-                        {form.photo_url ? (
-                          <img src={form.photo_url} alt="Preview" className="w-full h-full object-cover" />
-                        ) : (
-                          <svg viewBox="0 0 80 80" className="w-20 h-20 text-gray-700" fill="currentColor">
-                            <circle cx="40" cy="28" r="16" /><path d="M8 72c0-17.673 14.327-32 32-32s32 14.327 32 32" />
-                          </svg>
-                        )}
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                          </svg>
-                        </div>
-                      </button>
-                      <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
-                      {form.photo_url
-                        ? <button type="button" onClick={() => set('photo_url', '')} className="text-red-400 text-xs hover:underline">Remove photo</button>
-                        : <p className="text-gray-500 text-xs text-center">Click to upload · JPG, PNG, WEBP · Max 2 MB</p>
-                      }
-                    </div>
+                    <PhotoUpload
+                      value={form.photo_url}
+                      onChange={v => set('photo_url', v)}
+                      name={form.name}
+                      size={112}
+                    />
                   </div>
                   <div>
                     <label className="text-gray-300 text-xs block mb-1.5">YouTube Channel <span className="text-gray-600">(optional)</span></label>

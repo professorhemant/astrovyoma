@@ -6,6 +6,7 @@ import PanditCallPanel from '../components/PanditCallPanel';
 import PanditSchedule from '../components/PanditSchedule';
 import CompleteContactPrompt from '../components/CompleteContactPrompt';
 import PanditPoojaBookings from '../components/PanditPoojaBookings';
+import PhotoUpload from '../components/PhotoUpload';
 import { panditProfile } from '../api';
 import toast from 'react-hot-toast';
 import axios from 'axios';
@@ -363,11 +364,13 @@ export default function PanditPortalPage() {
                       className="input-cosmic w-full text-sm" />
                   </div>
                   <div>
-                    <label className="text-gray-400 text-xs block mb-1">Profile Photo URL</label>
-                    <input type="url" value={editForm.photo_url || ''}
-                      onChange={e => setEditForm(f => ({ ...f, photo_url: e.target.value }))}
-                      placeholder="https://…"
-                      className="input-cosmic w-full text-sm" />
+                    <label className="text-gray-400 text-xs block mb-2">Profile Photo</label>
+                    <PhotoUpload
+                      value={editForm.photo_url || ''}
+                      onChange={v => setEditForm(f => ({ ...f, photo_url: v }))}
+                      name={pandit?.display_name}
+                      size={96}
+                    />
                   </div>
                   <div>
                     <label className="text-gray-400 text-xs block mb-1">Bio</label>
