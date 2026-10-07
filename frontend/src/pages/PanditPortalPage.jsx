@@ -8,6 +8,7 @@ import CompleteContactPrompt from '../components/CompleteContactPrompt';
 import PanditPoojaBookings from '../components/PanditPoojaBookings';
 import PhotoUpload from '../components/PhotoUpload';
 import { panditProfile } from '../api';
+import { Users } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 
@@ -24,6 +25,8 @@ export default function PanditPortalPage() {
   const [toggling, setToggling] = useState(false);
   const [earnings, setEarnings] = useState(null);
   const [contactSkipped, setContactSkipped] = useState(false);
+
+  const [referralStats, setReferralStats] = useState(null);
 
   const [editOpen, setEditOpen] = useState(false);
   const [editForm, setEditForm] = useState({});
@@ -45,6 +48,9 @@ export default function PanditPortalPage() {
     // whether the token is still good.
     axios.get(`${API}/pandit/earnings`, { headers })
       .then(r => setEarnings(r.data))
+      .catch(() => {});
+    axios.get(`${API}/pandit/referral-stats`, { headers })
+      .then(r => setReferralStats(r.data))
       .catch(() => {});
   }, [token]);
 
@@ -254,6 +260,46 @@ export default function PanditPortalPage() {
               className="shrink-0 flex items-center gap-1 text-xs text-gold-400 hover:text-gold-300 transition-colors">
               <Share2 className="w-3.5 h-3.5" /> Share
             </button>
+          </div>
+        )}
+
+        {/* Referral link */}
+        {referralStats?.referral_code && (
+          <div className="mb-6 rounded-2xl border border-purple-500/20 bg-purple-500/5 px-4 py-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-purple-400" />
+                <p className="text-[10px] text-purple-400 uppercase tracking-widest">Your Referral Link</p>
+              </div>
+              <div className="flex items-center gap-3 text-xs text-gray-400">
+                <span><span className="text-purple-300 font-semibold">{referralStats.referred_count}</span> joined</span>
+                {referralStats.total_bonus > 0 && (
+                  <span><span className="text-gold-400 font-semibold">₹{referralStats.total_bonus}</span> earned</span>
+                )}
+              </div>
+            </div>
+            <p className="text-gray-500 text-[11px] mb-3">
+              Share this link. When someone signs up and completes their first consultation, you earn ₹25.
+            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-gray-400 text-xs truncate flex-1 bg-cosmic-900 rounded-lg px-3 py-2">
+                astrovyoma.com/r/{referralStats.referral_code}
+              </p>
+              <button
+                onClick={() => {
+                  const url = `${window.location.origin}/r/${referralStats.referral_code}`;
+                  if (navigator.share) {
+                    navigator.share({ title: `Join AstroVyoma with ${pandit.display_name}`, url }).catch(() => {});
+                  } else {
+                    navigator.clipboard.writeText(url)
+                      .then(() => toast.success('Referral link copied!'))
+                      .catch(() => toast.error('Could not copy'));
+                  }
+                }}
+                className="shrink-0 flex items-center gap-1 text-xs bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 transition-colors px-3 py-2 rounded-lg">
+                <Copy className="w-3.5 h-3.5" /> Copy
+              </button>
+            </div>
           </div>
         )}
 

@@ -18,7 +18,8 @@ module.exports = (sequelize) => {
     onboarding_complete: { type: DataTypes.BOOLEAN, defaultValue: false },
     role: { type: DataTypes.STRING, defaultValue: 'user' },
     subscription_plan: { type: DataTypes.STRING, defaultValue: 'free' },
-    subscription_expires_at: { type: DataTypes.DATE, allowNull: true }
+    subscription_expires_at: { type: DataTypes.DATE, allowNull: true },
+    referred_by_astrologer_id: { type: DataTypes.UUID, allowNull: true },
   }, {
     tableName: 'users',
     timestamps: true,

@@ -79,6 +79,7 @@ import JoinAsAstrologerPage    from './pages/JoinAsAstrologerPage';
 import AstrologerOnboardingPage      from './pages/AstrologerOnboardingPage';
 import EarningsDashboardPage         from './pages/EarningsDashboardPage';
 import AstrologerPublicProfilePage   from './pages/AstrologerPublicProfilePage';
+import ReferralRedirectPage          from './pages/ReferralRedirectPage';
 import KPAstrologyPage          from './pages/KPAstrologyPage';
 
 function ProtectedRoute({ children }) {
@@ -169,6 +170,7 @@ function AppLayout() {
             <Route path="/pandit-portal" element={<PanditPortalPage />} />
             <Route path="/pandit-earnings" element={<EarningsDashboardPage />} />
             <Route path="/astrologer/:slug" element={<AstrologerPublicProfilePage />} />
+            <Route path="/r/:code" element={<ReferralRedirectPage />} />
             <Route path="/astrologers/:id" element={<AstrologerDetailPage />} />
             <Route path="/consult/:id" element={<ProtectedRoute><ConsultationPage /></ProtectedRoute>} />
             <Route path="/chat" element={<ChatbotPage />} />

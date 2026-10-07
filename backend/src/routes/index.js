@@ -127,6 +127,7 @@ router.patch('/pandit/profile',       panditAuth, panditController.updateProfile
 router.post('/pandit/change-pin',     panditAuth, panditController.changePin);
 router.patch('/pandit/bank-details',  panditAuth, panditController.updateBankDetails);
 router.post('/pandit/request-payout', panditAuth, panditController.requestPayout);
+router.get('/pandit/referral-stats',  panditAuth, panditController.getReferralStats);
 router.get('/pandit/availability',  panditAuth, panditController.getAvailability);
 router.put('/pandit/availability',  panditAuth, panditController.setAvailability);
 router.get('/pandit/appointments',  panditAuth, panditController.getAppointments);
@@ -135,6 +136,21 @@ router.get('/pandit/calls', panditAuth, panditController.getIncomingCalls);
 router.post('/pandit/calls/:id/accept', panditAuth, panditController.acceptCall);
 router.post('/pandit/calls/:id/decline', panditAuth, panditController.declineCall);
 router.post('/pandit/calls/:id/end', panditAuth, panditController.endCall);
+
+// Public referral code lookup — used by /r/:code redirect page to show astrologer name
+router.get('/referral/:code', async (req, res) => {
+  try {
+    const { Astrologer: A } = require('../models');
+    const a = await A.findOne({
+      where: { referral_code: String(req.params.code).toUpperCase().trim() },
+      attributes: ['id', 'display_name', 'slug', 'photo_url', 'rating', 'referral_code'],
+    });
+    if (!a) return res.status(404).json({ error: 'Invalid referral code' });
+    res.json({ id: a.id, display_name: a.display_name, slug: a.slug, photo_url: a.photo_url, rating: a.rating, referral_code: a.referral_code });
+  } catch (err) {
+    res.status(500).json({ error: 'Could not look up referral code' });
+  }
+});
 
 // Astrologer routes
 router.get('/astrologers', astrologerController.getAstrologers);

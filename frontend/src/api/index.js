@@ -138,13 +138,18 @@ export const panditPooja = {
 };
 
 export const panditProfile = {
-  update:          (data) => panditApi.patch('/pandit/profile', data),
-  changePin:       (data) => panditApi.post('/pandit/change-pin', data),
-  getBreakdown:    ()     => panditApi.get('/pandit/earnings/breakdown'),
-  getSummary:      ()     => panditApi.get('/pandit/earnings'),
-  getMe:           ()     => panditApi.get('/pandit/me'),
+  update:            (data) => panditApi.patch('/pandit/profile', data),
+  changePin:         (data) => panditApi.post('/pandit/change-pin', data),
+  getBreakdown:      ()     => panditApi.get('/pandit/earnings/breakdown'),
+  getSummary:        ()     => panditApi.get('/pandit/earnings'),
+  getMe:             ()     => panditApi.get('/pandit/me'),
   updateBankDetails: (data) => panditApi.patch('/pandit/bank-details', data),
-  requestPayout:   ()     => panditApi.post('/pandit/request-payout'),
+  requestPayout:     ()     => panditApi.post('/pandit/request-payout'),
+  getReferralStats:  ()     => panditApi.get('/pandit/referral-stats'),
+};
+
+export const referral = {
+  getInfo: (code) => api.get(`/referral/${code}`),
 };
 
 export const adminPooja = {

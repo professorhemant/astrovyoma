@@ -18,8 +18,10 @@ module.exports = (sequelize) => {
   const AstrologerEarning = sequelize.define('AstrologerEarning', {
     id: { type: DataTypes.UUID, defaultValue: () => uuidv4(), primaryKey: true },
     astrologer_id:   { type: DataTypes.UUID, allowNull: false },
-    consultation_id: { type: DataTypes.UUID, allowNull: false, unique: true },
+    consultation_id: { type: DataTypes.UUID, allowNull: true, unique: true },
     user_id:         { type: DataTypes.UUID, allowNull: true },
+    earning_type:    { type: DataTypes.STRING(30), defaultValue: 'consultation' },
+    reference_id:    { type: DataTypes.STRING(255), allowNull: true },
 
     duration_mins: { type: DataTypes.INTEGER, defaultValue: 0 },
 

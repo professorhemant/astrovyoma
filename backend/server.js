@@ -181,6 +181,22 @@ async function start() {
       isPostgres
         ? `ALTER TABLE astrologers ADD COLUMN IF NOT EXISTS slug VARCHAR(120)`
         : `ALTER TABLE astrologers ADD COLUMN slug TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologers ADD COLUMN IF NOT EXISTS referral_code VARCHAR(12)`
+        : `ALTER TABLE astrologers ADD COLUMN referral_code TEXT`,
+      isPostgres
+        ? `ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by_astrologer_id UUID`
+        : `ALTER TABLE users ADD COLUMN referred_by_astrologer_id TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologer_earnings ADD COLUMN IF NOT EXISTS earning_type VARCHAR(30) DEFAULT 'consultation'`
+        : `ALTER TABLE astrologer_earnings ADD COLUMN earning_type TEXT DEFAULT 'consultation'`,
+      isPostgres
+        ? `ALTER TABLE astrologer_earnings ADD COLUMN IF NOT EXISTS reference_id VARCHAR(255)`
+        : `ALTER TABLE astrologer_earnings ADD COLUMN reference_id TEXT`,
+      // consultation_id was NOT NULL — relax it so referral bonus rows can have null there
+      isPostgres
+        ? `ALTER TABLE astrologer_earnings ALTER COLUMN consultation_id DROP NOT NULL`
+        : null,
     ].filter(Boolean);
     for (const sql of migrations) {
       try { await sequelize.query(sql); } catch (_) { /* column already exists */ }
@@ -204,6 +220,31 @@ async function start() {
       }
       if (noSlug.length) console.log(`[slug-backfill] assigned slugs to ${noSlug.length} astrologers`);
     } catch (e) { console.error('[slug-backfill]', e.message); }
+
+    // Backfill referral codes for any astrologer that doesn't have one yet.
+    try {
+      const { Astrologer: A2 } = require('./src/models');
+      const { Op: Op3 } = require('sequelize');
+      const { randomBytes } = require('crypto');
+      const CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+      function makeReferralCode() {
+        const b = randomBytes(8);
+        let c = '';
+        for (let i = 0; i < 8; i++) c += CHARS[b[i] % CHARS.length];
+        return c;
+      }
+      const noCode = await A2.findAll({ where: { referral_code: null } });
+      for (const a of noCode) {
+        let code;
+        let tries = 0;
+        do {
+          code = makeReferralCode();
+          tries++;
+        } while (tries < 20 && await A2.findOne({ where: { referral_code: code } }));
+        await a.update({ referral_code: code }).catch(() => {});
+      }
+      if (noCode.length) console.log(`[referral-backfill] assigned codes to ${noCode.length} astrologers`);
+    } catch (e) { console.error('[referral-backfill]', e.message); }
 
     // One-time data fix: clockBottom was saved as 81 (typo) instead of 8.
     try {

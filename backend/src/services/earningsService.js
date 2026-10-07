@@ -60,6 +60,32 @@ async function recordConsultationEarning({ consultationId, astrologerId, userId,
   }
 }
 
+// Record a referral bonus for the astrologer whose code brought in a new seeker.
+// Idempotent on reference_id so retries and double-fires don't double-pay.
+async function recordReferralBonus({ astrologerId, userId, amount }) {
+  const refId = `referral:${userId}`;
+  const existing = await AstrologerEarning.findOne({ where: { reference_id: refId } });
+  if (existing) return existing;
+  try {
+    return await AstrologerEarning.create({
+      astrologer_id:      astrologerId,
+      consultation_id:    null,
+      user_id:            userId,
+      earning_type:       'referral_bonus',
+      reference_id:       refId,
+      duration_mins:      0,
+      gross_amount:       amount,
+      commission_percent: 0,
+      commission_amount:  0,
+      net_amount:         amount,
+      status:             'pending',
+    });
+  } catch (err) {
+    if (err.name === 'SequelizeUniqueConstraintError') return null;
+    throw err;
+  }
+}
+
 // The payout week runs Monday to Sunday, because the kit promises payment on a
 // Monday for the week before. Computed in the server's timezone, which is the
 // same clock the payout is made on.
@@ -348,6 +374,6 @@ async function getBreakdownFor(astrologerId) {
 }
 
 module.exports = {
-  recordConsultationEarning, summaryFor, getBreakdownFor, markPaid, split, startOfWeek,
+  recordConsultationEarning, recordReferralBonus, summaryFor, getBreakdownFor, markPaid, split, startOfWeek,
   pendingByAstrologer, payAstrologer, recentPayouts, undoPayout,
 };

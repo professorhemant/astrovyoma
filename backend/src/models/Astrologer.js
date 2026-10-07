@@ -65,6 +65,7 @@ module.exports = (sequelize) => {
     payout_requested:    { type: DataTypes.BOOLEAN,   defaultValue: false },
     payout_requested_at: { type: DataTypes.DATE,      allowNull: true },
     slug: { type: DataTypes.STRING(120), allowNull: true, unique: true },
+    referral_code: { type: DataTypes.STRING(12), allowNull: true, unique: true },
   }, {
     tableName: 'astrologers',
     timestamps: true,

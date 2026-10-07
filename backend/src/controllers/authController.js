@@ -21,7 +21,7 @@ const resetKey = email => `reset:${email.toLowerCase()}`;
 
 async function register(req, res) {
   try {
-    const { name, password } = req.body;
+    const { name, password, referral_code } = req.body;
     if (!name || !password) {
       return res.status(400).json({ error: 'Name and password are required' });
     }
@@ -50,6 +50,17 @@ async function register(req, res) {
     // signup is the only moment it can be awarded, so a credit that failed on
     // its own would leave an account permanently short with nothing in the
     // ledger to explain it. Both rows land or neither does.
+    // Validate the referral code if one was supplied. An unknown code is silently
+    // ignored rather than blocking registration — the astrologer's link is the
+    // seeker's first contact with the platform, so a stale code must not strand them.
+    let referringAstrologer = null;
+    if (referral_code) {
+      referringAstrologer = await Astrologer.findOne({
+        where: { referral_code: String(referral_code).toUpperCase().trim() },
+        attributes: ['id', 'display_name'],
+      });
+    }
+
     const user = await sequelize.transaction(async (t) => {
       const created = await User.create({
         name,
@@ -57,6 +68,7 @@ async function register(req, res) {
         phone,
         password_hash,
         wallet_balance: WELCOME_BONUS,
+        referred_by_astrologer_id: referringAstrologer?.id || null,
       }, { transaction: t });
 
       if (WELCOME_BONUS > 0) {
@@ -78,6 +90,7 @@ async function register(req, res) {
     res.status(201).json({
       token,
       welcome_bonus: WELCOME_BONUS,
+      referred_by: referringAstrologer?.display_name || null,
       user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role, wallet_balance: user.wallet_balance }
     });
   } catch (err) {

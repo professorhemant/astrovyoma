@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, Loader, Gift } from 'lucide-react';
@@ -9,7 +9,18 @@ import { useAuth } from '../context/AuthContext';
 export default function RegisterPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' });
+  const [referralCode, setReferralCode] = useState(null);
+
+  useEffect(() => {
+    // Pick up a referral code from the URL (?ref=CODE) or from localStorage
+    // (set by ReferralRedirectPage when the user followed an astrologer's link).
+    const fromUrl = searchParams.get('ref');
+    const fromStorage = (() => { try { return localStorage.getItem('astrovyoma_ref'); } catch { return null; } })();
+    const code = (fromUrl || fromStorage || '').toUpperCase().trim() || null;
+    setReferralCode(code);
+  }, []);
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -31,12 +42,17 @@ export default function RegisterPage() {
         email: form.email.trim(),
         phone: form.phone.trim(),
         password: form.password,
+        ...(referralCode ? { referral_code: referralCode } : {}),
       });
       login(res.data.user, res.data.token);
+      // Clear the stored referral code — it has been consumed.
+      try { localStorage.removeItem('astrovyoma_ref'); } catch {}
       const bonus = Number(res.data.welcome_bonus) || 0;
-      toast.success(bonus > 0
-        ? `Welcome to AstroVyoma! ₹${bonus} added to your wallet ✦`
-        : 'Welcome to AstroVyoma! ✦');
+      if (res.data.referred_by) {
+        toast.success(`Welcome! Referred by ${res.data.referred_by}. ₹${bonus} added to your wallet ✦`, { duration: 4000 });
+      } else {
+        toast.success(bonus > 0 ? `Welcome to AstroVyoma! ₹${bonus} added to your wallet ✦` : 'Welcome to AstroVyoma! ✦');
+      }
       navigate('/kundali');
     } catch (err) {
       toast.error(err.response?.data?.error || 'Registration failed');
@@ -59,10 +75,17 @@ export default function RegisterPage() {
           </Link>
           <h1 className="font-serif text-3xl text-gold-400 mb-1">Begin Your Journey</h1>
           <p className="text-gray-300 text-sm">Free Kundali • AI guidance • Expert astrologers</p>
-          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-gold-500/40 bg-gold-500/10 px-4 py-1.5">
-            <Gift className="w-4 h-4 text-gold-400" />
-            <span className="text-gold-300 text-sm">Get <strong className="text-gold-400">₹50</strong> free in your wallet</span>
-          </div>
+          {referralCode ? (
+            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-gold-500/40 bg-gold-500/10 px-4 py-1.5">
+              <Gift className="w-4 h-4 text-gold-400" />
+              <span className="text-gold-300 text-sm">Referral code <strong className="text-gold-400">{referralCode}</strong> applied · ₹50 free!</span>
+            </div>
+          ) : (
+            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-gold-500/40 bg-gold-500/10 px-4 py-1.5">
+              <Gift className="w-4 h-4 text-gold-400" />
+              <span className="text-gold-300 text-sm">Get <strong className="text-gold-400">₹50</strong> free in your wallet</span>
+            </div>
+          )}
         </div>
 
         <motion.form onSubmit={handleRegister}

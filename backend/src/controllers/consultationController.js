@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 const { Consultation, Message, Astrologer, User, Appointment } = require('../models');
 const { generateToken, isConfigured: agoraConfigured } = require('../services/agoraService');
 const { deductPerMinute } = require('../services/walletService');
-const { recordConsultationEarning } = require('../services/earningsService');
+const { recordConsultationEarning, recordReferralBonus } = require('../services/earningsService');
 const { notifyPanditIncomingConsultation } = require('../services/notificationService');
 
 // How long a call rings before nobody is coming. Long enough to reach a phone in
@@ -244,6 +244,38 @@ async function finalizeConsultation(consultation, endedBy) {
       // consultation itself.
       console.error('[earnings] failed to record consultation', consultation.id, err.message);
     }
+  }
+
+  // Referral bonus — fire once, on the first paid consultation by this seeker.
+  // A referred seeker who has never paid anyone before triggers the bonus for
+  // whoever's code brought them here, regardless of which astrologer they are
+  // calling. Fire-and-forget: a bonus failure must not block the hang-up.
+  if (paid) {
+    (async () => {
+      try {
+        const REFERRAL_BONUS = Number(process.env.REFERRAL_BONUS) || 25;
+        const seeker = await User.findByPk(consultation.user_id, {
+          attributes: ['referred_by_astrologer_id'],
+        });
+        if (!seeker?.referred_by_astrologer_id) return;
+        const priorPaid = await Consultation.count({
+          where: {
+            user_id: consultation.user_id,
+            status:  'completed',
+            id:      { [Op.ne]: consultation.id },
+          },
+        });
+        if (priorPaid > 0) return;
+        await recordReferralBonus({
+          astrologerId: seeker.referred_by_astrologer_id,
+          userId:       consultation.user_id,
+          amount:       REFERRAL_BONUS,
+        });
+        console.log(`[referral] ₹${REFERRAL_BONUS} bonus queued for astrologer ${seeker.referred_by_astrologer_id}`);
+      } catch (err) {
+        console.error('[referral] bonus failed:', err.message);
+      }
+    })();
   }
 
   return { durationMins, freeMins, billableMins, totalCost, paid };

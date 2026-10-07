@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const { Astrologer, Consultation, User, Appointment } = require('../models');
+const { sequelize } = require('../models');
 const availability = require('../services/availabilityService');
 const { validateContact } = require('../services/contactService');
 const earningsService = require('../services/earningsService');
@@ -78,7 +79,7 @@ async function getStatus(req, res) {
       attributes: ['id', 'display_name', 'photo_url', 'is_online', 'price_per_min', 'free_minutes',
                    'email', 'phone', 'bio', 'experience_years', 'specialties', 'languages',
                    'upi_id', 'bank_account', 'bank_ifsc', 'bank_account_name',
-                   'payout_requested', 'payout_requested_at', 'slug']
+                   'payout_requested', 'payout_requested_at', 'slug', 'referral_code']
     });
     res.json(a);
   } catch (err) {
@@ -414,9 +415,34 @@ async function changePin(req, res) {
   }
 }
 
+async function getReferralStats(req, res) {
+  try {
+    const a = await Astrologer.findByPk(req.pandit.panditId, {
+      attributes: ['referral_code'],
+    });
+    const referredCount = await User.count({
+      where: { referred_by_astrologer_id: req.pandit.panditId },
+    });
+    const { AstrologerEarning } = require('../models');
+    const bonusRows = await AstrologerEarning.findAll({
+      where: { astrologer_id: req.pandit.panditId, earning_type: 'referral_bonus' },
+      attributes: ['net_amount', 'status'],
+    });
+    const totalBonus = bonusRows.reduce((s, r) => s + parseFloat(r.net_amount || 0), 0);
+    res.json({
+      referral_code:  a?.referral_code || null,
+      referred_count: referredCount,
+      total_bonus:    Math.round(totalBonus * 100) / 100,
+    });
+  } catch (err) {
+    console.error('getReferralStats error:', err);
+    res.status(500).json({ error: 'Failed to fetch referral stats' });
+  }
+}
+
 module.exports = {
   panditLogin, toggleStatus, getStatus, getEarnings, getEarningsBreakdown,
   getIncomingCalls, acceptCall, declineCall, endCall,
   getAvailability, setAvailability, getAppointments, setContact,
-  updateProfile, changePin, updateBankDetails, requestPayout,
+  updateProfile, changePin, updateBankDetails, requestPayout, getReferralStats,
 };
