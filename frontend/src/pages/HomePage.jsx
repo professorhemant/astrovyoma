@@ -636,8 +636,8 @@ export default function HomePage() {
                     </a>
                   </li>
                   <li>
-                    <a href="mailto:support@astrovyoma.com" className="hover:text-gold-400 transition-colors text-xs break-all">
-                      ✉ support@astrovyoma.com
+                    <a href="mailto:prof.hemant.sgnr@gmail.com" className="hover:text-gold-400 transition-colors text-xs break-all">
+                      ✉ prof.hemant.sgnr@gmail.com
                     </a>
                   </li>
                   <li className="text-xs text-gray-500">📍 Jaipur, Rajasthan</li>

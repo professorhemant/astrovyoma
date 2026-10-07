@@ -75,7 +75,7 @@ export default function PrivacyPolicyPage() {
             <p>• Correct inaccurate information</p>
             <p>• Request deletion of your account and data</p>
             <p>• Opt out of non-transactional communications</p>
-            <p>To exercise any of these rights, email us at <a href="mailto:support@astrovyoma.com" className="text-gold-400 hover:underline">support@astrovyoma.com</a>.</p>
+            <p>To exercise any of these rights, email us at <a href="mailto:prof.hemant.sgnr@gmail.com" className="text-gold-400 hover:underline">prof.hemant.sgnr@gmail.com</a>.</p>
           </Section>
 
           <Section title="9. Changes to This Policy">
@@ -85,8 +85,8 @@ export default function PrivacyPolicyPage() {
           <Section title="10. Contact Us">
             <p>If you have any questions about this Privacy Policy, please contact us:</p>
             <p className="mt-2">
-              <strong className="text-gray-300">AstroVyoma</strong><br />
-              Email: <a href="mailto:support@astrovyoma.com" className="text-gold-400 hover:underline">support@astrovyoma.com</a><br />
+              <strong className="text-gray-300">Prof. Hemant Kumar Sharma — AstroVyoma</strong><br />
+              Email: <a href="mailto:prof.hemant.sgnr@gmail.com" className="text-gold-400 hover:underline">prof.hemant.sgnr@gmail.com</a><br />
               Website: <a href="https://astrovyoma.com" className="text-gold-400 hover:underline">astrovyoma.com</a>
             </p>
           </Section>

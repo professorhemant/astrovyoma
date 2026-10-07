@@ -247,7 +247,7 @@ export default function PlansPage() {
               { q:'What payment methods are accepted?', a:'UPI, credit/debit cards, net banking, and wallets via Razorpay — the most trusted payment gateway in India.' },
               { q:'Is my birth data secure?', a:'Absolutely. Your kundali data is encrypted at rest and never shared with third parties.' },
               { q:'Can I upgrade from Silver to Gold later?', a:'Yes, you can upgrade at any time. The remaining balance of your current plan will be pro-rated.' },
-              { q:'Do I get a refund if I\'m not satisfied?', a:'We offer a 7-day refund guarantee on your first purchase. Contact support at support@astrovyoma.com.' },
+              { q:'Do I get a refund if I\'m not satisfied?', a:'We offer a 7-day refund guarantee on your first purchase. Contact us at prof.hemant.sgnr@gmail.com.' },
             ].map((item, i) => (
               <FAQItem key={i} q={item.q} a={item.a} />
             ))}
