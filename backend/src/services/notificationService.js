@@ -41,4 +41,40 @@ async function notifyPanditNewBooking({ panditMobile, refId, paathName, customer
   await sendSms(panditMobile, msg);
 }
 
-module.exports = { sendSms, notifyCustomerBookingConfirmed, notifyPanditNewBooking };
+// Sends a WhatsApp message via Fast2SMS. Falls back to SMS if WhatsApp fails so
+// the astrologer always gets *something*, even on accounts without WA credits.
+async function sendWhatsApp(mobile, message) {
+  const key = process.env.FAST2SMS_API_KEY;
+  const num = String(mobile).replace(/\D/g, '').slice(-10);
+  if (!key) {
+    console.log(`[WA-LOG] To ${num}: ${message}`);
+    return;
+  }
+  try {
+    const res = await fetch('https://www.fast2sms.com/dev/whatsapp', {
+      method: 'POST',
+      headers: { authorization: key, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, numbers: num, language: 'english', schedule_time: '' }),
+      signal: AbortSignal.timeout(10000),
+    });
+    const data = await res.json();
+    if (!data.return) {
+      console.error('[WA] Fast2SMS WA error, falling back to SMS:', JSON.stringify(data));
+      await sendSms(num, message);
+    } else {
+      console.log(`[WA] Sent to ${num}`);
+    }
+  } catch (err) {
+    console.error('[WA] Failed, falling back to SMS:', err.message);
+    await sendSms(num, message).catch(() => {});
+  }
+}
+
+async function notifyPanditIncomingConsultation({ panditPhone, panditName, seekerName, mode }) {
+  if (!panditPhone) return;
+  const modeLabel = mode === 'video' ? 'video' : 'voice';
+  const msg = `AstroVyoma: Namaste ${panditName}! You have an incoming ${modeLabel} call from ${seekerName}. Open your portal to accept: https://astrovyoma.com/pandit-portal`;
+  await sendWhatsApp(panditPhone, msg);
+}
+
+module.exports = { sendSms, sendWhatsApp, notifyCustomerBookingConfirmed, notifyPanditNewBooking, notifyPanditIncomingConsultation };

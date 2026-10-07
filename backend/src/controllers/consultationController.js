@@ -4,6 +4,7 @@ const { Consultation, Message, Astrologer, User, Appointment } = require('../mod
 const { generateToken, isConfigured: agoraConfigured } = require('../services/agoraService');
 const { deductPerMinute } = require('../services/walletService');
 const { recordConsultationEarning } = require('../services/earningsService');
+const { notifyPanditIncomingConsultation } = require('../services/notificationService');
 
 // How long a call rings before nobody is coming. Long enough to reach a phone in
 // another room, short enough that a caller is not left hanging.
@@ -146,6 +147,15 @@ async function startConsultation(req, res) {
     // closed off when the call ends and both sides stop showing it as pending
     // for ever.
     if (appointment) await appointment.update({ consultation_id: consultation.id });
+
+    // Alert the astrologer on WhatsApp (SMS fallback). Fire-and-forget — a
+    // delivery failure must never delay or cancel the seeker's call start.
+    notifyPanditIncomingConsultation({
+      panditPhone:  astrologer.phone,
+      panditName:   astrologer.display_name,
+      seekerName:   req.user.name || 'a seeker',
+      mode,
+    }).catch(err => console.error('[notify] incoming consultation alert failed:', err.message));
 
     res.status(201).json({
       consultation,
