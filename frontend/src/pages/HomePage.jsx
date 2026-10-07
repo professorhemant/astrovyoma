@@ -619,6 +619,30 @@ export default function HomePage() {
                   ))}
                 </ul>
               </div>
+
+              {/* Contact column */}
+              <div>
+                <h4 className="text-gold-400 text-sm font-medium mb-3">Contact Us</h4>
+                <ul className="space-y-2 text-gray-400 text-sm">
+                  <li className="font-medium text-gray-300 text-xs">Prof. Hemant Kumar Sharma</li>
+                  <li>
+                    <a href="tel:+919414282954" className="hover:text-gold-400 transition-colors text-xs">
+                      📞 +91 94142 82954
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://wa.me/919414282954" target="_blank" rel="noopener noreferrer" className="hover:text-gold-400 transition-colors text-xs">
+                      💬 WhatsApp
+                    </a>
+                  </li>
+                  <li>
+                    <a href="mailto:support@astrovyoma.com" className="hover:text-gold-400 transition-colors text-xs break-all">
+                      ✉ support@astrovyoma.com
+                    </a>
+                  </li>
+                  <li className="text-xs text-gray-500">📍 Jaipur, Rajasthan</li>
+                </ul>
+              </div>
             </div>
             <div className="border-t border-gold-600/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-gray-400 text-sm">© 2025 AstroVyoma. All rights reserved.</p>
@@ -626,7 +650,7 @@ export default function HomePage() {
               <div className="flex gap-4 text-gray-400 text-xs">
                 <Link to="/about" className="hover:text-gold-400 transition-colors">About Us</Link>
                 <span className="text-gold-600/30">·</span>
-                <Link to="/privacy" className="hover:text-gold-400 transition-colors">Privacy</Link>
+                <Link to="/privacy-policy" className="hover:text-gold-400 transition-colors">Privacy Policy</Link>
                 <span className="text-gold-600/30">·</span>
                 <Link to="/terms" className="hover:text-gold-400 transition-colors">Terms</Link>
               </div>
