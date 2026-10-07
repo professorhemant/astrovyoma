@@ -174,6 +174,7 @@ export default function JoinAsAstrologerPage() {
         specialties: form.skills.join(', ') || undefined,
       });
       setSubmitted(true);
+      if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
     } catch (err) {
       toast.error(err.response?.data?.error || 'Failed to submit. Please try again.');
     } finally {
@@ -686,7 +687,11 @@ export default function JoinAsAstrologerPage() {
       <div className="py-10 px-4 text-center border-t border-gold-600/10" style={{ position: 'relative', zIndex: 1 }}>
         <p className="text-gold-400 font-serif text-lg mb-1">ॐ नमः शिवाय</p>
         <p className="text-gray-600 text-xs">AstroVyoma — Connecting seekers with India's finest Vedic astrologers</p>
-        <Link to="/" className="text-gold-600 hover:text-gold-400 text-xs mt-2 inline-block transition-colors">← Back to AstroVyoma</Link>
+        <div className="flex items-center justify-center gap-4 mt-2">
+          <Link to="/" className="text-gold-600 hover:text-gold-400 text-xs transition-colors">← Back to AstroVyoma</Link>
+          <span className="text-gray-700 text-xs">·</span>
+          <Link to="/privacy-policy" className="text-gray-600 hover:text-gold-400 text-xs transition-colors">Privacy Policy</Link>
+        </div>
       </div>
 
     </div>
