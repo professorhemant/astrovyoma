@@ -6,7 +6,10 @@
 // piece of editable content, seeded on first boot with what the shop already
 // sold.
 
-const { ContentItem } = require('../models');
+const crypto = require('crypto');
+const { ContentItem, MallOrder } = require('../models');
+const { getRazorpay } = require('../services/razorpay');
+const { sendRevenueAlert } = require('../services/otpService');
 const { applyLang, langFrom } = require('../services/langOverlay');
 
 const commas = (v) => String(v || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -125,4 +128,114 @@ async function getCategories(req, res) {
   }
 }
 
-module.exports = { getProducts, getProductById, getCategories };
+async function createOrder(req, res) {
+  try {
+    const { items, customerName, customerPhone, deliveryAddress } = req.body;
+    if (!items?.length || !customerName || !customerPhone || !deliveryAddress) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    const amount = items.reduce((s, i) => s + i.price * i.qty, 0);
+    if (amount <= 0) return res.status(400).json({ error: 'Invalid order amount' });
+
+    const razorpay = getRazorpay();
+    const rzpOrder = await razorpay.orders.create({
+      amount:   Math.round(amount) * 100,
+      currency: 'INR',
+      receipt:  `mall_${req.user?.id || 'guest'}_${Date.now()}`,
+      notes:    { user_id: String(req.user?.id || ''), kind: 'mall_order' },
+    });
+
+    await MallOrder.create({
+      user_id:          req.user?.id || null,
+      customer_name:    customerName,
+      customer_phone:   customerPhone,
+      delivery_address: deliveryAddress,
+      items,
+      amount,
+      razorpay_order_id: rzpOrder.id,
+      status: 'pending',
+    });
+
+    res.json({
+      order_id: rzpOrder.id,
+      amount:   rzpOrder.amount,
+      currency: rzpOrder.currency,
+      key:      process.env.RAZORPAY_KEY_ID,
+    });
+  } catch (err) {
+    if (err.message === 'Razorpay credentials not configured') {
+      return res.status(503).json({ error: 'Payment gateway not configured.' });
+    }
+    console.error('[mall] createOrder', err);
+    res.status(500).json({ error: 'Failed to create order' });
+  }
+}
+
+async function verifyOrder(req, res) {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ error: 'Payment details missing' });
+    }
+
+    const secret = process.env.RAZORPAY_KEY_SECRET;
+    if (!secret) return res.status(503).json({ error: 'Payment gateway not configured' });
+
+    const digest = crypto.createHmac('sha256', secret)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest('hex');
+
+    const sigBuf = Buffer.from(String(razorpay_signature));
+    const digBuf = Buffer.from(digest);
+    if (sigBuf.length !== digBuf.length || !crypto.timingSafeEqual(sigBuf, digBuf)) {
+      return res.status(400).json({ error: 'Payment verification failed — invalid signature' });
+    }
+
+    const order = await MallOrder.findOne({ where: { razorpay_order_id } });
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+
+    await order.update({ razorpay_payment_id, status: 'paid' });
+
+    sendRevenueAlert({
+      kind:      'mall',
+      userName:  order.customer_name,
+      userPhone: order.customer_phone,
+      amount:    Number(order.amount),
+      plan:      `${order.items.length} item(s) — ${order.items.map(i => i.name).join(', ')}`,
+      billing:   `Ship to: ${order.delivery_address}`,
+      paymentId: razorpay_payment_id,
+    }).catch(err => console.error('[revenue-alert] mall email failed:', err.message));
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[mall] verifyOrder', err);
+    res.status(500).json({ error: 'Failed to verify payment' });
+  }
+}
+
+async function getMyOrders(req, res) {
+  try {
+    const orders = await MallOrder.findAll({
+      where: { user_id: req.user.id, status: 'paid' },
+      order: [['created_at', 'DESC']],
+      limit: 20,
+    });
+    res.json({ orders });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch orders' });
+  }
+}
+
+async function getAdminOrders(req, res) {
+  try {
+    const orders = await MallOrder.findAll({
+      order: [['created_at', 'DESC']],
+      limit: 100,
+    });
+    res.json({ orders });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch orders' });
+  }
+}
+
+module.exports = { getProducts, getProductById, getCategories, createOrder, verifyOrder, getMyOrders, getAdminOrders };

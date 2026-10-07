@@ -243,27 +243,42 @@ async function sendNewApplicationAdminAlert(application) {
 
 async function sendRevenueAlert({ kind, userName, userEmail, userPhone, amount, bonus, plan, billing, paymentId, newBalance }) {
   const adminEmail = process.env.ADMIN_EMAIL || 'prof.hemant.sgnr@gmail.com';
-  const isWallet = kind === 'wallet';
-  const subject = isWallet
-    ? `💰 Wallet Recharge ₹${amount} — ${userName || userEmail || 'User'}`
-    : `🌟 Plan Purchase (${plan}) ₹${amount} — ${userName || userEmail || 'User'}`;
+
+  const TITLES = {
+    wallet: '💰 Wallet Recharge Received',
+    plan:   '🌟 Plan Purchase Completed',
+    pooja:  '🪔 Pooja Booking Confirmed',
+    mall:   '🛒 Astro Mall Order Placed',
+  };
+  const SUBJECTS = {
+    wallet: `💰 Wallet Recharge ₹${amount} — ${userName || userEmail || 'User'}`,
+    plan:   `🌟 Plan Purchase (${plan}) ₹${amount} — ${userName || userEmail || 'User'}`,
+    pooja:  `🪔 Pooja Booking ₹${amount} — ${userName || 'Customer'}`,
+    mall:   `🛒 Mall Order ₹${amount} — ${userName || 'Customer'}`,
+  };
+
+  const title   = TITLES[kind]   || TITLES.plan;
+  const subject = SUBJECTS[kind] || SUBJECTS.plan;
+
+  const detailRows = kind === 'wallet' ? `
+    <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Amount Paid</td><td style="padding:10px 16px;color:#C9A84C;font-size:18px;font-weight:700;">₹${amount}</td></tr>
+    ${bonus ? `<tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Bonus Added</td><td style="padding:10px 16px;color:#4ade80;font-size:14px;">+₹${bonus}</td></tr>` : ''}
+    ${newBalance !== undefined ? `<tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">New Balance</td><td style="padding:10px 16px;color:#f0e6c0;font-size:13px;">₹${newBalance}</td></tr>` : ''}
+  ` : `
+    <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">${kind === 'mall' ? 'Items' : 'Plan / Paath'}</td><td style="padding:10px 16px;color:#C9A84C;font-size:14px;font-weight:700;">${plan || '—'}</td></tr>
+    ${billing ? `<tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Details</td><td style="padding:10px 16px;color:#f0e6c0;font-size:13px;">${billing}</td></tr>` : ''}
+    <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Amount Paid</td><td style="padding:10px 16px;color:#C9A84C;font-size:18px;font-weight:700;">₹${amount}</td></tr>
+  `;
 
   const html = `
     <div style="font-family:sans-serif;max-width:520px;margin:auto;background:#0d0728;color:#f0e6c0;padding:32px;border-radius:12px;">
       <h2 style="color:#C9A84C;font-family:serif;margin-bottom:4px;">✦ AstroVyoma</h2>
-      <p style="color:#d4c48a;font-size:18px;margin-bottom:20px;">${isWallet ? '💰 Wallet Recharge Received' : '🌟 Plan Purchase Completed'}</p>
+      <p style="color:#d4c48a;font-size:18px;margin-bottom:20px;">${title}</p>
       <table style="width:100%;background:#1a0a3a;border-radius:8px;padding:4px;margin-bottom:20px;border-collapse:collapse;">
         <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;width:40%;">Customer</td><td style="padding:10px 16px;color:#f0e6c0;font-size:14px;font-weight:600;">${userName || '—'}</td></tr>
-        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Email</td><td style="padding:10px 16px;color:#f0e6c0;font-size:13px;">${userEmail || '—'}</td></tr>
+        ${userEmail ? `<tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Email</td><td style="padding:10px 16px;color:#f0e6c0;font-size:13px;">${userEmail}</td></tr>` : ''}
         <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Phone</td><td style="padding:10px 16px;color:#C9A84C;font-size:13px;">${userPhone || '—'}</td></tr>
-        ${isWallet ? `
-        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Amount Paid</td><td style="padding:10px 16px;color:#C9A84C;font-size:18px;font-weight:700;">₹${amount}</td></tr>
-        ${bonus ? `<tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Bonus Added</td><td style="padding:10px 16px;color:#4ade80;font-size:14px;">+₹${bonus}</td></tr>` : ''}
-        ${newBalance !== undefined ? `<tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">New Balance</td><td style="padding:10px 16px;color:#f0e6c0;font-size:13px;">₹${newBalance}</td></tr>` : ''}
-        ` : `
-        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Plan</td><td style="padding:10px 16px;color:#C9A84C;font-size:16px;font-weight:700;">${plan} (${billing})</td></tr>
-        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Amount Paid</td><td style="padding:10px 16px;color:#C9A84C;font-size:18px;font-weight:700;">₹${amount}</td></tr>
-        `}
+        ${detailRows}
         <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Payment ID</td><td style="padding:10px 16px;color:#f0e6c0;font-size:11px;">${paymentId}</td></tr>
         <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Time</td><td style="padding:10px 16px;color:#f0e6c0;font-size:13px;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST</td></tr>
       </table>

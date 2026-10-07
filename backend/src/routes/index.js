@@ -288,6 +288,10 @@ router.post('/admin/pooja/payouts/pay', auth, adminAuth, poojaController.payPand
 router.get('/mall/categories',    mallController.getCategories);
 router.get('/mall/products',      mallController.getProducts);
 router.get('/mall/products/:id',  mallController.getProductById);
+router.post('/mall/orders/create',  auth, mallController.createOrder);
+router.post('/mall/orders/verify',  auth, mallController.verifyOrder);
+router.get('/mall/orders/my',       auth, mallController.getMyOrders);
+router.get('/admin/mall/orders',    auth, adminAuth, mallController.getAdminOrders);
 
 // KP Astrology
 router.post('/kp/analyse', kpController.analyse);

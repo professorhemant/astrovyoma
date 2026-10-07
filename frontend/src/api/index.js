@@ -146,6 +146,9 @@ export const mall = {
   getCategories: ()       => api.get('/mall/categories'),
   getProducts:   (params) => api.get('/mall/products', { params }),
   getProduct:    (id)     => api.get(`/mall/products/${id}`),
+  createOrder:   (data)   => api.post('/mall/orders/create', data),
+  verifyOrder:   (data)   => api.post('/mall/orders/verify', data),
+  getMyOrders:   ()       => api.get('/mall/orders/my'),
 };
 
 export const tarot = {
