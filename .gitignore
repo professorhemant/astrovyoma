@@ -2,3 +2,9 @@ node_modules/
 .env
 *.db
 dist/
+
+# Dev artifacts in project root (screenshots, test scripts, PDFs)
+/*.png
+/*.pdf
+/*.js
+/response.json
