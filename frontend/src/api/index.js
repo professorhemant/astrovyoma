@@ -137,11 +137,13 @@ export const panditPooja = {
 };
 
 export const panditProfile = {
-  update:       (data) => panditApi.patch('/pandit/profile', data),
-  changePin:    (data) => panditApi.post('/pandit/change-pin', data),
-  getBreakdown: ()     => panditApi.get('/pandit/earnings/breakdown'),
-  getSummary:   ()     => panditApi.get('/pandit/earnings'),
-  getMe:        ()     => panditApi.get('/pandit/me'),
+  update:          (data) => panditApi.patch('/pandit/profile', data),
+  changePin:       (data) => panditApi.post('/pandit/change-pin', data),
+  getBreakdown:    ()     => panditApi.get('/pandit/earnings/breakdown'),
+  getSummary:      ()     => panditApi.get('/pandit/earnings'),
+  getMe:           ()     => panditApi.get('/pandit/me'),
+  updateBankDetails: (data) => panditApi.patch('/pandit/bank-details', data),
+  requestPayout:   ()     => panditApi.post('/pandit/request-payout'),
 };
 
 export const adminPooja = {

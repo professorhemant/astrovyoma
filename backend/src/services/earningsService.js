@@ -161,7 +161,9 @@ async function pendingByAstrologer({ upto = null } = {}) {
 
   const astrologers = await Astrologer.findAll({
     where: { id: { [Op.in]: [...new Set(rows.map(r => r.astrologer_id))] } },
-    attributes: ['id', 'display_name', 'phone'],
+    attributes: ['id', 'display_name', 'phone', 'email',
+                 'upi_id', 'bank_account', 'bank_ifsc', 'bank_account_name',
+                 'payout_requested', 'payout_requested_at'],
   });
   const byId = new Map(astrologers.map(a => [a.id, a]));
 
@@ -171,10 +173,15 @@ async function pendingByAstrologer({ upto = null } = {}) {
       const a = byId.get(r.astrologer_id);
       groups.set(r.astrologer_id, {
         astrologer_id: r.astrologer_id,
-        // An earning whose astrologer row has since been deleted must still be
-        // visible — the money is owed to a person, not to a row.
-        display_name: a?.display_name || 'Astrologer no longer listed',
-        phone: a?.phone || null,
+        display_name:  a?.display_name || 'Astrologer no longer listed',
+        phone:         a?.phone        || null,
+        email:         a?.email        || null,
+        upi_id:            a?.upi_id            || null,
+        bank_account:      a?.bank_account      || null,
+        bank_ifsc:         a?.bank_ifsc         || null,
+        bank_account_name: a?.bank_account_name || null,
+        payout_requested:    a?.payout_requested    || false,
+        payout_requested_at: a?.payout_requested_at || null,
         amount: 0, gross: 0, consultations: 0, minutes: 0,
         oldest: r.created_at, newest: r.created_at,
         earning_ids: [],

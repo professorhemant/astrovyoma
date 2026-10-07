@@ -1012,7 +1012,14 @@ function PayoutsTab() {
             <div key={g.astrologer_id} className="card-cosmic p-5">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <h3 className="text-gray-200 font-medium">{g.display_name}</h3>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-gray-200 font-medium">{g.display_name}</h3>
+                    {g.payout_requested && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 border border-amber-500/40 text-amber-400 uppercase tracking-wide">
+                        ✦ Payout Requested
+                      </span>
+                    )}
+                  </div>
                   <p className="text-gray-500 text-xs mt-1">
                     {g.phone ? `${g.phone} · ` : ''}
                     {g.consultations} consultation{g.consultations === 1 ? '' : 's'} · {g.minutes} min
@@ -1023,6 +1030,21 @@ function PayoutsTab() {
                     {new Date(g.newest).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                     {' · seekers paid ₹'}{g.gross.toLocaleString('en-IN')}
                   </p>
+                  {/* Payment destination — shown so admin knows where to send */}
+                  {(g.upi_id || g.bank_account) ? (
+                    <p className="text-emerald-400/80 text-xs mt-1.5 font-medium">
+                      {g.upi_id
+                        ? `UPI: ${g.upi_id}`
+                        : `A/C: ${g.bank_account} · IFSC: ${g.bank_ifsc || '—'} · ${g.bank_account_name || ''}`}
+                    </p>
+                  ) : (
+                    <p className="text-red-400/60 text-xs mt-1.5">No payment details on file</p>
+                  )}
+                  {g.payout_requested && g.payout_requested_at && (
+                    <p className="text-amber-400/60 text-[10px] mt-0.5">
+                      Requested {new Date(g.payout_requested_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  )}
                 </div>
 
                 <div className="text-right shrink-0">

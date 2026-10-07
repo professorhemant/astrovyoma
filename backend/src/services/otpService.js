@@ -289,4 +289,30 @@ async function sendRevenueAlert({ kind, userName, userEmail, userPhone, amount, 
   await deliver(adminEmail, subject, html, 'REVENUE', '-');
 }
 
-module.exports = { generateOtp, storeOtp, verifyOtp, secondsUntilResendAllowed, sendOtpEmail, sendPasswordResetEmail, sendAstrologerApprovalEmail, sendAstrologerRejectionEmail, sendNewApplicationAdminAlert, sendRevenueAlert };
+async function sendPayoutRequestAlert({ name, phone, amount, pendingCount, upi_id, bank_account, bank_ifsc, bank_account_name }) {
+  const adminEmail = process.env.ADMIN_EMAIL || 'prof.hemant.sgnr@gmail.com';
+  const paymentMethod = upi_id
+    ? `UPI: <strong>${upi_id}</strong>`
+    : bank_account
+      ? `Bank A/C: <strong>${bank_account}</strong> · IFSC: <strong>${bank_ifsc || '—'}</strong> · Name: <strong>${bank_account_name || '—'}</strong>`
+      : '<span style="color:#f87171;">No bank details saved — ask them to add details</span>';
+
+  const html = `
+    <div style="font-family:sans-serif;max-width:520px;margin:auto;background:#0d0728;color:#f0e6c0;padding:32px;border-radius:12px;">
+      <h2 style="color:#C9A84C;font-family:serif;margin-bottom:4px;">&#10022; AstroVyoma</h2>
+      <p style="color:#d4c48a;font-size:18px;margin-bottom:20px;">Payout Request Received</p>
+      <table style="width:100%;background:#1a0a3a;border-radius:8px;padding:4px;margin-bottom:20px;border-collapse:collapse;">
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;width:40%;">Pandit</td><td style="padding:10px 16px;color:#f0e6c0;font-size:14px;font-weight:600;">${name}</td></tr>
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Phone</td><td style="padding:10px 16px;color:#C9A84C;font-size:14px;font-weight:600;">${phone || '—'}</td></tr>
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Amount Owed</td><td style="padding:10px 16px;color:#4ade80;font-size:16px;font-weight:700;">₹${Math.round(amount).toLocaleString('en-IN')}</td></tr>
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Sessions</td><td style="padding:10px 16px;color:#f0e6c0;font-size:13px;">${pendingCount} unpaid</td></tr>
+        <tr><td style="padding:10px 16px;color:#9e8a6a;font-size:13px;">Pay to</td><td style="padding:10px 16px;color:#f0e6c0;font-size:13px;">${paymentMethod}</td></tr>
+      </table>
+      <a href="https://astrovyoma.com/admin" style="display:inline-block;background:linear-gradient(135deg,#A07832,#E8C547);color:#04051A;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;">Process in Admin Panel →</a>
+      <p style="color:#9e8a6a;font-size:11px;margin-top:20px;">Sent automatically when a pandit requests their payout.</p>
+    </div>
+  `;
+  await deliver(adminEmail, `Payout Request ₹${Math.round(amount).toLocaleString('en-IN')} — ${name} (${phone || 'no phone'})`, html, 'PAYOUT-REQUEST', '-');
+}
+
+module.exports = { generateOtp, storeOtp, verifyOtp, secondsUntilResendAllowed, sendOtpEmail, sendPasswordResetEmail, sendAstrologerApprovalEmail, sendAstrologerRejectionEmail, sendNewApplicationAdminAlert, sendRevenueAlert, sendPayoutRequestAlert };

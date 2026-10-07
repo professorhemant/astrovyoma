@@ -7,6 +7,7 @@ const { validateContact } = require('../services/contactService');
 const earningsService = require('../services/earningsService');
 const { generateToken } = require('../services/agoraService');
 const { finalizeConsultation, expireIfRungOut, RING_TIMEOUT_MS } = require('./consultationController');
+const { sendPayoutRequestAlert } = require('../services/otpService');
 
 async function panditLogin(req, res) {
   try {
@@ -74,7 +75,10 @@ async function getStatus(req, res) {
     // whichever is missing. Approval used to drop the address the astrologer
     // applied with, so most existing accounts have only a number.
     const a = await Astrologer.findByPk(req.pandit.panditId, {
-      attributes: ['id', 'display_name', 'photo_url', 'is_online', 'price_per_min', 'free_minutes', 'email', 'phone', 'bio', 'experience_years', 'specialties', 'languages']
+      attributes: ['id', 'display_name', 'photo_url', 'is_online', 'price_per_min', 'free_minutes',
+                   'email', 'phone', 'bio', 'experience_years', 'specialties', 'languages',
+                   'upi_id', 'bank_account', 'bank_ifsc', 'bank_account_name',
+                   'payout_requested', 'payout_requested_at']
     });
     res.json(a);
   } catch (err) {
@@ -318,6 +322,57 @@ async function getAppointments(req, res) {
   }
 }
 
+async function updateBankDetails(req, res) {
+  try {
+    const a = await Astrologer.findByPk(req.pandit.panditId);
+    if (!a) return res.status(404).json({ error: 'Astrologer not found' });
+
+    const { upi_id, bank_account, bank_ifsc, bank_account_name } = req.body;
+    const patch = {};
+    if (upi_id      !== undefined) patch.upi_id           = upi_id      ? String(upi_id).trim()           : null;
+    if (bank_account !== undefined) patch.bank_account    = bank_account ? String(bank_account).trim()    : null;
+    if (bank_ifsc    !== undefined) patch.bank_ifsc       = bank_ifsc    ? String(bank_ifsc).trim().toUpperCase() : null;
+    if (bank_account_name !== undefined) patch.bank_account_name = bank_account_name ? String(bank_account_name).trim() : null;
+
+    if (!Object.keys(patch).length) return res.status(400).json({ error: 'No details provided' });
+    await a.update(patch);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('updateBankDetails error:', err);
+    res.status(500).json({ error: 'Could not save bank details' });
+  }
+}
+
+async function requestPayout(req, res) {
+  try {
+    const a = await Astrologer.findByPk(req.pandit.panditId);
+    if (!a) return res.status(404).json({ error: 'Astrologer not found' });
+
+    const summary = await earningsService.summaryFor(req.pandit.panditId);
+    if (summary.pendingAmount <= 0) {
+      return res.status(400).json({ error: 'No pending earnings to request' });
+    }
+
+    await a.update({ payout_requested: true, payout_requested_at: new Date() });
+
+    sendPayoutRequestAlert({
+      name:             a.display_name,
+      phone:            a.phone,
+      amount:           summary.pendingAmount,
+      pendingCount:     summary.pendingCount,
+      upi_id:           a.upi_id,
+      bank_account:     a.bank_account,
+      bank_ifsc:        a.bank_ifsc,
+      bank_account_name: a.bank_account_name,
+    }).catch(err => console.error('[payout-request] alert email failed:', err.message));
+
+    res.json({ success: true, pending_amount: summary.pendingAmount });
+  } catch (err) {
+    console.error('requestPayout error:', err);
+    res.status(500).json({ error: 'Could not submit payout request' });
+  }
+}
+
 async function updateProfile(req, res) {
   try {
     const a = await Astrologer.findByPk(req.pandit.panditId);
@@ -363,5 +418,5 @@ module.exports = {
   panditLogin, toggleStatus, getStatus, getEarnings, getEarningsBreakdown,
   getIncomingCalls, acceptCall, declineCall, endCall,
   getAvailability, setAvailability, getAppointments, setContact,
-  updateProfile, changePin,
+  updateProfile, changePin, updateBankDetails, requestPayout,
 };

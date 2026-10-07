@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   IndianRupee, ArrowLeft, Clock, TrendingUp, CheckCircle, Hourglass,
-  BarChart2, Calendar, Activity, Filter,
+  BarChart2, Calendar, Activity, Filter, CreditCard, ChevronDown, Send,
 } from 'lucide-react';
 import { panditProfile } from '../api';
+import toast from 'react-hot-toast';
 
 const TOKEN_KEY = 'pandit_token';
 
@@ -135,6 +136,13 @@ export default function EarningsDashboardPage() {
   const [histPage, setHistPage] = useState(1);
   const HIST_PER_PAGE = 20;
 
+  const [bankOpen, setBankOpen] = useState(false);
+  const [bankMethod, setBankMethod] = useState('upi'); // 'upi' | 'bank'
+  const [bankForm, setBankForm] = useState({ upi_id: '', bank_account: '', bank_ifsc: '', bank_account_name: '' });
+  const [bankSaving, setBankSaving] = useState(false);
+
+  const [requesting, setRequesting] = useState(false);
+
   useEffect(() => {
     const token = localStorage.getItem(TOKEN_KEY);
     if (!token) { navigate('/pandit-portal', { replace: true }); return; }
@@ -147,10 +155,50 @@ export default function EarningsDashboardPage() {
       setPandit(me.data);
       setSummary(sum.data);
       setBreakdown(brk.data);
+      const a = me.data;
+      setBankForm({
+        upi_id:           a.upi_id           || '',
+        bank_account:     a.bank_account     || '',
+        bank_ifsc:        a.bank_ifsc        || '',
+        bank_account_name: a.bank_account_name || '',
+      });
+      if (a.bank_account && !a.upi_id) setBankMethod('bank');
     }).catch(() => {
       navigate('/pandit-portal', { replace: true });
     }).finally(() => setLoading(false));
   }, [navigate]);
+
+  async function saveBankDetails(e) {
+    e.preventDefault();
+    setBankSaving(true);
+    try {
+      const payload = bankMethod === 'upi'
+        ? { upi_id: bankForm.upi_id, bank_account: null, bank_ifsc: null, bank_account_name: null }
+        : { upi_id: null, bank_account: bankForm.bank_account, bank_ifsc: bankForm.bank_ifsc, bank_account_name: bankForm.bank_account_name };
+      await panditProfile.updateBankDetails(payload);
+      setPandit(p => ({ ...p, ...payload }));
+      toast.success('Bank details saved');
+      setBankOpen(false);
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Could not save details');
+    } finally {
+      setBankSaving(false);
+    }
+  }
+
+  async function submitPayoutRequest() {
+    if (requesting) return;
+    setRequesting(true);
+    try {
+      await panditProfile.requestPayout();
+      setPandit(p => ({ ...p, payout_requested: true, payout_requested_at: new Date().toISOString() }));
+      toast.success('Payout request sent! We will process it within 1–2 business days.');
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Could not send request');
+    } finally {
+      setRequesting(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -237,6 +285,152 @@ export default function EarningsDashboardPage() {
                 {s.sub && <p className="text-gray-600 text-xs mt-0.5">{s.sub}</p>}
               </div>
             ))}
+          </div>
+        )}
+
+        {/* ── Payout request + bank details ── */}
+        {summary && (
+          <div className="grid sm:grid-cols-2 gap-4 mb-6">
+
+            {/* Request Payout card */}
+            <div className="card-cosmic p-5 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Send className="w-4 h-4 text-gold-500" />
+                  <h2 className="text-gray-200 text-sm font-medium">Request Payout</h2>
+                </div>
+                <p className="text-gray-500 text-xs leading-relaxed mb-4">
+                  We process payouts within 1–2 business days of your request.
+                </p>
+              </div>
+
+              {pandit?.payout_requested ? (
+                <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 px-4 py-3">
+                  <p className="text-amber-400 text-sm font-semibold">Request Sent ✓</p>
+                  <p className="text-gray-500 text-xs mt-1">
+                    Requested on {new Date(pandit.payout_requested_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}.
+                    We'll process it within 1–2 business days.
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  {!(pandit?.upi_id || pandit?.bank_account) && (
+                    <p className="text-red-400/80 text-xs mb-3">
+                      Add your UPI ID or bank account below before requesting.
+                    </p>
+                  )}
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <p className="text-gray-400 text-xs">Pending amount</p>
+                      <p className="font-serif text-gold-400 text-xl">{INR(summary.pendingAmount)}</p>
+                    </div>
+                    <button
+                      onClick={submitPayoutRequest}
+                      disabled={requesting || summary.pendingAmount <= 0 || !(pandit?.upi_id || pandit?.bank_account)}
+                      className="btn-gold px-5 py-2.5 text-sm font-semibold disabled:opacity-40">
+                      {requesting ? 'Sending…' : 'Request Payout'}
+                    </button>
+                  </div>
+                  <p className="text-gray-600 text-[10px]">
+                    {summary.pendingCount} unpaid session{summary.pendingCount !== 1 ? 's' : ''}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Bank Details card */}
+            <div className="card-cosmic p-5">
+              <button onClick={() => setBankOpen(v => !v)}
+                className="w-full flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-purple-400" />
+                  <h2 className="text-gray-200 text-sm font-medium">Payment Details</h2>
+                </div>
+                <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${bankOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {/* Current saved method (always visible) */}
+              {!bankOpen && (
+                <div className="mt-3">
+                  {pandit?.upi_id ? (
+                    <p className="text-gray-400 text-sm">UPI: <span className="text-gold-400 font-medium">{pandit.upi_id}</span></p>
+                  ) : pandit?.bank_account ? (
+                    <div className="text-xs text-gray-400 space-y-0.5">
+                      <p>A/C: <span className="text-gray-200">{pandit.bank_account}</span></p>
+                      <p>IFSC: <span className="text-gray-200">{pandit.bank_ifsc || '—'}</span>
+                        {pandit.bank_account_name && <> · {pandit.bank_account_name}</>}</p>
+                    </div>
+                  ) : (
+                    <p className="text-gray-600 text-xs mt-2">No payment details saved. Add UPI or bank account to enable payout requests.</p>
+                  )}
+                </div>
+              )}
+
+              <AnimatePresence>
+                {bankOpen && (
+                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}
+                    className="overflow-hidden">
+                    <form onSubmit={saveBankDetails} className="mt-4 space-y-3">
+                      {/* Method toggle */}
+                      <div className="flex gap-2">
+                        {['upi', 'bank'].map(m => (
+                          <button key={m} type="button"
+                            onClick={() => setBankMethod(m)}
+                            className={`flex-1 py-2 rounded-xl text-xs font-medium border transition-all ${
+                              bankMethod === m
+                                ? 'bg-gold-500/15 border-gold-500/50 text-gold-400'
+                                : 'border-gold-600/15 text-gray-500 hover:text-gray-300'
+                            }`}>
+                            {m === 'upi' ? 'UPI / PhonePe / GPay' : 'Bank Account'}
+                          </button>
+                        ))}
+                      </div>
+
+                      {bankMethod === 'upi' ? (
+                        <div>
+                          <label className="text-gray-400 text-xs block mb-1">UPI ID</label>
+                          <input type="text" value={bankForm.upi_id}
+                            onChange={e => setBankForm(f => ({ ...f, upi_id: e.target.value }))}
+                            placeholder="yourname@upi or 9876543210@ybl"
+                            className="input-cosmic w-full text-sm" />
+                        </div>
+                      ) : (
+                        <>
+                          <div>
+                            <label className="text-gray-400 text-xs block mb-1">Account Holder Name</label>
+                            <input type="text" value={bankForm.bank_account_name}
+                              onChange={e => setBankForm(f => ({ ...f, bank_account_name: e.target.value }))}
+                              placeholder="As on bank passbook"
+                              className="input-cosmic w-full text-sm" />
+                          </div>
+                          <div>
+                            <label className="text-gray-400 text-xs block mb-1">Account Number</label>
+                            <input type="text" value={bankForm.bank_account}
+                              onChange={e => setBankForm(f => ({ ...f, bank_account: e.target.value }))}
+                              placeholder="e.g. 00110123456789"
+                              className="input-cosmic w-full text-sm" />
+                          </div>
+                          <div>
+                            <label className="text-gray-400 text-xs block mb-1">IFSC Code</label>
+                            <input type="text" value={bankForm.bank_ifsc}
+                              onChange={e => setBankForm(f => ({ ...f, bank_ifsc: e.target.value.toUpperCase() }))}
+                              placeholder="e.g. SBIN0001234"
+                              className="input-cosmic w-full text-sm tracking-wider" />
+                          </div>
+                        </>
+                      )}
+
+                      <button type="submit" disabled={bankSaving}
+                        className="btn-gold w-full py-2.5 text-sm font-semibold disabled:opacity-60">
+                        {bankSaving ? 'Saving…' : 'Save Payment Details'}
+                      </button>
+                    </form>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
           </div>
         )}
 

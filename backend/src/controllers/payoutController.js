@@ -7,6 +7,7 @@
 
 const earningsService = require('../services/earningsService');
 const { startOfWeek } = earningsService;
+const { Astrologer } = require('../models');
 
 // Everything still owed, grouped by astrologer.
 //
@@ -45,6 +46,13 @@ async function payAstrologer(req, res) {
 
     console.log(`[payout] ${result.paid} earning(s), ₹${result.amount} to astrologer ${astrologer_id}` +
                 (reference ? ` (ref ${reference})` : ''));
+
+    // Clear the payout request flag so the portal shows the request as fulfilled.
+    Astrologer.update(
+      { payout_requested: false, payout_requested_at: null },
+      { where: { id: astrologer_id } }
+    ).catch(err => console.error('[payout] clear request flag failed:', err.message));
+
     res.json(result);
   } catch (err) {
     console.error('payAstrologer error:', err);

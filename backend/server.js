@@ -159,6 +159,25 @@ async function start() {
       isPostgres
         ? `ALTER TABLE astrologers ALTER COLUMN photo_url TYPE TEXT`
         : null,
+      // Bank details + payout request for astrologer self-service payouts
+      isPostgres
+        ? `ALTER TABLE astrologers ADD COLUMN IF NOT EXISTS upi_id VARCHAR(100)`
+        : `ALTER TABLE astrologers ADD COLUMN upi_id TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologers ADD COLUMN IF NOT EXISTS bank_account VARCHAR(50)`
+        : `ALTER TABLE astrologers ADD COLUMN bank_account TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologers ADD COLUMN IF NOT EXISTS bank_ifsc VARCHAR(20)`
+        : `ALTER TABLE astrologers ADD COLUMN bank_ifsc TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologers ADD COLUMN IF NOT EXISTS bank_account_name VARCHAR(200)`
+        : `ALTER TABLE astrologers ADD COLUMN bank_account_name TEXT`,
+      isPostgres
+        ? `ALTER TABLE astrologers ADD COLUMN IF NOT EXISTS payout_requested BOOLEAN DEFAULT false`
+        : `ALTER TABLE astrologers ADD COLUMN payout_requested INTEGER DEFAULT 0`,
+      isPostgres
+        ? `ALTER TABLE astrologers ADD COLUMN IF NOT EXISTS payout_requested_at TIMESTAMP WITH TIME ZONE`
+        : `ALTER TABLE astrologers ADD COLUMN payout_requested_at DATETIME`,
     ].filter(Boolean);
     for (const sql of migrations) {
       try { await sequelize.query(sql); } catch (_) { /* column already exists */ }

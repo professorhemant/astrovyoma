@@ -57,7 +57,13 @@ module.exports = (sequelize) => {
       defaultValue: '[]',
       get() { try { return JSON.parse(this.getDataValue('concern_tags') || '[]'); } catch { return []; } },
       set(val) { this.setDataValue('concern_tags', JSON.stringify(Array.isArray(val) ? val : [])); }
-    }
+    },
+    upi_id:            { type: DataTypes.STRING(100), allowNull: true },
+    bank_account:      { type: DataTypes.STRING(50),  allowNull: true },
+    bank_ifsc:         { type: DataTypes.STRING(20),  allowNull: true },
+    bank_account_name: { type: DataTypes.STRING(200), allowNull: true },
+    payout_requested:    { type: DataTypes.BOOLEAN,   defaultValue: false },
+    payout_requested_at: { type: DataTypes.DATE,      allowNull: true },
   }, {
     tableName: 'astrologers',
     timestamps: true,
