@@ -82,14 +82,21 @@ async function getStatus(req, res) {
   }
 }
 
-// An astrologer's own earnings. Reads only their own rows — the token carries
-// the astrologer id, and nothing in the request can point it at anybody else.
 async function getEarnings(req, res) {
   try {
     res.json(await earningsService.summaryFor(req.pandit.panditId));
   } catch (err) {
     console.error('getEarnings error:', err);
     res.status(500).json({ error: 'Failed to fetch earnings' });
+  }
+}
+
+async function getEarningsBreakdown(req, res) {
+  try {
+    res.json(await earningsService.getBreakdownFor(req.pandit.panditId));
+  } catch (err) {
+    console.error('getEarningsBreakdown error:', err);
+    res.status(500).json({ error: 'Failed to fetch earnings breakdown' });
   }
 }
 
@@ -353,7 +360,7 @@ async function changePin(req, res) {
 }
 
 module.exports = {
-  panditLogin, toggleStatus, getStatus, getEarnings,
+  panditLogin, toggleStatus, getStatus, getEarnings, getEarningsBreakdown,
   getIncomingCalls, acceptCall, declineCall, endCall,
   getAvailability, setAvailability, getAppointments, setContact,
   updateProfile, changePin,

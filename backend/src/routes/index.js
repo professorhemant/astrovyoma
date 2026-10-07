@@ -121,6 +121,7 @@ router.post('/pandit/login', panditController.panditLogin);
 router.get('/pandit/me', panditAuth, panditController.getStatus);
 router.patch('/pandit/status', panditAuth, panditController.toggleStatus);
 router.get('/pandit/earnings', panditAuth, panditController.getEarnings);
+router.get('/pandit/earnings/breakdown', panditAuth, panditController.getEarningsBreakdown);
 router.patch('/pandit/contact',     panditAuth, panditController.setContact);
 router.patch('/pandit/profile',     panditAuth, panditController.updateProfile);
 router.post('/pandit/change-pin',   panditAuth, panditController.changePin);

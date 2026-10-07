@@ -77,6 +77,7 @@ import PrivacyPolicyPage        from './pages/PrivacyPolicyPage';
 import ContentPage              from './pages/ContentPage';
 import JoinAsAstrologerPage    from './pages/JoinAsAstrologerPage';
 import AstrologerOnboardingPage from './pages/AstrologerOnboardingPage';
+import EarningsDashboardPage    from './pages/EarningsDashboardPage';
 import KPAstrologyPage          from './pages/KPAstrologyPage';
 
 function ProtectedRoute({ children }) {
@@ -94,7 +95,7 @@ function AppLayout() {
   const location = useLocation();
   const isConsultation = location.pathname.startsWith('/consult/');
   const isAdmin = location.pathname.startsWith('/admin');
-  const isPortal = location.pathname.startsWith('/pandit-portal');
+  const isPortal = location.pathname.startsWith('/pandit-portal') || location.pathname.startsWith('/pandit-earnings');
   const [atTop, setAtTop] = useState(true);
 
   useEffect(() => {
@@ -165,6 +166,7 @@ function AppLayout() {
             <Route path="/purpose" element={<PurposePage />} />
             <Route path="/astrologers" element={<AstrologersPage />} />
             <Route path="/pandit-portal" element={<PanditPortalPage />} />
+            <Route path="/pandit-earnings" element={<EarningsDashboardPage />} />
             <Route path="/astrologers/:id" element={<AstrologerDetailPage />} />
             <Route path="/consult/:id" element={<ProtectedRoute><ConsultationPage /></ProtectedRoute>} />
             <Route path="/chat" element={<ChatbotPage />} />

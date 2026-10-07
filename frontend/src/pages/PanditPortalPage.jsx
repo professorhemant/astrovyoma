@@ -271,11 +271,9 @@ export default function PanditPortalPage() {
         <div className="mt-6">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-xs text-gold-600 uppercase tracking-widest">Earnings</h3>
-            {earnings && (
-              <span className="text-[11px] text-gray-500">
-                {earnings.consultations} consultation{earnings.consultations === 1 ? '' : 's'}
-              </span>
-            )}
+            <Link to="/pandit-earnings" className="text-[11px] text-gold-600 hover:text-gold-400 transition-colors">
+              Full Dashboard →
+            </Link>
           </div>
 
           {!earnings ? (

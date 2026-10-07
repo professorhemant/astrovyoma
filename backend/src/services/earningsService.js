@@ -283,7 +283,64 @@ async function undoPayout(astrologerId, earningIds) {
   return { restored: count, amount: round2(sum(rows, 'net_amount')) };
 }
 
+// Chart data + full consultation list for the earnings dashboard page.
+async function getBreakdownFor(astrologerId) {
+  const rows = await AstrologerEarning.findAll({
+    where: { astrologer_id: astrologerId },
+    order: [['created_at', 'ASC']],
+  });
+
+  const now = new Date();
+
+  // Daily: last 30 days
+  const daily = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    d.setHours(0, 0, 0, 0);
+    const next = new Date(d); next.setDate(next.getDate() + 1);
+    const dayRows = rows.filter(r => { const t = new Date(r.created_at); return t >= d && t < next; });
+    daily.push({
+      date: d.toISOString().split('T')[0],
+      amount: round2(sum(dayRows, 'net_amount')),
+      sessions: dayRows.length,
+    });
+  }
+
+  // Monthly: last 12 months
+  const monthly = [];
+  for (let i = 11; i >= 0; i--) {
+    const d    = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const next = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+    const monthRows = rows.filter(r => { const t = new Date(r.created_at); return t >= d && t < next; });
+    monthly.push({
+      label:    d.toLocaleDateString('en-IN', { month: 'short', year: '2-digit' }),
+      amount:   round2(sum(monthRows, 'net_amount')),
+      sessions: monthRows.length,
+    });
+  }
+
+  const dayAmounts = daily.filter(d => d.amount > 0);
+  const bestDay = dayAmounts.length
+    ? dayAmounts.reduce((a, b) => (a.amount >= b.amount ? a : b))
+    : null;
+
+  const all = [...rows].reverse().map(r => ({
+    id:                 r.id,
+    at:                 r.created_at,
+    duration_mins:      r.duration_mins,
+    gross_amount:       parseFloat(r.gross_amount),
+    commission_percent: parseFloat(r.commission_percent),
+    commission_amount:  parseFloat(r.commission_amount),
+    net_amount:         parseFloat(r.net_amount),
+    status:             r.status,
+    paid_at:            r.paid_at,
+  }));
+
+  return { daily, monthly, all, bestDay };
+}
+
 module.exports = {
-  recordConsultationEarning, summaryFor, markPaid, split, startOfWeek,
+  recordConsultationEarning, summaryFor, getBreakdownFor, markPaid, split, startOfWeek,
   pendingByAstrologer, payAstrologer, recentPayouts, undoPayout,
 };
