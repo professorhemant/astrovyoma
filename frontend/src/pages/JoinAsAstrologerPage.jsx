@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PhotoUpload from '../components/PhotoUpload';
+import { useSeoMeta } from '../hooks/useSeoMeta';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { IndianRupee, Clock, Shield, Users, Zap, Star, CheckCircle, ChevronDown } from 'lucide-react';
@@ -173,6 +174,13 @@ const HOW_STEPS = [
 ];
 
 export default function JoinAsAstrologerPage() {
+  useSeoMeta({
+    title:         'Join AstroVyoma — Earn as a Vedic Astrologer',
+    description:   'India\'s sacred platform for Vedic astrologers. Earn 60% on every consultation. Weekly payouts. Free to join. No middlemen, no lock-ins.',
+    ogUrl:         'https://astrovyoma.com/join-as-astrologer',
+    ogImage:       'https://astrovyoma.com/og-join.jpg',
+  });
+
   const [step, setStep]         = useState(0);
   const [form, setForm]         = useState(EMPTY);
   const [errors, setErrors]     = useState({});

@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { Star, Globe, Clock, Award, Phone, Video, Calendar, Share2, BadgeCheck, ChevronLeft } from 'lucide-react';
 import { astrologers as astrologersApi, consultations as consultationsApi } from '../api';
 import { useAuth } from '../context/AuthContext';
+import { useSeoMeta } from '../hooks/useSeoMeta';
 
 export default function AstrologerPublicProfilePage() {
   const { slug } = useParams();
@@ -13,6 +14,21 @@ export default function AstrologerPublicProfilePage() {
   const [astrologer, setAstrologer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(null);
+
+  // OG image must be an https:// URL — base64 data URIs are rejected by all social crawlers
+  const ogImage = astrologer?.photo_url?.startsWith('https://') ? astrologer.photo_url : undefined;
+  const specsSnippet = (astrologer?.specialties || []).slice(0, 3).join(', ');
+  const bioSnippet = astrologer?.bio?.slice(0, 160) || (specsSnippet ? `Expert in ${specsSnippet}` : '');
+
+  useSeoMeta(astrologer ? {
+    title:         `${astrologer.display_name} — Vedic Astrologer | AstroVyoma`,
+    description:   `${bioSnippet}${bioSnippet && astrologer.price_per_min ? ` · ₹${astrologer.price_per_min}/min` : ''}`,
+    ogTitle:       `${astrologer.display_name} | AstroVyoma`,
+    ogDescription: bioSnippet || `Consult ${astrologer.display_name} on AstroVyoma · ₹${astrologer.price_per_min}/min`,
+    ogImage,
+    ogUrl:         `https://astrovyoma.com/astrologer/${slug}`,
+    ogType:        'profile',
+  } : {});
 
   useEffect(() => {
     let alive = true;

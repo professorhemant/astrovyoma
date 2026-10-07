@@ -7,6 +7,7 @@ import HeroMarquee from '../components/HeroMarquee';
 import TarotSection from '../components/TarotSection';
 import { horoscope as horoscopeApi, kundali as kundaliApi, content as contentApi } from '../api';
 import { useAuth } from '../context/AuthContext';
+import { useSeoMeta } from '../hooks/useSeoMeta';
 import VisualEditor from '../components/editor/VisualEditor';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -158,6 +159,12 @@ function EarningCalc() {
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
+  useSeoMeta({
+    title:       'AstroVyoma — Vedic Astrology Platform',
+    description: 'Free Kundali, daily horoscopes, expert Vedic astrologers & AI-powered cosmic guidance. India\'s sacred astrology platform.',
+    ogUrl:       'https://astrovyoma.com/',
+  });
+
   const [selectedSign, setSelectedSign]   = useState(null);
   const [horoscopeText, setHoroscopeText] = useState('');
   const { lang } = useLanguage();

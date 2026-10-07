@@ -4,6 +4,7 @@ import { Heart, Briefcase, Gem, Coins, Leaf, Sparkles, Layers, SlidersHorizontal
 import AstrologerCard from '../components/AstrologerCard';
 import { astrologers as astrologersApi } from '../api';
 import SwastikBorder from '../components/SwastikBorder';
+import { useSeoMeta } from '../hooks/useSeoMeta';
 
 const CONCERNS = [
   { key: 'all',      label: 'All',       Icon: Layers    },
@@ -24,6 +25,12 @@ const SORTS = [
 ];
 
 export default function AstrologersPage() {
+  useSeoMeta({
+    title:       'Find Vedic Astrologers | AstroVyoma',
+    description: 'Connect with India\'s finest Vedic astrologers. Live consultations by voice & video. Browse by specialty — Kundali, Tarot, Numerology, Lal Kitab & more.',
+    ogUrl:       'https://astrovyoma.com/astrologers',
+  });
+
   const [list, setList]       = useState([]);
   const [loading, setLoading] = useState(true);
   const [concern, setConcern] = useState('all');
