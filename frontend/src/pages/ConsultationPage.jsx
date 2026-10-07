@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { Send, Mic, MicOff, Video, VideoOff, PhoneOff, Clock, Wallet, Star } from 'lucide-react';
 import ChatMessage from '../components/ChatMessage';
@@ -39,7 +39,8 @@ export default function ConsultationPage() {
   const agoraToken = searchParams.get('token');
   const appId = searchParams.get('appId');
   const astrologerName = searchParams.get('astrologer') || 'Astrologer';
-  const astrologerId = searchParams.get('astrologerId') || null;
+  const astrologerId   = searchParams.get('astrologerId') || null;
+  const astrologerSlug = searchParams.get('astrologerSlug') || null;
   const astrologerSpecialties = searchParams.get('specialties') ? JSON.parse(searchParams.get('specialties')) : [];
   const pricePerMin = parseFloat(searchParams.get('price') || '30');
 
@@ -61,7 +62,10 @@ export default function ConsultationPage() {
   const [demoMediaActive, setDemoMediaActive] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
   const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
   const [showRating, setShowRating] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const messagesEndRef = useRef(null);
   const timerRef = useRef(null);
@@ -246,7 +250,13 @@ export default function ConsultationPage() {
     // Agora client matters less than the seeker getting out of a call that is
     // going nowhere, and it must never be what stands between them and the exit.
     try { await consultationsApi.end(id); } catch {}
-    setShowRating(true);
+    // Only prompt for a review when the astrologer actually joined — a missed
+    // or declined call has nothing to rate.
+    if (astrologerJoined) {
+      setShowRating(true);
+    } else {
+      navigate('/astrologers');
+    }
     cleanupMedia().catch(() => {});
   }
 
@@ -259,33 +269,114 @@ export default function ConsultationPage() {
   // Nothing is owed until the two are actually connected, so nothing is shown.
   const estimatedCost = (astrologerJoined ? (elapsed / 60 * pricePerMin) : 0).toFixed(2);
 
+  const RATING_LABELS = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent!'];
+
+  async function handleSubmitReview() {
+    setSubmitting(true);
+    try {
+      if (rating > 0 && astrologerId) {
+        await reviewsApi.submit({
+          consultation_id: id,
+          astrologer_id: astrologerId,
+          rating,
+          comment: comment.trim() || undefined,
+        });
+        toast.success('Thank you for your feedback!');
+      }
+      setSubmitted(true);
+    } catch {
+      setSubmitted(true);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   if (showRating) {
     return (
-      <div className="min-h-screen bg-cosmic-950 flex items-center justify-center px-4" style={{ background: 'radial-gradient(ellipse at top, #1a1060 0%, #0A0E2A 40%, #04051A 100%)' }}>
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-cosmic-800/80 border border-gold-600/20 rounded-2xl p-8 max-w-sm w-full text-center">
-          <div className="text-4xl mb-4 font-serif text-gold-400">✦</div>
-          <h2 className="font-serif text-2xl text-gold-400 mb-2">Session Complete</h2>
-          <p className="text-gray-200 text-sm mb-1">Duration: {formatTime(elapsed)}</p>
-          <p className="text-gray-200 text-sm mb-6">Consultation cost: ₹{estimatedCost}</p>
-          <p className="text-gray-300 text-sm mb-4">Rate your experience with {astrologerName}</p>
-          <div className="flex justify-center gap-2 mb-6">
-            {[1, 2, 3, 4, 5].map(s => (
-              <button key={s} onClick={() => setRating(s)} className="transition-transform hover:scale-110">
-                <Star className={`w-8 h-8 ${s <= rating ? 'fill-gold-400 text-gold-400' : 'text-gray-300'}`} />
+      <div className="min-h-screen flex items-center justify-center px-4"
+        style={{ background: 'radial-gradient(ellipse at top, #1a1060 0%, #0A0E2A 40%, #04051A 100%)' }}>
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+          className="bg-cosmic-800/80 border border-gold-600/20 rounded-2xl p-8 max-w-sm w-full text-center">
+
+          {submitted ? (
+            <>
+              <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 200 }}
+                className="text-5xl mb-4 font-serif text-gold-400">✦</motion.div>
+              <h2 className="font-serif text-2xl text-gold-400 mb-2">Thank You!</h2>
+              <p className="text-gray-400 text-sm mb-6 leading-relaxed">
+                Your feedback helps other seekers find the right guide.
+              </p>
+              <div className="flex flex-col gap-3">
+                {astrologerSlug && (
+                  <button onClick={() => navigate(`/astrologer/${astrologerSlug}`)}
+                    className="w-full bg-gradient-to-r from-gold-600 to-gold-400 text-cosmic-950 font-semibold rounded-full py-3 text-sm hover:opacity-90 transition-opacity">
+                    Book Again with {astrologerName}
+                  </button>
+                )}
+                <button onClick={() => navigate('/astrologers')}
+                  className="w-full py-2.5 rounded-full border border-gold-600/20 text-gray-400 text-sm hover:text-gold-400 hover:border-gold-600/40 transition-colors">
+                  Browse Other Astrologers
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-4xl mb-3 font-serif text-gold-400">✦</div>
+              <h2 className="font-serif text-2xl text-gold-400 mb-1">Session Complete</h2>
+              <p className="text-gray-400 text-xs mb-4">
+                {formatTime(elapsed)} · ₹{estimatedCost} charged
+              </p>
+
+              <p className="text-gray-300 text-sm mb-4">
+                How was your session with <span className="text-gold-400">{astrologerName}</span>?
+              </p>
+
+              {/* Stars */}
+              <div className="flex justify-center gap-1.5 mb-2">
+                {[1, 2, 3, 4, 5].map(s => (
+                  <button key={s} onClick={() => setRating(s)}
+                    className="transition-all hover:scale-110 active:scale-95">
+                    <Star className={`w-9 h-9 transition-colors ${
+                      s <= rating ? 'fill-gold-400 text-gold-400' : 'text-gray-600 hover:text-gray-400'
+                    }`} />
+                  </button>
+                ))}
+              </div>
+
+              {rating > 0 && (
+                <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+                  className="text-gold-400 text-xs font-medium mb-4">
+                  {RATING_LABELS[rating]}
+                </motion.p>
+              )}
+
+              {/* Comment — appears after picking a star */}
+              <AnimatePresence>
+                {rating > 0 && (
+                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}
+                    className="overflow-hidden mb-4">
+                    <textarea
+                      value={comment}
+                      onChange={e => setComment(e.target.value)}
+                      placeholder="What made this session helpful? (optional)"
+                      rows={3}
+                      maxLength={500}
+                      className="w-full bg-cosmic-900 border border-gold-600/20 rounded-xl px-3 py-2.5 text-gray-200 text-sm focus:outline-none focus:border-gold-500 transition-colors placeholder-gray-600 resize-none"
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <button onClick={handleSubmitReview} disabled={submitting}
+                className="w-full bg-gradient-to-r from-gold-600 to-gold-400 text-cosmic-950 font-semibold rounded-full py-3 text-sm hover:opacity-90 transition-opacity disabled:opacity-60">
+                {submitting
+                  ? 'Submitting…'
+                  : rating > 0 ? 'Submit Review' : 'Skip'}
               </button>
-            ))}
-          </div>
-          <button onClick={async () => {
-            if (rating > 0 && astrologerId) {
-              try {
-                await reviewsApi.submit({ consultation_id: id, astrologer_id: astrologerId, rating });
-                toast.success('Thank you for your feedback!');
-              } catch {}
-            }
-            navigate('/astrologers');
-          }} className="w-full bg-gradient-to-r from-gold-600 to-gold-400 text-cosmic-950 font-semibold rounded-full py-3 hover:opacity-90 transition-opacity">
-            {rating > 0 ? 'Submit & Continue' : 'Skip & Continue'}
-          </button>
+            </>
+          )}
         </motion.div>
       </div>
     );

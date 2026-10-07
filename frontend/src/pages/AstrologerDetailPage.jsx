@@ -43,6 +43,7 @@ export default function AstrologerDetailPage() {
       const params = new URLSearchParams({
         astrologer: astrologer.display_name,
         astrologerId: id,
+        astrologerSlug: astrologer.slug || '',
         price: astrologer.price_per_min,
         specialties: JSON.stringify(astrologer.specialties || []),
         mode,
