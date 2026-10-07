@@ -680,6 +680,7 @@ const crypto  = require('crypto');
 const { getRazorpay } = require('../services/razorpay');
 const { PoojaBooking, Astrologer } = require('../models');
 const { notifyCustomerBookingConfirmed, notifyPanditNewBooking } = require('../services/notificationService');
+const { sendRevenueAlert } = require('../services/otpService');
 const { getSettings } = require('../services/settingsService');
 const { Op } = require('sequelize');
 
@@ -802,7 +803,17 @@ async function verifyAndBook(req, res) {
 
     console.log(`[PoojaBooking] Confirmed — ${refId} | ${paath.name} | ${name} (${mobile}) | ₹${gross} | Pandit ₹${net}`);
 
-    // Fire-and-forget SMS — never let notification failure break the booking response
+    // Fire-and-forget notifications — never let failures break the booking response
+    sendRevenueAlert({
+      kind: 'pooja',
+      userName: name,
+      userPhone: mobile,
+      amount: gross,
+      plan: `${paath.name}${variant ? ` (${variant})` : ''}`,
+      billing: `Ref: ${refId} | Date: ${date}`,
+      paymentId: razorpay_payment_id,
+    }).catch(err => console.error('[revenue-alert] pooja email failed:', err.message));
+
     notifyCustomerBookingConfirmed({ mobile, name, paathName: paath.name, refId, date }).catch(() => {});
     if (pandit?.phone) {
       notifyPanditNewBooking({
