@@ -1,5 +1,6 @@
 const { Astrologer, Review } = require('../models');
 const { findMatchingAstrologers } = require('../services/matchingService');
+const { generateUniqueSlug } = require('../utils/slugUtils');
 
 async function getAstrologers(req, res) {
   try {
@@ -48,4 +49,17 @@ async function updateOnlineStatus(req, res) {
   }
 }
 
-module.exports = { getAstrologers, getAstrologerById, updateOnlineStatus };
+async function getAstrologerBySlug(req, res) {
+  try {
+    const astrologer = await Astrologer.findOne({
+      where: { slug: req.params.slug },
+      include: [{ model: Review, as: 'reviews', limit: 10, order: [['created_at', 'DESC']] }],
+    });
+    if (!astrologer) return res.status(404).json({ error: 'Astrologer not found' });
+    res.json(astrologer);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch astrologer' });
+  }
+}
+
+module.exports = { getAstrologers, getAstrologerById, getAstrologerBySlug, updateOnlineStatus };

@@ -16,7 +16,7 @@ export default function AstrologerCard({ astrologer }) {
       whileHover={{ y: -4, boxShadow: '0 0 30px rgba(201,168,76,0.2)' }}
       transition={{ duration: 0.2 }}
       className="card-cosmic p-5 flex flex-col gap-3 cursor-pointer group relative overflow-hidden"
-      onClick={() => navigate(`/astrologers/${astrologer.id}`)}
+      onClick={() => navigate(astrologer.slug ? `/astrologer/${astrologer.slug}` : `/astrologers/${astrologer.id}`)}
     >
       {/* Verified glow strip at top */}
       {astrologer.is_verified && (
@@ -113,7 +113,7 @@ export default function AstrologerCard({ astrologer }) {
       <div className="flex flex-col gap-2 mt-1" onClick={e => e.stopPropagation()}>
         <div className="flex gap-2">
           <button
-            onClick={() => navigate(`/astrologers/${astrologer.id}`)}
+            onClick={() => navigate(astrologer.slug ? `/astrologer/${astrologer.slug}` : `/astrologers/${astrologer.id}`)}
             disabled={!astrologer.is_online}
             title={astrologer.is_online ? undefined : `${astrologer.display_name} is offline`}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full text-xs font-semibold ${

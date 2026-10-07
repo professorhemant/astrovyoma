@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Phone, Lock, LogOut, Wifi, WifiOff, IndianRupee, Clock, ChevronDown, User, Shield } from 'lucide-react';
+import { Phone, Lock, LogOut, Wifi, WifiOff, IndianRupee, Clock, ChevronDown, User, Shield, Share2, Copy } from 'lucide-react';
 import PanditCallPanel from '../components/PanditCallPanel';
 import PanditSchedule from '../components/PanditSchedule';
 import CompleteContactPrompt from '../components/CompleteContactPrompt';
@@ -232,6 +232,30 @@ export default function PanditPortalPage() {
             </div>
           </div>
         </div>
+
+        {/* Shareable profile link */}
+        {pandit.slug && (
+          <div className="mb-6 rounded-2xl border border-gold-600/15 bg-gold-600/5 px-4 py-3 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[10px] text-gold-600 uppercase tracking-widest mb-0.5">Your Public Profile</p>
+              <p className="text-gray-400 text-xs truncate">astrovyoma.com/astrologer/{pandit.slug}</p>
+            </div>
+            <button
+              onClick={() => {
+                const url = `${window.location.origin}/astrologer/${pandit.slug}`;
+                if (navigator.share) {
+                  navigator.share({ title: `${pandit.display_name} — AstroVyoma`, url }).catch(() => {});
+                } else {
+                  navigator.clipboard.writeText(url)
+                    .then(() => toast.success('Link copied!'))
+                    .catch(() => toast.error('Could not copy'));
+                }
+              }}
+              className="shrink-0 flex items-center gap-1 text-xs text-gold-400 hover:text-gold-300 transition-colors">
+              <Share2 className="w-3.5 h-3.5" /> Share
+            </button>
+          </div>
+        )}
 
         {/* Live Toggle */}
         <div className="rounded-2xl p-6 text-center"

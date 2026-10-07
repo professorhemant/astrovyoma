@@ -178,6 +178,9 @@ async function start() {
       isPostgres
         ? `ALTER TABLE astrologers ADD COLUMN IF NOT EXISTS payout_requested_at TIMESTAMP WITH TIME ZONE`
         : `ALTER TABLE astrologers ADD COLUMN payout_requested_at DATETIME`,
+      isPostgres
+        ? `ALTER TABLE astrologers ADD COLUMN IF NOT EXISTS slug VARCHAR(120)`
+        : `ALTER TABLE astrologers ADD COLUMN slug TEXT`,
     ].filter(Boolean);
     for (const sql of migrations) {
       try { await sequelize.query(sql); } catch (_) { /* column already exists */ }
@@ -185,6 +188,22 @@ async function start() {
 
     await sequelize.sync();
     console.log('Models synchronized');
+
+    // Backfill slugs for any astrologer that doesn't have one yet.
+    try {
+      const { Astrologer: A } = require('./src/models');
+      const { Op: Op2 } = require('sequelize');
+      const { makeSlug } = require('./src/utils/slugUtils');
+      const noSlug = await A.findAll({ where: { slug: null } });
+      for (const a of noSlug) {
+        let base = makeSlug(a.display_name);
+        if (!base) base = 'astrologer';
+        let slug = base, n = 2;
+        while (await A.findOne({ where: { slug, id: { [Op2.ne]: a.id } } })) slug = `${base}-${n++}`;
+        await a.update({ slug }).catch(() => {});
+      }
+      if (noSlug.length) console.log(`[slug-backfill] assigned slugs to ${noSlug.length} astrologers`);
+    } catch (e) { console.error('[slug-backfill]', e.message); }
 
     // One-time data fix: clockBottom was saved as 81 (typo) instead of 8.
     try {

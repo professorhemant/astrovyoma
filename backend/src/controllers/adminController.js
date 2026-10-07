@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const { DEMO_ASTROLOGER_NAMES } = require('../seeders/astrologerSeeder');
 const { Op } = require('sequelize');
+const { generateUniqueSlug } = require('../utils/slugUtils');
 const { sequelize, User, Astrologer, Consultation, Transaction, Appointment,
         Kundali, Message, Review, Subscription, UserReport, AiChatMessage, OtpCode } = require('../models');
 
@@ -249,6 +250,7 @@ async function createAstrologer(req, res) {
   try {
     const { display_name, bio, phone, email, pin, price_per_min, experience_years, specialties, languages, free_minutes, photo_url, is_verified } = req.body;
     const pin_hash = pin ? await bcrypt.hash(String(pin), 10) : null;
+    const slug = await generateUniqueSlug(Astrologer, display_name);
     const a = await Astrologer.create({
       display_name, bio, phone, email: email || null, pin_hash,
       price_per_min: price_per_min || 30,
@@ -258,6 +260,7 @@ async function createAstrologer(req, res) {
       free_minutes: free_minutes || 0,
       photo_url: photo_url || null,
       is_verified: is_verified !== undefined ? is_verified : true,
+      slug,
     });
     res.status(201).json(a);
   } catch (err) {

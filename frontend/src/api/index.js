@@ -54,7 +54,8 @@ export const kundali = {
 
 export const astrologers = {
   getAll: (params) => api.get('/astrologers', { params }),
-  getById: (id) => api.get(`/astrologers/${id}`)
+  getById: (id) => api.get(`/astrologers/${id}`),
+  getBySlug: (slug) => api.get(`/astrologers/by-slug/${slug}`),
 };
 
 export const consultations = {

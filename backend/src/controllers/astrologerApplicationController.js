@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const { sendAstrologerApprovalEmail, sendAstrologerRejectionEmail, sendNewApplicationAdminAlert } = require('../services/otpService');
 const { Op } = require('sequelize');
 const { AstrologerApplication, Astrologer } = require('../models');
+const { generateUniqueSlug } = require('../utils/slugUtils');
 
 async function submitApplication(req, res) {
   try {
@@ -98,6 +99,7 @@ async function approveApplication(req, res) {
     let languagesArr = ['Hindi', 'English'];
     try { languagesArr = application.languages ? application.languages.split(',').map(s => s.trim()).filter(Boolean) : ['Hindi', 'English']; } catch {}
 
+    const slug = await generateUniqueSlug(Astrologer, application.name);
     const astrologer = await Astrologer.create({
       display_name: application.name,
       phone: application.phone,
@@ -113,6 +115,7 @@ async function approveApplication(req, res) {
       photo_url: application.photo_url || null,
       pin_hash,
       is_verified: true,
+      slug,
     });
 
     application.status = 'approved';

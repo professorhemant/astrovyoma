@@ -64,6 +64,7 @@ module.exports = (sequelize) => {
     bank_account_name: { type: DataTypes.STRING(200), allowNull: true },
     payout_requested:    { type: DataTypes.BOOLEAN,   defaultValue: false },
     payout_requested_at: { type: DataTypes.DATE,      allowNull: true },
+    slug: { type: DataTypes.STRING(120), allowNull: true, unique: true },
   }, {
     tableName: 'astrologers',
     timestamps: true,

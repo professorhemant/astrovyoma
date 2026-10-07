@@ -138,6 +138,7 @@ router.post('/pandit/calls/:id/end', panditAuth, panditController.endCall);
 
 // Astrologer routes
 router.get('/astrologers', astrologerController.getAstrologers);
+router.get('/astrologers/by-slug/:slug', astrologerController.getAstrologerBySlug);
 router.get('/astrologers/:id', astrologerController.getAstrologerById);
 router.patch('/astrologers/status', auth, astrologerController.updateOnlineStatus);
 

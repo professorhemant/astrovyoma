@@ -78,7 +78,7 @@ async function getStatus(req, res) {
       attributes: ['id', 'display_name', 'photo_url', 'is_online', 'price_per_min', 'free_minutes',
                    'email', 'phone', 'bio', 'experience_years', 'specialties', 'languages',
                    'upi_id', 'bank_account', 'bank_ifsc', 'bank_account_name',
-                   'payout_requested', 'payout_requested_at']
+                   'payout_requested', 'payout_requested_at', 'slug']
     });
     res.json(a);
   } catch (err) {
