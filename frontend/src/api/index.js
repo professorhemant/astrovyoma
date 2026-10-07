@@ -136,6 +136,11 @@ export const panditPooja = {
   markDone:       (id) => panditApi.post(`/pooja/pandit/bookings/${id}/done`),
 };
 
+export const panditProfile = {
+  update:    (data) => panditApi.patch('/pandit/profile', data),
+  changePin: (data) => panditApi.post('/pandit/change-pin', data),
+};
+
 export const adminPooja = {
   getBookings: (params) => api.get('/admin/pooja/bookings', { params }),
   getPayouts:  ()       => api.get('/admin/pooja/payouts'),
@@ -290,11 +295,12 @@ export const content = {
 };
 
 export const astrologerApplications = {
-  submit: (data) => api.post('/astrologer/apply', data),
-  getAll: (params) => api.get('/admin/applications', { params }),
-  approve: (id) => api.post(`/admin/applications/${id}/approve`),
-  reject: (id, data) => api.post(`/admin/applications/${id}/reject`, data),
-  remove: (id) => api.delete(`/admin/applications/${id}`),
+  submit:      (data)   => api.post('/astrologer/apply', data),
+  checkStatus: (params) => api.get('/astrologer/application-status', { params }),
+  getAll:      (params) => api.get('/admin/applications', { params }),
+  approve:     (id)     => api.post(`/admin/applications/${id}/approve`),
+  reject:      (id, data) => api.post(`/admin/applications/${id}/reject`, data),
+  remove:      (id)     => api.delete(`/admin/applications/${id}`),
 };
 
 // Marks the point the astrologer actually joined. Billing runs from here, not

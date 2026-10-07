@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Phone, Lock, LogOut, Wifi, WifiOff, IndianRupee, Clock } from 'lucide-react';
+import { Phone, Lock, LogOut, Wifi, WifiOff, IndianRupee, Clock, ChevronDown, User, Shield } from 'lucide-react';
 import PanditCallPanel from '../components/PanditCallPanel';
 import PanditSchedule from '../components/PanditSchedule';
 import CompleteContactPrompt from '../components/CompleteContactPrompt';
 import PanditPoojaBookings from '../components/PanditPoojaBookings';
+import { panditProfile } from '../api';
+import toast from 'react-hot-toast';
 import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -21,6 +23,16 @@ export default function PanditPortalPage() {
   const [toggling, setToggling] = useState(false);
   const [earnings, setEarnings] = useState(null);
   const [contactSkipped, setContactSkipped] = useState(false);
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [editForm, setEditForm] = useState({});
+  const [editSaving, setEditSaving] = useState(false);
+
+  const [pinOpen, setPinOpen] = useState(false);
+  const [currentPin, setCurrentPin] = useState('');
+  const [newPin, setNewPin] = useState('');
+  const [confirmPin, setConfirmPin] = useState('');
+  const [pinSaving, setPinSaving] = useState(false);
 
   useEffect(() => {
     if (!token) return;
@@ -73,6 +85,48 @@ export default function PanditPortalPage() {
     setPandit(null);
     setPhone('');
     setPin('');
+  }
+
+  function openEdit() {
+    setEditForm({
+      bio: pandit.bio || '',
+      price_per_min: pandit.price_per_min || 30,
+      experience_years: pandit.experience_years || '',
+      photo_url: pandit.photo_url || '',
+    });
+    setEditOpen(v => !v);
+  }
+
+  async function saveProfile(e) {
+    e.preventDefault();
+    setEditSaving(true);
+    try {
+      await panditProfile.update(editForm);
+      setPandit(p => ({ ...p, ...editForm }));
+      toast.success('Profile updated');
+      setEditOpen(false);
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Could not update profile');
+    } finally {
+      setEditSaving(false);
+    }
+  }
+
+  async function submitChangePin(e) {
+    e.preventDefault();
+    if (newPin !== confirmPin) return toast.error('New PINs do not match');
+    if (!/^\d{4}$/.test(newPin)) return toast.error('PIN must be exactly 4 digits');
+    setPinSaving(true);
+    try {
+      await panditProfile.changePin({ current_pin: currentPin, new_pin: newPin });
+      toast.success('PIN changed successfully');
+      setCurrentPin(''); setNewPin(''); setConfirmPin('');
+      setPinOpen(false);
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Could not change PIN');
+    } finally {
+      setPinSaving(false);
+    }
   }
 
   if (!token || !pandit) {
@@ -281,6 +335,102 @@ export default function PanditPortalPage() {
         {/* Her hours, and who has booked them. The online toggle above is for
             someone wanting to talk *now*; this is the diary. */}
         <PanditSchedule token={token} />
+
+        {/* ── Edit Profile ── */}
+        <div className="mt-6 rounded-2xl border border-gold-600/15 overflow-hidden">
+          <button onClick={openEdit}
+            className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-white/[0.02] transition-colors">
+            <div className="flex items-center gap-2">
+              <User className="w-4 h-4 text-gold-500" />
+              <span className="text-sm text-gray-300 font-medium">Edit Profile</span>
+            </div>
+            <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${editOpen ? 'rotate-180' : ''}`} />
+          </button>
+          <AnimatePresence>
+            {editOpen && (
+              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}
+                className="overflow-hidden">
+                <form onSubmit={saveProfile} className="px-5 pb-5 space-y-4 border-t border-gold-600/10">
+                  <div className="pt-4">
+                    <label className="text-gray-400 text-xs block mb-1">Rate per minute (₹)</label>
+                    <input type="number" min={10} max={500} value={editForm.price_per_min || ''}
+                      onChange={e => setEditForm(f => ({ ...f, price_per_min: Number(e.target.value) }))}
+                      className="input-cosmic w-full text-sm" />
+                  </div>
+                  <div>
+                    <label className="text-gray-400 text-xs block mb-1">Experience (years)</label>
+                    <input type="number" min={0} max={60} value={editForm.experience_years || ''}
+                      onChange={e => setEditForm(f => ({ ...f, experience_years: Number(e.target.value) }))}
+                      className="input-cosmic w-full text-sm" />
+                  </div>
+                  <div>
+                    <label className="text-gray-400 text-xs block mb-1">Profile Photo URL</label>
+                    <input type="url" value={editForm.photo_url || ''}
+                      onChange={e => setEditForm(f => ({ ...f, photo_url: e.target.value }))}
+                      placeholder="https://…"
+                      className="input-cosmic w-full text-sm" />
+                  </div>
+                  <div>
+                    <label className="text-gray-400 text-xs block mb-1">Bio</label>
+                    <textarea rows={3} value={editForm.bio || ''}
+                      onChange={e => setEditForm(f => ({ ...f, bio: e.target.value }))}
+                      placeholder="Tell seekers about yourself…"
+                      className="input-cosmic w-full text-sm resize-none" />
+                  </div>
+                  <button type="submit" disabled={editSaving}
+                    className="btn-gold w-full py-2.5 text-sm font-semibold disabled:opacity-60">
+                    {editSaving ? 'Saving…' : 'Save Changes'}
+                  </button>
+                </form>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* ── Change PIN ── */}
+        <div className="mt-3 rounded-2xl border border-gold-600/15 overflow-hidden">
+          <button onClick={() => setPinOpen(v => !v)}
+            className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-white/[0.02] transition-colors">
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 text-purple-400" />
+              <span className="text-sm text-gray-300 font-medium">Change PIN</span>
+            </div>
+            <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${pinOpen ? 'rotate-180' : ''}`} />
+          </button>
+          <AnimatePresence>
+            {pinOpen && (
+              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}
+                className="overflow-hidden">
+                <form onSubmit={submitChangePin} className="px-5 pb-5 space-y-3 border-t border-gold-600/10">
+                  <div className="pt-4">
+                    <label className="text-gray-400 text-xs block mb-1">Current PIN</label>
+                    <input type="password" maxLength={4} value={currentPin}
+                      onChange={e => setCurrentPin(e.target.value)}
+                      className="input-cosmic w-full text-sm tracking-widest" placeholder="••••" required />
+                  </div>
+                  <div>
+                    <label className="text-gray-400 text-xs block mb-1">New PIN (4 digits)</label>
+                    <input type="password" maxLength={4} value={newPin}
+                      onChange={e => setNewPin(e.target.value)}
+                      className="input-cosmic w-full text-sm tracking-widest" placeholder="••••" required />
+                  </div>
+                  <div>
+                    <label className="text-gray-400 text-xs block mb-1">Confirm New PIN</label>
+                    <input type="password" maxLength={4} value={confirmPin}
+                      onChange={e => setConfirmPin(e.target.value)}
+                      className="input-cosmic w-full text-sm tracking-widest" placeholder="••••" required />
+                  </div>
+                  <button type="submit" disabled={pinSaving}
+                    className="w-full py-2.5 rounded-xl bg-purple-500/20 border border-purple-500/40 text-purple-300 text-sm font-semibold hover:bg-purple-500/30 transition-colors disabled:opacity-60">
+                    {pinSaving ? 'Changing…' : 'Change PIN'}
+                  </button>
+                </form>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* Approval used to drop the email an astrologer applied with, so most
             accounts have only the number she signs in with. Ask once she is in,

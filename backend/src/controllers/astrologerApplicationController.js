@@ -194,4 +194,42 @@ async function deleteApplication(req, res) {
   }
 }
 
-module.exports = { submitApplication, getApplications, approveApplication, rejectApplication, deleteApplication };
+async function getApplicationStatus(req, res) {
+  try {
+    const { phone, email } = req.query;
+    if (!phone && !email) return res.status(400).json({ error: 'Provide phone or email' });
+
+    let app = null;
+    if (email) {
+      app = await AstrologerApplication.findOne({
+        where: { email: email.trim().toLowerCase() },
+        order: [['created_at', 'DESC']],
+        attributes: ['name', 'status', 'rejection_reason', 'created_at'],
+      });
+    }
+    if (!app && phone) {
+      const normalised = phone.replace(/\D/g, '').slice(-10);
+      const all = await AstrologerApplication.findAll({
+        attributes: ['name', 'status', 'rejection_reason', 'created_at', 'phone'],
+        order: [['created_at', 'DESC']],
+        limit: 500,
+      });
+      const found = all.find(a => a.phone && a.phone.replace(/\D/g, '').slice(-10) === normalised);
+      if (found) app = found;
+    }
+
+    if (!app) return res.status(404).json({ error: 'No application found with these details' });
+
+    res.json({
+      name: app.name,
+      status: app.status,
+      submitted_at: app.created_at,
+      rejection_reason: app.status === 'rejected' ? app.rejection_reason : null,
+    });
+  } catch (err) {
+    console.error('getApplicationStatus error:', err);
+    res.status(500).json({ error: 'Could not fetch application status' });
+  }
+}
+
+module.exports = { submitApplication, getApplications, approveApplication, rejectApplication, deleteApplication, getApplicationStatus };

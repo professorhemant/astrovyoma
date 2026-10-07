@@ -112,6 +112,49 @@ function SectionDivider() {
 // short box for the reason above.
 const heroBannerClass = 'w-full block object-cover object-[80%_50%] h-80 sm:h-96 md:h-[clamp(300px,77vh,880px)] xl:h-[100svh]';
 
+function EarningCalc() {
+  const [rate, setRate]     = React.useState(50);
+  const [mins, setMins]     = React.useState(40);
+  const share = 0.60;
+  const weekly  = Math.round(rate * mins * 7 * share);
+  const monthly = Math.round(rate * mins * 30 * share);
+  return (
+    <div className="space-y-6">
+      <div>
+        <div className="flex justify-between text-xs mb-2 text-gray-400">
+          <span>Your rate</span>
+          <span className="text-gold-400 font-semibold">₹{rate}/min</span>
+        </div>
+        <input type="range" min={10} max={150} step={5} value={rate}
+          onChange={e => setRate(Number(e.target.value))}
+          className="w-full accent-yellow-500 cursor-pointer" />
+        <div className="flex justify-between text-[10px] text-gray-600 mt-1"><span>₹10</span><span>₹150</span></div>
+      </div>
+      <div>
+        <div className="flex justify-between text-xs mb-2 text-gray-400">
+          <span>Active minutes/day</span>
+          <span className="text-purple-300 font-semibold">{mins} min</span>
+        </div>
+        <input type="range" min={10} max={240} step={10} value={mins}
+          onChange={e => setMins(Number(e.target.value))}
+          className="w-full accent-purple-500 cursor-pointer" />
+        <div className="flex justify-between text-[10px] text-gray-600 mt-1"><span>10 min</span><span>4 hrs</span></div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="rounded-2xl bg-gold-500/10 border border-gold-500/30 p-4 text-center">
+          <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Weekly</p>
+          <p className="font-serif text-gold-400 text-2xl">₹{weekly.toLocaleString('en-IN')}</p>
+        </div>
+        <div className="rounded-2xl bg-purple-500/10 border border-purple-500/30 p-4 text-center">
+          <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Monthly</p>
+          <p className="font-serif text-purple-300 text-2xl">₹{monthly.toLocaleString('en-IN')}</p>
+        </div>
+      </div>
+      <p className="text-[10px] text-gray-600 text-center">Based on 60% astrologer share · ₹{rate}/min · {mins} min/day</p>
+    </div>
+  );
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
@@ -569,6 +612,59 @@ export default function HomePage() {
                   )}
                 </motion.div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Earn with AstroVyoma ── */}
+        <section className="py-20 px-4 md:px-8 lg:px-16 relative z-10 overflow-hidden">
+          <div className="max-w-6xl mx-auto">
+            <div className="rounded-3xl border border-gold-500/20 overflow-hidden"
+              style={{ background: 'linear-gradient(135deg, rgba(201,168,76,0.07) 0%, rgba(139,92,246,0.07) 100%)' }}>
+              <div className="grid md:grid-cols-2 gap-0">
+
+                {/* Left: pitch */}
+                <div className="p-10 md:p-14">
+                  <p className="text-xs text-gold-600 uppercase tracking-widest mb-3">For Astrologers</p>
+                  <h2 className="font-serif text-3xl md:text-4xl text-gold-400 leading-tight mb-4">
+                    Earn ₹30,000+<br />
+                    <span className="text-white">a Month from Home</span>
+                  </h2>
+                  <p className="text-gray-400 text-sm leading-relaxed mb-8">
+                    India's most generous platform for Vedic astrologers. Zero joining fee, weekly payouts, and seekers matched to your exact specialty.
+                  </p>
+                  <ul className="space-y-3 mb-10">
+                    {[
+                      ['60% payout', 'Highest split in the industry — we take only 40%'],
+                      ['₹0 joining fee', 'Free to apply, free to go live, no monthly charges'],
+                      ['Flexible schedule', 'Toggle online when you want. Take breaks freely'],
+                      ['Weekly payments', 'Transferred every Monday, straight to your bank'],
+                    ].map(([title, desc]) => (
+                      <li key={title} className="flex items-start gap-3">
+                        <span className="w-5 h-5 rounded-full bg-gold-500/20 border border-gold-500/40 flex items-center justify-center shrink-0 mt-0.5">
+                          <span className="text-gold-400 text-[10px]">✓</span>
+                        </span>
+                        <div>
+                          <span className="text-gray-200 text-sm font-medium">{title}</span>
+                          <span className="text-gray-500 text-xs"> — {desc}</span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link to="/join-as-astrologer"
+                    className="btn-gold inline-flex items-center gap-2 px-8 py-3 text-sm font-semibold">
+                    Apply in 5 Minutes →
+                  </Link>
+                  <p className="text-gray-600 text-xs mt-3">No documents needed upfront. Our team calls you within 3–5 days.</p>
+                </div>
+
+                {/* Right: earnings calculator */}
+                <div className="bg-cosmic-900/40 border-l border-gold-500/10 p-10 md:p-14 flex flex-col justify-center">
+                  <p className="text-xs text-purple-300/60 uppercase tracking-widest mb-6">Earnings Calculator</p>
+                  <EarningCalc />
+                </div>
+
+              </div>
             </div>
           </div>
         </section>

@@ -90,6 +90,7 @@ router.post('/admin/payouts/undo',              auth, adminAuth, payoutControlle
 
 // Astrologer application routes
 router.post('/astrologer/apply', astrologerApplicationController.submitApplication);
+router.get('/astrologer/application-status', astrologerApplicationController.getApplicationStatus);
 router.get('/admin/applications', auth, adminAuth, astrologerApplicationController.getApplications);
 router.post('/admin/applications/:id/approve', auth, adminAuth, astrologerApplicationController.approveApplication);
 router.post('/admin/applications/:id/reject', auth, adminAuth, astrologerApplicationController.rejectApplication);
@@ -121,6 +122,8 @@ router.get('/pandit/me', panditAuth, panditController.getStatus);
 router.patch('/pandit/status', panditAuth, panditController.toggleStatus);
 router.get('/pandit/earnings', panditAuth, panditController.getEarnings);
 router.patch('/pandit/contact',     panditAuth, panditController.setContact);
+router.patch('/pandit/profile',     panditAuth, panditController.updateProfile);
+router.post('/pandit/change-pin',   panditAuth, panditController.changePin);
 router.get('/pandit/availability',  panditAuth, panditController.getAvailability);
 router.put('/pandit/availability',  panditAuth, panditController.setAvailability);
 router.get('/pandit/appointments',  panditAuth, panditController.getAppointments);

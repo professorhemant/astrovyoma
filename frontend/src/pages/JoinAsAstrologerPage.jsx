@@ -6,6 +6,119 @@ import ScrollDatePicker from '../components/ScrollDatePicker';
 import toast from 'react-hot-toast';
 import { astrologerApplications, content as contentApi } from '../api';
 
+function ApplicationSuccessScreen({ name, email, phone }) {
+  const [query, setQuery]     = useState('');
+  const [checking, setChecking] = useState(false);
+  const [statusResult, setStatusResult] = useState(null);
+  const [statusError, setStatusError]   = useState('');
+
+  async function checkStatus(e) {
+    e.preventDefault();
+    if (!query.trim()) return;
+    setChecking(true);
+    setStatusResult(null);
+    setStatusError('');
+    try {
+      const isPhone = /^\d/.test(query.trim());
+      const params = isPhone ? { phone: query.trim() } : { email: query.trim() };
+      const res = await astrologerApplications.checkStatus(params);
+      setStatusResult(res.data);
+    } catch (err) {
+      setStatusError(err.response?.data?.error || 'No application found with these details');
+    } finally {
+      setChecking(false);
+    }
+  }
+
+  const statusColors = {
+    pending:  { bg: 'bg-yellow-500/10 border-yellow-500/30', text: 'text-yellow-400', label: 'Under Review' },
+    approved: { bg: 'bg-green-500/10 border-green-500/30',  text: 'text-green-400',  label: 'Approved ✓' },
+    rejected: { bg: 'bg-red-500/10 border-red-500/30',      text: 'text-red-400',    label: 'Not Selected' },
+  };
+
+  return (
+    <div className="min-h-screen bg-cosmic-950 pt-24 pb-16 px-4">
+      <div className="max-w-md mx-auto space-y-6">
+
+        {/* Success card */}
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
+          className="card-cosmic p-8 text-center border border-green-500/30">
+          <div className="w-16 h-16 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-8 h-8 text-green-400" />
+          </div>
+          <h2 className="font-serif text-2xl text-green-400 mb-3">Application Submitted!</h2>
+          <p className="text-gray-300 text-sm leading-relaxed mb-4">
+            Thank you <span className="text-gold-400 font-medium">{name}</span>! Our team will review your
+            application and contact you at <span className="text-gold-400">{email}</span> within 3–5 business days.
+          </p>
+          <div className="text-left bg-cosmic-900/60 border border-gold-600/15 rounded-xl p-4 mb-6">
+            <p className="text-gold-400 text-xs font-semibold mb-2">If approved</p>
+            <p className="text-gray-400 text-xs leading-relaxed">
+              You will receive an email with a link to your <strong className="text-gray-300">Pandit Portal</strong> and
+              a 4-digit PIN. Sign in with your mobile number and PIN to go online and start receiving seekers.
+            </p>
+          </div>
+          <Link to="/astrologers" className="btn-gold px-6 py-2.5 text-sm inline-block">Browse Astrologers</Link>
+        </motion.div>
+
+        {/* Status checker */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+          className="card-cosmic p-6 border border-gold-600/15">
+          <h3 className="text-gold-400 font-semibold text-sm mb-1">Check Application Status</h3>
+          <p className="text-gray-500 text-xs mb-4">Come back any time and enter your mobile number or email to see where your application stands.</p>
+
+          <form onSubmit={checkStatus} className="flex gap-2">
+            <input
+              type="text"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="Mobile number or email"
+              className="input-cosmic flex-1 text-sm"
+              defaultValue={phone || email}
+            />
+            <button type="submit" disabled={checking}
+              className="btn-gold px-4 py-2 text-xs font-semibold shrink-0 disabled:opacity-60">
+              {checking ? '…' : 'Check'}
+            </button>
+          </form>
+
+          {statusError && (
+            <p className="text-red-400 text-xs mt-3">{statusError}</p>
+          )}
+
+          {statusResult && (() => {
+            const sc = statusColors[statusResult.status] || statusColors.pending;
+            return (
+              <div className={`mt-4 rounded-xl border p-4 ${sc.bg}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-gray-300 text-sm font-medium">{statusResult.name}</span>
+                  <span className={`text-xs font-bold uppercase tracking-wide ${sc.text}`}>{sc.label}</span>
+                </div>
+                <p className="text-gray-500 text-[11px]">
+                  Submitted {new Date(statusResult.submitted_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </p>
+                {statusResult.status === 'pending' && (
+                  <p className="text-yellow-300/70 text-xs mt-2">Our team typically responds within 3–5 business days. Check back soon!</p>
+                )}
+                {statusResult.status === 'approved' && (
+                  <p className="text-green-300/80 text-xs mt-2">Check your email for your Pandit Portal PIN. If you didn't receive it, contact support.</p>
+                )}
+                {statusResult.status === 'rejected' && statusResult.rejection_reason && (
+                  <p className="text-gray-400 text-xs mt-2">Reason: {statusResult.rejection_reason}</p>
+                )}
+              </div>
+            );
+          })()}
+        </motion.div>
+
+        <div className="text-center">
+          <Link to="/" className="text-gold-600 hover:text-gold-400 text-xs transition-colors">← Back to AstroVyoma</Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const STEPS = ['Personal Info', 'Skills & Languages', 'Education', 'Profile & Pricing', 'About You'];
 
 const SKILLS = [
@@ -232,29 +345,7 @@ export default function JoinAsAstrologerPage() {
 
   /* ── Success screen ── */
   if (submitted) {
-    return (
-      <div className="min-h-screen bg-cosmic-950 pt-24 pb-16 px-4 flex items-center justify-center">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
-          className="card-cosmic p-10 max-w-md w-full text-center border border-green-500/30">
-          <div className="w-16 h-16 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-8 h-8 text-green-400" />
-          </div>
-          <h2 className="font-serif text-2xl text-green-400 mb-3">Application Submitted!</h2>
-          <p className="text-gray-300 text-sm leading-relaxed mb-4">
-            Thank you <span className="text-gold-400 font-medium">{form.name}</span>! Our team will review your
-            application and contact you at <span className="text-gold-400">{form.email}</span> within 3–5 business days.
-          </p>
-          <div className="text-left bg-cosmic-900/60 border border-gold-600/15 rounded-xl p-4 mb-6">
-            <p className="text-gold-400 text-xs font-semibold mb-2">If approved</p>
-            <p className="text-gray-400 text-xs leading-relaxed">
-              You will receive an email with a link to your <strong className="text-gray-300">Pandit Portal</strong> and
-              a 4-digit PIN. Sign in with your mobile number and PIN to go online and start receiving seekers.
-            </p>
-          </div>
-          <Link to="/astrologers" className="btn-gold px-6 py-2.5 text-sm inline-block">Browse Astrologers</Link>
-        </motion.div>
-      </div>
-    );
+    return <ApplicationSuccessScreen name={form.name} email={form.email} phone={form.phone} />;
   }
 
   return (

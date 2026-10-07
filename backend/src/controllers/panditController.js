@@ -74,7 +74,7 @@ async function getStatus(req, res) {
     // whichever is missing. Approval used to drop the address the astrologer
     // applied with, so most existing accounts have only a number.
     const a = await Astrologer.findByPk(req.pandit.panditId, {
-      attributes: ['id', 'display_name', 'photo_url', 'is_online', 'price_per_min', 'free_minutes', 'email', 'phone']
+      attributes: ['id', 'display_name', 'photo_url', 'is_online', 'price_per_min', 'free_minutes', 'email', 'phone', 'bio', 'experience_years', 'specialties', 'languages']
     });
     res.json(a);
   } catch (err) {
@@ -311,8 +311,50 @@ async function getAppointments(req, res) {
   }
 }
 
+async function updateProfile(req, res) {
+  try {
+    const a = await Astrologer.findByPk(req.pandit.panditId);
+    if (!a) return res.status(404).json({ error: 'Astrologer not found' });
+
+    const allowed = ['bio', 'specialties', 'languages', 'price_per_min', 'experience_years', 'photo_url', 'youtube_channel', 'linkedin_url', 'concern_tags'];
+    const patch = {};
+    for (const k of allowed) {
+      if (req.body[k] !== undefined) patch[k] = req.body[k];
+    }
+    if (!Object.keys(patch).length) return res.status(400).json({ error: 'No changes provided' });
+
+    await a.update(patch);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('updateProfile error:', err);
+    res.status(500).json({ error: 'Could not update profile' });
+  }
+}
+
+async function changePin(req, res) {
+  try {
+    const { current_pin, new_pin } = req.body;
+    if (!current_pin || !new_pin) return res.status(400).json({ error: 'current_pin and new_pin required' });
+    if (!/^\d{4}$/.test(String(new_pin))) return res.status(400).json({ error: 'New PIN must be exactly 4 digits' });
+
+    const a = await Astrologer.findByPk(req.pandit.panditId, { attributes: ['id', 'pin_hash'] });
+    if (!a) return res.status(404).json({ error: 'Astrologer not found' });
+
+    const ok = await bcrypt.compare(String(current_pin), a.pin_hash || '');
+    if (!ok) return res.status(401).json({ error: 'Current PIN is incorrect' });
+
+    const pin_hash = await bcrypt.hash(String(new_pin), 10);
+    await a.update({ pin_hash });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('changePin error:', err);
+    res.status(500).json({ error: 'Could not change PIN' });
+  }
+}
+
 module.exports = {
   panditLogin, toggleStatus, getStatus, getEarnings,
   getIncomingCalls, acceptCall, declineCall, endCall,
   getAvailability, setAvailability, getAppointments, setContact,
+  updateProfile, changePin,
 };
