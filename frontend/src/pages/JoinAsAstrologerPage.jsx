@@ -491,11 +491,11 @@ export default function JoinAsAstrologerPage() {
                   <span>Your rate per minute</span>
                   <span style={{ color: '#c9a84c', fontWeight: 600 }}>₹{ratePerMin}/min</span>
                 </div>
-                <input type="range" min={10} max={100} step={5} value={ratePerMin}
+                <input type="range" min={10} max={200} step={5} value={ratePerMin}
                   onChange={e => setRatePerMin(Number(e.target.value))}
                   className="w-full cursor-pointer accent-yellow-500" />
                 <div className="flex justify-between mt-1" style={{ fontSize: 11, color: '#4b5563' }}>
-                  <span>₹10</span><span>₹100</span>
+                  <span>₹10</span><span>₹200</span>
                 </div>
               </div>
             </div>
