@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { sendAstrologerApprovalEmail, sendAstrologerRejectionEmail, sendNewApplicationAdminAlert } = require('../services/otpService');
+const { sendSms } = require('../services/notificationService');
 const { Op } = require('sequelize');
 const { AstrologerApplication, Astrologer } = require('../models');
 const { generateUniqueSlug } = require('../utils/slugUtils');
@@ -49,10 +50,16 @@ async function submitApplication(req, res) {
       status: 'pending',
     });
 
-    // Fire-and-forget admin alert — never let it delay or fail the response
+    // Fire-and-forget admin alerts — never let them delay or fail the response
     sendNewApplicationAdminAlert({
       name, email, phone, skills, specialties, experience_years, price_per_min, location,
     }).catch(err => console.error('[admin-alert] email failed:', err.message));
+
+    if (process.env.ADMIN_PHONE) {
+      sendSms(process.env.ADMIN_PHONE,
+        `AstroVyoma: New pandit application from ${name} (${phone}). Skills: ${skills || specialties || 'N/A'}. Review: https://astrovyoma.com/admin`
+      ).catch(err => console.error('[admin-alert] SMS failed:', err.message));
+    }
 
     res.status(201).json({
       success: true,

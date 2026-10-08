@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import { astrologerApplications, content as contentApi } from '../api';
 
 function ApplicationSuccessScreen({ name, email, phone }) {
-  const [query, setQuery]     = useState('');
+  const [query, setQuery]     = useState(phone || email || '');
   const [checking, setChecking] = useState(false);
   const [statusResult, setStatusResult] = useState(null);
   const [statusError, setStatusError]   = useState('');
@@ -76,7 +76,6 @@ function ApplicationSuccessScreen({ name, email, phone }) {
               onChange={e => setQuery(e.target.value)}
               placeholder="Mobile number or email"
               className="input-cosmic flex-1 text-sm"
-              defaultValue={phone || email}
             />
             <button type="submit" disabled={checking}
               className="btn-gold px-4 py-2 text-xs font-semibold shrink-0 disabled:opacity-60">
