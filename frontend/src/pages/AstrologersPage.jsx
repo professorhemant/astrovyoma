@@ -65,7 +65,7 @@ export default function AstrologersPage() {
             <div className="flex items-center justify-center gap-6 mt-5">
               <span className="flex items-center gap-1.5 text-xs text-gray-400">
                 <Users className="w-3.5 h-3.5 text-gold-500" />
-                {total} astrologers
+                {total} {total === 1 ? 'astrologer' : 'astrologers'}
               </span>
               <span className="w-px h-3 bg-gold-600/30" />
               {onlineCount > 0 && (
